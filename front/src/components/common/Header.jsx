@@ -154,7 +154,9 @@ const Header = () => {
             <BsBell />
           </Icon>
           <Icon>회원가입</Icon>
-          <Icon>로그인</Icon>
+          <Link to="/login">
+            <Icon>로그인</Icon>
+          </Link>
         </Icons>
       </TopSection>
       <BottomSection>

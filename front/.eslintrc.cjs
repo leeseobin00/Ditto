@@ -35,6 +35,14 @@ module.exports = {
   },
   plugins: ["react", "react-refresh"], // 사용될 ESLint 플러그인을 설정한다.
   rules: {
+    rules: {
+      'prettier/prettier': [
+          'error',
+          {
+              endOfLine: 'auto',
+          },
+      ],
+  },
     "react/prop-types": "off", // PropTypes를 사용하지 않아도 경고나 오류를 발생시키지 않는다.
     "react/jsx-no-target-blank": "warn", // 관련 보안 경고를 유지한다.
     "react-refresh/only-export-components": [
