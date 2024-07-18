@@ -1,5 +1,6 @@
 package com.ssafy.ditto.global.jwt;
 
+import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import com.ssafy.ditto.global.jwt.exception.ExpiredTokenException;
 import com.ssafy.ditto.global.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Date;
 
 @Component
 public class JwtProvider {
@@ -18,6 +20,12 @@ public class JwtProvider {
     @Value("${jwt.refresh_secret}")
     private String refreshSecret;
 
+    @Value("${jwt.access_token_expiration}")
+    private long accessTokenExpiration;
+
+    @Value("${jwt.refresh_token_expiration}")
+    private long refreshTokenExpiration;
+
     public Claims parseClaims(String token, boolean isRefreshToken) {
         try {
             return Jwts.parser()
@@ -25,7 +33,7 @@ public class JwtProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new ExpiredTokenException(e);
         }
     }
 
@@ -43,5 +51,38 @@ public class JwtProvider {
         Claims claims = parseClaims(token, false);
         String userId = claims.getSubject();
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+    }
+
+    public String createAccessToken(String userId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
+
+        return Jwts.builder()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, accessSecret)
+                .compact();
+    }
+
+    public String createRefreshToken(String userId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshTokenExpiration);
+
+        return Jwts.builder()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, refreshSecret)
+                .compact();
+    }
+
+    public JwtResponse refreshAccessToken(String refreshToken) {
+        validateToken(refreshToken, true);
+        Claims claims = parseClaims(refreshToken, true);
+        String userId = claims.getSubject();
+
+        String newAccessToken = createAccessToken(userId);
+        return new JwtResponse(newAccessToken, refreshToken);
     }
 }
