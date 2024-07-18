@@ -28,4 +28,14 @@ public class JwtProvider {
             return e.getClaims();
         }
     }
+
+    public void validateToken(String token, boolean isRefreshToken) {
+        try {
+            parseClaims(token, isRefreshToken);
+        } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
+            throw new InvalidTokenException();
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        }
+    }
 }
