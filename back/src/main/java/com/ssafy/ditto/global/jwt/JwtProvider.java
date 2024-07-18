@@ -38,4 +38,10 @@ public class JwtProvider {
             throw new ExpiredTokenException();
         }
     }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token, false);
+        String userId = claims.getSubject();
+        return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+    }
 }
