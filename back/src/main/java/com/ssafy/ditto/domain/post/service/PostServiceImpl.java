@@ -13,7 +13,6 @@ import com.ssafy.ditto.domain.post.exception.BoardException;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +70,9 @@ public class PostServiceImpl implements PostService {
 
         PostList postList = new PostList();
 //수정 필요
+        for(Post post:list){
+            postList.getPosts().add(PostResponse.of(post));
+        }
         postList.setCurrentPage(curPage);
         postList.setTotalPageCount(pageCount);
         return postList;
@@ -78,9 +80,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostList bestPost() throws Exception {
-        PostList postList = new PostList();
         List<Post> list = postRepository.getBestPosts(LocalDateTime.now());
-        postList.setPosts(list); // 수정필요
+        PostList postList = new PostList();
+         // 수정필요
+        for(Post post:list){
+            postList.getPosts().add(PostResponse.of(post));
+        }
         return postList;
     }
 
