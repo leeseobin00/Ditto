@@ -5,8 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import com.ssafy.ditto.domain.post.domain.Board;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
+import com.ssafy.ditto.domain.post.dto.PostResponse;
+import com.ssafy.ditto.domain.post.exception.BoardException;
+import com.ssafy.ditto.domain.post.exception.PostException;
+import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,21 +22,27 @@ import com.ssafy.ditto.domain.post.dto.PostList;
 
 import lombok.RequiredArgsConstructor;
 
+import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
+import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
+
 @Component
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
     public final PostRepository postRepository;
+    public final BoardRepository boardRepository;
 
     @Override
     @Transactional
     public String writePost(PostRequest postReq) throws Exception {
+        Board board = boardRepository.findById(postReq.getBoardId())
+                .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
         Post post = new Post();
         post.setTitle(postReq.getTitle());
-        post.setTitle(postReq.getUsername());
         post.setContent(postReq.getContent());
         post.setUserId(postReq.getUserId());
-        post.setBoardId(postReq.getBoardId());
+        post.setTitle(postReq.getUsername());
+        post.setBoard(board);
         post.setCategoryId(postReq.getCategoryId());
         post.setTagId(postReq.getTagId());
 
@@ -90,14 +101,17 @@ public class PostServiceImpl implements PostService {
 //    }
 
     @Override
-    public Post getPost(int postId) throws Exception {
+    public PostResponse getPost(int postId) throws Exception {
         postRepository.addView(postId);
-        return postRepository.getPost(postId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        PostResponse postResp = new PostResponse();
+        
+        return postResp;
     }
 
     @Override
-    public String modifyPost(PostRequest postReq) throws Exception {
-        Post post = postRepository.getPost(postReq.getPostId());
+    public String modifyPost(int postId, PostRequest postReq) throws Exception {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         if (post != null) {
             post.setTitle(postReq.getTitle());
             post.setContent(postReq.getContent());
@@ -108,7 +122,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String deletePost(int postId) throws Exception {
-        Post post = postRepository.getPost(postId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.delete(post);
         return postId+"번 게시글 삭제";
     }
