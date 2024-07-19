@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import com.ssafy.ditto.domain.category.domain.Category;
+import com.ssafy.ditto.domain.category.repository.CategoryRepository;
 import com.ssafy.ditto.domain.post.domain.Board;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
@@ -13,6 +15,8 @@ import com.ssafy.ditto.domain.post.exception.BoardException;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
+import com.ssafy.ditto.domain.tag.domain.Tag;
+import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
 import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
+import static com.ssafy.ditto.global.dto.ResponseMessage.*;
 
 @Component
 @Service
@@ -30,20 +35,26 @@ import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
 public class PostServiceImpl implements PostService {
     public final PostRepository postRepository;
     public final BoardRepository boardRepository;
+    public final CategoryRepository categoryRepository;
+    public final TagRepository tagRepository;
 
     @Override
     @Transactional
     public String writePost(PostRequest postReq) throws Exception {
         Board board = boardRepository.findById(postReq.getBoardId())
                 .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
+        Category category = categoryRepository.findById(postReq.getCategoryId())
+                .orElseThrow(() -> new Exception(NOT_FOUND.getMessage()));
+        Tag tag = tagRepository.findById(postReq.getCategoryId())
+                .orElseThrow(() -> new Exception(NOT_FOUND.getMessage()));
         Post post = new Post();
         post.setTitle(postReq.getTitle());
         post.setContent(postReq.getContent());
         post.setUserId(postReq.getUserId());
         post.setTitle(postReq.getUsername());
         post.setBoard(board);
-        post.setCategoryId(postReq.getCategoryId());
-        post.setTagId(postReq.getTagId());
+        post.setCategory(category);
+        post.setTag(tag);
 
         postRepository.save(post);
 //        List<File> files = boardDto.getFileInfos();

@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.post.domain;
 
+import com.ssafy.ditto.domain.category.domain.Category;
+import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,6 +29,14 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "board_id", insertable = false, updatable = false)
     private Board board;
 
+    @ManyToOne
+    @Column(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @Column(name = "tag_id")
+    private Tag tag;
+
     @Column(name = "title", length = 100)
     private String title;
 
@@ -44,13 +54,4 @@ public class Post extends BaseTimeEntity {
 
     @Column(name = "comment_count")
     private Integer commentCount;
-
-    @Column(name = "user_id")
-    private Integer userId;
-
-    @Column(name = "tag_id")
-    private Integer tagId;
-
-    @Column(name = "category_id")
-    private Integer categoryId;
 }

@@ -11,14 +11,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class PostRequest {
+
+    private Integer postId;
+    private Integer userId;
+    private String username;
+    private Integer boardId;
+    private Integer categoryId;
+    private Integer tagId;
     private String title;
     private String content;
-    private String username;
-    private int userId;
-    private int postId;
-    private int boardId;
-    private int categoryId;
-    private int tagId;
+
 //    @Schema(description = "업로드 파일 정보")
 //    private List<FileInfoDto> files;
 }

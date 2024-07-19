@@ -27,12 +27,12 @@ public class PostResponse {
     private Integer likeCount;
     private Integer commentCount;
 
-    public PostResponse(Integer postId, Integer userId, String username, Integer boardId, String boardName,
+    public PostResponse(Integer postId, Integer userId, /*String username,*/ Integer boardId, String boardName,
                         Integer tagId, String tagName, Integer categoryId, String categoryName,
                         String title, String content, Integer viewCount, Boolean isDeleted, Integer likeCount, Integer likeCount1, Integer commentCount) {
         this.postId=postId;
         this.userId=userId;
-        this.username=username;
+//        this.username=username;
         this.boardId=boardId;
         this.boardName=boardName;
         this.tagId=tagId;
@@ -51,13 +51,13 @@ public class PostResponse {
         return new PostResponse(
                 post.getPostId(),
                 post.getUserId(),
-                post.getUsername(),
+//                post.getUsername(),
                 post.getBoard().getBoardId(),
                 post.getBoard().getBoardName(),
-                post.getTagId(),
-                post.getTagName(),
-                post.getCategoryId(),
-                post.getCategoryName(),
+                post.getTag().getTagId(),
+                post.getTag().getTagName(),
+                post.getCategory().getCategoryId(),
+                post.getCategory().getCategoryName(),
                 post.getTitle(),
                 post.getContent(),
                 post.getViewCount(),
