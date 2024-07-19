@@ -10,13 +10,20 @@ const FilterWrapper = styled.div`
 
 const FilterTitle = styled.p`
   white-space: nowrap;
-  margin-right: 8px;
+  width: 60px;
+  margin-right: 4px;
+`;
+
+const FilterContent = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 `;
 
 const Filter = ({ title, children }) => (
   <FilterWrapper>
     <FilterTitle>{title}</FilterTitle>
-    {children}
+    <FilterContent>{children}</FilterContent>
   </FilterWrapper>
 );
 

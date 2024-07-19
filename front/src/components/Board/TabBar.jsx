@@ -1,6 +1,5 @@
 import { styled } from "styled-components";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Tabs = styled.ul`
   display: flex;
@@ -20,8 +19,8 @@ function TabBar() {
 
   return (
     <Tabs>
-      <Link to="/board">
-        <Tab $active={path === undefined}>전체</Tab>
+      <Link to="/board/all">
+        <Tab $active={path === "all"}>전체</Tab>
       </Link>
       <Link to="/board/talk">
         <Tab $active={path === "talk"}>소통해요</Tab>

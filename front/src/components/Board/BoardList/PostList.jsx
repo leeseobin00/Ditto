@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { Link } from "react-router-dom";
 
 import PostItem from "./PostItem";
 
@@ -11,15 +12,16 @@ function PostList({ posts }) {
   return (
     <List>
       {posts?.map((post, index) => (
-        <PostItem
-          key={index}
-          postId={post?.postId}
-          title={post?.title}
-          likeCount={post?.likeCount}
-          userName={post?.userName}
-          createdDate={post?.createdDate}
-          viewCount={post?.viewCount}
-        />
+        <Link key={index} to={`${post?.postId}`}>
+          <PostItem
+            postId={post?.postId}
+            title={post?.title}
+            likeCount={post?.likeCount}
+            userName={post?.userName}
+            createdDate={post?.createdDate}
+            viewCount={post?.viewCount}
+          />
+        </Link>
       ))}
     </List>
   );
