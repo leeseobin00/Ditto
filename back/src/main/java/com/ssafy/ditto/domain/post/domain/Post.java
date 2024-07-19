@@ -26,15 +26,15 @@ public class Post extends BaseTimeEntity {
     private Integer userId;
 
     @ManyToOne
-    @JoinColumn(name = "board_id", insertable = false, updatable = false)
+    @JoinColumn(name = "board_id")
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id", insertable = false, updatable = false)
+    @JoinColumn(name = "tag_id")
     private Tag tag;
 
     @Column(name = "title", length = 100)

@@ -21,8 +21,8 @@ public class LikePost extends BaseTimeEntity {
     private Integer likePostId;
 
     @ManyToOne
-    @JoinColumn(name = "board_id", insertable = false, updatable = false)
-    private Board board;
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Column(name = "user_id")
     private Integer userId;

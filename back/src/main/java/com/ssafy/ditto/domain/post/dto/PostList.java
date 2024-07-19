@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.post.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@NoArgsConstructor
+//@NoArgsConstructor
 @ToString
 public class PostList {
 
@@ -22,4 +23,8 @@ public class PostList {
 
     @Schema(description = "전체 페이지 수")
     private Integer totalPageCount;
+
+    public PostList(){
+        posts = new ArrayList<>();
+    }
 }

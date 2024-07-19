@@ -1,9 +1,7 @@
 package com.ssafy.ditto.domain.post.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
 
 import com.ssafy.ditto.domain.category.domain.Category;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
@@ -40,13 +38,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public String writePost(PostRequest postReq) throws Exception {
+    public String writePost(PostRequest postReq) {
         Board board = boardRepository.findById(postReq.getBoardId())
                 .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
+        System.out.println(board);
         Category category = categoryRepository.findById(postReq.getCategoryId())
-                .orElseThrow(() -> new Exception(NOT_FOUND.getMessage()));
+                .orElse(null);
         Tag tag = tagRepository.findById(postReq.getCategoryId())
-                .orElseThrow(() -> new Exception(NOT_FOUND.getMessage()));
+                .orElse(null);
         Post post = new Post();
         post.setTitle(postReq.getTitle());
         post.setContent(postReq.getContent());
@@ -55,33 +54,62 @@ public class PostServiceImpl implements PostService {
         post.setBoard(board);
         post.setCategory(category);
         post.setTag(tag);
+        post.setViewCount(0);
+        post.setIsDeleted(false);
+        post.setLikeCount(0);
+        post.setCommentCount(0);
 
         postRepository.save(post);
 //        List<File> files = boardDto.getFileInfos();
 //        if (fileInfos != null && !fileInfos.isEmpty()) {
 //            boardMapper.registerFile(boardDto);
 //        }
-        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 작성";
+        return postReq.getBoardId()+"번 게시판에 게시글 작성";
     }
 
     @Override
-    public PostList searchPost(Map<String, String> map) throws Exception {
+    public PostList searchPost(Map<String, String> map) {
         int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
         int sizePage = Integer.parseInt(map.getOrDefault("size", "10"));
         int start = (curPage - 1) * sizePage;
 
-        Integer boardId = map.get("boardId") != null ? Integer.parseInt(map.get("boardId")) : null;
-        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
-        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
-        String sortBy = map.getOrDefault("sortBy", "p.post_id"); // 여기 확인 필요.
+        Integer boardId = map.get("boardId") != null && !map.get("boardId").isEmpty() ? Integer.parseInt(map.get("boardId")) : null;
+        Integer categoryId = map.get("categoryId") != null && !map.get("categoryId").isEmpty() ? Integer.parseInt(map.get("categoryId")) : null;
+        Integer tagId = map.get("tagId") != null && !map.get("tagId").isEmpty() ? Integer.parseInt(map.get("tagId")) : null;
+        String sortBy = map.getOrDefault("sortBy", "postId");
 
-        List<Post> list = postRepository.getlist(boardId, categoryId, tagId, sortBy, start, sizePage);
+        List<Post> list = postRepository.getPostLists(boardId, categoryId, tagId);
         int postCount = postRepository.getPostCount(boardId, categoryId, tagId);
         int pageCount = (postCount - 1) / sizePage + 1;
 
+        // Sort the list
+        switch (sortBy) {
+            case "likeCount":
+                list.sort(Comparator.comparing(Post::getLikeCount).reversed());
+                break;
+            case "viewCount":
+                list.sort(Comparator.comparing(Post::getViewCount).reversed());
+                break;
+            case "createdDate":
+                list.sort(Comparator.comparing(Post::getCreatedDate).reversed());
+                break;
+            case "postId":
+            default:
+                list.sort(Comparator.comparing(Post::getPostId).reversed());
+                break;
+        }
+
+        // Paginate the list
+        List<Post> paginatedList;
+        if (start >= list.size()) {
+            paginatedList = Collections.emptyList();
+        } else {
+            int end = Math.min(start + sizePage, list.size());
+            paginatedList = list.subList(start, end);
+        }
+
         PostList postList = new PostList();
-//수정 필요
-        for(Post post:list){
+        for (Post post : paginatedList) {
             postList.getPosts().add(PostResponse.of(post));
         }
         postList.setCurrentPage(curPage);
@@ -90,8 +118,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostList bestPost() throws Exception {
-        List<Post> list = postRepository.getBestPosts(LocalDateTime.now());
+    public PostList bestPost() {
+        List<Post> list = postRepository.getBestPosts(LocalDateTime.now().minusDays(7));
         PostList postList = new PostList();
          // 수정필요
         for(Post post:list){
@@ -117,14 +145,14 @@ public class PostServiceImpl implements PostService {
 //    }
 
     @Override
-    public PostResponse getPost(int postId) throws Exception {
+    public PostResponse getPost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.addView(postId);
         return PostResponse.of(post);
     }
 
     @Override
-    public String modifyPost(int postId, PostRequest postReq) throws Exception {
+    public String modifyPost(int postId, PostRequest postReq) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         if (post != null) {
             post.setTitle(postReq.getTitle());
@@ -135,27 +163,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String deletePost(int postId) throws Exception {
+    public String deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.delete(post);
         return postId+"번 게시글 삭제";
     }
 
     @Override
-    public String addLike(int postId, int userId) throws Exception {
+    public String addLike(int postId, int userId) {
         postRepository.addLike(postId,userId);
         return postId+"번 게시글 "+userId+"번 유저 좋아요 누름";
     }
 
     @Override
-    public String removeLike(int postId, int userId) throws Exception {
+    public String removeLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.removeLike(postId,userId);
         return postId+"번 게시글 "+userId+"번 유저 좋아요 취소";
     }
 
     @Override
-    public Boolean checkLike(int postId, int userId) throws Exception {
+    public Boolean checkLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         int count = postRepository.checkLike(postId,userId);
         return count==1;

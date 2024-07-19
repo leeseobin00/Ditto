@@ -14,23 +14,22 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer>{
 
-    // 커뮤니티 게시글 목록 조회
     @Query(value = "SELECT * FROM Post p WHERE "
-            + "(:boardId IS NULL OR p.board_id = :boardId) AND "
-            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
-            + "(:tagId IS NULL OR p.tag_id = :tagId) "
-            + "ORDER BY :sortBy DESC "
-            + "LIMIT :start, :listSize", nativeQuery = true)
-    List<Post> getlist(@Param("boardId") Integer boardId, @Param("categoryId") Integer categoryId,
-                       @Param("tagId") Integer tagId, @Param("sortBy") String sortBy,
-                       @Param("start") int start, @Param("listSize") int listSize);
-
+            + "(COALESCE(:boardId, p.board_id) = p.board_id) AND "
+            + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
+            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) ",
+            nativeQuery = true)
+    List<Post> getPostLists(@Param("boardId") Integer boardId,
+                            @Param("categoryId") Integer categoryId,
+                            @Param("tagId") Integer tagId);
 
     @Query(value = "SELECT COUNT(*) FROM Post p WHERE "
-            + "(:boardId IS NULL OR p.board_id = :boardId) AND "
-            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
-            + "(:tagId IS NULL OR p.tag_id = :tagId)", nativeQuery = true)
-    int getPostCount(@Param("boardId") Integer boardId, @Param("categoryId") Integer categoryId,
+            + "(COALESCE(:boardId, p.board_id) = p.board_id) AND "
+            + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
+            + "(COALESCE(:tagId, p.tag_id) = p.tag_id)",
+            nativeQuery = true)
+    int getPostCount(@Param("boardId") Integer boardId,
+                     @Param("categoryId") Integer categoryId,
                      @Param("tagId") Integer tagId);
 
     // 최근 1주일간 받은 좋아요수
@@ -57,7 +56,7 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     // 좋아요 추가
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Like_Post (post_id, user_id) VALUES (:postId, :userId)", nativeQuery = true)
+    @Query(value = "INSERT INTO Like_Post (post_id, user_id, created_date) VALUES (:postId, :userId, now())", nativeQuery = true)
     void addLike(@Param("postId") int postId, @Param("userId") int userId);
 
     // 좋아요 삭제

@@ -28,3 +28,8 @@ INSERT INTO Tag (tag_name, category_id) VALUES ('미니어처', 4);
 INSERT INTO Tag (tag_name, category_id) VALUES ('키링', 4);
 INSERT INTO Tag (tag_name, category_id) VALUES ('모빌', 4);
 INSERT INTO Tag (tag_name, category_id) VALUES ('페인팅', 4);
+
+-- Board 테이블에 데이터 삽입
+INSERT INTO Board (board_name) VALUES ('소통해요');
+INSERT INTO Board (board_name) VALUES ('자랑해요');
+INSERT INTO Board (board_name) VALUES ('도와줘요');
