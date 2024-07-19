@@ -12,21 +12,13 @@ import lombok.ToString;
 @ToString
 public class PostRequest {
 
-    @Schema(description = "글 제목")
     private String title;
-    @Schema(description = "글 내용")
     private String content;
-    @Schema(description = "사용자 이름")
     private String username;
-    @Schema(description = "사용자 ID")
     private int userId;
-    @Schema(description = "게시글 ID")
     private int postId;
-    @Schema(description = "게시판 ID")
     private int boardId;
-    @Schema(description = "카테고리 ID")
     private int categoryId;
-    @Schema(description = "태그 ID")
     private int tagId;
 //    @Schema(description = "업로드 파일 정보")
 //    private List<FileInfoDto> files;

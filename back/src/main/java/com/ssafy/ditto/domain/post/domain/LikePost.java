@@ -18,12 +18,12 @@ public class LikePost extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_post_id")
-    private int likePostId;
+    private Integer likePostId;
 
     @ManyToOne
     @JoinColumn(name = "board_id", insertable = false, updatable = false)
     private Board board;
 
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
 }
