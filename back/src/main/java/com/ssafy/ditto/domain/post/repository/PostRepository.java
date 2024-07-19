@@ -2,6 +2,7 @@ package com.ssafy.ditto.domain.post.repository;
 
 import com.ssafy.ditto.domain.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -48,17 +49,19 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     @Query("SELECT p FROM Post p WHERE p.postId = :postId")
     Post getPost(@Param("postId") int postId);
 
-    // 조회수 +1
+    @Modifying
     @Transactional
-    @Query("UPDATE Post p SET p.view_count = p.view_count + 1 WHERE p.post_id = :postId")
+    @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
     void addView(@Param("postId") int postId);
 
     // 좋아요 추가
+    @Modifying
     @Transactional
     @Query(value = "INSERT INTO Like_Post (post_id, user_id) VALUES (:postId, :userId)", nativeQuery = true)
     void addLike(@Param("postId") int postId, @Param("userId") int userId);
 
     // 좋아요 삭제
+    @Modifying
     @Transactional
     @Query(value = "DELETE FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
     void removeLike(@Param("postId") int postId, @Param("userId") int userId);
