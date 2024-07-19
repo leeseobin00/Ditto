@@ -2,8 +2,11 @@ import { useState } from "react";
 import { styled } from "styled-components";
 import { BsChevronLeft, BsHeart, BsHeartFill } from "react-icons/bs";
 import { MdMenu } from "react-icons/md";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
+import Button from "../../common/Button";
 import OutlineButton from "../../common/OutlineButton";
+import Modal from "../../common/Modal";
 
 const PostWrapper = styled.div``;
 
@@ -138,6 +141,20 @@ const Tag = styled.div`
   white-space: nowrap;
 `;
 
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+`;
+
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 32px;
+  margin-top: 48px;
+`;
+
 function Post({
   title,
   username,
@@ -147,18 +164,32 @@ function Post({
   fileUrl,
   content,
 }) {
+  const location = useLocation();
+  const path = location.pathname.split("/");
+  const { postId } = useParams(); // 게시글 ID를 URL 파라미터로 가져옴
+  const navigate = useNavigate();
   const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleHeartClick = () => {
     setIsHeartFilled(!isHeartFilled);
   };
 
   const handleEdit = () => {
-    // Handle edit action
+    navigate(`/board/edit/${postId}`);
   };
 
   const handleDelete = () => {
-    // Handle delete action
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    // 추후 삭제 api 연결
+    setIsModalOpen(false);
   };
 
   return (
@@ -185,9 +216,15 @@ function Post({
         <HTMLContent html={content} />
       </Content>
       <Buttons>
-        <ButtonWrapper>
-          <OutlineButton label={<CustomBackIcon />} color="default" size="sm" />
-        </ButtonWrapper>
+        <Link to={`/${path[1]}/${path[2]}`}>
+          <ButtonWrapper>
+            <OutlineButton
+              label={<CustomBackIcon />}
+              color="default"
+              size="sm"
+            />
+          </ButtonWrapper>
+        </Link>
         <ButtonWrapper onClick={handleHeartClick}>
           <OutlineButton
             label={
@@ -208,6 +245,22 @@ function Post({
           <Tag>향초</Tag>
         </ButtonWrapper>
       </Buttons>
+
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal}>
+          <ModalContent style={{ textAlign: "center" }}>
+            <p>게시글을 삭제하시겠습니까?</p>
+            <ModalButtons>
+              <OutlineButton
+                label="삭제"
+                color="ACCENT1"
+                onClick={handleConfirmDelete}
+              />
+              <Button label="취소" color="default" onClick={handleCloseModal} />
+            </ModalButtons>
+          </ModalContent>
+        </Modal>
+      )}
     </PostWrapper>
   );
 }
