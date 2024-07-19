@@ -5,12 +5,12 @@ import BestClassList from "./BestClassList";
 const BestClassContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 5% 0;
+  margin-top: 3%;
   padding: 0 20px;
 `;
 
 const BestClassTitle = styled.div`
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 700;
 `;
 
