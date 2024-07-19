@@ -30,11 +30,11 @@ public class Post extends BaseTimeEntity {
     private Board board;
 
     @ManyToOne
-    @Column(name = "category_id")
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
     @ManyToOne
-    @Column(name = "tag_id")
+    @JoinColumn(name = "tag_id", insertable = false, updatable = false)
     private Tag tag;
 
     @Column(name = "title", length = 100)
