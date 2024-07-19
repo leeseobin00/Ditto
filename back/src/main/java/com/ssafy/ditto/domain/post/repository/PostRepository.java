@@ -4,11 +4,13 @@ import com.ssafy.ditto.domain.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface PostRepository extends JpaRepository<Post,Integer>{
 
     // 커뮤니티 게시글 목록 조회
@@ -53,16 +55,16 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     // 좋아요 추가
     @Transactional
-    @Query(value = "INSERT INTO likes (post_id, user_id) VALUES (:postId, :userId)", nativeQuery = true)
+    @Query(value = "INSERT INTO Like_Post (post_id, user_id) VALUES (:postId, :userId)", nativeQuery = true)
     void addLike(@Param("postId") int postId, @Param("userId") int userId);
 
     // 좋아요 삭제
     @Transactional
-    @Query(value = "DELETE FROM likes WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
-    int removeLike(@Param("postId") int postId, @Param("userId") int userId);
+    @Query(value = "DELETE FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
+    void removeLike(@Param("postId") int postId, @Param("userId") int userId);
 
     // 좋아요 상태 확인
-    @Query(value = "SELECT COUNT(*) FROM likes WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
     int checkLike(@Param("postId") int postId, @Param("userId") int userId);
 
 }
