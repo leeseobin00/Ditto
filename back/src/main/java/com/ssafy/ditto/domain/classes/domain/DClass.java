@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.classes.domain;
 
+import com.ssafy.ditto.domain.category.domain.Category;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.*;
 @Entity
 @Table
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -59,6 +61,10 @@ public class DClass extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tagId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category categoryId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kit_id")
