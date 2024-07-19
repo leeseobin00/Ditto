@@ -8,6 +8,8 @@ import java.util.List;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +17,14 @@ import com.ssafy.ditto.domain.post.dto.PostList;
 
 import lombok.RequiredArgsConstructor;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private PostRepository postRepository;
+    @Autowired
+    final PostRepository postRepository;
+
+
 
     @Override
     @Transactional
@@ -37,7 +43,7 @@ public class PostServiceImpl implements PostService {
 //        if (fileInfos != null && !fileInfos.isEmpty()) {
 //            boardMapper.registerFile(boardDto);
 //        }
-        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 작성 성공";
+        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 작성";
     }
 
     @Override
@@ -63,67 +69,68 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostList bestPost(Map<String, String> map) throws Exception {
+    public PostList bestPost() throws Exception {
         PostList postList = new PostList();
         List<Post> list = postRepository.getBestPosts(LocalDateTime.now());
         postList.setPosts(list);
         return postList;
     }
 
-    @Override
-    public PostList userPost(Map<String, String> map) throws Exception {
-        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
-        int sizePage = Integer.parseInt(map.getOrDefault("size", "10"));
-        int start = (curPage - 1) * sizePage;
-
-        int userId = Integer.parseInt(map.get("userId"));
-        List<Post> posts = postRepository.findByUserId(userId);
-
-        PostList postList = new PostList();
-        postList.setPosts(posts);
-        postList.setCurrentPage(curPage);
-        postList.setTotalPageCount(1); // 확인 필요
-        return postList;
-    }
+//    @Override
+//    public PostList userPost(Map<String, String> map) throws Exception {
+//        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
+//        int sizePage = Integer.parseInt(map.getOrDefault("size", "10"));
+//        int start = (curPage - 1) * sizePage;
+//
+//        int userId = Integer.parseInt(map.get("userId"));
+//        List<Post> posts = postRepository.findByUserId(userId);
+//
+//        PostList postList = new PostList();
+//        postList.setPosts(posts);
+//        postList.setCurrentPage(curPage);
+//        postList.setTotalPageCount(1); // 확인 필요
+//        return postList;
+//    }
 
     @Override
     public Post getPost(int postId) throws Exception {
+        postRepository.addView(postId);
         return postRepository.getPost(postId);
     }
 
     @Override
-    public void modifyPost(PostRequest postReq) throws Exception {
+    public String modifyPost(PostRequest postReq) throws Exception {
         Post post = postRepository.getPost(postReq.getPostId());
         if (post != null) {
             post.setTitle(postReq.getTitle());
             post.setContent(postReq.getContent());
             postRepository.save(post);
         }
+        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 수정";
     }
 
     @Override
-    public void deletePost(int postId) throws Exception {
+    public String deletePost(int postId) throws Exception {
         Post post = postRepository.getPost(postId);
         postRepository.delete(post);
+        return postId+"번 게시글 삭제";
     }
 
     @Override
-    public void addView(int postId) throws Exception {
-        postRepository.addView(postId);
-    }
-
-    @Override
-    public void addLike(int postId, int userId) throws Exception {
+    public String addLike(int postId, int userId) throws Exception {
         postRepository.addLike(postId,userId);
+        return postId+"번 게시글 "+userId+"번 유저 좋아요 누름";
     }
 
     @Override
-    public int removeLike(int postId, int userId) throws Exception {
-        return postRepository.removeLike(postId,userId);
+    public String removeLike(int postId, int userId) throws Exception {
+        postRepository.removeLike(postId,userId);
+        return postId+"번 게시글 "+userId+"번 유저 좋아요 취소";
     }
 
     @Override
-    public int checkLike(int postId, int userId) throws Exception {
-        return postRepository.checkLike(postId,userId);
+    public Boolean checkLike(int postId, int userId) throws Exception {
+        int count = postRepository.checkLike(postId,userId);
+        return count==1;
     }
 }
