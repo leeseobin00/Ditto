@@ -6,6 +6,7 @@ import com.ssafy.ditto.domain.comment.dto.CommentResponse;
 import com.ssafy.ditto.domain.comment.exception.CommentException;
 import com.ssafy.ditto.domain.comment.repository.CommentRepository;
 import com.ssafy.ditto.domain.post.domain.Post;
+import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ssafy.ditto.domain.comment.exception.CommentErrorCode.*;
+import static com.ssafy.ditto.domain.post.exception.PostErrorCode.POST_NOT_EXIST;
 
 @Component
 @Service

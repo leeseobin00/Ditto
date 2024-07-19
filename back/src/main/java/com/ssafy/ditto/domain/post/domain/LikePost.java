@@ -1,12 +1,7 @@
 package com.ssafy.ditto.domain.post.domain;
 
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,8 +20,9 @@ public class LikePost extends BaseTimeEntity {
     @Column(name = "like_post_id")
     private int likePostId;
 
-    @Column(name = "post_id")
-    private int postId;
+    @ManyToOne
+    @JoinColumn(name = "board_id", insertable = false, updatable = false)
+    private Board board;
 
     @Column(name = "user_id")
     private int userId;

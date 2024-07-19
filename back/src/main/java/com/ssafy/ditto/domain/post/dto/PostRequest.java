@@ -10,7 +10,6 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-@Schema(title = "PostRequest : 게시글 요청 정보", description = "게시글 생성 요청에 필요한 정보를 나타낸다.")
 public class PostRequest {
 
     @Schema(description = "글 제목")
