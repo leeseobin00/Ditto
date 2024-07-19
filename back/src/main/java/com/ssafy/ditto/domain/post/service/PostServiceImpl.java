@@ -132,7 +132,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String addLike(int postId, int userId) throws Exception {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.addLike(postId,userId);
         return postId+"번 게시글 "+userId+"번 유저 좋아요 누름";
     }
