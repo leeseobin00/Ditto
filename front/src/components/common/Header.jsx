@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
+import { useSelector } from "react-redux";  // 추가된 부분
 import { BsCameraVideo, BsBell } from "react-icons/bs";
 
 const HeaderContainer = styled.header`
@@ -128,6 +129,8 @@ const Overlay = styled.div`
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);  // 추가된 부분
+  const userName = useSelector(state => state.auth.userName);  // 추가된 부분
 
   const handleOverlayClick = () => {
     setMenuOpen(false);
@@ -153,10 +156,20 @@ const Header = () => {
           <Icon>
             <BsBell />
           </Icon>
-          <Icon>회원가입</Icon>
-          <Link to="/login">
-            <Icon>로그인</Icon>
-          </Link>
+          {isAuthenticated ? (
+            <Icon>MyPage</Icon> // 로그인된 경우 사용자 이름 표시
+          ) : (
+            <Link to="/signup">
+              <Icon>회원가입</Icon>
+            </Link>
+          )}
+          {isAuthenticated ? (
+            <Icon>{userName}</Icon> // 로그인된 경우 사용자 이름 표시
+          ) : (
+            <Link to="/login">
+              <Icon>로그인</Icon>
+            </Link>
+          )}
         </Icons>
       </TopSection>
       <BottomSection>

@@ -1,9 +1,8 @@
-// src/components/LoginForm.jsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import axiosIntercepter from '../../features/axiosIntercepter';
-import { login } from '../../features/auth/authSlice';
+import axiosIntercepter from '../../../features/axiosIntercepter';
+import { login } from '../../../features/auth/authSlice';
 import KakaoLogin from './KaKaoLogin';
 
 // 스타일링 컴포넌트 정의
@@ -12,7 +11,6 @@ const FormContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--LIGHT);
 `;
 
 const StyledForm = styled.form`
@@ -20,11 +18,11 @@ const StyledForm = styled.form`
   flex-direction: column;
   width: 400px;
   padding: 20px;
-  background-color: var(--LIGHT);
   text-align: center;
 `;
 
 const FormTitle = styled.h2`
+  margin-top: 30px;
   margin-bottom: 10px;
   text-align: center;
   color: var(--TEXT_SECONDARY);
@@ -107,8 +105,6 @@ const LoginDivider = styled.div`
 
 const SocialGroup = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
 `;
 
@@ -117,54 +113,24 @@ const LoginGroup = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 50px 0;
-`;
-
-const SocialLoginButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  padding: 10px;
-  border: none;
-  border-radius: 40px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-bottom: 10px;
-
-  ${(props) => {
-    if (props.$provider === 'kakao') {
-      return `
-        background-color: #fee500;
-        color: var(--DARK);
-      `;
-    } else if (props.$provider === 'google') {
-      return `
-        background-color: var(--LIGHT);
-        color: var(--DARK);
-        border: 1px solid var(--BORDER_COLOR);
-      `;
-    } else if (props.$provider === 'naver') {
-      return `
-        background-color: #03c75a;
-        color: var(--LIGHT);
-      `;
-    }
-  }}
-
-  &:hover {
-    opacity: 0.9;
-  }
+  margin-top: 50px;
 `;
 
 const SignUpLink = styled.a`
-  display: block;
-  margin-top: 20px;
+  margin-left: 5px; /* 링크와 텍스트 사이의 간격 조정 */
   color: var(--PRIMARY);
   text-decoration: none;
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const SignUpGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  flex-direction: row;
 `;
 
 const LoginForm = () => {
@@ -218,8 +184,10 @@ const LoginForm = () => {
         <SocialGroup>       
             <KakaoLogin />
         </SocialGroup>
-        <div>회원이 아니신가요?</div>
-        <SignUpLink href="#"> 회원가입</SignUpLink>
+        <SignUpGroup>
+          <div>회원이 아니신가요? </div>
+          <SignUpLink href="#">회원가입</SignUpLink>
+        </SignUpGroup>
       </StyledForm>
     </FormContainer>
   );
