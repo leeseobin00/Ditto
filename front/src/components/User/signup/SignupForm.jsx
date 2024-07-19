@@ -4,6 +4,7 @@ import axios from 'axios';
 import KakaoLogin from '../login/KaKaoLogin';
 import { useNavigate } from 'react-router-dom';
 import { MdClose } from "react-icons/md"; // 아이콘 import
+import ProSignupForm from "../signup/ProSignupForm";
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -285,7 +286,7 @@ const SignupForm = () => {
     password: '',
     confirmPassword: '',
     nickname: '',
-    role: 0, // 0 관리자, 1 일반, 2 강사
+    role: 1, // 1 관리자, 2 일반, 3 강사
     agreeTOS: false,
     agreePICU: false,
   });
@@ -299,6 +300,7 @@ const SignupForm = () => {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [termsContent, setTermsContent] = useState('');
   const [privacyContent, setPrivacyContent] = useState('');
+  const [isInstructorStep, setIsInstructorStep] = useState(false); // 강사 추가 정보 입력 단계 여부
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -393,27 +395,32 @@ const SignupForm = () => {
       alert("사용할 수 없는 닉네임입니다.");
       return;
     }
+    if (!formData.agreeTOS || !formData.agreePICU) {
+      alert("모든 약관에 동의해주세요.");
+      return;
+    }
 
-    try {
-      const response = await axios.post('https://localhost:8080/users/signup', {
-        email: formData.email,
-        password: formData.password,
-        nickname: formData.nickname,
-        role: formData.role,
-        agreeTOS: formData.agreeTOS,
-        agreePICU: formData.agreePICU,
-      });
-      console.log(response.data);
-      // 성공 처리 로직 (예: 로그인 페이지로 이동)
-      if (formData.role === 1) {
+    if (formData.role === 3) {
+      // 강사일 경우, 강사 추가 정보 입력 단계로 이동
+      setIsInstructorStep(true);
+    } else if (formData.role ===2) {
+      // 일반 사용자일 경우, 서버에 데이터 전송
+      try {
+        const response = await axios.post('https://localhost:8080/users/signup', {
+          email: formData.email,
+          password: formData.password,
+          nickname: formData.nickname,
+          role: formData.role,
+          agreeTOS: formData.agreeTOS,
+          agreePICU: formData.agreePICU,
+        });
+        console.log(response.data);
         alert("회원가입 성공!");
         navigate('/'); // 홈화면으로 이동
-      } else if (formData.role === 2) {
-        navigate('/user/sign/form', { state: { formData } }); // 프로 강사회원 추가 정보 입력 화면으로 이동
+      } catch (error) {
+        console.error(error);
+        alert("회원가입 중 오류가 발생했습니다.");
       }
-    } catch (error) {
-      console.error(error);
-      // 오류 처리 로직
     }
   };
 
@@ -421,7 +428,6 @@ const SignupForm = () => {
     try {
       const response = await axios.get('https://localhost:8080/users/signup/0');
       setTermsContent(response.data.agree);
-      console.log(response);
       setIsTermsModalOpen(true);
     } catch (error) {
       console.error("이용약관 불러오기 에러:", error);
@@ -464,137 +470,141 @@ const SignupForm = () => {
 
   return (
     <FormContainer>
-      <StyledForm onSubmit={handleSubmit}>
-        <FormTitle>회원가입</FormTitle>
-        <SignDivider />
-        <RoleToggle>
-          <RoleButton
-            type="button"
-            $active={formData.role === 1 ? 'true' : 'false'}
-            onClick={() => handleRoleChange(1)}
-          >
-            일반
-          </RoleButton>
-          <RoleButton
-            type="button"
-            $active={formData.role === 2 ? 'true' : 'false'}
-            onClick={() => handleRoleChange(2)}
-          >
-            강사
-          </RoleButton>
-        </RoleToggle>
-        <FormGroup>
-          <FormLabel>닉네임</FormLabel>
-          <FormInput
-            type="text"
-            name="nickname"
-            placeholder="특수문자 제외 2~15자"
-            value={formData.nickname}
-            onChange={handleNicknameChange}
-            required
-          />
-          <MessageWrapper>
-            <NicknameCheckMessage $isAvailable={isNicknameAvailable}>
-              {nicknameMessage}
-            </NicknameCheckMessage>
-          </MessageWrapper>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>EMAIL</FormLabel>
-          <EmailFormGroup>
+      {isInstructorStep ? (
+        <StyledForm onSubmit={handleSubmit}>
+          <FormTitle>회원가입</FormTitle>
+          <SignDivider />
+          <RoleToggle>
+            <RoleButton
+              type="button"
+              $active={formData.role === 2 ? 'true' : 'false'}
+              onClick={() => handleRoleChange(2)}
+            >
+              일반
+            </RoleButton>
+            <RoleButton
+              type="button"
+              $active={formData.role === 3 ? 'true' : 'false'}
+              onClick={() => handleRoleChange(3)}
+            >
+              강사
+            </RoleButton>
+          </RoleToggle>
+          <FormGroup>
+            <FormLabel>닉네임</FormLabel>
             <FormInput
-              type="email"
-              name="email"
-              placeholder="이메일"
-              value={formData.email}
-              onChange={handleChange}
+              type="text"
+              name="nickname"
+              placeholder="특수문자 제외 2~15자"
+              value={formData.nickname}
+              onChange={handleNicknameChange}
               required
             />
-            <VerifyButton type="button" onClick={handleEmailVerification}>인증</VerifyButton>
-          </EmailFormGroup>
-        </FormGroup>
-        {isVerificationCodeInputVisible && (
-          <FormGroup>          
-            <FormLabel>인증번호</FormLabel>
+            <MessageWrapper>
+              <NicknameCheckMessage $isAvailable={isNicknameAvailable}>
+                {nicknameMessage}
+              </NicknameCheckMessage>
+            </MessageWrapper>
+          </FormGroup>
+          <FormGroup>
+            <FormLabel>EMAIL</FormLabel>
             <EmailFormGroup>
               <FormInput
-                type="text"
-                name="verificationCode"
-                placeholder="인증번호 입력"
-                value={formData.verificationCode}
+                type="email"
+                name="email"
+                placeholder="이메일"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
-              <VerifyButton type="button" onClick={handleVerifyCode}>확인</VerifyButton>
+              <VerifyButton type="button" onClick={handleEmailVerification}>인증</VerifyButton>
             </EmailFormGroup>
           </FormGroup>
-        )}
-        <FormGroup>
-          <FormLabel>PW</FormLabel>
-          <FormInput
-            type="password"
-            name="password"
-            placeholder="영어, 숫자, 특수문자 포함 8~32자"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <MessageWrapper>
-            {!isPasswordValid && (
-              <PasswordValidMessage>
-                영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.
-              </PasswordValidMessage>
-            )}
-          </MessageWrapper>
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>PW 확인</FormLabel>
-          <FormInput
-            type="password"
-            name="confirmPassword"
-            placeholder="영어, 숫자, 특수문자 포함 8~32자"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-          <MessageWrapper>
-            <PasswordMatchMessage $isMatch={isPasswordMatch}>
-              {isPasswordMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다."}
-            </PasswordMatchMessage>
-          </MessageWrapper>
-        </FormGroup>
-        <CheckboxGroup onClick={handleAgreeTOSClick}>
-          <input
-            type="checkbox"
-            name="agreeTOS"
-            checked={formData.agreeTOS}
-            onChange={handleChange}
-            required
-          />
-          <CheckboxLabel>이용약관에 동의합니다</CheckboxLabel>
-          <TermsLink onClick={(e) => { e.stopPropagation(); openTermsModal(); }}>약관 보기</TermsLink>
-        </CheckboxGroup>
-        <CheckboxGroup onClick={handleAgreePICUClick}>
-          <input
-            type="checkbox"
-            name="agreePICU"
-            checked={formData.agreePICU}
-            onChange={handleChange}
-            required
-          />
-          <CheckboxLabel>개인정보 처리방침에 동의합니다</CheckboxLabel>
-          <TermsLink onClick={(e) => { e.stopPropagation(); openPrivacyModal(); }}>약관 보기</TermsLink>
-        </CheckboxGroup>
-        <SubmitButton type="submit" disabled={!isPasswordMatch || !isNicknameAvailable || !isPasswordValid}>Next</SubmitButton>
-        <Divider>간편 가입</Divider>
-        <SocialGroup>
-          <KakaoLogin />
-        </SocialGroup>
-        <SignUpGroup>
-          <div>이미 회원이신가요?</div>
-          <SignUpLink href="/login">로그인</SignUpLink>
-        </SignUpGroup>
-      </StyledForm>
+          {isVerificationCodeInputVisible && (
+            <FormGroup>          
+              <FormLabel>인증번호</FormLabel>
+              <EmailFormGroup>
+                <FormInput
+                  type="text"
+                  name="verificationCode"
+                  placeholder="인증번호 입력"
+                  value={formData.verificationCode}
+                  onChange={handleChange}
+                  required
+                />
+                <VerifyButton type="button" onClick={handleVerifyCode}>확인</VerifyButton>
+              </EmailFormGroup>
+            </FormGroup>
+          )}
+          <FormGroup>
+            <FormLabel>PW</FormLabel>
+            <FormInput
+              type="password"
+              name="password"
+              placeholder="영어, 숫자, 특수문자 포함 8~32자"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <MessageWrapper>
+              {!isPasswordValid && (
+                <PasswordValidMessage>
+                  영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.
+                </PasswordValidMessage>
+              )}
+            </MessageWrapper>
+          </FormGroup>
+          <FormGroup>
+            <FormLabel>PW 확인</FormLabel>
+            <FormInput
+              type="password"
+              name="confirmPassword"
+              placeholder="영어, 숫자, 특수문자 포함 8~32자"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+            <MessageWrapper>
+              <PasswordMatchMessage $isMatch={isPasswordMatch}>
+                {isPasswordMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다."}
+              </PasswordMatchMessage>
+            </MessageWrapper>
+          </FormGroup>
+          <CheckboxGroup onClick={handleAgreeTOSClick}>
+            <input
+              type="checkbox"
+              name="agreeTOS"
+              checked={formData.agreeTOS}
+              onChange={handleChange}
+              required
+            />
+            <CheckboxLabel>이용약관에 동의합니다</CheckboxLabel>
+            <TermsLink onClick={(e) => { e.stopPropagation(); openTermsModal(); }}>약관 보기</TermsLink>
+          </CheckboxGroup>
+          <CheckboxGroup onClick={handleAgreePICUClick}>
+            <input
+              type="checkbox"
+              name="agreePICU"
+              checked={formData.agreePICU}
+              onChange={handleChange}
+              required
+            />
+            <CheckboxLabel>개인정보 처리방침에 동의합니다</CheckboxLabel>
+            <TermsLink onClick={(e) => { e.stopPropagation(); openPrivacyModal(); }}>약관 보기</TermsLink>
+          </CheckboxGroup>
+          <SubmitButton type="submit" disabled={!isPasswordMatch || !isNicknameAvailable || !isPasswordValid || !formData.agreeTOS || !formData.agreePICU}>Next</SubmitButton>
+          <Divider>간편 가입</Divider>
+          <SocialGroup>
+            <KakaoLogin />
+          </SocialGroup>
+          <SignUpGroup>
+            <div>이미 회원이신가요?</div>
+            <SignUpLink href="/login">로그인</SignUpLink>
+          </SignUpGroup>
+        </StyledForm>
+      ) : (
+        <ProSignupForm formData={formData} setFormData={setFormData} />
+      )}
       {isTermsModalOpen && (
         <Modal onClose={closeTermsModal}>
           <h2>이용약관</h2>
