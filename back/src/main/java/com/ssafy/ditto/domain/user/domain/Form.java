@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "User")
+@Table(name = "Form")
 @Getter
 @Builder
 @AllArgsConstructor

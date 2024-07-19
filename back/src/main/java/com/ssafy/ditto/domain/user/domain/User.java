@@ -4,8 +4,6 @@ import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "User")
 @Getter
