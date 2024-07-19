@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
         int pageCount = (postCount - 1) / sizePage + 1;
 
         PostList postList = new PostList();
-        postList.setPosts(list);
+//수정 필요
         postList.setCurrentPage(curPage);
         postList.setTotalPageCount(pageCount);
         return postList;
@@ -80,7 +80,7 @@ public class PostServiceImpl implements PostService {
     public PostList bestPost() throws Exception {
         PostList postList = new PostList();
         List<Post> list = postRepository.getBestPosts(LocalDateTime.now());
-        postList.setPosts(list);
+        postList.setPosts(list); // 수정필요
         return postList;
     }
 
@@ -102,11 +102,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse getPost(int postId) throws Exception {
-        postRepository.addView(postId);
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
-        PostResponse postResp = new PostResponse();
-        
-        return postResp;
+        postRepository.addView(postId);
+        return PostResponse.of(post);
     }
 
     @Override
@@ -135,12 +133,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String removeLike(int postId, int userId) throws Exception {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.removeLike(postId,userId);
         return postId+"번 게시글 "+userId+"번 유저 좋아요 취소";
     }
 
     @Override
     public Boolean checkLike(int postId, int userId) throws Exception {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         int count = postRepository.checkLike(postId,userId);
         return count==1;
     }

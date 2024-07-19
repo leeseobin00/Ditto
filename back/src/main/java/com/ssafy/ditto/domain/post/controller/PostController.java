@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
+import com.ssafy.ditto.domain.post.dto.PostResponse;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import org.springframework.web.bind.annotation.*;
@@ -55,9 +56,9 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseDto<Post> getPost(@PathVariable("postId") int postId){
+    public ResponseDto<PostResponse> getPost(@PathVariable("postId") int postId){
         try{
-            Post post = postService.getPost(postId);
+            PostResponse post = postService.getPost(postId);
             return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),post);
         } catch (Exception e) {
             return ResponseDto.of(INTERNAL_SERVER_ERROR.getHttpStatus(), ERROR_FETCH.getMessage(), null);
@@ -68,7 +69,7 @@ public class PostController {
     public ResponseDto<String> modifyPost(@PathVariable("postId") int postId,@RequestBody PostRequest postReq){
         try{
             postReq.setPostId(postId);
-            String response = postService.modifyPost(postReq);
+            String response = postService.modifyPost(postId, postReq);
             return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(),response);
         } catch (Exception e) {
             return ResponseDto.of(INTERNAL_SERVER_ERROR.getHttpStatus(), ERROR_UPDATE.getMessage(), null);

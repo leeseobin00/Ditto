@@ -20,6 +20,9 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Integer postId;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
     @ManyToOne
     @JoinColumn(name = "board_id", insertable = false, updatable = false)
     private Board board;

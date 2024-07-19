@@ -16,8 +16,10 @@ public class PostList {
 
     @Schema(description = "게시글 목록")
     private List<PostResponse> posts;
+
     @Schema(description = "현재 페이지")
-    private int currentPage;
+    private Integer currentPage;
+
     @Schema(description = "전체 페이지 수")
-    private int totalPageCount;
+    private Integer totalPageCount;
 }
