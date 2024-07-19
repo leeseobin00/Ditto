@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/posts")
 public class PostController {
-    final PostService postService;
+    private final PostService postService;
 
     @PostMapping
     public ResponseDto<String> writePost(@RequestBody PostRequest postReq){

@@ -21,10 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    @Autowired
-    final PostRepository postRepository;
-
-
+    public final PostRepository postRepository;
 
     @Override
     @Transactional
