@@ -22,14 +22,14 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    private int commentId;
+    private Integer commentId;
 
     @ManyToOne
-    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
     //    @ManyToOne
 //    @JoinColumn(name = "user_id", insertable = false, updatable = false)
 //    private User user;
@@ -49,6 +49,18 @@ public class Comment {
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
+
+    public Comment(String content, int userId, Post post) {
+        this.content = content;
+        this.userId = userId;
+        this.post = post;
+        this.level = 0;
+        this.isDeleted = false;
+
+//        //==연관관계 편의 메서드==//
+//        post.getComments().add(this);
+//        member.getComments().add(this);
+    }
 
     public void addParent(Comment parent) {
         this.parent = parent;

@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getCommentList(int postId) throws Exception {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
-        List<Comment> commentList = commentRepository.findAllByPostId(post.getPostId());
+        List<Comment> commentList = commentRepository.findAllByPost_PostId(post.getPostId());
 
         List<CommentResponse> responseList = new ArrayList<>();
         Map<Integer, CommentResponse> parent = new HashMap<>();
