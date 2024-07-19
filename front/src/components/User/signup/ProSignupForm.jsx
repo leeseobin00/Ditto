@@ -1,18 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-`;
 
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  width: 700px;
+  width: 500px;
   padding: 20px;
   text-align: center;
 `;
@@ -43,16 +35,24 @@ const FormInput = styled.input`
   }
 `;
 
-const FormTextarea = styled.textarea`
-  width: 100%;
+const TagGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+`;
+
+const TagButton = styled.button`
+  margin: 5px;
   padding: 10px;
-  border: 1px solid var(--BORDER_COLOR);
+  border: 1px solid ${({ selected }) => (selected ? 'var(--PRIMARY)' : 'var(--BORDER_COLOR)')};
+  background-color: ${({ selected }) => (selected ? 'var(--PRIMARY)' : 'transparent')};
+  color: ${({ selected }) => (selected ? '#fff' : 'var(--TEXT_SECONDARY)')};
+  cursor: pointer;
   border-radius: 15px;
-  font-size: 16px;
-  resize: none;
-  &:focus {
-    border-color: var(--PRIMARY);
-    outline: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 `;
 
@@ -71,86 +71,117 @@ const SubmitButton = styled.button`
   }
 `;
 
-const InstructorApplicationForm = ({ formData, setFormData, handleSubmit }) => {
+const ProSignupForm = ({ formData, setFormData }) => {
+  const tags = ['향수', '향초', '비누', '뜨개질', '바느질', '가죽', '십자수', '키링', '모빌', '미니어처', '푸드'];
+  const [selectedTags, setSelectedTags] = useState([]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
+  const handleTagClick = (tag) => {
+    let newTags = [...selectedTags];
+    if (newTags.includes(tag)) {
+      newTags = newTags.filter((t) => t !== tag);
+    } else if (newTags.length < 3) {
+      newTags.push(tag);
+    }
+    setSelectedTags(newTags);
+    setFormData({
+      ...formData,
+      tags: newTags,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted Data:', formData);
+    // 서버로 데이터 전송
+  };
+
   return (
-    <FormContainer>
-      <StyledForm onSubmit={handleSubmit}>
-        <h2>강사 지원서</h2>
-        <FormGroup>
-          <FormLabel>이름</FormLabel>
-          <FormInput
-            type="text"
-            name="name"
-            placeholder="이름 입력"
-            value={formData.name || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>전화번호</FormLabel>
-          <FormInput
-            type="text"
-            name="phoneNumber"
-            placeholder="전화번호 입력"
-            value={formData.phoneNumber || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>클래스 시작 가능일</FormLabel>
-          <FormInput
-            type="date"
-            name="startDate"
-            value={formData.startDate || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>활동 최소 기간</FormLabel>
-          <FormInput
-            type="number"
-            name="minActive"
-            placeholder="개월 단위로 입력"
-            value={formData.minActive || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>경력</FormLabel>
-          <FormTextarea
-            name="experience"
-            placeholder="경력 입력"
-            value={formData.experience || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>활동에 임하는 각오 한마디</FormLabel>
-          <FormTextarea
-            name="comment"
-            placeholder="활동에 임하는 각오 한마디 입력"
-            value={formData.comment || ''}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-        <SubmitButton type="submit">제출</SubmitButton>
-      </StyledForm>
-    </FormContainer>
+    <StyledForm onSubmit={handleSubmit}>
+      <FormGroup>
+        <FormLabel>이름</FormLabel>
+        <FormInput
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>전화번호</FormLabel>
+        <FormInput
+          type="text"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>클래스 등록이 가능한 분야를 모두 선택해주세요.</FormLabel>
+        <TagGroup>
+          {tags.map((tag) => (
+            <TagButton
+              key={tag}
+              type="button"
+              onClick={() => handleTagClick(tag)}
+              selected={selectedTags.includes(tag)}
+              disabled={!selectedTags.includes(tag) && selectedTags.length >= 3}
+            >
+              {tag}
+            </TagButton>
+          ))}
+        </TagGroup>
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>클래스 시작 가능일을 입력해주세요.</FormLabel>
+        <FormInput
+          type="date"
+          name="startDate"
+          value={formData.startDate}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>Ditto 강사 활동 최소기간을 입력해주세요.</FormLabel>
+        <FormInput
+          type="number"
+          name="minActive"
+          value={formData.minActive}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>클래스 진행 경험이 있으신가요? 있다면 입력해주세요.</FormLabel>
+        <FormInput
+          type="text"
+          name="experience"
+          value={formData.experience}
+          onChange={handleChange}
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormLabel>Ditto 강사 활동에 임하는 각오 한마디!</FormLabel>
+        <FormInput
+          type="text"
+          name="comment"
+          value={formData.comment}
+          onChange={handleChange}
+        />
+      </FormGroup>
+      <SubmitButton type="submit">가입 신청</SubmitButton>
+    </StyledForm>
   );
 };
 
-export default InstructorApplicationForm;
+export default ProSignupForm;
