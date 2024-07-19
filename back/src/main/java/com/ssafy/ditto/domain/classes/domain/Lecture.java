@@ -36,7 +36,7 @@ public class Lecture extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private Class classId;
+    private DClass classId;
 
     @Column
     private String className;

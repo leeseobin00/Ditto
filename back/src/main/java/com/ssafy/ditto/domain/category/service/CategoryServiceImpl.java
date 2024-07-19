@@ -2,7 +2,6 @@ package com.ssafy.ditto.domain.category.service;
 
 import com.ssafy.ditto.domain.category.dto.CategoryResponse;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
-import com.ssafy.ditto.domain.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

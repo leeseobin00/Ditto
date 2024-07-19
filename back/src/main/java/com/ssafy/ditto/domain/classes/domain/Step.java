@@ -26,7 +26,7 @@ public class Step {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private Class classId;
+    private DClass classId;
 
     //FK
     private Integer fileId;

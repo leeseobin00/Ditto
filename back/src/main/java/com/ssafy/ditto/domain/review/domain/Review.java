@@ -1,7 +1,7 @@
 package com.ssafy.ditto.domain.review.domain;
 
 import com.ssafy.ditto.domain.classes.domain.Lecture;
-import com.ssafy.ditto.domain.classes.domain.Class;
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,7 +32,7 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private Class classId;
+    private DClass classId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")

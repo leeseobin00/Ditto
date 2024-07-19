@@ -3,7 +3,7 @@ package com.ssafy.ditto.domain.question.domain;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import com.ssafy.ditto.domain.classes.domain.Class;
+import com.ssafy.ditto.domain.classes.domain.DClass;
 
 @Entity
 @Table
@@ -34,5 +34,5 @@ public class Question extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private Class classId;
+    private DClass classId;
 }
