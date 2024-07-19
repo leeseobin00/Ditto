@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const StyledForm = styled.form`
   display: flex;
@@ -97,10 +98,17 @@ const ProSignupForm = ({ formData, setFormData }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitted Data:', formData);
-    // 서버로 데이터 전송
+    try {
+      const response = await axios.post('https://localhost:8080/users/signup/form', formData);
+      console.log('Submitted Data:', response.data);
+      alert("가입 신청이 완료되었습니다.");
+      navigate('/');
+    } catch (error) {
+      console.error('서버로 데이터 전송 중 오류 발생:', error);
+      alert('가입 신청 중 오류가 발생했습니다.');
+    }
   };
 
   return (
