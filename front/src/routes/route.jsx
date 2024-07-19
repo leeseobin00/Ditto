@@ -5,6 +5,7 @@ import MeetingPage from "../pages/MeetingPage";
 import BoardListPage from "../pages/Board/BoardListPage";
 import BoardDetailPage from "../pages/Board/BoardDetailPage";
 import BoardAddPage from "../pages/Board/BoardAddPage";
+import ProfileDetailPage from "../pages/Profile/ProfileDetailPage";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
       />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
+      <Route path="/profile" element={<ProfileDetailPage />} />
       {/* <Route path="/nasa" element={
         <PrivateRoute>
           <></>
