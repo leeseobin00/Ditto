@@ -13,5 +13,6 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Integer> {
-
+    // 게시물의 댓글 조회
+    List<Comment> findAllByPostId(int postId);
 }

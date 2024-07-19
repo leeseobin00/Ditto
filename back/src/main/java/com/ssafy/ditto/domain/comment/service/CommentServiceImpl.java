@@ -122,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
 
     public Comment getParent(int postId, int parentId) throws Exception {
         Comment parent = commentRepository.findById(parentId).orElseThrow(()-> new CommentException(PARENT_COMMENT_NOT_EXIST));
-        if(parent.getPostId() != postId) { // 부모와 자식 댓글의 게시글이 같은지 확인
+        if(parent.getPost().getPostId() != postId) { // 부모와 자식 댓글의 게시글이 같은지 확인
             throw new CommentException(COMMENT_NOT_SAME_POST);
         }
         return parent;
