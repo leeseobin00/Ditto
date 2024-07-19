@@ -13,7 +13,7 @@ import com.ssafy.ditto.domain.classes.domain.Class;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question extends BaseTimeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer questionId;
 
