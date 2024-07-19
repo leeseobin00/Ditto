@@ -2,9 +2,11 @@ import { useState } from "react";
 import { styled } from "styled-components";
 
 import OutlineButton from "../../components/common/OutlineButton";
-import ClassCard from "../../components/Profile/ClassCard";
-import PostList from "../../components/Profile/ProfileDetail/PostList";
 import Sidebar from "../../components/Profile/SideBar";
+import Section from "../../components/Profile/ProfileDetail/Section";
+import CardList from "../../components/Profile/ProfileDetail/CardList";
+import ReviewList from "../../components/Profile/ProfileDetail/ReviewList";
+import PostList from "../../components/common/PostList";
 
 const Container = styled.div`
   display: flex;
@@ -14,42 +16,6 @@ const Content = styled.div`
   width: calc(100% - 200px);
 `;
 
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 32px;
-  margin-bottom: 60px;
-`;
-
-const SectionTitle = styled.p`
-  color: var(--PRIMARY);
-  font-weight: 600;
-  font-size: 22px;
-  width: 100%;
-  max-width: 1024px;
-  margin-bottom: 32px;
-`;
-
-const Cards = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  width: calc(780px + 64px);
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    width: calc(520px + 32px);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(1, 1fr);
-    width: 260px;
-    gap: 0px;
-  }
-`;
-
 const IntroContent = styled.div`
   display: flex;
   justify-content: center;
@@ -57,10 +23,6 @@ const IntroContent = styled.div`
   padding: 32px 16px;
   min-height: 160px;
   text-align: center;
-`;
-
-const ButtonWrapper = styled.div`
-  margin-top: 32px;
 `;
 
 function ProfileDetailPage() {
@@ -80,38 +42,50 @@ function ProfileDetailPage() {
       createdDate: "2024-07-19",
     },
   ]);
+  const [cards, setCards] = useState([
+    {
+      title: "제목",
+      name: "김싸피",
+      date: "2024-07-19",
+      tag: "향수",
+    },
+    {
+      title: "제목2",
+      name: "김디토",
+      date: "2024-07-19",
+      tag: "뜨개질",
+    },
+  ]);
+  const [reviews, setReviews] = useState([
+    { rating: 4 },
+    { rating: 3 },
+    { rating: 5 },
+  ]);
+
+  // const handleStarClick = (index) => {
+  //   setRating(index + 1);
+  // };
 
   return (
     <Container>
       <Sidebar />
       <Content>
-        <Section id="intro">
-          <SectionTitle>소개글</SectionTitle>
+        <Section id="intro" title="소개글">
           <IntroContent>
-            안녕하세요, 조향과 뜨개질에 관심이 많은 김디토입니다!
-            <br />
-            소통해요~
+            안녕하세요, 조향과 뜨개질에 관심이 많은 김디토입니다! 소통해요~
           </IntroContent>
         </Section>
 
-        <Section id="classes">
-          <SectionTitle>참여 Class</SectionTitle>
-          <Cards>
-            <ClassCard />
-            <ClassCard />
-            <ClassCard />
-          </Cards>
-          <ButtonWrapper>
-            <OutlineButton label="더보기" color="default" />
-          </ButtonWrapper>
+        <Section id="classes" title="참여 Class" onClick="클릭">
+          <CardList cards={cards} />
         </Section>
 
-        <Section id="posts">
-          <SectionTitle>작성한 글</SectionTitle>
+        <Section id="reviews" title="강의 리뷰" onClick="클릭">
+          <ReviewList reviews={reviews} />
+        </Section>
+
+        <Section id="posts" title="작성한 글" onClick="클릭">
           <PostList posts={posts} />
-          <ButtonWrapper>
-            <OutlineButton label="더보기" color="default" />
-          </ButtonWrapper>
         </Section>
       </Content>
     </Container>

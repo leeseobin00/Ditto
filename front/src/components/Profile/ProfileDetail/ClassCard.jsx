@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-import Tag from "../Profile/Tag";
+import Tag from "../Tag";
 
 const CardWrapper = styled.div`
   background-color: white;
@@ -45,16 +45,16 @@ const Instructor = styled.div`
   color: var(--TEXT_TERTIARY);
 `;
 
-function ClassCard() {
+function ClassCard({ title, date, name, tag }) {
   return (
     <CardWrapper>
       <Image />
       <ContentWrapper>
-        <Title>내가 원하는 대로! 커스텀 향수 만들기 입문</Title>
+        <Title>{title}</Title>
         <Info>
-          <Date>2024-06-05</Date>
-          <Instructor>이강사</Instructor>
-          <Tag tagName="향수" />
+          <Date>{date}</Date>
+          <Instructor>{name}</Instructor>
+          <Tag tagName={tag} />
         </Info>
       </ContentWrapper>
     </CardWrapper>

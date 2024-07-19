@@ -39,6 +39,9 @@ function Sidebar() {
           <NavLink href="#classes">참여 Class</NavLink>
         </NavItem>
         <NavItem>
+          <NavLink href="#reviews">강의 리뷰</NavLink>
+        </NavItem>
+        <NavItem>
           <NavLink href="#posts">작성한 글</NavLink>
         </NavItem>
       </NavList>

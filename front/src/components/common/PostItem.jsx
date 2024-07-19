@@ -5,6 +5,7 @@ const Item = styled.div`
   padding: 16px;
   background-color: var(--LIGHT);
   border-bottom: 1px solid var(--BORDER_COLOR);
+  cursor: pointer;
 `;
 
 const Content = styled.p`
