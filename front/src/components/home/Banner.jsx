@@ -11,7 +11,7 @@ const BannerContainer = styled.div`
 
 const BannerInner = styled.div`
   background-image: url(${BannerImage});
-  width: 100vw;
+  width: 100%;
   height: 350px;
   background: cover;
   background-position: center;

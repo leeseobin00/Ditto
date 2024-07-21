@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import styled from "styled-components";
+import { styled } from "styled-components";
 
 const EditorContainer = styled.div`
   padding: 20px;
@@ -27,7 +27,7 @@ const QuillWrapper = styled.div`
   }
   .ql-container {
     min-height: 500px; /* 텍스트 부분의 최소 높이 */
-  }s
+  }
 `;
 
 const BoardEditor = ({ onTitleChange, onEditorChange }) => {

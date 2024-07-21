@@ -1,8 +1,8 @@
 import { styled } from "styled-components";
 
-import Star from "../../assets/icon/class/star.png";
-import Dollar from "../../assets/icon/class/dollar.png";
-import Heart from "../../assets/icon/common/heart/heart-activated.png";
+import Star from "../../../assets/icon/class/star.png";
+import Dollar from "../../../assets/icon/class/dollar.png";
+import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 
 const ClassListItemContainer = styled.a`
   display: flex;

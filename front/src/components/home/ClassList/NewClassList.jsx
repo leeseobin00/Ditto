@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-import ClassListItem from "../../class/ClassListItem";
+import ClassListItem from "../../class/ClassList/ClassListItem";
 
 const NewClassListContainer = styled.div`
   display: flex;
