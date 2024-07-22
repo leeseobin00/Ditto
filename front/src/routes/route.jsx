@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
+import ClassDetailPage from "../pages/Class/ClassDetailPage";
 import MeetingPage from "../pages/MeetingPage";
 import BoardListPage from "../pages/Board/BoardListPage";
 import BoardDetailPage from "../pages/Board/BoardDetailPage";
@@ -12,6 +13,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/class/:classCategory" element={<ClassListPage />} />
+      <Route path="/class/:classId" element={<ClassDetailPage />} />
+      <Route path="/class" element={<ClassDetailPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route

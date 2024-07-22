@@ -9,7 +9,7 @@ const BestClassContainer = styled.div`
   padding: 0 20px;
 `;
 
-const BestClassTitle = styled.div`
+const Title = styled.div`
   font-size: 25px;
   font-weight: 700;
 `;
@@ -17,7 +17,7 @@ const BestClassTitle = styled.div`
 function BestClass() {
   return (
     <BestClassContainer>
-      <BestClassTitle>Best Class</BestClassTitle>
+      <Title>Best Class</Title>
       <BestClassList />
     </BestClassContainer>
   );
