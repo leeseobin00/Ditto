@@ -40,10 +40,11 @@ public class CommentServiceImpl implements CommentService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         Comment comment = new Comment();
         comment.setContent(commentReq.getContent());
-        comment.setUser(user);
+//        comment.setUser(user);
         comment.setPost(post);
         comment.setIsDeleted(false);
         comment.setLevel((byte)0);
+
 
         if(commentReq.getParentId() != -1) { // 대댓글인 경우
             Comment parent = getParent(postId, commentReq.getParentId());
@@ -54,8 +55,9 @@ public class CommentServiceImpl implements CommentService {
         if(comment.getLevel() > MAX_COMMENT_LEVEL) { // 댓글 레벨 제한
             throw new CommentException(COMMENT_LEVEL_EXCEED);
         }
+
         commentRepository.save(comment);
-        return comment.getCommentId()+"번 댓글 작성 완료";
+        return comment.getCommentId()+"번 댓글 작성완료";
     }
 
     @Override
@@ -64,65 +66,72 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> commentList = commentRepository.findAllByPost_PostId(post.getPostId());
 
         List<CommentResponse> responseList = new ArrayList<>();
-        Map<Integer, CommentResponse> parent = new HashMap<>();
+        Map<Integer, CommentResponse> root = new HashMap<>();
         for (Comment comment : commentList) {
             CommentResponse commentResp = new CommentResponse();
             commentResp.setCommentId(comment.getCommentId());
-            commentResp.setParentId(comment.getParent().getCommentId());
-            commentResp.setUserId(comment.getUser().getUserId());
-            commentResp.setNickname(comment.getUser().getNickname());
+            if(comment.getParent()!=null)
+                commentResp.setParentId(comment.getParent().getCommentId());
+//            commentResp.setUserId(comment.getUser().getUserId());
+//            commentResp.setNickname(comment.getUser().getNickname());
             commentResp.setContent(checkRemoved(comment));
             commentResp.setLevel(comment.getLevel());
             commentResp.setIsDeleted(comment.getIsDeleted());
 
-            parent.put(comment.getCommentId(), commentResp);
+            root.put(comment.getCommentId(), commentResp);
 
             if(comment.getParent() == null) responseList.add(commentResp);
-            else  parent.get(comment.getParent().getCommentId()).getChildren().add(commentResp);
+            else  root.get(comment.getParent().getCommentId()).getChildren().add(commentResp);
         }
         return responseList;
     }
 
+    @Transactional
     @Override
     public String modifyComment(int commentId, CommentRequest commentReq) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
+
+        if (comment.getIsDeleted()) {
+            throw new CommentException(CANNOT_MODIFY_DELETED_COMMENT);
+        }
+
         comment.setContent(commentReq.getContent());
-        return comment.getCommentId()+"번 댓글 수정";
+        return comment.getCommentId() + "번 댓글 수정";
     }
 
-    @Override
+    @Transactional
     public String deleteComment(int commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
-        comment.setIsDeleted(true);
-        deleteRootComment(comment);
-        return comment.getCommentId()+"번 댓글 삭제";
-    }
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
 
-    public Comment findRootComment(Comment child) {
-        if(child.getParent() == null) return child;
-        return findRootComment(child.getParent());
-    }
-
-    public void deleteRootComment(Comment comment) {
-        Comment root = findRootComment(comment);
-        if(!root.getIsDeleted()) return;
-        int cnt = countNotRemovedChild(root);
-        if(cnt == 0) {
-            commentRepository.deleteById(root.getCommentId());
-        }
-    }
-
-    public int countNotRemovedChild(Comment parent) {
-        if(parent == null) return 0;
-
-        int childcnt = 0;
-        if(!parent.getChildren().isEmpty()){
-            for(Comment child:parent.getChildren()){
-                if(!child.getIsDeleted()) childcnt++;
-                childcnt+=countNotRemovedChild(child);
+        if (comment.getLevel() == 0) { // 댓글
+            if (hasActiveChildren(comment)) {
+                comment.setContent(REMOVED_COMMENT);
+                comment.setIsDeleted(true);
+            } else {
+                commentRepository.delete(comment);
             }
+        } else { // 대댓글
+            Comment parent = comment.getParent();
+            comment.setIsDeleted(true);
+            commentRepository.delete(comment);
+            // 부모 댓글이 "삭제된 댓글"이고 더 이상 자식 댓글이 없으면 부모 댓글도 삭제
+            checkAndDeleteParentComment(parent);
         }
-        return childcnt;
+
+        return comment.getCommentId() + "번 댓글 삭제";
+    }
+
+    private boolean hasActiveChildren(Comment comment) {
+        if(comment.getChildren().isEmpty()) return false;
+        return comment.getChildren().stream().anyMatch(child -> !child.getIsDeleted());
+    }
+
+    private void checkAndDeleteParentComment(Comment parent) {
+        if (parent != null && parent.getIsDeleted() && !hasActiveChildren(parent)) {
+            deleteComment(parent.getCommentId());
+        }
     }
 
     public Comment getParent(int postId, int parentId) {

@@ -29,9 +29,11 @@ public class Comment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "content", length = 1000)
     private String content;
@@ -43,15 +45,16 @@ public class Comment {
     private Byte level;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_id")
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 
-    public Comment(String content, User user, Post post) {
+    public Comment(String content, User user, Integer userId, Post post) {
         this.content = content;
-        this.user = user;
+//        this.user = user;
+        this.userId= userId;
         this.post = post;
         this.level = 0;
         this.isDeleted = false;
