@@ -120,9 +120,9 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        // 토큰에 이메일, 닉네임, 프로필사진Url 있음
-        String accessToken = jwtProvider.createAccessToken(user.getEmail(), user.getNickname(), user.getFileId().getFileUrl());
-        String refreshToken = jwtProvider.createRefreshToken(user.getEmail(), user.getNickname(), user.getFileId().getFileUrl());
+        // 토큰에 유저 이메일만 있음
+        String accessToken = jwtProvider.createAccessToken(user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);

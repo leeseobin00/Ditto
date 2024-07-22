@@ -53,7 +53,7 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
 
-    public String createAccessToken(String userEmail, String userNickName, String userProfileUrl) {
+    public String createAccessToken(String userEmail) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
@@ -61,13 +61,11 @@ public class JwtProvider {
                 .setSubject(userEmail) // 이메일
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .claim("nickName", userNickName) // 닉네임 클레임 추가
-                .claim("profileUrl", userProfileUrl) // 프로필Url 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, accessSecret)
                 .compact();
     }
 
-    public String createRefreshToken(String userId, String userNickName, String userProfileUrl) {
+    public String createRefreshToken(String userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpiration);
 
@@ -75,8 +73,6 @@ public class JwtProvider {
                 .setSubject(userId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .claim("nickName", userNickName) // 닉네임 클레임 추가
-                .claim("profileUrl", userProfileUrl) // 프로필Url 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, refreshSecret)
                 .compact();
     }
@@ -85,10 +81,8 @@ public class JwtProvider {
         validateToken(refreshToken, true);
         Claims claims = parseClaims(refreshToken, true);
         String userEmail = claims.getSubject();
-        String userNickName = claims.get("nickName", String.class); // 닉네임 클레임 추출
-        String userProfileUrl = claims.get("profileUrl", String.class); // 프로필Url 클레임 추가
 
-        String newAccessToken = createAccessToken(userEmail, userNickName, userProfileUrl);
+        String newAccessToken = createAccessToken(userEmail);
         return new JwtResponse(newAccessToken, refreshToken);
     }
 }
