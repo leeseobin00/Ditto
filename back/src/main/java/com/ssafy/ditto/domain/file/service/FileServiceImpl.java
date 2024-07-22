@@ -61,12 +61,13 @@ public class FileServiceImpl implements FileService{
         fileRepository.saveAll(fileList);
     }
 
-
+    @Override
     public int updateFile(int fileId, MultipartFile requestFile) throws IOException {
         deleteFile(fileId);
         return saveFile(requestFile);
     }
 
+    @Override
     public void updateList(int postId, List<MultipartFile> requestFiles) throws IOException {
         deleteList(postId);
         saveList(postId, requestFiles);
