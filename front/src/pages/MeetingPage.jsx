@@ -4,7 +4,7 @@ import { increment, decrement } from "../features/counter/counterSlice";
 
 function MeetingPage() {
   const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const handleIncrement = () => {
     dispatch(increment());

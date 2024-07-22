@@ -3,6 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
 import MeetingPage from "../pages/MeetingPage";
+import LoginPage from "../pages/LoginPage";
+import SignupPage from "../pages/SignupPage"
 import BoardListPage from "../pages/Board/BoardListPage";
 import BoardDetailPage from "../pages/Board/BoardDetailPage";
 import BoardAddPage from "../pages/Board/BoardAddPage";
@@ -14,6 +16,8 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/class/:classCategory" element={<ClassListPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route
         path="/board/:boardCategory/:postId"
