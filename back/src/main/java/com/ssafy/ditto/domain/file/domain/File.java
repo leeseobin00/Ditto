@@ -19,15 +19,15 @@ public class File extends BaseTimeEntity {
     @Column(name = "file_id")
     private Integer fileId;
 
-    @Column(name = "upload_file_name")
+    @Column(name = "upload_file_name", nullable = false)
     private String uploadFileName;
 
-    @Column(name = "store_file_name")
+    @Column(name = "store_file_name", nullable = false)
     private String storeFileName;
 
-    @Column(name = "file_url")
+    @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    @Column(name = "file_size")
+    @Column(name = "file_size", nullable = false)
     private Long fileSize;
 }
