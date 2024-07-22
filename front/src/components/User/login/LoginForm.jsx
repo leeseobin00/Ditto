@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosIntercepter from '../../../features/axiosIntercepter';
 import { login } from '../../../features/auth/authSlice';
 import KakaoLogin from './KaKaoLogin';
+import { jwtDecode } from 'jwt-decode';  // jwt-decode 패키지 가져오기
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -136,23 +138,41 @@ const SignUpGroup = styled.div`
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+    setLoading(true);
+    setError('');
+    
+    if (!email || !password) {
+      setError('이메일과 비밀번호를 입력해 주세요.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axiosIntercepter.post('/user/login', {
         email,
         password,
       });
       const { accessToken, refreshToken } = response.data;
-      dispatch(login({ accessToken, refreshToken })); // Redux 상태 업데이트
+
+      // JWT 디코딩하여 사용자 정보 추출
+      const decodedToken = jwtDecode(accessToken);
+      const userName = decodedToken.userName;
+
+      dispatch(login({ accessToken, refreshToken, userName })); // Redux 상태 업데이트
       alert("로그인 성공!");
+      navigate('/'); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error("로그인 에러:", error);
-      alert("로그인 실패. 다시 시도해주세요.");
+      setError('로그인 실패. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,27 +182,30 @@ const LoginForm = () => {
         <FormTitle>로그인</FormTitle>
         <LoginDivider />
         <LoginGroup>
-        <FormGroup>
-          <FormLabel>Email</FormLabel>
-          <FormInput
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormLabel>PW</FormLabel>
-          <FormInput
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </FormGroup>
+          <FormGroup>
+            <FormLabel>Email</FormLabel>
+            <FormInput
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup>
+            <FormLabel>PW</FormLabel>
+            <FormInput
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </FormGroup>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </LoginGroup>
-        <SubmitButton type="submit">로그인</SubmitButton>
+        <SubmitButton type="submit" disabled={loading}>
+          {loading ? '로그인 중...' : '로그인'}
+        </SubmitButton>
         <Divider>간편 로그인</Divider>
         <SocialGroup>       
-            <KakaoLogin />
+          <KakaoLogin />
         </SocialGroup>
         <SignUpGroup>
           <div>회원이 아니신가요? </div>
