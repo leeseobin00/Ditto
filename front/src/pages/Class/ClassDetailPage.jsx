@@ -1,8 +1,9 @@
 import { styled } from "styled-components";
 
-import ClassThumbnail from "../../components/class/ClasDetail/ClassThumbnail";
-import ClassContent from "../../components/class/ClasDetail/ClassContent";
-import ClassSideBar from "../../components/class/ClasDetail/ClassSideBar";
+import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
+import ClassContent from "../../components/Class/ClasDetail/ClassContent";
+import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
+import TabBar from "../../components/Class/ClasDetail/TabBar";
 
 const ClassDetailPageContainer = styled.div`
   display: flex;
@@ -65,6 +66,7 @@ function ClassDetailPage() {
   return (
     <ClassDetailPageContainer>
       <ClassThumbnail classInfo={classInfo} />
+      <TabBar />
       <ClassBody>
         <ClassContent classInfo={classInfo} />
         <ClassSideBar classInfo={classInfo} />

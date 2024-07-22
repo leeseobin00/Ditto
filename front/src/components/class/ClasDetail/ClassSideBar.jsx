@@ -85,9 +85,7 @@ function ClassSideBar({ classInfo, lectureList }) {
         <SelectBox>
           <option>2022-08-10</option>
         </SelectBox>
-        <Button>
-          구매하기
-        </Button>
+        <Button>구매하기</Button>
       </SelectBoxContainer>
       <LikeContainer>
         <Icon src={Heart} />
