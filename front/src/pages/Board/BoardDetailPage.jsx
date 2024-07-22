@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
+import { useParams } from "react-router-dom";
 
+import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
 import Post from "../../components/Board/BoardDetail/Post";
 import Profile from "../../components/Board/BoardDetail/Profile";
@@ -63,17 +65,20 @@ const CommentReplyWrapper = styled.div`
 `;
 
 function BoardDetailPage() {
-  // eslint-disable-next-line no-unused-vars
-  const contentHTML = `
-  <h3>제 귀여운 고양이 몽이를 소개합니다! 🐱🖤</h3>
-  <p>우리 몽이는 정말 사랑스러워요.</p>
-  <p>항상 장난감과 놀면서 즐거운 시간을 보내고, 햇볕 아래서 낮잠 자는 걸 좋아해요.</p>
-  <p>특히 몽이의 귀여운 모습은 정말 사랑스러워서 볼 때마다 웃음이 절로 나와요.</p>
-  <p>사진을 보면 알겠지만, 몽이의 작은 얼굴과 반짝이는 눈망울은 정말 예쁩니다.</p>
-  <p>몽이는 저와 함께 있는 시간이 많아서 저를 항상 행복하게 만들어줘요.</p>
-  <p>몽이를 키우는 건 정말 큰 행복이자 사랑스러운 친구가 옆에 있다는 건 정말 큰 축복인 것 같아요.</p>
-  <p>여러분의 반려동물 이야기도 궁금해요! 함께 공유해요!✨</p>
-`;
+  const { response: getResponse, sendRequest: getPost } = useAxios();
+
+  // router
+  const { postId } = useParams();
+
+  const [post, setPost] = useState({});
+
+  useEffect(() => {
+    getPost(`/posts/${postId}`, null, "get");
+  }, []);
+
+  useEffect(() => {
+    setPost(getResponse?.data);
+  }, [getResponse]);
 
   const comments = [
     { user: "사용자1", text: "이 이미지는 정말 멋지네요!" },
@@ -106,13 +111,15 @@ function BoardDetailPage() {
       <TabBar />
       <Wrapper>
         <Post
-          title="제가 만든 고양이 인형을 다들 주목해주세요."
-          username="김묘묘"
+          title={post?.title}
+          username={post?.username}
           createdDate="2024.07.11"
-          viewCount="3"
+          viewCount={post?.viewCount}
           fileName="img.png"
           fileUrl="ddd"
-          content={contentHTML}
+          content={post?.content}
+          likeCount={post?.likeCount}
+          tagName={post?.tagName}
         />
 
         <CommentTitle>댓글</CommentTitle>
