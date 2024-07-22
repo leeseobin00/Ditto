@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface LectureService {
     void createLecture(Integer classId, LectureRequest lectureRequest);
+    List<LectureResponse> getLecturesByClassId(Integer classId);
 }
