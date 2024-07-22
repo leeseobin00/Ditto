@@ -47,5 +47,10 @@ public class ClassController {
         lectureService.createLecture(classId, lectureRequest);
         return ResponseDto.of(201, "차시가 성공적으로 추가되었습니다.");
     }
+
+    @PatchMapping("/{classId}/lectures/{lectureId}")
+    public ResponseDto<Void> updateLecture(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestBody LectureRequest lectureRequest) {
+        lectureService.updateLecture(classId, lectureId, lectureRequest);
+        return ResponseDto.of(200, "차시가 성공적으로 수정되었습니다.");
     }
 }
