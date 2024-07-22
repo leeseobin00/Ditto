@@ -53,7 +53,7 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
 
-    public String createAccessToken(String userEmail, String userNickName) {
+    public String createAccessToken(String userEmail, String userNickName, String userProfileUrl) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
@@ -62,11 +62,12 @@ public class JwtProvider {
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .claim("nickName", userNickName) // 닉네임 클레임 추가
+                .claim("profileUrl", userProfileUrl) // 프로필Url 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, accessSecret)
                 .compact();
     }
 
-    public String createRefreshToken(String userId, String userNickName) {
+    public String createRefreshToken(String userId, String userNickName, String userProfileUrl) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpiration);
 
@@ -75,6 +76,7 @@ public class JwtProvider {
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .claim("nickName", userNickName) // 닉네임 클레임 추가
+                .claim("profileUrl", userProfileUrl) // 프로필Url 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, refreshSecret)
                 .compact();
     }
@@ -84,8 +86,9 @@ public class JwtProvider {
         Claims claims = parseClaims(refreshToken, true);
         String userEmail = claims.getSubject();
         String userNickName = claims.get("nickName", String.class); // 닉네임 클레임 추출
+        String userProfileUrl = claims.get("profileUrl", String.class); // 프로필Url 클레임 추가
 
-        String newAccessToken = createAccessToken(userEmail, userNickName);
+        String newAccessToken = createAccessToken(userEmail, userNickName, userProfileUrl);
         return new JwtResponse(newAccessToken, refreshToken);
     }
 }

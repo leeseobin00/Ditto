@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
+                .fileId(null)
                 .build();
 
         user = userRepository.save(user);
@@ -73,6 +74,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
+                .fileId(null)
                 .build();
 
         user = userRepository.save(user);
@@ -118,9 +120,9 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        // 나중에 프로필사진도 추가 가능
-        String accessToken = jwtProvider.createAccessToken(user.getEmail(), user.getNickname());
-        String refreshToken = jwtProvider.createRefreshToken(user.getEmail(), user.getNickname());
+        // 토큰에 이메일, 닉네임, 프로필사진Url 있음
+        String accessToken = jwtProvider.createAccessToken(user.getEmail(), user.getNickname(), user.getFileId().getFileUrl());
+        String refreshToken = jwtProvider.createRefreshToken(user.getEmail(), user.getNickname(), user.getFileId().getFileUrl());
 
         user.setRefreshToken(refreshToken);
         userRepository.save(user);

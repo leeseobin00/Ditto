@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.user.domain;
 
+import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,7 +46,9 @@ public class User extends BaseTimeEntity {
     private String domain;
 
     //FK
-    private int fileId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private File fileId;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
