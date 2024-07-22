@@ -36,6 +36,11 @@ public class ClassController {
         return ResponseDto.of(204, "클래스가 성공적으로 삭제되었습니다.");
     }
 
+    @GetMapping("/{classId}/lectures")
+    public ResponseDto<List<LectureResponse>> getLecturesByClassId(@PathVariable Integer classId) {
+        List<LectureResponse> lectureList = lectureService.getLecturesByClassId(classId);
+        return ResponseDto.of(200, "클래스의 강의 목록 조회가 성공적으로 완료되었습니다.", lectureList);
+    }
 
     @PostMapping("/{classId}/lectures")
     public ResponseDto<Void> addLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
