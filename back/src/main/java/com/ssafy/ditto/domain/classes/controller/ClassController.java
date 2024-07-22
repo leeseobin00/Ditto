@@ -1,18 +1,22 @@
 package com.ssafy.ditto.domain.classes.controller;
 
 import com.ssafy.ditto.domain.classes.dto.ClassRequest;
-import com.ssafy.ditto.domain.classes.repository.ClassRepository;
+import com.ssafy.ditto.domain.classes.dto.LectureRequest;
+import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.service.ClassService;
+import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/classes")
 @RequiredArgsConstructor
 public class ClassController {
     private final ClassService classService;
+    private final LectureService lectureService;
 
     @PostMapping
     public ResponseDto<Void> createClass(@RequestBody ClassRequest classRequest) {
@@ -32,4 +36,10 @@ public class ClassController {
         return ResponseDto.of(204, "클래스가 성공적으로 삭제되었습니다.");
     }
 
+
+    @PostMapping("/{classId}/lectures")
+    public ResponseDto<Void> addLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
+        lectureService.createLecture(classId, lectureRequest);
+        return ResponseDto.of(201, "강의가 성공적으로 추가되었습니다.");
+    }
 }
