@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
-import MeetingPage from "../pages/MeetingPage";
+import MeetingPage from "../pages/Meeting/MeetingPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import BoardListPage from "../pages/Board/BoardListPage";
