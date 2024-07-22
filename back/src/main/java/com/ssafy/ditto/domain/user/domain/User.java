@@ -37,6 +37,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "intro")
     private String intro;
 
+    @Setter
     @Column(name = "refresh_token")
     private String refreshToken;
 

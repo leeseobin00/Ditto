@@ -53,19 +53,20 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
 
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String userEmail, String userNickName) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(userEmail) // 이메일
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
+                .claim("nickName", userNickName) // 닉네임 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, accessSecret)
                 .compact();
     }
 
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String userId, String userNickName) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpiration);
 
@@ -73,6 +74,7 @@ public class JwtProvider {
                 .setSubject(userId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
+                .claim("nickName", userNickName) // 닉네임 클레임 추가
                 .signWith(SignatureAlgorithm.HS512, refreshSecret)
                 .compact();
     }
@@ -80,9 +82,10 @@ public class JwtProvider {
     public JwtResponse refreshAccessToken(String refreshToken) {
         validateToken(refreshToken, true);
         Claims claims = parseClaims(refreshToken, true);
-        String userId = claims.getSubject();
+        String userEmail = claims.getSubject();
+        String userNickName = claims.get("nickName", String.class); // 닉네임 클레임 추출
 
-        String newAccessToken = createAccessToken(userId);
+        String newAccessToken = createAccessToken(userEmail, userNickName);
         return new JwtResponse(newAccessToken, refreshToken);
     }
 }
