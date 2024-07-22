@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.ssafy.ditto.global.dto.ResponseMessage.*;
-import static com.ssafy.ditto.global.error.ErrorCode.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController

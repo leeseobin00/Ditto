@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.comment.service;
 
-import com.ssafy.ditto.domain.comment.domain.Comment;
 import com.ssafy.ditto.domain.comment.dto.CommentRequest;
 import com.ssafy.ditto.domain.comment.dto.CommentResponse;
 

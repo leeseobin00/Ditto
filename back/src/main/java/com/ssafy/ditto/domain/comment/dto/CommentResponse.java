@@ -24,11 +24,11 @@ public class CommentResponse extends BaseTimeEntity {
     private Boolean isDeleted;
     private List<CommentResponse> children = new ArrayList<>();
 
-    public CommentResponse(Integer commentId, Integer parentId, Integer userId, /*String nickname,*/ String content, Byte level, Boolean isDeleted, List<CommentResponse> children) {
+    public CommentResponse(Integer commentId, Integer parentId, Integer userId, String nickname, String content, Byte level, Boolean isDeleted, List<CommentResponse> children) {
         this.commentId = commentId;
         this.parentId = parentId;
         this.userId = userId;
-//        this.nickname = nickname;
+        this.nickname = nickname;
         this.content = content;
         this.level = level;
         this.isDeleted = isDeleted;
@@ -39,9 +39,8 @@ public class CommentResponse extends BaseTimeEntity {
         return new CommentResponse(
                 comment.getCommentId(),
                 comment.getParent() != null ? comment.getParent().getCommentId() : -1,
-//                comment.getUser().getUserId(),
-//                comment.getUser().getNickname(),
-                comment.getUserId(),
+                comment.getUser().getUserId(),
+                comment.getUser().getNickname(),
                 comment.getContent(),
                 comment.getLevel(),
                 comment.getIsDeleted(),

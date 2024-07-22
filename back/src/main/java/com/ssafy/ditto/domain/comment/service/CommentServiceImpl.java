@@ -40,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         Comment comment = new Comment();
         comment.setContent(commentReq.getContent());
-//        comment.setUser(user);
+        comment.setUser(user);
         comment.setPost(post);
         comment.setIsDeleted(false);
         comment.setLevel((byte)0);
@@ -72,8 +72,8 @@ public class CommentServiceImpl implements CommentService {
             commentResp.setCommentId(comment.getCommentId());
             if(comment.getParent()!=null)
                 commentResp.setParentId(comment.getParent().getCommentId());
-//            commentResp.setUserId(comment.getUser().getUserId());
-//            commentResp.setNickname(comment.getUser().getNickname());
+            commentResp.setUserId(comment.getUser().getUserId());
+            commentResp.setNickname(comment.getUser().getNickname());
             commentResp.setContent(checkRemoved(comment));
             commentResp.setLevel(comment.getLevel());
             commentResp.setIsDeleted(comment.getIsDeleted());
