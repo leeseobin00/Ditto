@@ -26,4 +26,10 @@ public class ClassController {
         return ResponseDto.of(200, "클래스가 성공적으로 수정되었습니다.");
     }
 
+    @DeleteMapping("/{classId}")
+    public ResponseDto<Void> deleteClass(@PathVariable Integer classId) {
+        classService.deleteClass(classId);
+        return ResponseDto.of(204, "클래스가 성공적으로 삭제되었습니다.");
+    }
+
 }

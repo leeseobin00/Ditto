@@ -74,7 +74,7 @@ public class ClassServiceImpl implements ClassService {
     @Override
     @Transactional
     public void updateClass(Integer classId, ClassRequest classRequest) {
-        DClass dClass = classRepository.findById(classId).orElseThrow(() -> new ClassNotFoundException());
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
         Kit kit = dClass.getKitId();
         kit.setKitName(classRequest.getKit().getKitName());
@@ -105,6 +105,13 @@ public class ClassServiceImpl implements ClassService {
                 .collect(Collectors.toList());
         stepRepository.saveAll(newSteps);
 
+        classRepository.save(dClass);
+    }
+
+    @Override
+    public void deleteClass(Integer classId) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        dClass.setIsDeleted(true);
         classRepository.save(dClass);
     }
 }
