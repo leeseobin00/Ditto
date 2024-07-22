@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { BsChevronDown } from "react-icons/bs";
 
@@ -49,7 +49,7 @@ const CustomDownIcon = styled(BsChevronDown)`
   font-size: 16px;
 `;
 
-const SelectBox = ({ options, onChange }) => {
+const SelectBox = ({ options, curOption, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0].label);
 
@@ -58,6 +58,10 @@ const SelectBox = ({ options, onChange }) => {
     setIsOpen(false);
     onChange({ target: { value: option.value } });
   };
+
+  useEffect(() => {
+    setSelectedOption(curOption);
+  }, [curOption]);
 
   return (
     <CustomSelect>

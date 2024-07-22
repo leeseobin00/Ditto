@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { BsChevronLeft, BsHeart, BsHeartFill } from "react-icons/bs";
 import { MdMenu } from "react-icons/md";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
+import useAxios from "../../../hooks/useAxios";
 import Button from "../../common/Button";
 import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
@@ -163,16 +164,44 @@ function Post({
   fileName,
   fileUrl,
   content,
+  likeCount,
+  tagName,
 }) {
+  const { response: getLikeResponse, sendRequest: getLike } = useAxios();
+  const { sendRequest: postLike } = useAxios();
+  const { sendRequest: deleteLike } = useAxios();
+  const { sendRequest: deletePost } = useAxios();
+
   const location = useLocation();
   const path = location.pathname.split("/");
   const { postId } = useParams(); // 게시글 ID를 URL 파라미터로 가져옴
   const navigate = useNavigate();
   const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [curlikeCount, setCurlikeCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    setCurlikeCount(likeCount);
+  }, [likeCount]);
+
+  useEffect(() => {
+    getLike(`/posts/${postId}/like?userId=${1}`, null, "get");
+  }, [postId]);
+
+  useEffect(() => {
+    setIsHeartFilled(getLikeResponse?.data);
+  }, [getLikeResponse]);
+
   const handleHeartClick = () => {
-    setIsHeartFilled(!isHeartFilled);
+    if (isHeartFilled) {
+      setIsHeartFilled(false);
+      setCurlikeCount((prev) => prev - 1);
+      postLike(`/posts/${postId}/like?userId=${1}`, null, "delete");
+    } else {
+      setIsHeartFilled(true);
+      setCurlikeCount((prev) => prev + 1);
+      deleteLike(`/posts/${postId}/like?userId=${1}`, null, "post");
+    }
   };
 
   const handleEdit = () => {
@@ -189,7 +218,9 @@ function Post({
 
   const handleConfirmDelete = () => {
     // 추후 삭제 api 연결
+    deletePost(`/posts/${postId}`, null, "delete");
     setIsModalOpen(false);
+    navigate("/board/all");
   };
 
   return (
@@ -234,7 +265,7 @@ function Post({
                 ) : (
                   <CustomHeartIcon />
                 )}
-                <HeartCount>123</HeartCount>
+                <HeartCount>{curlikeCount}</HeartCount>
               </>
             }
             color="default"
@@ -242,7 +273,7 @@ function Post({
           />
         </ButtonWrapper>
         <ButtonWrapper>
-          <Tag>향초</Tag>
+          <Tag>{tagName}</Tag>
         </ButtonWrapper>
       </Buttons>
 

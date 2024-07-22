@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { useNavigate, useParams } from "react-router-dom"; // useParams 추가
+import { useNavigate, useParams } from "react-router-dom";
 
+import useAxios from "../../hooks/useAxios";
 import Button from "../../components/common/Button";
 import OutlineButton from "../../components/common/OutlineButton";
 import TabBar from "../../components/Board/TabBar";
@@ -12,10 +13,9 @@ import BoardEditor from "../../components/Board/BoardAdd/BoardEditor";
 import {
   BOARD_TYPE_OPTIONS,
   CATEGORY_OPTIONS,
-  LIVING_TAGS,
-  FABRIC_OPTIONS,
-  ART_OPTIONS,
-  FOOD_OPTIONS,
+  getTagsForCategory,
+  getBoardTypeLabelByValue,
+  getCategoryLabelByValue,
 } from "../../utils/options";
 
 const Wrapper = styled.div`
@@ -59,93 +59,120 @@ const Buttons = styled.div`
   margin-top: 32px;
 `;
 
-function getTagsForCategory(category) {
-  switch (category) {
-    case "전체":
-      return [
-        ...LIVING_TAGS,
-        ...FABRIC_OPTIONS,
-        ...ART_OPTIONS,
-        ...FOOD_OPTIONS,
-      ];
-    case "리빙":
-      return LIVING_TAGS;
-    case "패브릭":
-      return FABRIC_OPTIONS;
-    case "아트":
-      return ART_OPTIONS;
-    case "푸드":
-      return FOOD_OPTIONS;
-    default:
-      return [];
-  }
-}
-
 function BoardAddPage() {
+  const { response: getResponse, sendRequest: getPost } = useAxios();
+  const { sendRequest } = useAxios();
+  // router
   const navigate = useNavigate();
-  const { postId } = useParams(); // 게시글 ID를 URL 파라미터로 가져옴
-  const isEdit = Boolean(postId); // id가 있으면 수정 모드
+  const { postId } = useParams();
+  const isEdit = Boolean(postId);
 
   const handleCancel = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      navigate("/board/all", { replace: true });
-    }
+    navigate("/board/all");
   };
 
-  const [tag, setTag] = useState(null);
-  const [boardType, setBoardType] = useState("소통해요");
-  const [category, setCategory] = useState("리빙");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [postData, setPostData] = useState({
+    userId: 1,
+    username: "김싸피",
+    boardId: 1,
+    categoryId: 1,
+    tagId: 1,
+    title: "",
+    content: "",
+  });
+
+  useEffect(() => {
+    if (isEdit) {
+      getPost(`/posts/${postId}`, null, "get");
+    }
+  }, [isEdit, postId]);
+
+  useEffect(() => {
+    console.log(getResponse);
+    if (getResponse) {
+      setPostData({
+        userId: 1,
+        username: "김싸피",
+        boardId: getResponse?.data?.boardId,
+        categoryId: getResponse?.data?.categoryId,
+        tagId: getResponse?.data?.tagId,
+        title: getResponse?.data?.title,
+        content: getResponse?.data?.content,
+      });
+    }
+  }, [getResponse]);
+
+  // form
+  const [category, setCategory] = useState(postData?.categoryId);
+  const [tags, setTags] = useState(getTagsForCategory(postData?.categoryId));
+
+  useEffect(() => {
+    setTags(getTagsForCategory(category));
+    let ret = 1;
+    switch (category) {
+      case 1:
+        ret = 1;
+        break;
+      case 2:
+        ret = 6;
+        break;
+      case 3:
+        ret = 12;
+        break;
+      case 4:
+        ret = 14;
+        break;
+    }
+    setPostData((prevState) => ({
+      ...prevState,
+      tagId: ret,
+    }));
+  }, [category]);
 
   const handleBoardType = (event) => {
-    setBoardType(event.target.value);
+    setPostData((prevState) => ({
+      ...prevState,
+      boardId: event.target.value,
+    }));
   };
 
   const handleCategory = (event) => {
     setCategory(event.target.value);
+    setPostData((prevState) => ({
+      ...prevState,
+      categoryId: event.target.value,
+    }));
   };
 
-  const [tags, setTags] = useState([]);
-  useEffect(() => {
-    setTags(getTagsForCategory(category));
-  }, [category]);
-
-  const handleTag = (tagValue) => {
-    setTag(tagValue);
+  const handleTag = (tagId) => {
+    setPostData((prevState) => ({
+      ...prevState,
+      tagId,
+    }));
   };
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
+  const handleTitle = (event) => {
+    setPostData((prevState) => ({
+      ...prevState,
+      title: event.target.value,
+    }));
   };
 
-  const handleEditorChange = (content) => {
-    setContent(content);
+  const handleEditor = (content) => {
+    setPostData((prevState) => ({
+      ...prevState,
+      content,
+    }));
   };
 
-  useEffect(() => {
-    if (isEdit) {
-      // 게시글 수정 모드일 때 기존 데이터를 불러오는 로직 추가
-      // 예: fetch(`/api/posts/${id}`).then((response) => response.json()).then((data) => {
-      //   setTitle(data.title);
-      //   setContent(data.content);
-      //   setBoardType(data.boardType);
-      //   setCategory(data.category);
-      //   setTag(data.tag);
-      // });
-    }
-  }, [isEdit, postId]);
+  const handleSave = async () => {
+    const url = isEdit ? `/posts/${postId}` : "/posts";
+    const method = isEdit ? "patch" : "post";
 
-  const handleSave = () => {
-    if (isEdit) {
-      // 수정 로직
-      // 예: fetch(`/api/posts/${id}`, { method: 'PUT', body: JSON.stringify({ title, content, boardType, category, tag }) });
-    } else {
-      // 등록 로직
-      // 예: fetch('/api/posts', { method: 'POST', body: JSON.stringify({ title, content, boardType, category, tag }) });
-    }
+    try {
+      await sendRequest(url, postData, method);
+      handleCancel();
+    } catch (error) {}
   };
 
   return (
@@ -158,11 +185,11 @@ function BoardAddPage() {
             <SelectBox
               options={BOARD_TYPE_OPTIONS}
               onChange={handleBoardType}
-              value={boardType}
+              curOption={getBoardTypeLabelByValue(postData?.boardId)}
             />
           </Filter>
           <Filter title="작성자">
-            <NameInput>이름</NameInput>
+            <NameInput>{postData?.username}</NameInput>
           </Filter>
         </FilterWrapper>
         <FilterWrapper>
@@ -170,19 +197,23 @@ function BoardAddPage() {
             <SelectBox
               options={CATEGORY_OPTIONS}
               onChange={handleCategory}
-              value={category}
+              curOption={getCategoryLabelByValue(category)}
             />
           </Filter>
           <Filter title="태그">
-            <SelectTag tags={tags} curTag={tag} handleTag={handleTag} />
+            <SelectTag
+              tags={tags}
+              curTag={postData?.tagId}
+              handleTag={handleTag}
+            />
           </Filter>
         </FilterWrapper>
         <EditorWrapper>
           <BoardEditor
-            title={title}
-            content={content}
-            onTitleChange={handleTitleChange}
-            onEditorChange={handleEditorChange}
+            title={postData?.title}
+            content={postData?.content}
+            onTitleChange={handleTitle}
+            onEditorChange={handleEditor}
           />
         </EditorWrapper>
         <Buttons>

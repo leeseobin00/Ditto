@@ -27,10 +27,15 @@ const QuillWrapper = styled.div`
   }
   .ql-container {
     min-height: 500px; /* 텍스트 부분의 최소 높이 */
-  }
+  }s
 `;
 
-const BoardEditor = ({ onTitleChange, onEditorChange }) => {
+const BoardEditor = ({
+  title = "",
+  content = "",
+  onTitleChange,
+  onEditorChange,
+}) => {
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
@@ -58,7 +63,17 @@ const BoardEditor = ({ onTitleChange, onEditorChange }) => {
         onEditorChange(editorRef.current.root.innerHTML);
       });
     }
-  }, [onEditorChange]);
+  }, [content, onEditorChange]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      // 새로운 content 값이 올 때마다 에디터 업데이트
+      const currentContent = editorRef.current.root.innerHTML;
+      if (content !== currentContent) {
+        editorRef.current.root.innerHTML = content;
+      }
+    }
+  }, [content]);
 
   const handleTitleChange = (event) => {
     onTitleChange(event);
@@ -71,6 +86,7 @@ const BoardEditor = ({ onTitleChange, onEditorChange }) => {
           type="text"
           placeholder="제목을 입력하세요"
           onChange={handleTitleChange}
+          value={title}
         />
       </TitleInput>
       <QuillWrapper>
