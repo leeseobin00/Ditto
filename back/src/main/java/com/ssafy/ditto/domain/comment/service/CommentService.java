@@ -7,9 +7,9 @@ import com.ssafy.ditto.domain.comment.dto.CommentResponse;
 import java.util.List;
 
 public interface CommentService {
-    String writeComment(int postId, CommentRequest commentReq) throws Exception;
-    List<CommentResponse> getCommentList(int postId) throws Exception;
+    String writeComment(int postId, CommentRequest commentReq);
+    List<CommentResponse> getCommentList(int postId);
 
-    String modifyComment(int commentId, CommentRequest commentReq) throws Exception;
-    String deleteComment(int commentId) throws Exception;
+    String modifyComment(int commentId, CommentRequest commentReq);
+    String deleteComment(int commentId);
 }
