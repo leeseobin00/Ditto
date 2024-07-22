@@ -186,7 +186,7 @@ const LoginForm = () => {
         </SocialGroup>
         <SignUpGroup>
           <div>회원이 아니신가요? </div>
-          <SignUpLink href="#">회원가입</SignUpLink>
+          <SignUpLink href="/signup">회원가입</SignUpLink>
         </SignUpGroup>
       </StyledForm>
     </FormContainer>
