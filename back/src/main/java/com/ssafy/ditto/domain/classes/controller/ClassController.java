@@ -6,10 +6,7 @@ import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/classes")
@@ -22,4 +19,11 @@ public class ClassController {
         classService.createClass(classRequest);
         return ResponseDto.of(201, "클래스가 성공적으로 생성되었습니다.");
     }
+
+    @PatchMapping("/{classId}")
+    public ResponseDto<Void> updateClass(@PathVariable Integer classId, @RequestBody ClassRequest classRequest) {
+        classService.updateClass(classId, classRequest);
+        return ResponseDto.of(200, "클래스가 성공적으로 수정되었습니다.");
+    }
+
 }
