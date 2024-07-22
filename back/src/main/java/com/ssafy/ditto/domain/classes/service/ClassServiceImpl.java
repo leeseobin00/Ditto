@@ -49,7 +49,7 @@ public class ClassServiceImpl implements ClassService {
                 .classMin(classRequest.getClassMin().byteValue())
                 .classMax(classRequest.getClassMax().byteValue())
                 .classExplanation(classRequest.getClassExplanation())
-                .kit(kit)
+                .kitId(kit)
                 .studentSum(0)
                 .likeCount(0)
                 .reviewCount(0)
@@ -76,7 +76,7 @@ public class ClassServiceImpl implements ClassService {
     public void updateClass(Integer classId, ClassRequest classRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
-        Kit kit = dClass.getKit();
+        Kit kit = dClass.getKitId();
         kit.setKitName(classRequest.getKit().getKitName());
         kit.setKitExplanation(classRequest.getKit().getKitExplanation());
         kitRepository.save(kit);

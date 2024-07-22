@@ -68,7 +68,7 @@ public class DClass extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kit_id")
-    private Kit kit;
+    private Kit kitId;
 
     // FK
     private Integer fileId;
