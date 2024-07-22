@@ -19,15 +19,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = resolveToken(request);
-        if (token != null) {
-            jwtProvider.validateToken(token, false);
-            Authentication authentication = this.jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = resolveToken(request); // 요청에서 jwt 추출
+        if (token != null) { // jwt가 존재하면
+            jwtProvider.validateToken(token, false); // jwt 검증
+            Authentication authentication = this.jwtProvider.getAuthentication(token); // JWT에서 인증 정보 추출
+            SecurityContextHolder.getContext().setAuthentication(authentication); // Spring Security 컨텍스트에 인증 정보 설정
         }
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response); // 다음 필터로 요청 전달
     }
 
+    // 요청 헤더에서 jwt를 추출
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HEADER_NAME);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
