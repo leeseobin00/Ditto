@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class CommentRequest {
-    private int userId;
+    private Integer userId;
     private String content;
-    private int parentId;
+    private Integer parentId;
 }

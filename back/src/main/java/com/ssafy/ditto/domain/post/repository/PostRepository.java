@@ -41,9 +41,6 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
             "LIMIT 5", nativeQuery = true)
     List<Post> getBestPosts(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
 
-
-    List<Post> findByUserId(int userId);
-
     // 커뮤니티 게시글 상세 조회
     @Query("SELECT p FROM Post p WHERE p.postId = :postId")
     Post getPost(@Param("postId") int postId);

@@ -13,7 +13,7 @@ import lombok.ToString;
 public class PostResponse {
     private Integer postId;
     private Integer userId;
-    private String username;
+    private String nickname;
     private Integer boardId;
     private String boardName;
     private Integer tagId;
@@ -27,12 +27,12 @@ public class PostResponse {
     private Integer likeCount;
     private Integer commentCount;
 
-    public PostResponse(Integer postId, Integer userId, /*String username,*/ Integer boardId, String boardName,
+    public PostResponse(Integer postId, Integer userId, String nickname, Integer boardId, String boardName,
                         Integer tagId, String tagName, Integer categoryId, String categoryName,
                         String title, String content, Integer viewCount, Boolean isDeleted, Integer likeCount, Integer likeCount1, Integer commentCount) {
         this.postId=postId;
         this.userId=userId;
-//        this.username=username;
+        this.nickname = nickname;
         this.boardId=boardId;
         this.boardName=boardName;
         this.tagId=tagId;
@@ -50,8 +50,8 @@ public class PostResponse {
     public static PostResponse of(Post post){
         return new PostResponse(
                 post.getPostId(),
-                post.getUserId(),
-//                post.getUsername(),
+                post.getUser().getUserId(),
+                post.getUser().getNickname(),
                 post.getBoard().getBoardId(),
                 post.getBoard().getBoardName(),
                 post.getTag().getTagId(),
