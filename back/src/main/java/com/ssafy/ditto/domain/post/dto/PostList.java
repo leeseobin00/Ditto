@@ -11,20 +11,16 @@ import lombok.ToString;
 
 @Getter
 @Setter
-//@NoArgsConstructor
+@NoArgsConstructor
 @ToString
 public class PostList {
 
     @Schema(description = "게시글 목록")
-    private List<PostResponse> posts;
+    private List<PostResponse> posts = new ArrayList<>();
 
     @Schema(description = "현재 페이지")
     private Integer currentPage;
 
     @Schema(description = "전체 페이지 수")
     private Integer totalPageCount;
-
-    public PostList(){
-        posts = new ArrayList<>();
-    }
 }

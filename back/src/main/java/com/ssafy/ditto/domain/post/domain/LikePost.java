@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.post.domain;
 
+import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,9 +22,10 @@ public class LikePost extends BaseTimeEntity {
     private Integer likePostId;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

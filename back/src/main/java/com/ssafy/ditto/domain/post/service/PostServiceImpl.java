@@ -15,6 +15,8 @@ import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
+import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class PostServiceImpl implements PostService {
     public final BoardRepository boardRepository;
     public final CategoryRepository categoryRepository;
     public final TagRepository tagRepository;
+    public final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -46,11 +49,13 @@ public class PostServiceImpl implements PostService {
                 .orElse(null);
         Tag tag = tagRepository.findById(postReq.getCategoryId())
                 .orElse(null);
+        User user = userRepository.findById(postReq.getUserId())
+                .orElse(null);
+
         Post post = new Post();
         post.setTitle(postReq.getTitle());
         post.setContent(postReq.getContent());
-        post.setUserId(postReq.getUserId());
-        post.setTitle(postReq.getUsername());
+        post.setUser(user);
         post.setBoard(board);
         post.setCategory(category);
         post.setTag(tag);
@@ -121,7 +126,6 @@ public class PostServiceImpl implements PostService {
     public PostList bestPost() {
         List<Post> list = postRepository.getBestPosts(LocalDateTime.now().minusDays(7));
         PostList postList = new PostList();
-         // 수정필요
         for(Post post:list){
             postList.getPosts().add(PostResponse.of(post));
         }
