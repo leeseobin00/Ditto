@@ -7,7 +7,7 @@ import Section from "../../components/Profile/ProfileDetail/Section";
 import CardList from "../../components/Profile/ProfileDetail/CardList";
 import ReviewList from "../../components/Profile/ProfileDetail/ReviewList";
 import PostList from "../../components/common/PostList";
-import RoundButton from "../../components/common/RoundButton";
+import ModifyIntro from "../../components/Profile/ProfileDetail/ModifyIntro";
 
 const Container = styled.div`
   display: flex;
@@ -25,34 +25,6 @@ const IntroContent = styled.div`
   min-height: 160px;
   text-align: center;
 `;
-
-const ModalTitle = styled.p`
-  color: var(--PRIMARY);
-  font-weight: 600;
-  font-size: 20px;
-  margin-bottom: 32px;
-`;
-
-const Textarea = styled.textarea`
-  width: 100%;
-  min-height: 120px;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid lightgray;
-  border-radius: 8px;
-  margin-bottom: 48px;
-  resize: none;
-`;
-
-const introModalContent = () => {
-  return (
-    <>
-      <ModalTitle>소개글</ModalTitle>
-      <Textarea />
-      <RoundButton label="수정" />
-    </>
-  );
-};
 
 function ProfileDetailPage() {
   const location = useLocation();
@@ -102,7 +74,7 @@ function ProfileDetailPage() {
           id="intro"
           title="소개글"
           isMyProfile={isMyProfile}
-          modalContent={introModalContent}
+          modalContent={ModifyIntro}
         >
           <IntroContent>
             안녕하세요, 조향과 뜨개질에 관심이 많은 김디토입니다! 소통해요~
