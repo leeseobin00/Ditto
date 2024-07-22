@@ -5,6 +5,6 @@ import com.ssafy.ditto.global.error.ServiceException;
 
 public class UserNotFoundException extends ServiceException {
     public UserNotFoundException() {
-        super(ErrorCode.CLASS_NOT_FOUND);
+        super(ErrorCode.USER_NOT_FOUND);
     }
 }
