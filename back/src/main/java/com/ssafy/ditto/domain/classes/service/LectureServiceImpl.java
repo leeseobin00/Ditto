@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
+import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,21 @@ public class LectureServiceImpl implements LectureService {
                 .classPrice(dClass.getClassPrice())
                 .isDeleted(false)
                 .build();
+        lectureRepository.save(lecture);
+    }
+
+    @Override
+    @Transactional
+    public void updateLecture(Integer classId, Integer lectureId, LectureRequest lectureRequest) {
+        classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+
+        lecture.setYear(lectureRequest.getYear());
+        lecture.setMonth(lectureRequest.getMonth());
+        lecture.setDay(lectureRequest.getDay());
+        lecture.setHour(lectureRequest.getHour());
+        lecture.setMinute(lectureRequest.getMinute());
+
         lectureRepository.save(lecture);
     }
 

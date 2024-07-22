@@ -43,8 +43,14 @@ public class ClassController {
     }
 
     @PostMapping("/{classId}/lectures")
-    public ResponseDto<Void> addLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
+    public ResponseDto<Void> createLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
         lectureService.createLecture(classId, lectureRequest);
-        return ResponseDto.of(201, "강의가 성공적으로 추가되었습니다.");
+        return ResponseDto.of(201, "차시가 성공적으로 추가되었습니다.");
+    }
+
+    @PatchMapping("/{classId}/lectures/{lectureId}")
+    public ResponseDto<Void> updateLecture(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestBody LectureRequest lectureRequest) {
+        lectureService.updateLecture(classId, lectureId, lectureRequest);
+        return ResponseDto.of(200, "차시가 성공적으로 수정되었습니다.");
     }
 }
