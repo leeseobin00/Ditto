@@ -15,9 +15,6 @@ public class Agree {
     @Column(name = "agree_id")
     private int agreeId;
 
-    @Column(name = "agree1")
-    private String agree1;
-
-    @Column(name = "agree2")
-    private String agree2;
+    @Column(name = "agree")
+    private String agree;
 }

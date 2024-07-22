@@ -3,7 +3,7 @@ package com.ssafy.ditto.domain.user.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Form")
@@ -24,10 +24,10 @@ public class Form {
     private String phoneNumber;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "min_active")
-    private byte minActive;
+    private Byte minActive;
 
     @Column(name = "experience")
     private String experience;
@@ -37,6 +37,6 @@ public class Form {
 
     //FK
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 }

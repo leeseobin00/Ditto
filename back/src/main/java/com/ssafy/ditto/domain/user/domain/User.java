@@ -46,7 +46,8 @@ public class User extends BaseTimeEntity {
     //FK
     private int fileId;
 
+    //FK
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private UserRole roleId;
 }
