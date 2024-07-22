@@ -6,6 +6,7 @@ import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import jdk.javadoc.doclet.Reporter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +53,11 @@ public class ClassController {
     public ResponseDto<Void> updateLecture(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestBody LectureRequest lectureRequest) {
         lectureService.updateLecture(classId, lectureId, lectureRequest);
         return ResponseDto.of(200, "차시가 성공적으로 수정되었습니다.");
+    }
+
+    @DeleteMapping("/{classId}/lectures/{lectureId}")
+    public ResponseDto<Void> deleteLecture(@PathVariable Integer classId, @PathVariable Integer lectureId) {
+        lectureService.deleteLecture(classId, lectureId);
+        return ResponseDto.of(204, "차시가 성공적으로 삭제되었습니다.");
     }
 }
