@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import axiosIntercepter from '../../../features/axiosIntercepter';
+import axios from 'axios';
 import { login } from '../../../features/auth/authSlice';
 import KakaoLogin from './KaKaoLogin';
 import { jwtDecode } from 'jwt-decode';  // jwt-decode 패키지 가져오기
@@ -155,7 +155,7 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await axiosIntercepter.post('/user/login', {
+      const response = await axios.post('http://localhost:8080/user/login', {
         email,
         password,
       });
@@ -163,9 +163,10 @@ const LoginForm = () => {
 
       // JWT 디코딩하여 사용자 정보 추출
       const decodedToken = jwtDecode(accessToken);
+      const userId = decodedToken.userId;
       const userName = decodedToken.userName;
 
-      dispatch(login({ accessToken, refreshToken, userName })); // Redux 상태 업데이트
+      dispatch(login({ accessToken, refreshToken, userId, userName })); // Redux 상태 업데이트
       alert("로그인 성공!");
       navigate('/'); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {

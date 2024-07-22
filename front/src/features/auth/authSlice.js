@@ -7,23 +7,33 @@ const authSlice = createSlice({
   initialState: {
     accessToken: localStorage.getItem("accessToken") || null,
     isAuthenticated: !!localStorage.getItem("accessToken"),
-    userName: localStorage.getItem("userName") || null,  // 사용자 이름 추가
+    userId: localStorage.getItem("userId") || null,  // 사용자 ID 추가
+    nickName: localStorage.getItem("nickName") || null,  // 닉네임으로 변경
+    email: localStorage.getItem("email") || null,  // 사용자 이메일 추가
   },
   reducers: {
     login: (state, action) => {
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
-      state.userName = action.payload.userName;  // 사용자 이름 설정
+      state.userId = action.payload.userId;  // 사용자 ID 설정
+      state.nickName = action.payload.nickName;  // 닉네임 설정
+      state.email = action.payload.email;  // 사용자 이메일 설정
       localStorage.setItem("accessToken", action.payload.accessToken);
-      localStorage.setItem("userName", action.payload.userName);  // 사용자 이름 저장
+      localStorage.setItem("userId", action.payload.userId);  // 사용자 ID 저장
+      localStorage.setItem("nickName", action.payload.nickName);  // 닉네임 저장
+      localStorage.setItem("email", action.payload.email);  // 사용자 이메일 저장
       Cookies.set("refreshToken", action.payload.refreshToken, { expires: 7, secure: true, sameSite: 'strict' });
     },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-      state.userName = null;  // 사용자 이름 초기화
+      state.userId = null;  // 사용자 ID 초기화
+      state.nickName = null;  // 닉네임 초기화
+      state.email = null;  // 사용자 이메일 초기화
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userName");  // 사용자 이름 제거
+      localStorage.removeItem("userId");  // 사용자 ID 제거
+      localStorage.removeItem("nickName");  // 닉네임 제거
+      localStorage.removeItem("email");  // 사용자 이메일 제거
       Cookies.remove("refreshToken");
     },
     refresh: (state, action) => {
@@ -33,9 +43,13 @@ const authSlice = createSlice({
     sessionExpired: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-      state.userName = null;  // 사용자 이름 초기화
+      state.userId = null;  // 사용자 ID 초기화
+      state.nickName = null;  // 닉네임 초기화
+      state.email = null;  // 사용자 이메일 초기화
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userName");  // 사용자 이름 제거
+      localStorage.removeItem("userId");  // 사용자 ID 제거
+      localStorage.removeItem("nickName");  // 닉네임 제거
+      localStorage.removeItem("email");  // 사용자 이메일 제거
     },
   },
 });
