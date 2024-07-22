@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { Link } from "react-router-dom";
 
 import PostItem from "./PostItem";
 
@@ -12,13 +13,14 @@ function PostList({ posts }) {
   return (
     <PostListWrapper>
       {posts.map((post) => (
-        <PostItem
-          key={post?.postId}
-          title={post?.title}
-          likeCount={post?.likeCount}
-          userName={post?.userName}
-          createdDate={post?.createdDate}
-        />
+        <Link to={`/board/all/${post?.postId}`} key={post?.postId}>
+          <PostItem
+            title={post?.title}
+            likeCount={post?.likeCount}
+            userName={post?.userName}
+            createdDate={post?.createdDate}
+          />
+        </Link>
       ))}
     </PostListWrapper>
   );

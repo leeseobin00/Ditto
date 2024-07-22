@@ -20,6 +20,7 @@ const AppRoutes = () => {
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
       <Route path="/profile" element={<ProfileDetailPage />} />
+      <Route path="/profile/my" element={<ProfileDetailPage />} />
       {/* <Route path="/nasa" element={
         <PrivateRoute>
           <></>

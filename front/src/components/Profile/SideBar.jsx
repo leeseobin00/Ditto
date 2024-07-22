@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 
 import Profile from "./Profile";
+import MyProfile from "./MyProfile";
 
 const SidebarWrapper = styled.nav`
   background-color: white;
@@ -27,10 +28,10 @@ const NavLink = styled.a`
   }
 `;
 
-function Sidebar() {
+function Sidebar({ isMyProfile }) {
   return (
     <SidebarWrapper>
-      <Profile />
+      {isMyProfile ? <MyProfile /> : <Profile />}
       <NavList>
         <NavItem>
           <NavLink href="#intro">소개글</NavLink>
