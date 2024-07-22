@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,16 +17,18 @@ import java.util.stream.Collectors;
 public class CommentResponse extends BaseTimeEntity {
     private Integer commentId;
     private Integer parentId;
-    private String username;
+    private Integer userId;
+    private String nickname;
     private String content;
     private Byte level;
     private Boolean isDeleted;
-    private List<CommentResponse> children;
+    private List<CommentResponse> children = new ArrayList<>();
 
-    public CommentResponse(Integer commentId, Integer parentId, String username, String content, Byte level, Boolean isDeleted, List<CommentResponse> children) {
+    public CommentResponse(Integer commentId, Integer parentId, Integer userId, String nickname, String content, Byte level, Boolean isDeleted, List<CommentResponse> children) {
         this.commentId = commentId;
         this.parentId = parentId;
-        this.username = username;
+        this.userId = userId;
+        this.nickname = nickname;
         this.content = content;
         this.level = level;
         this.isDeleted = isDeleted;
@@ -36,7 +39,8 @@ public class CommentResponse extends BaseTimeEntity {
         return new CommentResponse(
                 comment.getCommentId(),
                 comment.getParent() != null ? comment.getParent().getCommentId() : -1,
-                null,
+                comment.getUser().getUserId(),
+                comment.getUser().getNickname(),
                 comment.getContent(),
                 comment.getLevel(),
                 comment.getIsDeleted(),
