@@ -50,14 +50,6 @@ const ButtonWrapper = styled.div`
   margin-top: 32px;
 `;
 
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 32px;
-`;
-
 function Section({
   id,
   title,
@@ -95,9 +87,7 @@ function Section({
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalContent>
-            <ModalContentComponent />
-          </ModalContent>
+          <ModalContentComponent onClose={handleCloseModal} />
         </Modal>
       )}
     </SectionWrapper>

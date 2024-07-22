@@ -1,10 +1,14 @@
-import { useState } from "react";
-import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { styled } from "styled-components";
 import { BsHeartFill } from "react-icons/bs";
+
 import WriteIcon from "../../assets/icon/profile/write-white.png";
-import Tag from "./Tag";
 import Modal from "../common/Modal";
 import RoundButton from "../common/RoundButton";
+
+import ModifyTags from "./ProfileDetail/ModifyTags";
+import Tag from "./Tag";
+import ModifyProfileImage from "./ProfileDetail/ModifyProfileImage";
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -82,81 +86,10 @@ const TagsEditButton = styled.button`
   align-items: center;
 `;
 
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 32px;
-`;
-
-const ModalTitle = styled.p`
-  color: var(--PRIMARY);
-  font-weight: 600;
-  font-size: 20px;
-  margin-bottom: 32px;
-`;
-
-const ProfileImage = styled.img`
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  border: 2px solid orange;
-  margin-bottom: 16px;
-`;
-
-const FileInput = styled.input`
-  display: none;
-`;
-
-const FileInputLabel = styled.label`
-  color: var(--SECONDARY);
-  margin-bottom: 48px;
-  cursor: pointer;
-`;
-
-const TagButton = styled.button`
-  border: 1px solid var(--SECONDARY);
-  border-radius: 25px;
-  padding: 4px 12px;
-  font-weight: 600;
-  color: var(--SECONDARY);
-  background-color: ${(props) =>
-    props.$selected === "true" ? "var(--TERTIARY)" : "var(--LIGHT)"};
-  white-space: nowrap;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--TERTIARY);
-  }
-`;
-
-const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 32px;
-  margin-bottom: 48px;
-`;
-
 function Profile() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-  const [tags, setTags] = useState([
-    { name: "향수", selected: false },
-    { name: "양초", selected: false },
-    { name: "비누", selected: false },
-    { name: "뜨개질", selected: true },
-    { name: "바느질", selected: false },
-    { name: "가죽", selected: false },
-    { name: "십자수", selected: false },
-    { name: "키링", selected: false },
-    { name: "모빌", selected: false },
-    { name: "미니어쳐", selected: false },
-    { name: "푸드", selected: true },
-  ]);
 
   const handleProfileEditClick = () => {
     setIsProfileModalOpen(true);
@@ -172,24 +105,6 @@ function Profile() {
 
   const handleCloseTagsModal = () => {
     setIsTagsModalOpen(false);
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfileImage(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleTagClick = (index) => {
-    const newTags = [...tags];
-    const selectedCount = newTags.filter((tag) => tag.selected).length;
-    if (newTags[index].selected || selectedCount < 3) {
-      newTags[index].selected = !newTags[index].selected;
-      setTags(newTags);
-    }
   };
 
   return (
@@ -220,42 +135,13 @@ function Profile() {
 
       {isProfileModalOpen && (
         <Modal onClose={handleCloseProfileModal}>
-          <ModalContent>
-            <ModalTitle>프로필 이미지</ModalTitle>
-            <ProfileImage
-              src={profileImage || "path/to/default/image.png"}
-              alt="Profile"
-            />
-            <FileInputLabel htmlFor="file-upload">파일 선택</FileInputLabel>
-            <FileInput
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-            <RoundButton label="수정" onClick={handleCloseProfileModal} />
-          </ModalContent>
+          <ModifyProfileImage onClose={handleCloseProfileModal} />
         </Modal>
       )}
 
       {isTagsModalOpen && (
         <Modal onClose={handleCloseTagsModal}>
-          <ModalContent>
-            <ModalTitle>관심 태그</ModalTitle>
-            <p>가장 관심 있는 태그를 선택해주세요. (최대 3개)</p>
-            <TagList>
-              {tags.map((tag, index) => (
-                <TagButton
-                  key={tag.name}
-                  $selected={tag.selected}
-                  onClick={() => handleTagClick(index)}
-                >
-                  {tag.name}
-                </TagButton>
-              ))}
-            </TagList>
-            <RoundButton label="수정" onClick={handleCloseTagsModal} />
-          </ModalContent>
+          <ModifyTags onClose={handleCloseTagsModal} />
         </Modal>
       )}
     </ProfileWrapper>
