@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface LectureRepository extends JpaRepository<Lecture, Integer> {
     List<Lecture> findAllByClassId(DClass classId);
+    List<Lecture> findAllByClassIdAndIsDeletedFalse(DClass classId);
 }
