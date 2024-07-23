@@ -7,6 +7,7 @@ const TabBarContainer = styled.div`
   flex-direction: row;
   align-items: center;
   height: 40px;
+  width: 100%;
 `;
 
 const Button = styled.button`
@@ -92,7 +93,6 @@ function TabBar() {
           color={block.color}
           ref={(el) => (blockRefs.current[index] = el)}
         >
-          {block.label}
         </Block>
       ))}
     </TabBarContainer>
