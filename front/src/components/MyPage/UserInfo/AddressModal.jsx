@@ -107,7 +107,7 @@ const SaveButton = styled.button`
   font-weight: bold;
   border: 1px solid var(--BORDER_COLOR);
   border: none;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 px 8px rgba(0, 0, 0, 0.2);
   border-radius: 15px;
   font-size: 14px;
   cursor: pointer;
