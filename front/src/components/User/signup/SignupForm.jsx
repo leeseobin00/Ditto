@@ -470,7 +470,7 @@ const SignupForm = () => {
 
   return (
     <FormContainer>
-      {isInstructorStep ? (
+      {!isInstructorStep ? ( // isInstructorStep에 !를 붙이면 일반 회원가입 페이지 안붙이면 강사 회원가입 페이지 확인가능
         <StyledForm onSubmit={handleSubmit}>
           <FormTitle>회원가입</FormTitle>
           <SignDivider />

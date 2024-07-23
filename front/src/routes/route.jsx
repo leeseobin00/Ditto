@@ -5,6 +5,8 @@ import ClassListPage from "../pages/Class/ClassListPage";
 import ClassDetailPage from "../pages/Class/ClassDetailPage";
 import MeetingPage from "../pages/MeetingPage";
 import LoginPage from "../pages/LoginPage";
+import KakaoCallback from "../pages/KakaoCallback";
+import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import BoardListPage from "../pages/Board/BoardListPage";
 import BoardDetailPage from "../pages/Board/BoardDetailPage";
@@ -22,6 +24,8 @@ const AppRoutes = () => {
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/callback" element={<KakaoCallback />} />
+      <Route path="/mypage" element={<MyPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route
         path="/board/:boardCategory/:postId"
