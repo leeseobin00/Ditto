@@ -4,7 +4,8 @@ import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
 import ClassDetailPage from "../pages/Class/ClassDetailPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
-import MeetingPage from "../pages/MeetingPage";
+import MeetingPage from "../pages/Meeting/MeetingPage";
+
 import LoginPage from "../pages/LoginPage";
 import KakaoCallback from "../pages/KakaoCallback";
 import MyPage from "../pages/MyPage";

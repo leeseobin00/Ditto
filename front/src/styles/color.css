@@ -18,4 +18,8 @@
   --LIGHT: #ffffff;
   --BORDER_COLOR: #b2b2b2;
   --BACKGROUND_COLOR: #efefef;
+  --MEETING_BACKGROUND: #2d2d2d;
+  --MEETING_PRIMARY: #3a3a3a;
+  --MEETING_SECONDARY: #444444;
+  --MEETING_DARK: #1b1b1b;
 }
