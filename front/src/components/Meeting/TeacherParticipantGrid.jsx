@@ -8,15 +8,47 @@ const ParticipantGrid = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  width: 80%;
+  padding-bottom: 80px;
+`;
+
+const ParticipantContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 280px;
 `;
 
 function TeacherParticipantGrid() {
   return (
     <ParticipantGrid>
-      <Participant name="한싸피" imgSrc="/mnt/data/image.png" isInstructor />
-      <Participant name="김싸피" imgSrc="/mnt/data/image.png" isHelp={true} />
-      <Participant name="전싸피" imgSrc="/mnt/data/image.png" isHighlighted />
+      <ParticipantContainer>
+        <Participant name="한싸피" imgSrc="/mnt/data/image.png" isInstructor />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="김싸피" imgSrc="/mnt/data/image.png" isHelp={true} />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="전싸피" imgSrc="/mnt/data/image.png" isHighlighted />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="한싸피" imgSrc="/mnt/data/image.png" isInstructor />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="김싸피" imgSrc="/mnt/data/image.png" isHelp={true} />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="전싸피" imgSrc="/mnt/data/image.png" isHighlighted />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="한싸피" imgSrc="/mnt/data/image.png" isInstructor />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="김싸피" imgSrc="/mnt/data/image.png" isHelp={true} />
+      </ParticipantContainer>
+      <ParticipantContainer>
+        <Participant name="전싸피" imgSrc="/mnt/data/image.png" isHighlighted />
+      </ParticipantContainer>
     </ParticipantGrid>
   );
 }

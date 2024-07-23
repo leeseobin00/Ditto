@@ -9,10 +9,9 @@ const ParticipantTile = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 240px;
+  width: 100%;
   aspect-ratio: 4 / 3;
   position: relative;
-  overflow: visible;
 
   &.active {
     border: 2px solid var(--GREEN);
@@ -65,7 +64,7 @@ const Menu = styled.div`
   border: 1px solid var(--MEETING_SECONDARY);
   border-radius: 4px;
   display: ${(props) => (props.open ? "block" : "none")};
-  z-index: 100;
+  z-index: 1;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 
   & > div {

@@ -3,11 +3,13 @@ import styled from "styled-components";
 import { IoClose } from "react-icons/io5";
 
 const WindowWrapper = styled.div`
-  position: absolute;
+  position: fixed; /* Footer를 기준으로 고정된 위치를 설정 */
   right: 24px;
-  top: calc(60px + 80px + 16px);
+  bottom: 76px; /* Footer의 높이(60px) + 약간의 간격(16px)을 고려 */
   width: 360px;
-  height: calc(100% - 60px - 80px - 16px - 60px);
+  height: calc(
+    100% - 60px - 80px - 16px - 60px
+  ); /* 전체 화면에서 Footer와 ChatWindow의 높이를 뺀 값 */
   background-color: #333;
   border-left: 2px solid var(--MEETING_SECONDARY);
   display: flex;

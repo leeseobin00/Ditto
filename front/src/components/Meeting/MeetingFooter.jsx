@@ -14,7 +14,8 @@ import ChatWindow from "./ChatWindow";
 import ContentWindow from "./ContentWindow";
 
 const Footer = styled.div`
-  position: sticky;
+  position: fixed; /* 화면의 고정 위치를 위해 fixed 사용 */
+  bottom: 0; /* 바닥에 고정 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -119,7 +120,7 @@ const TimerDisplay = styled.div`
   color: var(--SECONDARY);
 `;
 
-function MeetingFooter() {
+function MeetingFooter({ handleIsOpen }) {
   const summaries = [
     {
       title: "1단계. 향수 기본 구성요소 설명",
@@ -160,6 +161,11 @@ function MeetingFooter() {
   const handleChatWindow = () => {
     setIsChatWindow((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isChatWindow === true || isContentWindow === true) handleIsOpen(true);
+    else handleIsOpen(false);
+  }, [isChatWindow, isContentWindow]);
 
   const handleMicToggle = () => {
     setIsMicActive((prev) => !prev);
