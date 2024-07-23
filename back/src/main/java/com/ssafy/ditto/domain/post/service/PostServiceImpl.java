@@ -38,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
 import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
-import static com.ssafy.ditto.global.dto.ResponseMessage.*;
 
 @Component
 @Service
@@ -49,12 +48,11 @@ public class PostServiceImpl implements PostService {
     public final CategoryRepository categoryRepository;
     public final TagRepository tagRepository;
     public final UserRepository userRepository;
-    public final FileService fileService;
     public final FileRepository fileRepository;
 
     @Override
     @Transactional
-    public String writePost(PostRequest postReq) {
+    public int writePost(PostRequest postReq) {
         Board board = boardRepository.findById(postReq.getBoardId())
                 .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
         System.out.println(board);
@@ -79,12 +77,7 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(post);
 
-        try {
-            fileService.saveList(post.getPostId(), postReq.getFiles());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return postReq.getBoardId()+"번 게시판에 게시글 작성";
+        return post.getPostId();
     }
 
     @Override
@@ -194,23 +187,13 @@ public class PostServiceImpl implements PostService {
             postRepository.save(post);
         }
 
-        try {
-            fileService.saveList(postId, postReq.getFiles());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 수정";
+        return postReq.getBoardId()+"번 게시판에 "+postId+"번 게시글 수정";
     }
 
     @Override
     public String deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.delete(post);
-        try {
-            fileService.deleteList(postId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         return postId+"번 게시글 삭제";
     }

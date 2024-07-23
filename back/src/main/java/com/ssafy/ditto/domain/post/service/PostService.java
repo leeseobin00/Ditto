@@ -1,13 +1,15 @@
 package com.ssafy.ditto.domain.post.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.ssafy.ditto.domain.post.dto.PostRequest;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.post.dto.PostResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
-    String writePost(PostRequest postReq);
+    int writePost(PostRequest postReq);
     PostList searchPost(Map<String,String> map);
     PostList bestPost();
     PostList userPost(int userId, Map<String,String> map);

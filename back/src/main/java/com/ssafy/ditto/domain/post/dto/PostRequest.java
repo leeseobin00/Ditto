@@ -14,13 +14,10 @@ import java.util.List;
 @ToString
 public class PostRequest {
 
-    private Integer postId;
     private Integer userId;
     private Integer boardId;
     private Integer categoryId;
     private Integer tagId;
     private String title;
     private String content;
-
-    private List<MultipartFile> files;
 }
