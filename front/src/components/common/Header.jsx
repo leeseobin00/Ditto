@@ -130,7 +130,7 @@ const Overlay = styled.div`
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);  // 추가된 부분
-  const nickName = useSelector(state => state.auth.nickName);  // 추가된 부분
+  const nickname = useSelector(state => state.auth.nickname);  // 추가된 부분
 
   const handleOverlayClick = () => {
     setMenuOpen(false);
@@ -157,14 +157,16 @@ const Header = () => {
             <BsBell />
           </Icon>
           {isAuthenticated ? (
-            <Icon>MyPage</Icon> // 로그인된 경우 사용자 이름 표시
+            <Link to="/mypage">
+              <Icon>MyPage</Icon> // 로그인된 경우 사용자 이름 표시
+            </Link>
           ) : (
             <Link to="/signup">
               <Icon>회원가입</Icon>
             </Link>
           )}
           {isAuthenticated ? (
-            <Icon>{nickName}</Icon> // 로그인된 경우 사용자 이름 표시
+            <Icon>{nickname}</Icon> // 로그인된 경우 사용자 이름 표시
           ) : (
             <Link to="/login">
               <Icon>로그인</Icon>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { formatPhoneNumber } from '../../../utils/formatPhoneNumber';
 
 const StyledForm = styled.form`
   display: flex;
@@ -178,19 +179,6 @@ const Message = styled.div`
 
 const tags = ['향수', '향초', '비누', '뜨개질', '바느질', '가죽', '십자수', '키링', '모빌', '미니어처', '푸드'];
 
-const formatPhoneNumber = (value) => {
-  const cleaned = ('' + value).replace(/\D/g, '');
-  let match;
-  if (cleaned.startsWith('02')) {
-    match = cleaned.match(/^(02)(\d{3,4})(\d{4})$/);
-  } else {
-    match = cleaned.match(/^(01[016789])(\d{3,4})(\d{4})$/);
-  }
-  if (match) {
-    return `${match[1]}-${match[2]}-${match[3]}`;
-  }
-  return value;
-};
 
 const validateName = (name) => {
   const nameRegex = /^[가-힣a-zA-Z\s]+$/;

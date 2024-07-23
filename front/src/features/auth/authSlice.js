@@ -7,33 +7,33 @@ const authSlice = createSlice({
   initialState: {
     accessToken: localStorage.getItem("accessToken") || null,
     isAuthenticated: !!localStorage.getItem("accessToken"),
-    userId: localStorage.getItem("userId") || null,  // 사용자 ID 추가
-    nickName: localStorage.getItem("nickName") || null,  // 닉네임으로 변경
-    email: localStorage.getItem("email") || null,  // 사용자 이메일 추가
+    userId: localStorage.getItem("userId") || null,
+    nickname: localStorage.getItem("nickname") || null,
+    email: localStorage.getItem("email") || null,
   },
   reducers: {
     login: (state, action) => {
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
-      state.userId = action.payload.userId;  // 사용자 ID 설정
-      state.nickName = action.payload.nickName;  // 닉네임 설정
-      state.email = action.payload.email;  // 사용자 이메일 설정
+      state.userId = action.payload.userId;
+      state.nickname = action.payload.nickname;
+      state.email = action.payload.email;
       localStorage.setItem("accessToken", action.payload.accessToken);
-      localStorage.setItem("userId", action.payload.userId);  // 사용자 ID 저장
-      localStorage.setItem("nickName", action.payload.nickName);  // 닉네임 저장
-      localStorage.setItem("email", action.payload.email);  // 사용자 이메일 저장
+      localStorage.setItem("userId", action.payload.userId);
+      localStorage.setItem("nickname", action.payload.nickname);
+      localStorage.setItem("email", action.payload.email);
       Cookies.set("refreshToken", action.payload.refreshToken, { expires: 7, secure: true, sameSite: 'strict' });
     },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-      state.userId = null;  // 사용자 ID 초기화
-      state.nickName = null;  // 닉네임 초기화
-      state.email = null;  // 사용자 이메일 초기화
+      state.userId = null;
+      state.nickname = null;
+      state.email = null;
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userId");  // 사용자 ID 제거
-      localStorage.removeItem("nickName");  // 닉네임 제거
-      localStorage.removeItem("email");  // 사용자 이메일 제거
+      localStorage.removeItem("userId");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("email");
       Cookies.remove("refreshToken");
     },
     refresh: (state, action) => {
@@ -43,13 +43,13 @@ const authSlice = createSlice({
     sessionExpired: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-      state.userId = null;  // 사용자 ID 초기화
-      state.nickName = null;  // 닉네임 초기화
-      state.email = null;  // 사용자 이메일 초기화
+      state.userId = null;
+      state.nickname = null;
+      state.email = null;
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userId");  // 사용자 ID 제거
-      localStorage.removeItem("nickName");  // 닉네임 제거
-      localStorage.removeItem("email");  // 사용자 이메일 제거
+      localStorage.removeItem("userId");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("email");
     },
   },
 });
