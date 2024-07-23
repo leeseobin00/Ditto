@@ -339,6 +339,7 @@ const SignupForm = () => {
     try {
       const response = await axios.post('https://localhost:8080/users/signup/auth', {
         code: formData.verificationCode,
+        email: formData.email,
       });
       if (response.status === 200) {
         setIsVerified(true);
@@ -399,30 +400,27 @@ const SignupForm = () => {
       alert("모든 약관에 동의해주세요.");
       return;
     }
-
-    if (formData.role === 3) {
-      // 강사일 경우, 강사 추가 정보 입력 단계로 이동
-      setIsInstructorStep(true);
-    } else if (formData.role ===2) {
-      // 일반 사용자일 경우, 서버에 데이터 전송
-      try {
-        const response = await axios.post('https://localhost:8080/users/signup', {
-          email: formData.email,
-          password: formData.password,
-          nickname: formData.nickname,
-          role: formData.role,
-          agreeTOS: formData.agreeTOS,
-          agreePICU: formData.agreePICU,
-        });
-        console.log(response.data);
-        alert("회원가입 성공!");
-        navigate('/'); // 홈화면으로 이동
-      } catch (error) {
-        console.error(error);
-        alert("회원가입 중 오류가 발생했습니다.");
-      }
+  
+    const userData = {
+      email: formData.email,
+      password: formData.password,
+      nickname: formData.nickname,
+      role: formData.role,
+      agreeTOS: formData.agreeTOS,
+      agreePICU: formData.agreePICU,
+    };
+  
+    try {
+      const response = await axios.post('https://localhost:8080/users/signup', userData);
+      console.log(response.data);
+      alert("회원가입 성공!");
+      navigate('/'); // 홈화면으로 이동
+    } catch (error) {
+      console.error(error);
+      alert("회원가입 중 오류가 발생했습니다.");
     }
   };
+  
 
   const openTermsModal = async () => {
     try {
@@ -470,7 +468,7 @@ const SignupForm = () => {
 
   return (
     <FormContainer>
-      {isInstructorStep ? (
+      {!isInstructorStep ? ( // isInstructorStep에 !를 붙이면 일반 회원가입 페이지 안붙이면 강사 회원가입 페이지 확인가능
         <StyledForm onSubmit={handleSubmit}>
           <FormTitle>회원가입</FormTitle>
           <SignDivider />

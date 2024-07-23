@@ -9,7 +9,7 @@ const NewClassContainer = styled.div`
   padding: 0 20px;
 `;
 
-const NewClassTitle = styled.div`
+const Title = styled.div`
   font-size: 25px;
   font-weight: 700;
 `;
@@ -17,7 +17,7 @@ const NewClassTitle = styled.div`
 function NewClass() {
   return (
     <NewClassContainer>
-      <NewClassTitle>New Class</NewClassTitle>
+      <Title>New Class</Title>
       <NewClassList />
     </NewClassContainer>
   );

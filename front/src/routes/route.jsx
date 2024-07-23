@@ -2,8 +2,13 @@ import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
+import ClassDetailPage from "../pages/Class/ClassDetailPage";
+import ClassAddPage from "../pages/Class/ClassAddPage";
 import MeetingPage from "../pages/Meeting/MeetingPage";
+
 import LoginPage from "../pages/LoginPage";
+import KakaoCallback from "../pages/KakaoCallback";
+import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import BoardListPage from "../pages/Board/BoardListPage";
 import BoardDetailPage from "../pages/Board/BoardDetailPage";
@@ -16,9 +21,14 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/class/:classCategory" element={<ClassListPage />} />
+      <Route path="/class/:classId" element={<ClassDetailPage />} />
+      <Route path="/class" element={<ClassDetailPage />} />
+      <Route path="/class/add" element={<ClassAddPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/callback" element={<KakaoCallback />} />
+      <Route path="/mypage" element={<MyPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route
         path="/board/:boardCategory/:postId"

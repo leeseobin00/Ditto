@@ -1,7 +1,6 @@
 import { styled } from "styled-components";
 
-import TabBar from "../../components/class/TabBar";
-import ClassList from "../../components/class/ClassList/ClassList";
+import TabBar from "../../components/Class/ClassList/TabBar";
 
 const ClassPageContainer = styled.div`
   display: flex;

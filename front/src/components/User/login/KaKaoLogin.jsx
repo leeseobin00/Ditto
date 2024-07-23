@@ -13,8 +13,8 @@ const StyledImg = styled.img`
 `;
 
 const KakaoLogin = () => {
-  const CLIENT_ID = '6e58cec5e631373e4c3d4724ce2c0d6c';
-  const REDIRECT_URI = 'http://localhost:8080/callback';
+  const CLIENT_ID = import.meta.env.VITE_REACT_APP_REST_API_KEY; //.env 파일에서 가져올것
+  const REDIRECT_URI = import.meta.env.VITE_REACT_APP_REDIRECT_URL; // .env 파일에서 가져올것
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
 
