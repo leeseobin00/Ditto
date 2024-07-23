@@ -53,12 +53,12 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
 
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String userEmail) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(userEmail) // 이메일
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, accessSecret)
@@ -80,9 +80,9 @@ public class JwtProvider {
     public JwtResponse refreshAccessToken(String refreshToken) {
         validateToken(refreshToken, true);
         Claims claims = parseClaims(refreshToken, true);
-        String userId = claims.getSubject();
+        String userEmail = claims.getSubject();
 
-        String newAccessToken = createAccessToken(userId);
+        String newAccessToken = createAccessToken(userEmail);
         return new JwtResponse(newAccessToken, refreshToken);
     }
 }

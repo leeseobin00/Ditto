@@ -6,9 +6,14 @@ import com.ssafy.ditto.domain.user.domain.Form;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.domain.UserTag;
 import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
+import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
 import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
 import com.ssafy.ditto.domain.user.repository.*;
+import com.ssafy.ditto.global.jwt.dto.JwtResponse;
+import com.ssafy.ditto.global.jwt.JwtProvider;
+import com.ssafy.ditto.global.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
+    private final JwtProvider jwtProvider;
 
     @Override
     public void signup(UserSignUpRequest userSignUpRequest) {
@@ -37,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
+                .fileId(null)
                 .build();
 
         user = userRepository.save(user);
@@ -67,6 +74,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
+                .fileId(null)
                 .build();
 
         user = userRepository.save(user);
@@ -96,6 +104,33 @@ public class UserServiceImpl implements UserService {
         }
 
 
+    }
+
+    @Transactional
+    @Override
+    public JwtResponse login(UserLoginRequest userLoginRequest) {
+        User user;
+        try {
+            user = userRepository.findByEmail(userLoginRequest.getEmail());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())){
+            return null;
+        }
+
+        // 토큰에 유저 이메일만 있음
+        String accessToken = jwtProvider.createAccessToken(user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
+
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        return JwtResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
 

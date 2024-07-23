@@ -26,8 +26,10 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(404, "CATEGORY_NOT_FOUND", "카테고리를 찾을 수 없습니다."),
     TAG_NOT_FOUND(404, "TAG_NOT_FOUND", "태그를 찾을 수 없습니다."),
     CLASS_NOT_FOUND(404, "CLASS_NOT_FOUND", "클래스를 찾을 수 없습니다."),
+    LECTURE_NOT_FOUND(404, "LECTURE_NOT_FOUND", "차시를 찾을 수 없습니다."),
     KIT_NOT_FOUND(404, "KIT_NOT_FOUND", "키트를 찾을 수 없습니다."),
     STEP_NOT_FOUND(404, "STEP_NOT_FOUND", "단계를 찾을 수 없습니다."),
+    
 
     // 중복 관련 오류
     DUPLICATE_RESOURCE(409, "DUPLICATE_RESOURCE", "중복된 리소스가 있습니다."),
