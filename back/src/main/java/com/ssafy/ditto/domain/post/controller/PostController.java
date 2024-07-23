@@ -59,7 +59,7 @@ public class PostController {
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),post);
     }
 
-    @PatchMapping("/{postId}")
+    @PatchMapping(value = "/{postId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> modifyPost(
             @PathVariable("postId") int postId,
             @RequestPart(value = "post") @Valid PostRequest postReq,
@@ -67,7 +67,7 @@ public class PostController {
         String response = postService.modifyPost(postId, postReq);
         if(files != null) {
             try {
-                fileService.saveList(postId, files);
+                fileService.updateList(postId, files);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
