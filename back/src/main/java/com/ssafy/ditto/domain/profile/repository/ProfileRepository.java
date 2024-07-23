@@ -13,18 +13,18 @@ import java.util.List;
 @Repository
 public interface ProfileRepository extends JpaRepository<User,Integer> {
 
-//    @Query("SELECT u FROM User u " +
-//            "JOIN UserTag ut ON u.userId = ut.userId " +
-//            "JOIN Tag t ON ut.tagId = t.tagId " +
-//            "WHERE (:categoryId IS NULL OR t.categoryId.categoryId = :categoryId) " +
-//            "AND (:tagId IS NULL OR t.tagId = :tagId) " +
-//            "AND (u.roleId.id = :role) " +
-//            "AND (:keyword IS NULL OR u.nickname LIKE %:keyword%) " +
-//            "AND u.isDeleted = false")
-//    List<User> findUsers(@Param("categoryId") Integer categoryId,
-//                         @Param("tagId") Integer tagId,
-//                         @Param("role") Integer role,
-//                         @Param("keyword") String keyword);
+    @Query("SELECT u FROM User u " +
+            "JOIN UserTag ut ON u.userId = ut.userId.userId " +
+            "JOIN Tag t ON ut.tagId.tagId = t.tagId " +
+            "WHERE (:categoryId IS NULL OR t.categoryId.categoryId = :categoryId) " +
+            "AND (:tagId IS NULL OR t.tagId = :tagId) " +
+            "AND (u.roleId.roleId = :role) " +
+            "AND (:keyword IS NULL OR u.nickname LIKE %:keyword%) " +
+            "AND u.isDeleted = false")
+    List<User> findUsers(@Param("categoryId") Integer categoryId,
+                         @Param("tagId") Integer tagId,
+                         @Param("role") Integer role,
+                         @Param("keyword") String keyword);
 
 
     @Query("SELECT SUM(c.studentSum) FROM DClass c WHERE c.userId = :userId")

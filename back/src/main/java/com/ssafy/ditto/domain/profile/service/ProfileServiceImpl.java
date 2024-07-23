@@ -52,41 +52,40 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileList searchUser(Map<String, String> map) {
-//        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
-//        int sizePage = Integer.parseInt(map.getOrDefault("size", "5"));
-//        int start = (curPage - 1) * sizePage;
-//
-//        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
-//        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
-//        Integer role = map.get("role") != null ? Integer.parseInt(map.get("role")) : null;
-//        String keyword = map.get("keyword");
-//
-//        List<User> users = profileRepository.findUsers(categoryId, tagId, role, keyword);
-//        int userCount = users.size();
-//        int pageCount = (userCount - 1) / sizePage + 1;
-//
-//        List<User> paginatedUsers;
-//        if (start >= users.size()) {
-//            paginatedUsers = Collections.emptyList();
-//        } else {
-//            int end = Math.min(start + sizePage, users.size());
-//            paginatedUsers = users.subList(start, end);
-//        }
-//
-//        List<ProfileResponse> profileResponses = paginatedUsers.stream()
-//                .map(user -> {
-//                    List<Tag> tags = userTagRepository.findByUserId(user.getUserId());
-//                    return ProfileResponse.of(user, tags);
-//                })
-//                .collect(Collectors.toList());
-//
-//        ProfileList profileList = new ProfileList();
-//        profileList.setProfiles(profileResponses);
-//        profileList.setCurrentPage(curPage);
-//        profileList.setTotalPageCount(pageCount);
-//
-//        return profileList;
-        return null;
+        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
+        int sizePage = Integer.parseInt(map.getOrDefault("size", "5"));
+        int start = (curPage - 1) * sizePage;
+
+        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
+        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
+        Integer role = map.get("role") != null ? Integer.parseInt(map.get("role")) : null;
+        String keyword = map.get("keyword");
+
+        List<User> users = profileRepository.findUsers(categoryId, tagId, role, keyword);
+        int userCount = users.size();
+        int pageCount = (userCount - 1) / sizePage + 1;
+
+        List<User> paginatedUsers;
+        if (start >= users.size()) {
+            paginatedUsers = Collections.emptyList();
+        } else {
+            int end = Math.min(start + sizePage, users.size());
+            paginatedUsers = users.subList(start, end);
+        }
+
+        List<ProfileResponse> profileResponses = paginatedUsers.stream()
+                .map(user -> {
+                    List<Tag> tags = userTagRepository.findByUserId(user.getUserId());
+                    return ProfileResponse.of(user, tags);
+                })
+                .collect(Collectors.toList());
+
+        ProfileList profileList = new ProfileList();
+        profileList.setProfiles(profileResponses);
+        profileList.setCurrentPage(curPage);
+        profileList.setTotalPageCount(pageCount);
+
+        return profileList;
     }
 
     @Override
