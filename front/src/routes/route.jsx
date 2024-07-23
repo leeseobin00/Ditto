@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import ClassListPage from "../pages/Class/ClassListPage";
 import ClassDetailPage from "../pages/Class/ClassDetailPage";
-import MeetingPage from "../pages/MeetingPage";
+import MeetingPage from "../pages/Meeting/MeetingPage";
 import LoginPage from "../pages/User/LoginPage";
 import KakaoCallback from "../pages/User/KakaoCallback";
 import MyPage from "../pages/Mypage/MyPage";
@@ -14,6 +14,7 @@ import ProfileDetailPage from "../pages/Profile/ProfileDetailPage";
 import ProfileSearchPage from "../pages/Profile/ProfileSearchPage";
 import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
 import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage"; // 추가된 라우트
+import ClassAddPage from "../pages/Class/ClassAddPage";
 
 const AppRoutes = () => {
   return (

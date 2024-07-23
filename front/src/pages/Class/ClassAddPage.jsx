@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-import ClassThumbnailAdd from "../../components/Class/ClassAdd/ClassThumbnailAdd";
+import ClassThumbnailAdd from "../../components/class/ClassAdd/ClassThumbnailAdd";
 
 const ClassAddPageContainer = styled.div`
   display: flex;
