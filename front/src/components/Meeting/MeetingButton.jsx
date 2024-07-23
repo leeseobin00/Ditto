@@ -1,6 +1,5 @@
 import { styled, css } from "styled-components";
 
-
 const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
@@ -53,10 +52,12 @@ const Button = styled.button`
   }
 `;
 
-function MeetingButton({size = "md", label, onClick}){
-    return <Button size={size} onClick={onClick}>
-        {label}
+function MeetingButton({ size = "md", label, onClick }) {
+  return (
+    <Button size={size} onClick={onClick}>
+      {label}
     </Button>
+  );
 }
 
 export default MeetingButton;

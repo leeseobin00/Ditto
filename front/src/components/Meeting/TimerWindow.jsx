@@ -1,13 +1,15 @@
 import { styled } from "styled-components";
 
-const TimerSettingWrapper = styled.div`
+import MeetingButton from "../../components/Meeting/MeetingButton";
+
+const TimerWindowWrapper = styled.div`
   position: absolute;
   left: 0px;
-  bottom: 48px;  
+  bottom: 48px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--MEETING_BAR);
+  background-color: var(--MEETING_SECONDARY);
   padding: 16px;
   border-radius: 8px;
 `;
@@ -42,31 +44,40 @@ const TimeButtons = styled.div`
   gap: 16px;
 `;
 
-
-function TimerSetting({title, handleMinute, handleSecond, handleStart, handleCancel}){
-    reuturn (<TimerSettingWrapper>
-        <TimerTitle>{title}</TimerTitle>
-        <TimeInputs>
+function TimerSetting({
+  title,
+  inputMinute,
+  handleMinute,
+  inputSecond,
+  handleSecond,
+  handleStart,
+  handleClose,
+}) {
+  return (
+    <TimerWindowWrapper>
+      <TimerTitle>{title}</TimerTitle>
+      <TimeInputs>
         <TimeInput
           type="number"
-          value={inputMinutes}
+          value={inputMinute}
           onChange={(e) => handleMinute(Number(e.target.value))}
           min="0"
         />
         :
         <TimeInput
           type="number"
-          value={inputSeconds}
+          value={inputSecond}
           onChange={(e) => handleSecond(Number(e.target.value))}
           min="0"
           max="59"
         />
-        </TimeInputs>
-        <TimeButtons>
-          <MeetingButton label="시작" onClick={handleStart} />
-          <MeetingButton label="취소" onClick={handleCancel} />
-        </TimeButtons>
-      </TimerSettingWrapper>);
+      </TimeInputs>
+      <TimeButtons>
+        <MeetingButton label="시작" onClick={handleStart} />
+        <MeetingButton label="취소" onClick={handleClose} />
+      </TimeButtons>
+    </TimerWindowWrapper>
+  );
 }
 
 export default TimerSetting;

@@ -1,14 +1,14 @@
 import { styled } from "styled-components";
 
-import { BiLogOut } from 'react-icons/bi';
+import { BiLogOut } from "react-icons/bi";
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;  
+  align-items: center;
   width: 100%;
   height: 60px;
-  background-color: #444;
+  background-color: var(--MEETING_SECONDARY);
   padding: 24px;
   position: sticky;
   top: 0;
@@ -32,8 +32,7 @@ const LiveIndicator = styled.p`
   font-size: 12px;
 `;
 
-const IconWrapper = styled.div`
-`;
+const IconWrapper = styled.div``;
 
 const CustomOutIcon = styled(BiLogOut)`
   font-size: 24px;
@@ -42,17 +41,18 @@ const CustomOutIcon = styled(BiLogOut)`
   cursor: pointer;
 `;
 
-
-function MeetingHeader({title}){
-    return (<Header>
-        <TitleWrapper>
-          {title}
-          <LiveIndicator>● LIVE</LiveIndicator>
-        </TitleWrapper>
-        <IconWrapper>
-          <CustomOutIcon />
-        </IconWrapper>
-      </Header>);
+function MeetingHeader({ title }) {
+  return (
+    <Header>
+      <TitleWrapper>
+        {title}
+        <LiveIndicator>● LIVE</LiveIndicator>
+      </TitleWrapper>
+      <IconWrapper>
+        <CustomOutIcon />
+      </IconWrapper>
+    </Header>
+  );
 }
 
 export default MeetingHeader;
