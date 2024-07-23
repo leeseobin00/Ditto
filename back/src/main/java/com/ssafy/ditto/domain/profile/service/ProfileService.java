@@ -18,7 +18,7 @@ public interface ProfileService {
     String modifyIntro(int userId, String intro);
     String modifyTag(int userId, List<String> tags);
 
-    PostList userPost(int userId);
+    PostList userPost(int userId, Map<String,String> map);
 //    List<DClass> userClass(int userId);
 //    List<Review> userReview(int userId);
 

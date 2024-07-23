@@ -1,12 +1,16 @@
 package com.ssafy.ditto.domain.profile.service;
 
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.exception.FileErrorCode;
+import com.ssafy.ditto.domain.file.exception.FileException;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
+import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
 import com.ssafy.ditto.domain.profile.repository.ProfileRepository;
@@ -26,11 +30,14 @@ import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
+
 @Component
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
     public final ProfileRepository profileRepository;
+    public final PostService postService;
     public final PostRepository postRepository;
     public final TagRepository tagRepository;
     public final UserTagRepository userTagRepository;
@@ -85,12 +92,13 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId)
                 .orElse(null);
 
-        if (user.getFileId() != null) {
-            fileService.deleteFile(user.getFileId());
+        if (user.getFile() != null) {
+            fileService.deleteFile(user.getFile().getFileId());
         }
 
         int fileId = fileService.saveFile(requestFile);
-        user.setFileId(fileId);
+        File file = fileRepository.findById(fileId).orElseThrow((() -> new FileException(FILE_NOT_EXIST));
+        user.setFile(file);
         profileRepository.save(user);
         return "";
     }
@@ -101,7 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElse(null);
 
         if (user.getFileId() != null) {
-            fileService.deleteFile(user.getFileId());
+            fileService.deleteFile(user.getFileId().getFileId());
             user.setFileId(null);
             profileRepository.save(user);
             return "Image deleted successfully";
@@ -115,7 +123,7 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId)
                 .orElse(null);
 
-//        user.setIntro(intro);
+        user.setIntro(intro);
         profileRepository.save(user);
         return "Intro modified successfully";
     }
@@ -136,8 +144,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public PostList userPost(int userId) {
-        return null;
+    public PostList userPost(int userId, Map<String,String> map) {
+        return postService.userPost(userId, map);
     }
 
     @Override
