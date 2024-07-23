@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 
 import RoundButton from "../../common/RoundButton";
 import {
-  LIVING_TAGS,
+  LIVING_OPTIONS,
   FABRIC_OPTIONS,
   FOOD_OPTIONS,
   ART_OPTIONS,
@@ -52,7 +52,7 @@ function ModifyTags({ onClose }) {
   useEffect(() => {
     // 필요한 태그들을 불러옵니다.
     const allTags = [
-      ...LIVING_TAGS,
+      ...LIVING_OPTIONS,
       ...FABRIC_OPTIONS,
       ...FOOD_OPTIONS,
       ...ART_OPTIONS,
@@ -66,15 +66,15 @@ function ModifyTags({ onClose }) {
       if (prevSelectedTags.includes(value)) {
         setTags((prevTags) =>
           prevTags.map((tag) =>
-            tag.value === value ? { ...tag, selected: false } : tag,
-          ),
+            tag.value === value ? { ...tag, selected: false } : tag
+          )
         );
         return prevSelectedTags.filter((tag) => tag !== value);
       } else if (prevSelectedTags.length < 3) {
         setTags((prevTags) =>
           prevTags.map((tag) =>
-            tag.value === value ? { ...tag, selected: true } : tag,
-          ),
+            tag.value === value ? { ...tag, selected: true } : tag
+          )
         );
         return [...prevSelectedTags, value];
       }

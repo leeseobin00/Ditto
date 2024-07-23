@@ -11,7 +11,7 @@ export const CATEGORY_OPTIONS = [
   { value: 4, label: "아트" },
 ];
 
-export const LIVING_TAGS = [
+export const LIVING_OPTIONS = [
   { value: 1, label: "비누" },
   { value: 2, label: "향수" },
   { value: 3, label: "캔들" },
@@ -54,13 +54,13 @@ export function getTagsForCategory(category) {
   switch (category) {
     case 0:
       return [
-        ...LIVING_TAGS,
+        ...LIVING_OPTIONS,
         ...FABRIC_OPTIONS,
         ...ART_OPTIONS,
         ...FOOD_OPTIONS,
       ];
     case 1:
-      return LIVING_TAGS;
+      return LIVING_OPTIONS;
     case 2:
       return FABRIC_OPTIONS;
     case 3:
