@@ -2,8 +2,10 @@ package com.ssafy.ditto.domain.file.service;
 
 import com.ssafy.ditto.domain.file.FileStore;
 import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.domain.FilePost;
 import com.ssafy.ditto.domain.file.dto.UploadFile;
 import com.ssafy.ditto.domain.file.exception.FileException;
+import com.ssafy.ditto.domain.file.repository.FilePostRepository;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.exception.PostException;
@@ -25,9 +27,9 @@ import static com.ssafy.ditto.domain.post.exception.PostErrorCode.POST_NOT_EXIST
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService{
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final FileRepository fileRepository;
+    private final FilePostRepository filePostRepository;
     private final FileStore fileStore;
 
     // 1장 저장
@@ -38,6 +40,7 @@ public class FileServiceImpl implements FileService{
         file.setUploadFileName(uploadFile.getUploadFileName());
         file.setStoreFileName(uploadFile.getStoreFileName());
         file.setFileSize(uploadFile.getFileSize());
+        file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
 
         fileRepository.save(file);
         // 저장된 fildId return 필요
@@ -56,9 +59,19 @@ public class FileServiceImpl implements FileService{
             file.setUploadFileName(uploadFile.getUploadFileName());
             file.setStoreFileName(uploadFile.getStoreFileName());
             file.setFileSize(uploadFile.getFileSize());
+            file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
             fileList.add(file);
         }
         fileRepository.saveAll(fileList);
+
+        List<FilePost> filePosts = new ArrayList<>();
+        for (File file : fileList) {
+            FilePost filePost = new FilePost();
+            filePost.setFile(file);
+            filePost.setPost(post);
+            filePosts.add(filePost);
+        }
+        filePostRepository.saveAll(filePosts);
     }
 
     @Override

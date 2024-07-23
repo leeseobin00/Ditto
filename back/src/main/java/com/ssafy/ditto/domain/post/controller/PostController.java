@@ -1,21 +1,21 @@
 package com.ssafy.ditto.domain.post.controller;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import com.ssafy.ditto.domain.post.domain.Post;
+import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
 import com.ssafy.ditto.domain.post.dto.PostResponse;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import static com.ssafy.ditto.global.error.ErrorCode.INTERNAL_SERVER_ERROR;
 import static com.ssafy.ditto.global.dto.ResponseMessage.*;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,12 +24,21 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
+    private final FileService fileService;
 
-    @PostMapping
-    public ResponseDto<String> writePost(@RequestBody PostRequest postReq){
-        String response = postService.writePost(postReq);
-        return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(),response);
-
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseDto<String> writePost(
+            @RequestPart(value = "post") @Valid PostRequest postReq,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files){
+        int postId = postService.writePost(postReq);
+        if(files != null) {
+            try {
+                fileService.saveList(postId, files);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(),"게시물 등록 성공");
     }
 
     @GetMapping
@@ -50,16 +59,30 @@ public class PostController {
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),post);
     }
 
-    @PatchMapping("/{postId}")
-    public ResponseDto<String> modifyPost(@PathVariable("postId") int postId,@RequestBody PostRequest postReq){
-        postReq.setPostId(postId);
+    @PatchMapping(value = "/{postId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseDto<String> modifyPost(
+            @PathVariable("postId") int postId,
+            @RequestPart(value = "post") @Valid PostRequest postReq,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files){
         String response = postService.modifyPost(postId, postReq);
+        if(files != null) {
+            try {
+                fileService.updateList(postId, files);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(),response);
     }
 
     @DeleteMapping("/{postId}")
     public ResponseDto<String> deletePost(@PathVariable("postId") int postId){
         String response = postService.deletePost(postId);
+        try {
+            fileService.deleteList(postId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(),response);
     }
 

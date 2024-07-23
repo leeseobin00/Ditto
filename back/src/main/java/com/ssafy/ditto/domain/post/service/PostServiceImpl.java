@@ -1,10 +1,17 @@
 package com.ssafy.ditto.domain.post.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import com.ssafy.ditto.domain.category.domain.Category;
+import com.ssafy.ditto.domain.category.exception.CategoryNotFoundException;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.dto.FileResponse;
+import com.ssafy.ditto.domain.file.dto.UploadFile;
+import com.ssafy.ditto.domain.file.repository.FileRepository;
+import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.domain.post.domain.Board;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
@@ -14,9 +21,12 @@ import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
+import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
+import com.ssafy.ditto.global.error.ErrorCode;
+import com.ssafy.ditto.global.error.ServiceException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.ditto.domain.post.dto.PostList;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
 import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
-import static com.ssafy.ditto.global.dto.ResponseMessage.*;
 
 @Component
 @Service
@@ -38,19 +48,20 @@ public class PostServiceImpl implements PostService {
     public final CategoryRepository categoryRepository;
     public final TagRepository tagRepository;
     public final UserRepository userRepository;
+    public final FileRepository fileRepository;
 
     @Override
     @Transactional
-    public String writePost(PostRequest postReq) {
+    public int writePost(PostRequest postReq) {
         Board board = boardRepository.findById(postReq.getBoardId())
                 .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
         System.out.println(board);
         Category category = categoryRepository.findById(postReq.getCategoryId())
-                .orElse(null);
+                .orElseThrow(CategoryNotFoundException::new);
         Tag tag = tagRepository.findById(postReq.getCategoryId())
-                .orElse(null);
+                .orElseThrow(TagNotFoundException::new);
         User user = userRepository.findById(postReq.getUserId())
-                .orElse(null);
+                .orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
 
         Post post = new Post();
         post.setTitle(postReq.getTitle());
@@ -65,11 +76,8 @@ public class PostServiceImpl implements PostService {
         post.setCommentCount(0);
 
         postRepository.save(post);
-//        List<File> files = boardDto.getFileInfos();
-//        if (fileInfos != null && !fileInfos.isEmpty()) {
-//            boardMapper.registerFile(boardDto);
-//        }
-        return postReq.getBoardId()+"번 게시판에 게시글 작성";
+
+        return post.getPostId();
     }
 
     @Override
@@ -87,7 +95,7 @@ public class PostServiceImpl implements PostService {
         int postCount = postRepository.getPostCount(boardId, categoryId, tagId);
         int pageCount = (postCount - 1) / sizePage + 1;
 
-        // Sort the list
+        // Sort
         switch (sortBy) {
             case "likeCount":
                 list.sort(Comparator.comparing(Post::getLikeCount).reversed());
@@ -104,7 +112,7 @@ public class PostServiceImpl implements PostService {
                 break;
         }
 
-        // Paginate the list
+        // Pagination
         List<Post> paginatedList;
         if (start >= list.size()) {
             paginatedList = Collections.emptyList();
@@ -162,8 +170,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        List<File> files = fileRepository.findByPostId(postId);
         postRepository.addView(postId);
-        return PostResponse.of(post);
+
+        PostResponse postResp = PostResponse.of(post);
+        postResp.setFiles(files);
+        return postResp;
     }
 
     @Override
@@ -174,13 +186,15 @@ public class PostServiceImpl implements PostService {
             post.setContent(postReq.getContent());
             postRepository.save(post);
         }
-        return postReq.getBoardId()+"번 게시판에 "+postReq.getPostId()+"번 게시글 수정";
+
+        return postReq.getBoardId()+"번 게시판에 "+postId+"번 게시글 수정";
     }
 
     @Override
     public String deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         postRepository.delete(post);
+
         return postId+"번 게시글 삭제";
     }
 
