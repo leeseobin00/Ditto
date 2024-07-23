@@ -1,14 +1,18 @@
 package com.ssafy.ditto.domain.user.controller;
 
+import com.ssafy.ditto.domain.user.dto.EmailCodeRequest;
 import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
 import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
 import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
+import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import com.ssafy.ditto.global.jwt.dto.JwtResponse;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     // signup_001
     @PostMapping("/signup")
@@ -38,8 +43,39 @@ public class UserController {
         return ResponseDto.of(201, "강사 회원 가입 성공");
     }
 
+    //signup-004
+    @PostMapping("signup/email")
+    public ResponseDto<Void> mailSend(@RequestBody String email) throws MessagingException, NoSuchAlgorithmException {
+        if (userService.emailDuplicateCheck(email)){
+            return ResponseDto.of(409, "해당 이메일을 사용하는 계정이 이미 존재합니다.");
+        }
+        emailService.sendEmail(email);
+        return ResponseDto.of(201, "인증번호를 발송했습니다.");
+    }
+
+    //signup-005
+    @PostMapping("signup/auth")
+    public ResponseDto<Void> checkCode(@RequestBody EmailCodeRequest emailCodeRequest){
+        if(emailService.checkCode(emailCodeRequest)){
+            return ResponseDto.of(201, "이메일 인증에 성공했습니다.");
+        } else {
+            return ResponseDto.of(409, "코드가 일치하지 않습니다.");
+        }
+    }
+
+    //signup-006
+    @GetMapping("signup/nickname/{nickname}")
+    public ResponseDto<Void> nickNameDuplicateCheck(@PathVariable("nickname") String nickname){
+        if (userService.nickNameDuplicateCheck(nickname)){
+            return ResponseDto.of(409, "이미 사용중인 닉네임입니다.");
+        } else {
+            return ResponseDto.of(201, "사용 가능한 닉네임입니다.");
+        }
+    }
+
+
     //login_001
-    //jwt에 있는 유저 정보 : 이메일, 닉네임, 프로필사진(미구현)
+    //jwt에 있는 유저 정보 : 이메일
     @PostMapping("/login")
     public ResponseDto<JwtResponse> login(@RequestBody UserLoginRequest userLoginRequest){
         JwtResponse jwtResponse = userService.login(userLoginRequest);

@@ -42,7 +42,8 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(405, "METHOD_NOT_ALLOWED", "허용되지 않은 HTTP 메서드입니다."),
     UNSUPPORTED_MEDIA_TYPE(415, "UNSUPPORTED_MEDIA_TYPE", "지원되지 않는 미디어 타입입니다."),
     TOO_MANY_REQUESTS(429, "TOO_MANY_REQUESTS", "요청이 너무 많습니다."),
-    SERVICE_UNAVAILABLE(503, "SERVICE_UNAVAILABLE", "서비스를 사용할 수 없습니다.");
+    SERVICE_UNAVAILABLE(503, "SERVICE_UNAVAILABLE", "서비스를 사용할 수 없습니다."),
+    EMAIL_CODE_NOTEXIST(401, "EMAIL_CODE_NOTEXIST", "이메일에 해당하는 인증번호가 존재하지 않습니다.");
 
     private final int httpStatus;
     private final String code;

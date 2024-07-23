@@ -10,6 +10,7 @@ import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
+import com.ssafy.ditto.domain.profile.repository.LikeUserRepository;
 import com.ssafy.ditto.domain.profile.repository.ProfileRepository;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
@@ -39,6 +40,7 @@ import static com.ssafy.ditto.global.error.ErrorCode.*;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
     public final ProfileRepository profileRepository;
+    public final LikeUserRepository likeUserRepository;
     public final PostService postService;
     public final PostRepository postRepository;
     public final TagRepository tagRepository;
@@ -73,7 +75,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
                 .map(user -> {
-                    List<Tag> tags = userTagRepository.findTagsByUserId(user.getUserId());
+                    List<Tag> tags = userTagRepository.findByUserId(user.getUserId());
                     return ProfileResponse.of(user, tags);
                 })
                 .collect(Collectors.toList());
@@ -91,7 +93,7 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Tag> tags = tagRepository.findByUserId(userId);
+        List<Tag> tags = userTagRepository.findByUserId(userId);
 
         ProfileResponse profileResponse = new ProfileResponse();
         profileResponse.setUserId(user.getUserId());
@@ -100,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileResponse.setUploadFileName(user.getFileId().getUploadFileName());
         profileResponse.setFileUrl(user.getFileId().getFileUrl());
 
-        int likeCount = profileRepository.countLikesByUserId(userId);
+        int likeCount = likeUserRepository.countLikesByUserId(userId);
         profileResponse.setLikeCount(likeCount);
 
         Integer studentSum = profileRepository.getTotalStudentSumByUserId(userId);
