@@ -4,6 +4,9 @@ import Header from "./Header";
 
 const LayoutContainer = styled.div`
   max-width: 1240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin: 0 auto;
 `;
 

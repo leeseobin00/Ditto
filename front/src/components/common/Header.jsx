@@ -176,7 +176,7 @@ const Header = () => {
         <Link to="/">
           <MenuItem>홈</MenuItem>
         </Link>
-        <Link to="/">
+        <Link to="/class">
           <MenuItem>카테고리</MenuItem>
         </Link>
         <Link to="/meeting">

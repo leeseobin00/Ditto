@@ -45,6 +45,13 @@ const CustomCloseIcon = styled(MdClose)`
     color: var(--SECONDARY_DARK); // 호버시 색상
   }
 `;
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+`;
 
 // 사용 예제
 const Modal = ({ onClose, children }) => {
@@ -52,7 +59,7 @@ const Modal = ({ onClose, children }) => {
     <Overlay onClick={onClose}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <CustomCloseIcon onClick={onClose} />
-        {children}
+        <ModalContent>{children}</ModalContent>
       </ModalContainer>
     </Overlay>
   );
