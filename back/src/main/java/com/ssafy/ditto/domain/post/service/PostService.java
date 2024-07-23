@@ -10,6 +10,7 @@ public interface PostService {
     String writePost(PostRequest postReq);
     PostList searchPost(Map<String,String> map);
     PostList bestPost();
+    PostList userPost(int userId, Map<String,String> map);
     PostResponse getPost(int postId);
     String modifyPost(int postId, PostRequest postReq);
     String deletePost(int postId);

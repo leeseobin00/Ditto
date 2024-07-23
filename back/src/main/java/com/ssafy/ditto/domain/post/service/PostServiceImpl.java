@@ -132,21 +132,32 @@ public class PostServiceImpl implements PostService {
         return postList;
     }
 
-//    @Override
-//    public PostList userPost(Map<String, String> map) throws Exception {
-//        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
-//        int sizePage = Integer.parseInt(map.getOrDefault("size", "10"));
-//        int start = (curPage - 1) * sizePage;
-//
-//        int userId = Integer.parseInt(map.get("userId"));
-//        List<Post> posts = postRepository.findByUserId(userId);
-//
-//        PostList postList = new PostList();
-//        postList.setPosts(posts);
-//        postList.setCurrentPage(curPage);
-//        postList.setTotalPageCount(1); // 확인 필요
-//        return postList;
-//    }
+    @Override
+    public PostList userPost(int userId, Map<String, String> map) {
+        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
+        int sizePage = Integer.parseInt(map.getOrDefault("size", "10"));
+        int start = (curPage - 1) * sizePage;
+
+        List<Post> list = postRepository.getUserPosts(userId);
+        int postCount = list.size();
+        int pageCount = (postCount - 1) / sizePage + 1;
+
+        List<Post> paginatedList;
+        if (start >= list.size()) {
+            paginatedList = Collections.emptyList();
+        } else {
+            int end = Math.min(start + sizePage, list.size());
+            paginatedList = list.subList(start, end);
+        }
+
+        PostList postList = new PostList();
+        for (Post post : paginatedList) {
+            postList.getPosts().add(PostResponse.of(post));
+        }
+        postList.setCurrentPage(curPage);
+        postList.setTotalPageCount(pageCount);
+        return postList;
+    }
 
     @Override
     public PostResponse getPost(int postId) {

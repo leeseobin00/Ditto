@@ -45,6 +45,9 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     @Query("SELECT p FROM Post p WHERE p.postId = :postId")
     Post getPost(@Param("postId") int postId);
 
+    @Query("SELECT p FROM Post p WHERE p.user.userId = :userId AND p.isDeleted = false")
+    List<Post> getUserPosts(@Param("userId") int userId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
