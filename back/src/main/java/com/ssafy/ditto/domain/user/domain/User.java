@@ -1,9 +1,13 @@
 package com.ssafy.ditto.domain.user.domain;
 
 import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -54,4 +58,12 @@ public class User extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole roleId;
+
+    public void changeFile(File newFile) {
+        this.fileId = newFile;
+    }
+
+    public void updateIntro(String newIntro) {
+        this.intro = newIntro;
+    }
 }

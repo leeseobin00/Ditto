@@ -8,8 +8,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface ProfileRepository extends JpaRepository<User,Integer> {
+
+    @Query("SELECT DISTINCT u FROM User u " +
+            "LEFT JOIN u.roleId r " +
+            "LEFT JOIN u.userTags ut " +
+            "LEFT JOIN ut.tagId t " +
+            "LEFT JOIN t.categoryId c " +
+            "WHERE (:categoryId IS NULL OR c.categoryId = :categoryId) " +
+            "AND (:tagId IS NULL OR t.tagId = :tagId) " +
+            "AND (:role IS NULL OR r.roleId = :role) " +
+            "AND (:keyword IS NULL OR u.nickname LIKE %:keyword%) " +
+            "AND u.isDeleted = false")
+    List<User> findUsers(@Param("categoryId") Integer categoryId,
+                         @Param("tagId") Integer tagId,
+                         @Param("role") Integer role,
+                         @Param("keyword") String keyword);
+
 
     @Query("SELECT COUNT(lu) FROM Like_User lu WHERE lu.likeGetterId = :userId")
     int countLikesByUserId(@Param("userId") int userId);
