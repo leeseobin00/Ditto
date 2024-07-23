@@ -1,3 +1,4 @@
+// src/pages/Login/LoginForm.jsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -138,6 +139,7 @@ const SignUpGroup = styled.div`
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const dispatch = useDispatch();
@@ -148,8 +150,8 @@ const LoginForm = () => {
     setLoading(true);
     setError('');
     
-    if (!email || !password) {
-      setError('이메일과 비밀번호를 입력해 주세요.');
+    if (!email || !password || !nickname) {
+      setError('이메일, 비밀번호, 닉네임을 입력해 주세요.');
       setLoading(false);
       return;
     }
@@ -158,15 +160,15 @@ const LoginForm = () => {
       const response = await axios.post('http://localhost:8080/user/login', {
         email,
         password,
+        nickname,
       });
-      const { accessToken, refreshToken } = response.data;
 
-      // JWT 디코딩하여 사용자 정보 추출
+      const { accessToken, refreshToken, nickname } = response.data;
       const decodedToken = jwtDecode(accessToken);
       const userId = decodedToken.userId;
-      const userName = decodedToken.userName;
+      const emailFromToken = decodedToken.email;
 
-      dispatch(login({ accessToken, refreshToken, userId, userName })); // Redux 상태 업데이트
+      dispatch(login({ accessToken, refreshToken, userId, nickname: nickname, email: emailFromToken })); // Redux 상태 업데이트
       alert("로그인 성공!");
       navigate('/'); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
@@ -197,6 +199,14 @@ const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup>
+            <FormLabel>닉네임</FormLabel>
+            <FormInput
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
             />
           </FormGroup>
           {error && <p style={{ color: 'red' }}>{error}</p>}

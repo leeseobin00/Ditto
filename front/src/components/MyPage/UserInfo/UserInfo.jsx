@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import defaultProfile from '../../assets/default-profile.jpg';
-import axiosIntercepter from '../../features/axiosIntercepter'; // axiosIntercepter 가져오기
+import defaultProfile from '../../../assets/default-profile.jpg';
+import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
+import { isPasswordMatch } from '../../../utils/passwordValidation'; // 비밀번호 확인 함수 임포트
+import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
 
 const UserInfoContainer = styled.div`
   margin-bottom: 40px;
@@ -58,7 +60,7 @@ const ButtonGroup = styled.div`
 
 const Button = styled.button`
   padding: 8px 16px;
-  background-color: ${(props) => (props.$cancel ? 'var(--TEXT_SECONDARY)' : 'var(--PRIMARY)')};
+  background-color: ${(props) => (props.$cancel ? 'var(--TEXT_SECONDARY)' : 'var(--SECONDARY)')};
   color: white;
   border: none;
   border-radius: 15px;
@@ -83,6 +85,8 @@ const UserInfo = ({ userData }) => {
   });
   const [error, setError] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
+  const [nicknameMessage, setNicknameMessage] = useState('');
 
   useEffect(() => {
     setFormData({
@@ -93,7 +97,7 @@ const UserInfo = ({ userData }) => {
   }, [nickName]);
 
   useEffect(() => {
-    setPasswordMatch(formData.password === formData.confirmPassword);
+    setPasswordMatch(isPasswordMatch(formData.password, formData.confirmPassword));
   }, [formData.password, formData.confirmPassword]);
 
   const handleChange = (e) => {
@@ -102,6 +106,24 @@ const UserInfo = ({ userData }) => {
       ...prevData,
       [name]: value,
     }));
+
+    if (name === 'nickname') {
+      handleNicknameChange(value);
+    }
+  };
+
+  const handleNicknameChange = async (nickname) => {
+    if (nickname) {
+      try {
+        const isAvailable = await checkNicknameAvailability(nickname);
+        setIsNicknameAvailable(isAvailable);
+        setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
+      } catch (error) {
+        console.error(error.message);
+        setIsNicknameAvailable(false);
+        setNicknameMessage(error.message);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -111,11 +133,18 @@ const UserInfo = ({ userData }) => {
       nickname: nickName || '',
     });
     setError('');
+    setNicknameMessage('');
+    setIsNicknameAvailable(true);
   };
 
   const handleSave = async () => {
     if (!passwordMatch) {
       setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (!isNicknameAvailable) {
+      setError('사용할 수 없는 닉네임입니다.');
       return;
     }
 
@@ -176,11 +205,12 @@ const UserInfo = ({ userData }) => {
             value={formData.nickname || ''}
             onChange={handleChange}
           />
+          {nicknameMessage && <ErrorMessage>{nicknameMessage}</ErrorMessage>}
         </ProfileField>
       </ProfileInfo>
       <ButtonGroup>
         <Button $cancel onClick={handleCancel}>취소</Button>
-        <Button onClick={handleSave}>저장</Button>
+        <Button onClick={handleSave}>수정</Button>
       </ButtonGroup>
     </UserInfoContainer>
   );

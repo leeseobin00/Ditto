@@ -5,6 +5,8 @@ import KakaoLogin from '../login/KaKaoLogin';
 import { useNavigate } from 'react-router-dom';
 import { MdClose } from "react-icons/md"; // 아이콘 import
 import ProSignupForm from "../signup/ProSignupForm";
+import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
+import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -291,8 +293,8 @@ const SignupForm = () => {
     agreePICU: false,
   });
   const [isVerified, setIsVerified] = useState(false);
-  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isPasswordMatchState, setIsPasswordMatchState] = useState(true);
+  const [isPasswordValidState, setIsPasswordValidState] = useState(true);
   const [isVerificationCodeInputVisible, setIsVerificationCodeInputVisible] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
   const [nicknameMessage, setNicknameMessage] = useState('');
@@ -304,12 +306,11 @@ const SignupForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsPasswordMatch(formData.password === formData.confirmPassword);
+    setIsPasswordMatchState(isPasswordMatch(formData.password, formData.confirmPassword));
   }, [formData.password, formData.confirmPassword]);
 
   useEffect(() => {
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
-    setIsPasswordValid(passwordRegex.test(formData.password));
+    setIsPasswordValidState(isPasswordValid(formData.password));
   }, [formData.password]);
 
   const handleChange = (e) => {
@@ -362,18 +363,13 @@ const SignupForm = () => {
 
     if (value) {
       try {
-        const response = await axios.get(`https://localhost:8080/users/signup/nickname/${value}`);
-        if (response.status === 200) {
-          setIsNicknameAvailable(true);
-          setNicknameMessage("사용 가능한 닉네임입니다.");
-        } else if (response.status === 409) {
-          setIsNicknameAvailable(false);
-          setNicknameMessage("이미 사용 중인 닉네임입니다.");
-        }
+        const isAvailable = await checkNicknameAvailability(value);
+        setIsNicknameAvailable(isAvailable);
+        setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
       } catch (error) {
-        console.error("닉네임 중복 확인 에러:", error);
+        console.error(error.message);
         setIsNicknameAvailable(false);
-        setNicknameMessage("닉네임 중복 확인 중 오류가 발생했습니다.");
+        setNicknameMessage(error.message);
       }
     }
   };
@@ -384,11 +380,11 @@ const SignupForm = () => {
       alert("이메일 인증을 완료해주세요.");
       return;
     }
-    if (!isPasswordMatch) {
+    if (!isPasswordMatchState) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    if (!isPasswordValid) {
+    if (!isPasswordValidState) {
       alert("비밀번호가 유효하지 않습니다.");
       return;
     }
@@ -545,7 +541,7 @@ const SignupForm = () => {
               required
             />
             <MessageWrapper>
-              {!isPasswordValid && (
+              {!isPasswordValidState && (
                 <PasswordValidMessage>
                   영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.
                 </PasswordValidMessage>
@@ -563,8 +559,8 @@ const SignupForm = () => {
               required
             />
             <MessageWrapper>
-              <PasswordMatchMessage $isMatch={isPasswordMatch}>
-                {isPasswordMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다."}
+              <PasswordMatchMessage $isMatch={isPasswordMatchState}>
+                {isPasswordMatchState ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다."}
               </PasswordMatchMessage>
             </MessageWrapper>
           </FormGroup>
@@ -590,7 +586,7 @@ const SignupForm = () => {
             <CheckboxLabel>개인정보 처리방침에 동의합니다</CheckboxLabel>
             <TermsLink onClick={(e) => { e.stopPropagation(); openPrivacyModal(); }}>약관 보기</TermsLink>
           </CheckboxGroup>
-          <SubmitButton type="submit" disabled={!isPasswordMatch || !isNicknameAvailable || !isPasswordValid || !formData.agreeTOS || !formData.agreePICU}>Next</SubmitButton>
+          <SubmitButton type="submit" disabled={!isPasswordMatchState || !isNicknameAvailable || !isPasswordValidState || !formData.agreeTOS || !formData.agreePICU}>Next</SubmitButton>
           <Divider>간편 가입</Divider>
           <SocialGroup>
             <KakaoLogin />

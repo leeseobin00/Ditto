@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // useNavigate로 변경
 import axios from 'axios';
-import { login } from '../features/auth/authSlice';
+import { login } from '../../features/auth/authSlice';
 import { jwtDecode } from 'jwt-decode';  // jwt-decode 패키지 가져오기
 
 const KakaoCallback = () => {
