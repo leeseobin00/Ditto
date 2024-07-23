@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { styled } from "styled-components";
-import { MdClose } from "react-icons/md";
+import React, { useState, useEffect, useCallback } from 'react';
+import styled from 'styled-components';
+import { MdClose } from 'react-icons/md';
+import PostcodeModal from './PostcodeModal';
 
-// 오버레이 스타일 정의
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -16,7 +16,6 @@ const Overlay = styled.div`
   z-index: 2;
 `;
 
-// 모달 컨테이너 스타일 정의
 const ModalContainer = styled.div`
   position: relative;
   background: var(--LIGHT);
@@ -26,24 +25,20 @@ const ModalContainer = styled.div`
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 2;
-
-  // 모달 애니메이션 (옵션)
   transition: all 0.3s ease-in-out;
   transform: translateY(0);
   opacity: 1;
 `;
 
-// 커스텀 아이콘 스타일 정의
 const CustomCloseIcon = styled(MdClose)`
-  position: absolute; // 절대 위치 설정
-  top: 16px; // 상단에서 16px 떨어진 위치
-  right: 16px; // 오른쪽에서 16px 떨어진 위치
+  position: absolute;
+  top: 16px;
+  right: 16px;
   cursor: pointer;
-  font-size: 32px; // 아이콘 크기
-  color: var(--SECONDARY); // 아이콘 색상
-
+  font-size: 32px;
+  color: var(--SECONDARY);
   &:hover {
-    color: var(--SECONDARY_DARK); // 호버시 색상
+    color: var(--SECONDARY_DARK);
   }
 `;
 
@@ -128,6 +123,8 @@ const AddressModal = ({ address, onClose }) => {
     isDefault: false,
   });
 
+  const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
+
   useEffect(() => {
     if (address) {
       setFormData({
@@ -151,82 +148,97 @@ const AddressModal = ({ address, onClose }) => {
   };
 
   const handleSave = () => {
-    // 저장 로직
     console.log('저장 클릭됨', formData);
-    onClose(); // 모달 닫기
+    onClose();
   };
 
+  const handleComplete = useCallback((data) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      zipCode: data.zonecode,
+      address1: data.address,
+    }));
+    setIsPostcodeOpen(false);
+  }, []);
+
   return (
-    <Overlay onClick={onClose}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
-        <CustomCloseIcon onClick={onClose} />
-        <Title>{address.addressId ? '배송지 수정' : '배송지 추가'}</Title>
-        <FormGroup>
-          <InputLabel>배송지명</InputLabel>
-          <TextInput
-            name="addressName"
-            value={formData.addressName}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <FormGroup>
-          <InputLabel>우편번호</InputLabel>
-          <Row>
+    <>
+      {isPostcodeOpen && (
+        <PostcodeModal onComplete={handleComplete} onClose={() => setIsPostcodeOpen(false)} />
+      )}
+      <Overlay onClick={onClose}>
+        <ModalContainer onClick={(e) => e.stopPropagation()}>
+          <CustomCloseIcon onClick={onClose} />
+          <Title>{address ? '배송지 수정' : '배송지 추가'}</Title>
+          <FormGroup>
+            <InputLabel>배송지명</InputLabel>
             <TextInput
-              name="zipCode"
-              value={formData.zipCode}
+              name="addressName"
+              value={formData.addressName}
               onChange={handleChange}
-              style={{ flex: 1 }}
             />
-            <SearchButton>우편번호 검색</SearchButton>
-          </Row>
-        </FormGroup>
-        <FormGroup>
-          <TextInput
-            name="address1"
-            value={formData.address1}
-            onChange={handleChange}
-            placeholder="주소"
-          />
-        </FormGroup>
-        <FormGroup>
-          <TextInput
-            name="address2"
-            value={formData.address2}
-            onChange={handleChange}
-            placeholder="상세 주소 입력"
-          />
-        </FormGroup>
-        <FormGroup>
-          <InputLabel>연락처</InputLabel>
-          <TextInput
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <FormGroup>
-          <InputLabel>수령인</InputLabel>
-          <TextInput
-            name="receiver"
-            value={formData.receiver}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <CheckboxLabel>
-          <CheckboxInput
-            type="checkbox"
-            name="isDefault"
-            checked={formData.isDefault}
-            onChange={handleChange}
-          />
-          기본 배송지로 설정
-        </CheckboxLabel>
-        <SaveButton onClick={handleSave}>
-          {address.addressId ? '수정' : '추가'}
-        </SaveButton>
-      </ModalContainer>
-    </Overlay>
+          </FormGroup>
+          <FormGroup>
+            <InputLabel>우편번호</InputLabel>
+            <Row>
+              <TextInput
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleChange}
+                style={{ flex: 1 }}
+              />
+              <SearchButton type="button" onClick={() => setIsPostcodeOpen(true)}>
+                우편번호 검색
+              </SearchButton>
+            </Row>
+          </FormGroup>
+          <FormGroup>
+            <TextInput
+              name="address1"
+              value={formData.address1}
+              onChange={handleChange}
+              placeholder="주소"
+            />
+          </FormGroup>
+          <FormGroup>
+            <TextInput
+              name="address2"
+              value={formData.address2}
+              onChange={handleChange}
+              placeholder="상세 주소 입력"
+            />
+          </FormGroup>
+          <FormGroup>
+            <InputLabel>연락처</InputLabel>
+            <TextInput
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <FormGroup>
+            <InputLabel>수령인</InputLabel>
+            <TextInput
+              name="receiver"
+              value={formData.receiver}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <CheckboxLabel>
+            <CheckboxInput
+              type="checkbox"
+              name="isDefault"
+              checked={formData.isDefault}
+              onChange={handleChange}
+            />
+            기본 배송지로 설정
+          </CheckboxLabel>
+          <SaveButton onClick={handleSave}>
+            {address ? '수정' : '추가'}
+          </SaveButton>
+        </ModalContainer>
+      </Overlay>
+    </>
   );
 };
 
