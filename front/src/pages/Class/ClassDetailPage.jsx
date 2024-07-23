@@ -8,6 +8,7 @@ import TabBar from "../../components/Class/ClasDetail/TabBar";
 const ClassDetailPageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 const ClassBody = styled.div`
@@ -63,6 +64,7 @@ function ClassDetailPage() {
     ],
   };
 
+  // 나중에 props 전달 방법 바꾸기 {...classInfo} -> ({classInfo, steps, 등})
   return (
     <ClassDetailPageContainer>
       <ClassThumbnail classInfo={classInfo} />

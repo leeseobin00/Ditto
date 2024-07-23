@@ -61,14 +61,17 @@ const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
       return css`
-        padding: 6px 8px;
+        width: 70px;
+        height: 30px;
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 600;
       `;
     }
 
     if (size === "lg") {
       return css`
+        width: 90px;
+        height: 35px;
         padding: 12px 48px;
         font-size: 18px;
         font-weight: 600;
@@ -77,6 +80,8 @@ const sizeStyle = css`
 
     if (size === "xl") {
       return css`
+        width: 100px;
+        height: 40px;
         padding: 12px 60px;
         font-size: 18px;
         font-weight: 600;
@@ -85,6 +90,8 @@ const sizeStyle = css`
 
     // 기본적으로 'md'일 때의 스타일 (default)
     return css`
+      width: 80px;
+      height: 30px;
       padding: 8px 32px;
       font-size: 16px;
       font-weight: 500;
@@ -99,10 +106,9 @@ const ButtonBase = styled.button`
   vertical-align: middle;
   min-width: 64px;
   border: none;
-  border-radius: 10px;
+  border-radius: 25px;
   cursor: pointer;
 
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
