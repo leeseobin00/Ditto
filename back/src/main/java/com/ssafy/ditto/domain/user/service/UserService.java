@@ -16,5 +16,5 @@ public interface UserService {
 
     boolean emailDuplicateCheck(String email);
 
-    boolean nickNameDuplicateCheck(String nickName);
+    boolean nickNameDuplicateCheck(String nickname);
 }

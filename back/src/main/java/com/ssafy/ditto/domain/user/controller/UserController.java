@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.user.controller;
 
+import com.ssafy.ditto.domain.user.dto.EmailCodeRequest;
 import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
 import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
 import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
@@ -9,7 +10,6 @@ import com.ssafy.ditto.global.dto.ResponseDto;
 import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -54,11 +54,19 @@ public class UserController {
     }
 
     //signup-005
+    @PostMapping("signup/auth")
+    public ResponseDto<Void> checkCode(@RequestBody EmailCodeRequest emailCodeRequest){
+        if(emailService.checkCode(emailCodeRequest)){
+            return ResponseDto.of(201, "이메일 인증에 성공했습니다.");
+        } else {
+            return ResponseDto.of(409, "코드가 일치하지 않습니다.");
+        }
+    }
 
     //signup-006
-    @GetMapping("signup/nickname/{nickName}")
-    public ResponseDto<Void> nickNameDuplicateCheck(@PathVariable("nickName") String nickName){
-        if (userService.nickNameDuplicateCheck(nickName)){
+    @GetMapping("signup/nickname/{nickname}")
+    public ResponseDto<Void> nickNameDuplicateCheck(@PathVariable("nickname") String nickname){
+        if (userService.nickNameDuplicateCheck(nickname)){
             return ResponseDto.of(409, "이미 사용중인 닉네임입니다.");
         } else {
             return ResponseDto.of(201, "사용 가능한 닉네임입니다.");
@@ -67,7 +75,7 @@ public class UserController {
 
 
     //login_001
-    //jwt에 있는 유저 정보 : 이메일, 닉네임, 프로필사진(미구현)
+    //jwt에 있는 유저 정보 : 이메일
     @PostMapping("/login")
     public ResponseDto<JwtResponse> login(@RequestBody UserLoginRequest userLoginRequest){
         JwtResponse jwtResponse = userService.login(userLoginRequest);

@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.user.service;
 
+import com.ssafy.ditto.domain.user.dto.EmailCodeRequest;
+import com.ssafy.ditto.domain.user.exception.NullCodeException;
 import com.ssafy.ditto.domain.user.repository.EmailRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +49,20 @@ public class EmailServiceImpl implements EmailService{
         javaMailSender.send(mimeMessage);
     }
 
+    @Override
+    public boolean checkCode(EmailCodeRequest emailCodeRequest) {
+        String email = emailCodeRequest.getEmail();
+        String code = emailCodeRequest.getCode();
+
+        String save = emailRepository.getCode(email);
+        if (save == null){
+            throw new NullCodeException();
+        } else if (code.equals(save)) {
+            emailRepository.removeCode(email);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

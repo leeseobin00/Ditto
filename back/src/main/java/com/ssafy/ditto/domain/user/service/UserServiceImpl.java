@@ -11,9 +11,7 @@ import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
 import com.ssafy.ditto.domain.user.repository.*;
 import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import com.ssafy.ditto.global.jwt.JwtProvider;
-import com.ssafy.ditto.global.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,23 +134,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean emailDuplicateCheck(String email) {
         User user = userRepository.findByEmail(email);
-        // 이미 이메일로 된 계정이 존재하는 경우
-        if (user != null){
-            return true;
-        } else { // 사용 가능한 이메일인 경우
-            return false;
-        }
+        // 이미 이메일로 된 계정이 존재하는 경우 true
+        // 사용 가능한 이메일인 경우 false
+        return user != null;
     }
 
     @Override
-    public boolean nickNameDuplicateCheck(String nickName) {
-        User user = userRepository.findByNickName(nickName);
-        // 이미 닉네임의 사용자가 존재하는 경우
-        if (user != null){
-            return true;
-        } else { // 사용 가능한 닉네임인 경우
-            return false;
-        }
+    public boolean nickNameDuplicateCheck(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        // 이미 닉네임의 사용자가 존재하는 경우 true
+        // 사용 가능한 닉네임인 경우 false
+        return user != null;
     }
 
 

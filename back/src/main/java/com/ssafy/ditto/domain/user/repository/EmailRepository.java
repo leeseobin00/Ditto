@@ -4,10 +4,11 @@ import lombok.Data;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class EmailRepository {
-    private HashMap<String, String> emailAndCode = new HashMap<>();
+    private final ConcurrentHashMap<String, String> emailAndCode = new ConcurrentHashMap<>();
 
     // 이메일과 코드 저장
     public void saveCode(String email, String code) {
