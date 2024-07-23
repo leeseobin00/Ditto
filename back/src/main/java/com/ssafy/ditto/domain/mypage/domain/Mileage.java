@@ -19,7 +19,8 @@ public class Mileage {
     @Column(name = "mileage")
     private int mileage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //FK
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
 }
