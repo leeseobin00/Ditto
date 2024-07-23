@@ -254,8 +254,7 @@ const ProSignupForm = ({ formData, setFormData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // 유효성 검사
+  
     let errors = {};
     if (!validateName(formData.name)) {
       errors.name = "이름은 한글 또는 영문만 입력 가능합니다.";
@@ -278,21 +277,36 @@ const ProSignupForm = ({ formData, setFormData }) => {
     if (!formData.tags || formData.tags.length === 0) {
       errors.tags = "최소 하나 이상의 분야를 선택해 주세요.";
     }
-
+  
     setFormErrors(errors);
-
+  
     if (Object.keys(errors).length > 0) {
       return;
     }
-
+  
     if (!agree) {
       alert("주의 사항을 확인하고 체크해 주세요.");
       return;
     }
-
+  
+    const instructorData = {
+      email: formData.email,
+      password: formData.password,
+      nickname: formData.nickname,
+      role: formData.role,
+      name: formData.name,
+      phoneNumber: formData.phoneNumber,
+      startDate: formData.startDate,
+      minActive: formData.minActive,
+      experience: formData.experience,
+      comment: formData.comment,
+      agreeTOS: formData.agreeTOS,
+      agreePICU: formData.agreePICU,
+      tags: formData.tags,
+    };
+  
     try {
-      const { agree, ...submitData } = formData; // agree를 제외한 데이터만 추출
-      const response = await axios.post('https://localhost:8080/users/signup/form', submitData);
+      const response = await axios.post('https://localhost:8080/users/signup/form', instructorData);
       console.log('Submitted Data:', response.data);
       alert("가입 신청이 완료되었습니다.");
       navigate('/');
@@ -301,6 +315,7 @@ const ProSignupForm = ({ formData, setFormData }) => {
       alert('가입 신청 중 오류가 발생했습니다.');
     }
   };
+  
 
   return (
     <StyledForm onSubmit={handleSubmit}>
