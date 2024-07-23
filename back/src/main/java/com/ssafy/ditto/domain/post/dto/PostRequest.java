@@ -20,9 +20,4 @@ public class PostRequest {
     private Integer tagId;
     private String title;
     private String content;
-<<<<<<< HEAD
-=======
-
-    private List<MultipartFile> files;
->>>>>>> 1f28d76b38f5c67d876710b4b8c6cb9ce14f6ee5
 }
