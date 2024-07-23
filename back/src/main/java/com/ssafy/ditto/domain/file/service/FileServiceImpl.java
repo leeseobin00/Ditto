@@ -40,6 +40,7 @@ public class FileServiceImpl implements FileService{
         file.setUploadFileName(uploadFile.getUploadFileName());
         file.setStoreFileName(uploadFile.getStoreFileName());
         file.setFileSize(uploadFile.getFileSize());
+        file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
 
         fileRepository.save(file);
         // 저장된 fildId return 필요
@@ -58,6 +59,7 @@ public class FileServiceImpl implements FileService{
             file.setUploadFileName(uploadFile.getUploadFileName());
             file.setStoreFileName(uploadFile.getStoreFileName());
             file.setFileSize(uploadFile.getFileSize());
+            file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
             fileList.add(file);
         }
         fileRepository.saveAll(fileList);

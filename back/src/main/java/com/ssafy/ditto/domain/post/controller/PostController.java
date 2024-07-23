@@ -11,6 +11,7 @@ import com.ssafy.ditto.domain.post.dto.PostResponse;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ public class PostController {
     private final PostService postService;
     private final FileService fileService;
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> writePost(
             @RequestPart(value = "post") @Valid PostRequest postReq,
             @RequestPart(value = "files", required = false) List<MultipartFile> files){
