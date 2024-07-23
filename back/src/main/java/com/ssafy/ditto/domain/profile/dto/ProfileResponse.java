@@ -25,18 +25,20 @@ public class ProfileResponse {
     private String intro;
     private List<Tag> tags;
 
-    public ProfileResponse(int userId, String nickname, String fileUrl) {
+    public ProfileResponse(int userId, String nickname, String fileUrl, List<Tag> tags) {
         this.userId = userId;
         this.nickname = nickname;
         this.fileUrl = fileUrl;
+        this.tags = tags;
     }
 
 
-    public static ProfileResponse of(User user) {
+    public static ProfileResponse of(User user, List<Tag> tags) {
         return new ProfileResponse(
                 user.getUserId(),
                 user.getNickname(),
-                user.getFileId().getFileUrl()
+                user.getFileId().getFileUrl(),
+                tags
         );
     }
 }

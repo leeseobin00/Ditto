@@ -72,9 +72,11 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
-                .map(ProfileResponse::of)
+                .map(user -> {
+                    List<Tag> tags = userTagRepository.findTagsByUserId(user.getUserId());
+                    return ProfileResponse.of(user, tags);
+                })
                 .collect(Collectors.toList());
-        //tag 가져오기
 
         ProfileList profileList = new ProfileList();
         profileList.setProfiles(profileResponses);
