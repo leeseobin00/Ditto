@@ -1,10 +1,13 @@
 package com.ssafy.ditto.domain.post.dto;
 
+import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.post.domain.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,10 +29,12 @@ public class PostResponse {
     private Boolean isDeleted;
     private Integer likeCount;
     private Integer commentCount;
+    private List<File> files;
 
     public PostResponse(Integer postId, Integer userId, String nickname, Integer boardId, String boardName,
                         Integer tagId, String tagName, Integer categoryId, String categoryName,
-                        String title, String content, Integer viewCount, Boolean isDeleted, Integer likeCount, Integer likeCount1, Integer commentCount) {
+                        String title, String content, Integer viewCount, Boolean isDeleted,
+                        Integer likeCount, Integer commentCount) {
         this.postId=postId;
         this.userId=userId;
         this.nickname = nickname;
@@ -63,7 +68,7 @@ public class PostResponse {
                 post.getViewCount(),
                 post.getIsDeleted(),
                 post.getLikeCount(),
-                post.getLikeCount(),
-                post.getCommentCount());
+                post.getCommentCount()
+        );
     }
 }
