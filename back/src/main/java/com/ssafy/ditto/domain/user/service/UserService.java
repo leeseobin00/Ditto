@@ -13,4 +13,8 @@ public interface UserService {
     void proSignup(ProSignUpRequest proSignUpRequest);
 
     JwtResponse login(UserLoginRequest userLoginRequest);
+
+    boolean emailDuplicateCheck(String email);
+
+    boolean nickNameDuplicateCheck(String nickname);
 }
