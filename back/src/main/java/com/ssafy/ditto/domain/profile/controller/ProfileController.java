@@ -62,7 +62,7 @@ public class ProfileController {
     @GetMapping("/{userId}/post")
     public ResponseDto<PostList> getUserPost(@PathVariable("userId") int userId, @RequestParam Map<String,String> map){
         PostList postList = profileService.userPost(userId,map);
-        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),null);
+        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),postList);
     }
 
     @GetMapping("/{userId}/class")
