@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Integer> {
     Tag findByTagName(String tagName);
-
-    List<Tag> findByUserId(int userId);
 }

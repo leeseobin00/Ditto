@@ -10,6 +10,7 @@ import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
+import com.ssafy.ditto.domain.profile.repository.LikeUserRepository;
 import com.ssafy.ditto.domain.profile.repository.ProfileRepository;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
@@ -39,6 +40,7 @@ import static com.ssafy.ditto.global.error.ErrorCode.*;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
     public final ProfileRepository profileRepository;
+    public final LikeUserRepository likeUserRepository;
     public final PostService postService;
     public final PostRepository postRepository;
     public final TagRepository tagRepository;
@@ -50,40 +52,41 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileList searchUser(Map<String, String> map) {
-        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
-        int sizePage = Integer.parseInt(map.getOrDefault("size", "5"));
-        int start = (curPage - 1) * sizePage;
-
-        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
-        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
-        Integer role = map.get("role") != null ? Integer.parseInt(map.get("role")) : null;
-        String keyword = map.get("keyword");
-
-        List<User> users = profileRepository.findUsers(categoryId, tagId, role, keyword);
-        int userCount = users.size();
-        int pageCount = (userCount - 1) / sizePage + 1;
-
-        List<User> paginatedUsers;
-        if (start >= users.size()) {
-            paginatedUsers = Collections.emptyList();
-        } else {
-            int end = Math.min(start + sizePage, users.size());
-            paginatedUsers = users.subList(start, end);
-        }
-
-        List<ProfileResponse> profileResponses = paginatedUsers.stream()
-                .map(user -> {
-                    List<Tag> tags = userTagRepository.findTagsByUserId(user.getUserId());
-                    return ProfileResponse.of(user, tags);
-                })
-                .collect(Collectors.toList());
-
-        ProfileList profileList = new ProfileList();
-        profileList.setProfiles(profileResponses);
-        profileList.setCurrentPage(curPage);
-        profileList.setTotalPageCount(pageCount);
-
-        return profileList;
+//        int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
+//        int sizePage = Integer.parseInt(map.getOrDefault("size", "5"));
+//        int start = (curPage - 1) * sizePage;
+//
+//        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
+//        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
+//        Integer role = map.get("role") != null ? Integer.parseInt(map.get("role")) : null;
+//        String keyword = map.get("keyword");
+//
+//        List<User> users = profileRepository.findUsers(categoryId, tagId, role, keyword);
+//        int userCount = users.size();
+//        int pageCount = (userCount - 1) / sizePage + 1;
+//
+//        List<User> paginatedUsers;
+//        if (start >= users.size()) {
+//            paginatedUsers = Collections.emptyList();
+//        } else {
+//            int end = Math.min(start + sizePage, users.size());
+//            paginatedUsers = users.subList(start, end);
+//        }
+//
+//        List<ProfileResponse> profileResponses = paginatedUsers.stream()
+//                .map(user -> {
+//                    List<Tag> tags = userTagRepository.findByUserId(user.getUserId());
+//                    return ProfileResponse.of(user, tags);
+//                })
+//                .collect(Collectors.toList());
+//
+//        ProfileList profileList = new ProfileList();
+//        profileList.setProfiles(profileResponses);
+//        profileList.setCurrentPage(curPage);
+//        profileList.setTotalPageCount(pageCount);
+//
+//        return profileList;
+        return null;
     }
 
     @Override
@@ -91,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Tag> tags = tagRepository.findByUserId(userId);
+        List<Tag> tags = userTagRepository.findByUserId(userId);
 
         ProfileResponse profileResponse = new ProfileResponse();
         profileResponse.setUserId(user.getUserId());
@@ -100,7 +103,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileResponse.setUploadFileName(user.getFileId().getUploadFileName());
         profileResponse.setFileUrl(user.getFileId().getFileUrl());
 
-        int likeCount = profileRepository.countLikesByUserId(userId);
+        int likeCount = likeUserRepository.countLikesByUserId(userId);
         profileResponse.setLikeCount(likeCount);
 
         Integer studentSum = profileRepository.getTotalStudentSumByUserId(userId);
