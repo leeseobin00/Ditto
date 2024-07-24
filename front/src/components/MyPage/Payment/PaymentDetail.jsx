@@ -1,8 +1,9 @@
+// src/pages/Mypage/PaymentDetail.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import SummaryModal from './SummaryModal'; // SummaryModal 경로 수정
+import SummaryModal from './SummaryModal'; // SummaryModal 컴포넌트 경로 수정
+import RefundPolicyModal from './RefundPolicyModal'; // RefundPolicyModal 컴포넌트 경로 수정
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -119,60 +120,112 @@ const PaymentUserName = styled.div`
 const PaymentDetail = ({ payments }) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
   const [modalMessage, setModalMessage] = useState('');
   const [summaries, setSummaries] = useState([]);
+  const [refundPolicy, setRefundPolicy] = useState('');
 
   const handleClassClick = (classId) => {
     navigate(`/class/${classId}`);
   };
 
   const handleCancelClick = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/mypage/payment/cancel', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
+    // 서버와 통신하는 부분 주석 처리
+    // try {
+    //   const response = await axios.get('http://localhost:8080/mypage/payment/cancel', {
+    //     headers: {
+    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    //     }
+    //   });
 
-      if (response.status === 200) {
-        setModalMessage(response.data.refund);
-      } else {
-        setModalMessage('환불 규정 조회 실패. 다시 시도해주세요.');
-      }
-    } catch (error) {
-      setModalMessage('환불 규정 조회 실패. 다시 시도해주세요.');
-      console.error('환불 규정 조회 에러:', error);
-    } finally {
-      setIsModalOpen(true);
-    }
+    //   if (response.status === 200) {
+    //     setRefundPolicy(response.data.refund);
+    //     setIsRefundPolicy(true);
+    //     setIsModalOpen(true);
+    //   } else {
+    //     alert('환불 규정 조회 실패. 다시 시도해주세요.');
+    //   }
+    // } catch (error) {
+    //   alert('환불 규정 조회 실패. 다시 시도해주세요.');
+    //   console.error('환불 규정 조회 에러:', error);
+    // }
+
+    // 테스트를 위한 더미 데이터
+    const dummyRefundPolicy = `
+      환불 규정:
+      1. 환불 요청 기간: 강의 시작 7일 이전: 전액 환불, 강의 시작 7일 이내: 환불 불가.
+      2. 환불 절차: 구매 취소 후 환불이 승인되면, 승인일로부터 7영업일 이내에 결제수단으로 환불 처리됩니다.
+      3. 예외 사항: 강의가 취소되거나 일정이 변경된 경우, 전액 환불해 드립니다.
+    `;
+    setRefundPolicy(dummyRefundPolicy);
+    setIsRefundPolicy(true);
+    setIsModalOpen(true);
   };
 
   const handleSummaryClick = async (lectureId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/mypage/lecture/${lectureId}/summary`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
+    // 서버와 통신하는 부분 주석 처리
+    // try {
+    //   const response = await axios.get(`http://localhost:8080/mypage/lecture/${lectureId}/summary`, {
+    //     headers: {
+    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    //     }
+    //   });
 
-      if (response.status === 200) {
-        setSummaries(response.data.summaries);
-        setIsModalOpen(true);
-      } else {
-        setModalMessage('요약 조회 실패. 다시 시도해주세요.');
-        setIsModalOpen(true);
-      }
-    } catch (error) {
-      setModalMessage('요약 조회 실패. 다시 시도해주세요.');
-      console.error('요약 조회 에러:', error);
-      setIsModalOpen(true);
-    }
+    //   if (response.status === 200) {
+    //     setSummaries(response.data.summaries);
+    //     setIsRefundPolicy(false);
+    //     setIsModalOpen(true);
+    //   } else {
+    //     alert('요약 조회 실패. 다시 시도해주세요.');
+    //   }
+    // } catch (error) {
+    //   alert('요약 조회 실패. 다시 시도해주세요.');
+    //   console.error('요약 조회 에러:', error);
+    // }
+
+    // 테스트를 위한 더미 데이터
+    const dummySummaries = [
+      { summaryId: 1, stepId: 1, summaryContent: '첫 번째 단계 요약 내용입니다.' },
+      { summaryId: 2, stepId: 2, summaryContent: '두 번째 단계 요약 내용입니다.' },
+    ];
+    setSummaries(dummySummaries);
+    setIsRefundPolicy(false);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsRefundPolicy(false);
     setModalMessage('');
     setSummaries([]);
+    setRefundPolicy('');
+  };
+
+  const handleConfirmCancel = async () => {
+    // 서버와 통신하는 부분 주석 처리
+    // try {
+    //   const response = await axios.patch(`http://localhost:8080/mypage/${userId}/payment/cancel`, {
+    //     userId
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    //     }
+    //   });
+
+    //   if (response.status === 200) {
+    //     setModalMessage('결제/수강 취소 성공');
+    //   } else {
+    //     alert('취소 실패. 다시 시도해주세요.');
+    //   }
+    // } catch (error) {
+    //   alert('취소 실패. 다시 시도해주세요.');
+    //   console.error('취소 에러:', error);
+    // }
+
+    // 테스트를 위한 더미 데이터
+    setModalMessage('결제/수강 취소 성공');
+    setIsRefundPolicy(false);
+    setIsModalOpen(true);
   };
 
   return (
@@ -195,7 +248,7 @@ const PaymentDetail = ({ payments }) => {
               <PaymentDate>결제 {payTime.toLocaleDateString()}</PaymentDate>
             </PaymentDateContainer>
             <PaymentDetails>
-              <PaymentImage src={payment.classImage} alt={payment.className} onClick={() => handleClassClick(payment.classId)} />
+              <PaymentImage src={payment.fileUrl} alt={payment.className} onClick={() => handleClassClick(payment.classId)} />
               <PaymentInfo onClick={() => handleClassClick(payment.classId)}>
                 <PaymentName>{payment.className}</PaymentName>
                 <ClassStartDateTime>
@@ -229,12 +282,23 @@ const PaymentDetail = ({ payments }) => {
           </PaymentItemContainer>
         );
       })}
-      <SummaryModal 
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        modalMessage={modalMessage}
-        summaries={summaries}
-      />
+      {isModalOpen && (
+        isRefundPolicy ? (
+          <RefundPolicyModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onConfirm={handleConfirmCancel}
+            refundPolicy={refundPolicy}
+          />
+        ) : (
+          <SummaryModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            modalMessage={modalMessage}
+            summaries={summaries}
+          />
+        )
+      )}
     </ListContainer>
   );
 };

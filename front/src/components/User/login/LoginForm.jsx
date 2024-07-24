@@ -166,7 +166,7 @@ const LoginForm = () => {
       const userId = decodedToken.userId;
       const emailFromToken = decodedToken.email;
 
-      dispatch(login({ accessToken, refreshToken, userId, nickname: nickname, email: emailFromToken })); // Redux 상태 업데이트
+      dispatch(login({ accessToken, refreshToken, userId, nickname: nickname, email: emailFromToken, roleId: roleId })); // Redux 상태 업데이트
       alert("로그인 성공!");
       navigate('/'); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {

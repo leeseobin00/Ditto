@@ -1,3 +1,4 @@
+// src/pages/PaymentPage.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -13,7 +14,9 @@ const Container = styled.div`
 
 const Title = styled.h2`
   align-self: flex-start;
-  margin-bottom: 20px;
+  color: var(--PRIMARY);
+  font-size: 20px;
+  margin: 20px 13px;
 `;
 
 const LoadMoreButton = styled.button`
@@ -35,7 +38,7 @@ const dummyPayments = [
     paymentId: 1,
     payTime: '2024-07-18T12:34:56Z',
     userName: '이강사',
-    classImage: '/path/to/image.jpg',
+    fileUrl: '/path/to/image.jpg',
     className: '오늘부터 나도 갓생! 독서 클래스',
     classPrice: 41900,
     year: 2024,
@@ -50,7 +53,7 @@ const dummyPayments = [
     paymentId: 2,
     payTime: '2024-07-11T12:34:56Z',
     userName: '이강사',
-    classImage: '/path/to/image.jpg',
+    fileUrl: '/path/to/image.jpg',
     className: '오늘부터 나도 갓생! 독서 클래스',
     classPrice: 41900,
     year: 2024,
@@ -61,12 +64,11 @@ const dummyPayments = [
     payCancelTime: '2024-07-15T12:34:56Z',
     classId: 102,
   },
-  // 더미 데이터에 classId 추가
   {
     paymentId: 3,
     payTime: '2024-07-20T12:34:56Z',
     userName: '박강사',
-    classImage: '/path/to/image2.jpg',
+    fileUrl: '/path/to/image2.jpg',
     className: '미래를 준비하는 독서 클래스',
     classPrice: 52900,
     year: 2024,
@@ -81,7 +83,7 @@ const dummyPayments = [
     paymentId: 4,
     payTime: '2024-06-15T12:34:56Z',
     userName: '김강사',
-    classImage: '/path/to/image3.jpg',
+    fileUrl: '/path/to/image3.jpg',
     className: '과거의 독서 클래스',
     classPrice: 35900,
     year: 2024,
@@ -106,10 +108,13 @@ const PaymentPage = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      // 서버와 통신하는 부분을 주석 처리하고 더미 데이터를 사용합니다.
-      // const response = await axios.get(`/mypage/${userId}/payment`);
+      // const response = await axios.get(`/mypage/${userId}/payment`, {
+      //   headers: {
+      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      //   },
+      // });
       // setPayments(response.data.payments);
-      setPayments(dummyPayments); // 더미 데이터 설정
+      setPayments(dummyPayments);
     } catch (error) {
       console.error('Error fetching payment data:', error);
     } finally {
@@ -123,10 +128,13 @@ const PaymentPage = () => {
     const finalDate = payments[payments.length - 1].payTime;
     setLoading(true);
     try {
-      // 서버와 통신하는 부분을 주석 처리하고 더미 데이터를 사용합니다.
-      // const response = await axios.get(`/mypage/${userId}/payment-more?final-date=${finalDate}`);
+      // const response = await axios.get(`/mypage/${userId}/payment-more?final-date=${finalDate}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      //   },
+      // });
       // setPayments((prevPayments) => [...prevPayments, ...response.data.payments]);
-      setPayments((prevPayments) => [...prevPayments, ...dummyPayments]); // 더미 데이터 추가
+      setPayments((prevPayments) => [...prevPayments, ...dummyPayments]);
     } catch (error) {
       console.error('Error loading more payments:', error);
     } finally {

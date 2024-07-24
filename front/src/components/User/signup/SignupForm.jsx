@@ -345,7 +345,7 @@ const SignupForm = () => {
       if (response.status === 200) {
         setIsVerified(true);
         alert("인증 성공!");
-      } else if (response.status === 400) {
+      } else if (response.status === 409) {
         alert("인증 코드가 일치하지 않습니다.");
       }
     } catch (error) {

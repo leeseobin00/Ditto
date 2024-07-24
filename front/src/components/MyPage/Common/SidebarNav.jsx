@@ -30,7 +30,7 @@ const SidebarNav = () => {
     <Sidebar>
       <NavItem to="account">계정 정보</NavItem>
       <NavItem to="payments">결제 내역</NavItem>
-      <NavItem to="queries">작성한 문의</NavItem>
+      <NavItem to="questions">작성한 문의</NavItem>
       <NavItem to="reviews">작성한 리뷰</NavItem>
       <NavItem to="wishlist">관심 목록</NavItem>
     </Sidebar>
