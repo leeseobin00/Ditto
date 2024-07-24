@@ -11,6 +11,7 @@ public enum ResponseMessage {
     SUCCESS_LOGIN("Login successful."),
     SUCCESS_LOGOUT("Logout successful."),
     SUCCESS_REGISTER("Registration successful."),
+    SUCCESS_CONVERT("Convert successful"),
 
     // Error messages
     ERROR_WRITE("Failed at creating."),
