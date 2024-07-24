@@ -19,7 +19,7 @@ public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -31,13 +31,13 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column(name = "agree_TOS", nullable = false)
-    private boolean agreeTOS;
+    private Boolean agreeTOS;
 
     @Column(name = "agree_PICU", nullable = false)
-    private boolean agreePICU;
+    private Boolean agreePICU;
 
     @Column(name = "is_deleted")
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     @Column(name = "intro")
     private String intro;

@@ -8,16 +8,15 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class PaymentResponse {
-    private int paymentId;
+    private Integer paymentId;
     private LocalDateTime payTime;
     private LocalDateTime payCancelTime;
-    private int fileId;
+    private Integer fileId;
     private String fileUrl;
-    private int classId;
+    private Integer lectureId;
     private String className;
-    private int classPrice;
-    private int lectureId;
-    private Byte year;
+    private Integer classPrice;
+    private Integer year;
     private Byte month;
     private Byte day;
     private Byte hour;

@@ -1,10 +1,8 @@
 package com.ssafy.ditto.domain.mypage.service;
 
-import com.ssafy.ditto.domain.mypage.dto.AddressRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageResponse;
-import com.ssafy.ditto.domain.mypage.dto.PaymentResponse;
+import com.ssafy.ditto.domain.mypage.dto.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MypageService {
@@ -18,5 +16,7 @@ public interface MypageService {
 
     void deleteAddress(int userId, int addressId);
 
-    List<PaymentResponse> getPayment(int userId);
+    List<PaymentResponse> getPayment(int userId, LocalDateTime finalDate);
+
+    CancelResponse getRefund();
 }

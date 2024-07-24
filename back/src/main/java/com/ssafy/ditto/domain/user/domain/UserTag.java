@@ -14,7 +14,7 @@ public class UserTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_tag_id")
-    private int userTagId;
+    private Integer userTagId;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)

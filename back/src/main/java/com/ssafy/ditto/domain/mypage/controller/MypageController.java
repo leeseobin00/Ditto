@@ -1,14 +1,12 @@
 package com.ssafy.ditto.domain.mypage.controller;
 
-import com.ssafy.ditto.domain.mypage.dto.AddressRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageResponse;
+import com.ssafy.ditto.domain.mypage.dto.*;
 import com.ssafy.ditto.domain.mypage.service.MypageService;
-import com.ssafy.ditto.domain.mypage.dto.PaymentResponse;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -53,10 +51,25 @@ public class MypageController {
         return ResponseDto.of(200, "일반 유저 배송지 삭제 성공");
     }
 
-    //Mypage_005
-    @GetMapping("{userID}/payment")
-    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId){
-        List<PaymentResponse> paymentResponse = mypageService.getPayment(userId);
-        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponse);
+//    //Mypage_005
+//    @GetMapping("{userId}/payment")
+//    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId){
+//
+//        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId);
+//        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
+//    }
+
+    //Mypage_006
+    @GetMapping("{userId}/payment-more")
+    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId, finalDate);
+        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
+    }
+
+    //Mypage_017
+    @GetMapping("payment/cancel")
+    public ResponseDto<CancelResponse> getCancel(){
+        CancelResponse cancelResponse = mypageService.getRefund();
+        return ResponseDto.of(200, "환불 규정 조회 성공", cancelResponse);
     }
 }

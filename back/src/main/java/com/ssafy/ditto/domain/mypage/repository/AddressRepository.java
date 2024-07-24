@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
     List<Address> findByUserId(User user);
-    Address findByUserIdAndDdefault(User userId, boolean ddfault);
+    Address findByUserIdAndIsDefault(User userId, boolean ddfault);
 }

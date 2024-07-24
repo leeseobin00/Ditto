@@ -9,5 +9,5 @@ public class LoginResponse {
     private final String accessToken;
     private final String refreshToken;
     private final String nickname;
-    private final int roleId;
+    private final Integer roleId;
 }

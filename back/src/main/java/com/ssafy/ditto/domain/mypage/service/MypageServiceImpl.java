@@ -1,20 +1,21 @@
 package com.ssafy.ditto.domain.mypage.service;
 
+import com.ssafy.ditto.domain.classes.domain.Payment;
 import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
 import com.ssafy.ditto.domain.mypage.domain.Address;
-import com.ssafy.ditto.domain.mypage.dto.AddressRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageResponse;
+import com.ssafy.ditto.domain.mypage.domain.Refund;
+import com.ssafy.ditto.domain.mypage.dto.*;
 import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
 import com.ssafy.ditto.domain.mypage.repository.AddressRepository;
+import com.ssafy.ditto.domain.mypage.repository.RefundRepository;
 import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.mypage.dto.PaymentResponse;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MypageServiceImpl implements MypageService{
     private final AccountRepository accountRepository;
     private final AddressRepository addressRepository;
     private final PaymentRepository paymentRepository;
+    private final RefundRepository refundRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -67,9 +69,9 @@ public class MypageServiceImpl implements MypageService{
     public void insertAddress(int userId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어온 경우
-        if (addressRequest.isDdefault()){
+        if (addressRequest.getIsDefault()){
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndDdefault(user, true);
+            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
             if (!(address == null)){
                 address.changeDefault(false);
             }
@@ -82,7 +84,7 @@ public class MypageServiceImpl implements MypageService{
                 .addressName(addressRequest.getAddressName())
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
-                .ddefault(addressRequest.isDdefault())
+                .isDefault(addressRequest.getIsDefault())
                 .userId(user)
                 .build();
 
@@ -94,9 +96,9 @@ public class MypageServiceImpl implements MypageService{
     public void modifyAddress(int userId, int addressId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어오면
-        if (addressRequest.isDdefault()){
+        if (addressRequest.getIsDefault()){
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndDdefault(user, true);
+            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
             if (!(address == null)){
                 address.changeDefault(false);
             }
@@ -111,7 +113,7 @@ public class MypageServiceImpl implements MypageService{
                 .addressName(addressRequest.getAddressName())
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
-                .ddefault(addressRequest.isDdefault())
+                .isDefault(addressRequest.getIsDefault())
                 .userId(user)
                 .build();
 
@@ -124,11 +126,47 @@ public class MypageServiceImpl implements MypageService{
     }
 
     @Override
-    public List<PaymentResponse> getPayment(int userId) {
+    public List<PaymentResponse> getPayment(int userId, LocalDateTime finalDate) {
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // 입력한 날짜로 결제내역을 보여줌. 없으면 빈 list
+        List<Payment> payments = paymentRepository.getPaymentList(userId, dateTime);
+
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
-        // 5개를 return해줘야함
+        User user = userRepository.findByUserId(userId);
+
+        for (Payment payment : payments){
+            PaymentResponse paymentResponse = PaymentResponse.builder()
+                    .paymentId(payment.getPaymentId())
+                    .payTime(payment.getPayTime())
+                    .payCancelTime(payment.getPayCancelTime())
+                    .fileId(user.getFileId().getFileId())
+                    .fileUrl(user.getFileId().getFileUrl())
+                    .lectureId(payment.getLectureId().getLectureId())
+                    .className(payment.getLectureId().getClassName())
+                    .classPrice(payment.getLectureId().getClassPrice())
+                    .year(payment.getLectureId().getYear())
+                    .month(payment.getLectureId().getMonth())
+                    .day(payment.getLectureId().getDay())
+                    .hour(payment.getLectureId().getHour())
+                    .minute(payment.getLectureId().getMinute())
+                    .build();
+
+            paymentResponses.add(paymentResponse);
+        }
 
         return paymentResponses;
+    }
+
+    @Override
+    public CancelResponse getRefund() {
+        Refund refund = refundRepository.findByRefundId(1);
+        CancelResponse cancelResponse = CancelResponse.builder()
+                .refundId(refund.getRefundId())
+                .refund(refund.getRefund())
+                .build();
+
+        return cancelResponse;
     }
 }
