@@ -19,6 +19,7 @@ import {
   getCategoryLabelByValue,
   getSortOptionLabelByValue,
 } from "../../utils/searchOptions";
+import { current } from "@reduxjs/toolkit";
 
 const Wrapper = styled.div`
   max-width: 1024px;
@@ -62,78 +63,69 @@ const SearchOptionWrapper = styled.div`
 `;
 
 function BoardListPage() {
-  const { response, sendRequest } = useAxios();
+  const { sendRequest } = useAxios();
+  // router
+  const location = useLocation();
+  const path = location.pathname.split("/")[2];
+  // page title
+  const [pageTitle, setPageTitle] = useState("전체");
   // posts
   const [posts, setPosts] = useState([]);
+  // getData
+  // const [getData, setGetData] = useState({
+  //   page: 1,
+  //   size: postsPerPage,
+  //   boardId: 0,
+  //   categoryId: 0,
+  //   tagId: 0,
+  //   searchBy: "제목",
+  //   keyword: "",
+  //   sortBy: "postId",
+  // });
+  const [categoryId, setCategoryId] = useState(0);
+  const [tagId, setTagId] = useState(0);
+  const [searchBy, setSearchBy] = useState("제목");
+  const [keyword, setKeyword] = useState("");
+  const [sortBy, setSortBy] = useState("postId")
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
   const postsPerPage = 1;
-  // page title
-  const [pageTitle, setPageTitle] = useState("전체");
-  // getData
-  const [getData, setGetData] = useState({
-    page: 1,
-    size: postsPerPage,
-    boardId: 0,
-    categoryId: 0,
-    tagId: 0,
-    searchBy: "제목",
-    keyword: "",
-    sortBy: "postId",
-  });
-  // router
-  const location = useLocation();
-  const path = location.pathname.split("/")[2];
 
   // posts state 시작 ///////////////////////////////////////
-  const getPosts = () => {
+  const getPosts = async() => {
     const boardId = path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
 
     const params = {
-      page: getData.page,
-      size: getData.size,
-      searchBy: getData.searchBy,
-      keyword: getData.keyword,
-      sortBy: getData.sortBy,
+      page: currentPage,
+      size: 1,
+      searchBy: searchBy,
+      keyword: keyword,
+      sortBy: sortBy,
       ...(boardId !== 0 && { boardId: boardId }),
-      ...(getData.categoryId !== 0 && { categoryId: getData.categoryId }),
-      ...(getData.tagId !== 0 && { tagId: getData.tagId }),
+      ...(categoryId !== 0 && { categoryId: categoryId }),
+      ...(tagId !== 0 && { tagId: tagId }),
     };
 
     const searchParams = new URLSearchParams(params).toString();
     const url = `/posts?${searchParams}`;
 
-    sendRequest(url, null, "get");
+    const result = await sendRequest(url, null, "get");
+
+    console.log(result);
+    setPosts(result?.data?.posts || []);
+    setTotalPageCount(result?.data?.totalPageCount);
   };
 
   const resetOptions = () => {
-    setGetData((prevState) => ({
-      ...prevState,
-      categoryId: 0,
-      tagId: 0,
-      searchBy: "제목",
-      keyword: "",
-    }));
-    setTempCategoryId(0);
-    setTempTagId(0);
-    setTempSearchBy("제목");
-    setTempKeyword("");
-  };
-
-  const setTempOptions = () => {
-    setGetData((prevState) => ({
-      ...prevState,
-      categoryId: tempCategoryId,
-      tagId: tempTagId,
-      searchBy: tempSearchBy,
-      keyword: tempKeyword,
-    }));
+    setCategoryId(0);
+    setTagId(0);
+    setSearchBy("제목");
+    setKeyword("");
   };
 
   const onSearchButton = () => {
-    setTempOptions();
     getPosts();
   };
 
@@ -152,51 +144,38 @@ function BoardListPage() {
 
   useEffect(() => {
     getPosts();
-  }, [path, getData.page, getData.sortBy]);
-
-  useEffect(() => {
-    setPosts(response?.data?.posts || []);
-    setTotalPageCount(response?.data?.totalPageCount);
-  }, [response]);
+  }, [path, currentPage, sortBy]);
   // posts state 끝 ///////////////////////////////////////
 
   // 검색 옵션 시작 ///////////////////////////////////////
-  const [boardId, setBoardId] = useState(0);
-  const [tempCategoryId, setTempCategoryId] = useState(0);
-  const [tempTagId, setTempTagId] = useState(0);
-  const [tempSearchBy, setTempSearchBy] = useState("제목");
-  const [tempKeyword, setTempKeyword] = useState("");
   // 선택한 category에 따라 tags가 바뀌여야 함 /////////////
   const [tags, setTags] = useState([]);
   useEffect(() => {
-    setTags(getTagsForCategory(tempCategoryId));
-  }, [tempCategoryId]);
+    setTags(getTagsForCategory(categoryId));
+  }, [categoryId]);
 
   const handleCategory = (event) => {
-    setTempCategoryId(event.target.value);
+    setCategoryId(event.target.value);
   };
 
   const handleTag = (tagValue) => {
-    if (tagValue === tempTagId) {
-      setTempTagId(0);
+    if (tagValue === tagId) {
+      setTagId(0);
     } else {
-      setTempTagId(tagValue);
+      setTagId(tagValue);
     }
   };
 
   const handleSearchBy = (event) => {
-    setTempSearchBy(event.target.value);
+    setSearchBy(event.target.value);
   };
 
   const handleKeyword = (event) => {
-    setTempKeyword(event.target.value);
+    setKeyword(event.target.value);
   };
 
   const handleSortOption = (event) => {
-    setGetData((prevState) => ({
-      ...prevState,
-      sortBy: event.target.value,
-    }));
+    setSortBy(event.target.value);
   };
   // 검색 옵션 끝 ///////////////////////////////////////////
 
@@ -214,10 +193,6 @@ function BoardListPage() {
   }, [currentSection, totalPageCount]);
 
   const handlePage = (number) => {
-    setGetData((prevState) => ({
-      ...prevState,
-      page: number,
-    }));
     setCurrentPage(number);
     setCurrentSection(Math.ceil(number / 10));
   };
@@ -234,12 +209,12 @@ function BoardListPage() {
             <SelectBox
               options={SEARCH_CATEGORY_OPTIONS}
               onChange={handleCategory}
-              curOption={getCategoryLabelByValue(tempCategoryId)}
+              curOption={getCategoryLabelByValue(categoryId)}
             />
           </Filter>
 
           <Filter title="태그">
-            <SelectTag tags={tags} curTag={tempTagId} handleTag={handleTag} />
+            <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
           </Filter>
         </FilterWrapper>
         <FilterWrapper>
@@ -247,9 +222,9 @@ function BoardListPage() {
             <SelectBox
               options={SEARCH_OPTIONS}
               onChange={handleSearchBy}
-              curOption={tempSearchBy}
+              curOption={searchBy}
             />
-            <Input onChange={handleKeyword} value={tempKeyword} />
+            <Input onChange={handleKeyword} value={keyword} />
             <Button
               onClick={onSearchButton}
               label={<CustomSearchIcon />}
@@ -266,7 +241,7 @@ function BoardListPage() {
           <SelectBox
             options={SORT_OPTIONS}
             onChange={handleSortOption}
-            curOption={getSortOptionLabelByValue(getData?.sortBy)}
+            curOption={getSortOptionLabelByValue(sortBy)}
           />
           <Link to="/board/add">
             <Button label="글쓰기" size="md" />

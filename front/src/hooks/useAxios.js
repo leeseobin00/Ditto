@@ -16,6 +16,7 @@ const useAxios = () => {
       const url = `${baseURL}${endpoint}`;
       const result = await axios({ method, url, data });
       setResponse(result.data);
+      return result.data;
     } catch (err) {
       setError(err);
     } finally {
