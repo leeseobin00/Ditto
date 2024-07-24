@@ -8,10 +8,7 @@ import com.ssafy.ditto.domain.category.domain.Category;
 import com.ssafy.ditto.domain.category.exception.CategoryNotFoundException;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
 import com.ssafy.ditto.domain.file.domain.File;
-import com.ssafy.ditto.domain.file.dto.FileResponse;
-import com.ssafy.ditto.domain.file.dto.UploadFile;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
-import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.domain.post.domain.Board;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
@@ -34,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.ditto.domain.post.dto.PostList;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
 import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;

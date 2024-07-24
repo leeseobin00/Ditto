@@ -10,7 +10,6 @@ import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
-import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -43,8 +42,7 @@ public class FileServiceImpl implements FileService{
         file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
 
         fileRepository.save(file);
-        // 저장된 fildId return 필요
-        return file.getFileId();
+        return file.getFileId(); // 저장된 fildId return
     }
 
 
@@ -96,6 +94,10 @@ public class FileServiceImpl implements FileService{
     public void deleteList(int postId) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         List<File> files = fileRepository.findByPostId(postId);
+        for (File file : files) {
+            List<FilePost> filePosts = filePostRepository.findByFile(file);
+            filePostRepository.deleteAll(filePosts);
+        }
         fileRepository.deleteAll(files);
     }
 }

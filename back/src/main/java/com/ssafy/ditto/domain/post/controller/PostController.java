@@ -77,12 +77,12 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     public ResponseDto<String> deletePost(@PathVariable("postId") int postId){
-        String response = postService.deletePost(postId);
         try {
             fileService.deleteList(postId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        String response = postService.deletePost(postId);
         return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(),response);
     }
 
