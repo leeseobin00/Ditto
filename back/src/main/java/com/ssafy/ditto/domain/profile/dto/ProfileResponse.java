@@ -23,9 +23,24 @@ public class ProfileResponse {
     private Integer studentSum;
     private Float avgRating;
     private String intro;
-    private List<Tag> tags;
+    private List<String> tags;
 
-    public ProfileResponse(int userId, String nickname, String fileUrl, List<Tag> tags) {
+    public ProfileResponse(Integer userId, Integer roleId, String nickname, String uploadFileName,
+                           String fileUrl, Integer likeCount, Integer studentSum, Float avgRating,
+                           String intro, List<String> tags) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.nickname = nickname;
+        this.uploadFileName = uploadFileName;
+        this.fileUrl = fileUrl;
+        this.likeCount = likeCount;
+        this.studentSum = studentSum;
+        this.avgRating = avgRating;
+        this.intro = intro;
+        this.tags = tags;
+    }
+
+    public ProfileResponse(int userId, String nickname, String fileUrl, List<String> tags) {
         this.userId = userId;
         this.nickname = nickname;
         this.fileUrl = fileUrl;
@@ -33,7 +48,7 @@ public class ProfileResponse {
     }
 
 
-    public static ProfileResponse of(User user, List<Tag> tags) {
+    public static ProfileResponse of(User user, List<String> tags) {
         return new ProfileResponse(
                 user.getUserId(),
                 user.getNickname(),
