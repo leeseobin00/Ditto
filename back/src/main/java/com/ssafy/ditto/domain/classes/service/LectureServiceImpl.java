@@ -56,6 +56,14 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
+    public void deleteLecture(Integer classId, Integer lectureId) {
+        classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        lecture.setIsDeleted(true);
+        lectureRepository.save(lecture);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<LectureResponse> getLecturesByClassId(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
