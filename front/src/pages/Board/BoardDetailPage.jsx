@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
@@ -68,12 +69,15 @@ function BoardDetailPage() {
   const { response: getResponse, sendRequest: getPost } = useAxios();
   const { response: getCommentResponse, sendRequest: getComment } = useAxios();
   const { sendRequest: postComment } = useAxios();
+  const userId = useSelector(state => state.auth.userId);  
+  const userName = useSelector(state => state.auth.nickname);
 
-  // router
   const { postId } = useParams();
 
   const [post, setPost] = useState({});
-  const [comment, setComment] = useState([]);
+  const [comments, setComments] = useState([]);
+  const date = new Date();
+  const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 
   useEffect(() => {
     getPost(`/posts/${postId}`, null, "get");
@@ -86,19 +90,11 @@ function BoardDetailPage() {
   }, [getResponse]);
 
   useEffect(() => {
-    setComment(getCommentResponse?.data);
+    setComments(getCommentResponse?.data);
     console.log(getCommentResponse);
   }, [getCommentResponse]);
 
-  const comments = [
-    { user: "사용자1", text: "이 이미지는 정말 멋지네요!" },
-    { user: "사용자2", text: "어디서 찍으셨나요?" },
-    { user: "사용자3", text: "색감이 아주 좋아요." },
-  ];
-
-  const [showReplyForms, setShowReplyForms] = useState(
-    comments.map(() => false),
-  );
+  const [showReplyForms, setShowReplyForms] = useState([]);
 
   const handleReplyFormOpen = (index) => {
     setShowReplyForms((prev) => {
@@ -116,6 +112,16 @@ function BoardDetailPage() {
     });
   };
 
+  const handleAddComment = async (content, parentId) => {
+    const postData = {
+      userId: userId,
+      content: content,
+      parentId: parentId,
+    };
+    await postComment(`/comments/${postId}`, postData, "post");
+    await getComment(`/comments/${postId}`, null, "get");
+    setComments(getCommentResponse?.data);
+  };
 
   return (
     <div>
@@ -136,39 +142,42 @@ function BoardDetailPage() {
         <CommentTitle>댓글</CommentTitle>
 
         <MyComment>
-          <Profile fileUrl="dd" name="김묘묘" date="2024.07.17" />
+          <Profile fileUrl="dd" name={userName} date={formattedDate} />
           <CommentReplyWrapper>
-            <ReplyForm parentId={-1} isCancel={false} />
+            <ReplyForm parentId={-1} isCancel={false} onAddComment={handleAddComment} />
           </CommentReplyWrapper>
         </MyComment>
 
         <Comments>
-          {comments.map((comment, index) => (
+          {comments?.map((comment, index) => (
             <Comment key={index}>
-              <Profile fileUrl="dd" name={comment.user} date="2024.07.17" />
+              <Profile fileUrl="dd" name={comment.nickname} date={(new Date(comment.createdDate)).toISOString().split('T')[0].replace(/-/g, '.')} />
               <CommentTextWrapper>
-                <CommentText>{comment.text}</CommentText>
+                <CommentText>{comment.content}</CommentText>
                 <AddComment onClick={() => handleReplyFormOpen(index)}>
                   답글달기
                 </AddComment>
               </CommentTextWrapper>
-
-              <CommentReplyWrapper>
-                <Profile fileUrl="dd" name={comment.user} date="2024.07.17" />
-                <CommentTextWrapper>
-                  <CommentText>{comment.text}</CommentText>
-                  <AddComment onClick={() => handleReplyFormOpen(index)}>
-                    답글달기
-                  </AddComment>
-                </CommentTextWrapper>
-              </CommentReplyWrapper>
+              
+              {comment?.children?.map((c, childIndex) => (
+                <CommentReplyWrapper key={childIndex}>
+                  <Profile fileUrl="dd" name={c.nickname} date={(new Date(c.createdDate)).toISOString().split('T')[0].replace(/-/g, '.')} />
+                  <CommentTextWrapper>
+                    <CommentText>{c.content}</CommentText>
+                    <AddComment onClick={() => handleReplyFormOpen(index)}>
+                      답글달기
+                    </AddComment>
+                  </CommentTextWrapper>
+                </CommentReplyWrapper>
+              ))}
 
               {showReplyForms[index] && (
                 <CommentReplyWrapper>
                   <ReplyForm
+                    parentId={comment.commentId}
                     isCancel
                     onCancel={() => handleReplyFormClose(index)}
-                    onAdd={() => handleReplyFormOpen(index)}
+                    onAddComment={handleAddComment}
                   />
                 </CommentReplyWrapper>
               )}
