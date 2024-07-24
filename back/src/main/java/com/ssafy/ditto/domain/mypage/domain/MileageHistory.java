@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.mypage.domain;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +20,7 @@ public class MileageHistory {
     private int historyId;
 
     @Column(name = "mileage_amount")
-    private int mileageHistory;
+    private int mileageAmount;
 
     @Column(name = "time")
     private Date time;
@@ -30,13 +31,17 @@ public class MileageHistory {
     @Column(name = "final_amount")
     private int finalAmount;
 
+    //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mileage_id")
     private Mileage mileageId;
 
     //FK
-    private int lectureId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lecture_id")
+    private Lecture lectureId;
 
+    //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
