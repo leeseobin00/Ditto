@@ -4,12 +4,12 @@ import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,7 +42,8 @@ public class UserController {
 
     //signup-004
     @PostMapping("signup/email")
-    public ResponseDto<Void> mailSend(@RequestBody String email) throws MessagingException, NoSuchAlgorithmException {
+    public ResponseDto<Void> mailSend(@RequestBody Map<String, String> getemail) throws MessagingException, NoSuchAlgorithmException {
+        String email = getemail.get("email");
         if (userService.emailDuplicateCheck(email)){
             return ResponseDto.of(409, "해당 이메일을 사용하는 계정이 이미 존재합니다.");
         }
