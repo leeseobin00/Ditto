@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 
 import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
-import ClassContent from "../../components/Class/ClasDetail/ClassContent";
+import ClassInfo from "../../components/Class/ClasDetail/ClassInfo";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
 
@@ -70,7 +70,7 @@ function ClassDetailPage() {
       <ClassThumbnail classInfo={classInfo} />
       <TabBar />
       <ClassBody>
-        <ClassContent classInfo={classInfo} />
+        <ClassInfo classInfo={classInfo} />
         <ClassSideBar classInfo={classInfo} />
       </ClassBody>
     </ClassDetailPageContainer>

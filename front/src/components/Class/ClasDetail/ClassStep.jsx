@@ -1,5 +1,7 @@
 import { styled } from "styled-components";
 
+import { MdClose } from "react-icons/md";
+
 const ClassStepContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -52,15 +54,37 @@ const Img = styled.img`
   border-radius: 10px;
 `;
 
-function ClassStep({ step }) {
+const DeleteButton = styled(MdClose)`
+  background-color: transparent;
+  width: 20px;
+  height: 20px;
+  border-style: none;
+  text-align: center;
+  color: var(--TEXT_SECONDARY);
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--SECONDARY);
+  }
+
+  &:active {
+    color: var(--SECONDARY);
+  }
+`;
+
+function ClassStep({ isAdd = false, stepNo, step, onDelete }) {
+  console.log(stepNo);
+
   return (
     <ClassStepContainer>
-      <StepNo>{step.stepNo}</StepNo>
+      <StepNo>{stepNo + 1}</StepNo>
       <StepDetail>
         <StepName>{step.stepName}</StepName>
         <StepExplation>{step.stepDetail}</StepExplation>
       </StepDetail>
-      <Img src={step.fileUrl} />
+      <Img src={isAdd ? step.preview : step.fileUrl} />
+      {isAdd && <DeleteButton onClick={onDelete} />}
     </ClassStepContainer>
   );
 }

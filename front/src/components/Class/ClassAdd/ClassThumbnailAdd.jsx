@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
 
 import {
@@ -7,6 +7,10 @@ import {
 } from "../../../utils/options.js";
 import AddButton from "./AddButton";
 import ClassImgAddModal from "./ClassImgAddModal";
+import Clock from "../../../assets/icon/class/clock.png";
+import User from "../../../assets/icon/class/user.png";
+import PlusSecondary from "../../../assets/icon/common/plus-secondary.png";
+import MinusSecondary from "../../../assets/icon/common/minus-secondary.png";
 
 const ClassThumbnailAddContainer = styled.div`
   width: 100%;
@@ -58,56 +62,144 @@ const SelectTagContainer = styled.div`
   display: flex;
   flex-direction: row;
   height: 30px;
+  padding-left: 10px;
 `;
 
 const SelectBox = styled.select`
   border-style: none;
-  border-radius: 10px;
+  border-radius: 25px;
   color: var(--TEXT_SECONDARY);
-  width: 80px;
+  width: 90px;
+  margin-right: 20px;
+  font-size: 14px;
+  padding-left: 5px;
+`;
+
+const InputClassName = styled.input`
+  font-size: 30px;
+  font-weight: 700;
+  background-color: transparent;
+  border-style: none;
+  border-radius: 25px;
+  height: 50px;
+  padding-left: 10px;
+  color: var(--LIGHT);
+  margin-top: 10px;
+  &::placeholder {
+    color: var(--LIGHT);
+  }
+  &:focus {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
+`;
+
+const MediumFont = styled.div`
+  font-size: 18px;
+  color: var(--LIGHT);
+`;
+
+const MediumDetailLine = styled(MediumFont)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 10px;
+  margin: 5px 0;
+`;
+
+const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+`;
+
+const Button = styled.button`
+  width: 16px;
+  height: 16px;
+  margin: 0 10px;
+  cursor: pointer;
+  border-style: none;
+  background-color: transparent;
+`;
+
+const MinusButton = styled(Button)`
+  background-image: url(${MinusSecondary});
+  background-size: cover;
+  height: 20px;
+`;
+
+const PlusButton = styled(Button)`
+  background-image: url(${PlusSecondary});
+  background-size: cover;
 `;
 
 function ClassThumbnailAdd({ userNickname }) {
   const [showModal, setShowModal] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [classTime, setClassTime] = useState({ hour: 0, minute: 0 });
+  const [classMax, setClassMax] = useState(0);
 
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
+  const toggleModal = () => setShowModal(!showModal);
 
   const handleFileSubmit = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-    };
-    if (selectedFile) {
-      reader.readAsDataURL(selectedFile);
-    }
+    reader.onloadend = () => setPreview(reader.result);
+    if (selectedFile) reader.readAsDataURL(selectedFile);
   };
 
   const [selectedCategory, setSelectedCategory] = useState(
     CATEGORY_OPTIONS[0].value
   );
-  const [tags, setTags] = useState(getTagsForCategory(selectedCategory));
+  const [tags, setTags] = useState(
+    getTagsForCategory(CATEGORY_OPTIONS[0].value)
+  );
 
-  const handleCategoryChange = (event) => {
-    const selectedValue = parseInt(event.target.value, 10);
-    setSelectedCategory(selectedValue);
-    setTags(getTagsForCategory(selectedValue));
+  useEffect(() => {
+    setTags(getTagsForCategory(selectedCategory));
+  }, [selectedCategory]);
+
+  const handleCategoryChange = (e) =>
+    setSelectedCategory(parseInt(e.target.value, 10));
+
+  const incrementTime = (field) => {
+    setClassTime((prevTime) => {
+      if (field === "hour") {
+        return { ...prevTime, hour: prevTime.hour + 1 };
+      } else if (field === "minute") {
+        const newMinute = prevTime.minute + 5;
+        return newMinute === 60
+          ? { hour: prevTime.hour + 1, minute: 0 }
+          : { ...prevTime, minute: newMinute };
+      }
+    });
   };
+
+  const decrementTime = (field) => {
+    setClassTime((prevTime) => {
+      if (field === "hour" && prevTime.hour > 0) {
+        return { ...prevTime, hour: prevTime.hour - 1 };
+      } else if (field === "minute" && prevTime.minute > 0) {
+        return { ...prevTime, minute: prevTime.minute - 5 };
+      }
+    });
+  };
+
+  const incrementMax = () =>
+    setClassMax((prevMax) => (prevMax < 15 ? prevMax + 1 : prevMax));
+  const decrementMax = () =>
+    setClassMax((prevMax) => (prevMax > 0 ? prevMax - 1 : prevMax));
 
   return (
     <ClassThumbnailAddContainer>
       <ThumbnailImg
         style={{ backgroundImage: preview ? `url(${preview})` : "none" }}
       />
-      <ButtonContainer>
-        <AddButton onClick={toggleModal} />
-      </ButtonContainer>
       <ClassImgAddModal
         show={showModal}
         modalTitle={"클래스 썸네일 등록"}
@@ -136,6 +228,41 @@ function ClassThumbnailAdd({ userNickname }) {
             ))}
           </SelectBox>
         </SelectTagContainer>
+        <InputClassName
+          name="className"
+          id="className"
+          placeholder="강의 제목을 입력해주세요."
+        />
+        <MediumDetailLine>{userNickname}이강사</MediumDetailLine>
+        <ButtonContainer>
+          <AddButton onClick={toggleModal} />
+        </ButtonContainer>
+        <MediumDetailLine>
+          <Icon src={Clock} />
+          <MediumDetailLine>
+            <MediumFont>진행 시간</MediumFont>
+            <MinusButton onClick={() => decrementTime("hour")} />
+            <MediumFont>{classTime.hour}</MediumFont>
+            <PlusButton onClick={() => incrementTime("hour")} />
+            <MediumFont>시간</MediumFont>
+          </MediumDetailLine>
+          <MediumDetailLine>
+            <MinusButton onClick={() => decrementTime("minute")} />
+            <MediumFont>{classTime.minute}</MediumFont>
+            <PlusButton onClick={() => incrementTime("minute")} />
+            <MediumFont>분</MediumFont>
+          </MediumDetailLine>
+        </MediumDetailLine>
+        <MediumDetailLine>
+          <Icon src={User} />
+          <MediumDetailLine>
+            <MediumFont>최대 인원</MediumFont>
+            <MinusButton onClick={decrementMax} />
+            <MediumFont>{classMax}</MediumFont>
+            <PlusButton onClick={incrementMax} />
+            <MediumFont>명</MediumFont>
+          </MediumDetailLine>
+        </MediumDetailLine>
       </ClassInfoInputContainer>
     </ClassThumbnailAddContainer>
   );

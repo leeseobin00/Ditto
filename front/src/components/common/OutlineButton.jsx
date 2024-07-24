@@ -61,40 +61,30 @@ const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
       return css`
-        width: 70px;
-        height: 30px;
+        padding: 6px 8px;
         font-size: 14px;
-        font-weight: 600;
       `;
     }
 
     if (size === "lg") {
       return css`
-        width: 90px;
-        height: 35px;
         padding: 12px 48px;
         font-size: 18px;
-        font-weight: 600;
       `;
     }
 
     if (size === "xl") {
       return css`
-        width: 100px;
-        height: 40px;
         padding: 12px 60px;
         font-size: 18px;
-        font-weight: 600;
       `;
     }
 
     // 기본적으로 'md'일 때의 스타일 (default)
     return css`
-      width: 80px;
-      height: 30px;
       padding: 8px 32px;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
     `;
   }}
 `;
