@@ -1,3 +1,8 @@
+-- USER_ROLE 테이블에 데이터 삽입
+insert into user_role(role_name) values('사용자');
+insert into user_role(role_name) values('강사');
+insert into user_role(role_name) values('운영자');
+
 -- Category 테이블에 데이터 삽입
 INSERT INTO Category (category_name) VALUES ('리빙');
 INSERT INTO Category (category_name) VALUES ('패브릭');
