@@ -1,15 +1,19 @@
 import { styled } from "styled-components";
 import ClassStepAdd from "./ClassStepAdd";
+import ClassKitAdd from "./ClassKitAdd";
 
 const ClassInfoAddContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 75%;
+  align-items: center;
 `;
 
 const ClassAddDetailContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px;
 `;
 
 const ClassIntroductionInput = styled.textarea`
@@ -49,8 +53,12 @@ function ClassInfoAdd() {
         <ClassIntroductionInput placeholder="강의에 대한 소개를 입력해주세요." />
       </ClassAddDetailContainer>
       <ClassAddDetailContainer>
-        <Title>진행과정</Title>
+        <Title>진행 과정</Title>
         <ClassStepAdd />
+      </ClassAddDetailContainer>
+      <ClassAddDetailContainer>
+        <Title>제공 키트</Title>
+        <ClassKitAdd />
       </ClassAddDetailContainer>
     </ClassInfoAddContainer>
   );

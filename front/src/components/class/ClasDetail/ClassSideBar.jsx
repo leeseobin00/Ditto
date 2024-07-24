@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 
+import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
 import Heart from "../../../assets/icon/common/heart/heart.png";
 import HeartActivated from "../../../assets/icon/common/heart/heart-activated.png";
@@ -85,7 +86,7 @@ function ClassSideBar({ classInfo, lectureList }) {
         <SelectBox>
           <option>2022-08-10</option>
         </SelectBox>
-        <Button>구매하기</Button>
+        <RoundButton label={"구매하기"} size="lg" />
       </SelectBoxContainer>
       <LikeContainer>
         <Icon src={Heart} />
