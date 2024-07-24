@@ -3,6 +3,9 @@ package com.ssafy.ditto.domain.stt.service;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import com.ssafy.ditto.domain.stt.exception.STTException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,6 +13,9 @@ import java.util.List;
 
 import static com.ssafy.ditto.domain.stt.exception.STTErrorCode.*;
 
+@Component
+@Service
+@RequiredArgsConstructor
 public class STTServiceImpl implements STTService{
     @Override
     public String transcribe(MultipartFile audioFile) throws IOException {

@@ -19,10 +19,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/stt")
 public class STTController {
-    private STTService sttService;
+    private final STTService sttService;
 
     @PostMapping(value = "/audio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseDto<String> handleAudioMessage(@RequestParam("audioFile") MultipartFile audioFile) throws IOException {
+    public ResponseDto<String> handleAudioMessage(@RequestParam("audio") MultipartFile audioFile) throws IOException {
         String transcribe = sttService.transcribe(audioFile);
         return ResponseDto.of(OK.value(), SUCCESS_CONVERT.getMessage(),transcribe);
     }
