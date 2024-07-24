@@ -1,5 +1,9 @@
+import { useState } from "react";
 import { styled } from "styled-components";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
+import useAxios from "../../../hooks/useAxios";
 import OutlineButton from "../../common/OutlineButton";
 import Button from "../../common/Button";
 
@@ -28,10 +32,30 @@ const ButtonWrapper = styled.div`
   gap: 8px;
 `;
 
-function ReplyForm({ isCancel, onCancel, onAdd }) {
+function ReplyForm({ isCancel, onCancel, parentId }) {
+  const { sendRequest: postComment } = useAxios();
+  const userId = useSelector(state => state.auth.userId);  // 추가된 부분
+  const [content, setContent] = useState("");
+  const { postId } = useParams();
+
+  const handleContent = (event) => {
+    setContent(event.target.value);
+  }
+
+  const handleAdd = () => {
+    alert("ddd");
+    const postData = {
+      "userId": userId,
+      "content": content,
+      "parentId": parentId
+    }
+    console.log(postData);
+    postComment(`/comments/${postId}`, postData, "post");
+  };
+
   return (
     <Form>
-      <TextArea placeholder="답글을 남겨주세요." />
+      <TextArea value={content} onChange={handleContent} placeholder="답글을 남겨주세요." />
       <ButtonWrapper>
         {isCancel && (
           <OutlineButton
@@ -41,7 +65,7 @@ function ReplyForm({ isCancel, onCancel, onAdd }) {
             size="sm"
           />
         )}
-        <Button onClick={onAdd} label="등록" size="sm" />
+        <Button onClick={handleAdd} label="등록" size="sm" />
       </ButtonWrapper>
     </Form>
   );

@@ -50,15 +50,25 @@ export function getCategoryLabelByValue(value) {
   return category ? category.label : "리빙";
 }
 
+export function getStartTagIdForCategory(categoryId) {
+  switch (categoryId) {
+    case 1: // 리빙
+      return LIVING_OPTIONS[0].value;
+    case 2: // 패브릭
+      return FABRIC_OPTIONS[0].value;
+    case 3: // 푸드
+      return FOOD_OPTIONS[0].value;
+    case 4: // 아트
+      return ART_OPTIONS[0].value;
+    default:
+      return null;
+  }
+}
+
 export function getTagsForCategory(category) {
   switch (category) {
     case 0:
-      return [
-        ...LIVING_OPTIONS,
-        ...FABRIC_OPTIONS,
-        ...ART_OPTIONS,
-        ...FOOD_OPTIONS,
-      ];
+      return [...LIVING_OPTIONS, ...FABRIC_OPTIONS, ...ART_OPTIONS, ...FOOD_OPTIONS];
     case 1:
       return LIVING_OPTIONS;
     case 2:

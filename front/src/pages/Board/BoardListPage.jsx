@@ -89,13 +89,15 @@ function BoardListPage() {
 
   // posts state 시작 ///////////////////////////////////////
   const getPosts = () => {
+    const boardId = path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
+
     const params = {
       page: getData.page,
       size: getData.size,
       searchBy: getData.searchBy,
       keyword: getData.keyword,
       sortBy: getData.sortBy,
-      ...(getData.boardId !== 0 && { boardId: getData.boardId }),
+      ...(boardId !== 0 && { boardId: boardId }),
       ...(getData.categoryId !== 0 && { categoryId: getData.categoryId }),
       ...(getData.tagId !== 0 && { tagId: getData.tagId }),
     };
@@ -150,7 +152,7 @@ function BoardListPage() {
 
   useEffect(() => {
     getPosts();
-  }, [getData.boardId, getData.page, getData.sortBy]);
+  }, [path, getData.page, getData.sortBy]);
 
   useEffect(() => {
     setPosts(response?.data?.posts || []);
@@ -159,6 +161,7 @@ function BoardListPage() {
   // posts state 끝 ///////////////////////////////////////
 
   // 검색 옵션 시작 ///////////////////////////////////////
+  const [boardId, setBoardId] = useState(0);
   const [tempCategoryId, setTempCategoryId] = useState(0);
   const [tempTagId, setTempTagId] = useState(0);
   const [tempSearchBy, setTempSearchBy] = useState("제목");

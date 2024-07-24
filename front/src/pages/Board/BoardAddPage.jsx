@@ -18,6 +18,7 @@ import {
   getTagsForCategory,
   getBoardTypeLabelByValue,
   getCategoryLabelByValue,
+  getStartTagIdForCategory
 } from "../../utils/options";
 
 const Wrapper = styled.div`
@@ -63,7 +64,7 @@ const Buttons = styled.div`
 
 function BoardAddPage() {
   const { response: getResponse, sendRequest: getPost } = useAxios();
-  const { sendRequest } = useFormDataAxios();
+  const { response, sendRequest } = useFormDataAxios();
   const userId = useSelector(state => state.auth.userId);
   // router
   const navigate = useNavigate();
@@ -91,7 +92,6 @@ function BoardAddPage() {
   }, [isEdit, postId]);
 
   useEffect(() => {
-    console.log(getResponse);
     if (getResponse) {
       setPostData({
         userId: 1,
@@ -101,12 +101,16 @@ function BoardAddPage() {
         title: getResponse?.data?.title,
         content: getResponse?.data?.content,
       });
+
+      setCategory(getResponse?.data?.categoryId);
+      setTag(getStartTagIdForCategory(getResponse?.data?.tagId));
     }
   }, [getResponse]);
 
   // form
-  const [category, setCategory] = useState(postData?.categoryId);
-  const [tags, setTags] = useState(getTagsForCategory(postData?.categoryId));
+  const [category, setCategory] = useState(1);
+  const [tags, setTags] = useState(getTagsForCategory(1));
+  const [tag, setTag] = useState(1);
 
   useEffect(() => {
     setTags(getTagsForCategory(category));
@@ -147,6 +151,7 @@ function BoardAddPage() {
   };
 
   const handleTag = (tagId) => {
+    setTag(tagId);
     setPostData((prevState) => ({
       ...prevState,
       tagId,
@@ -220,7 +225,7 @@ function BoardAddPage() {
           <Filter title="태그">
             <SelectTag
               tags={tags}
-              curTag={postData?.tagId}
+              curTag={tag}
               handleTag={handleTag}
             />
           </Filter>

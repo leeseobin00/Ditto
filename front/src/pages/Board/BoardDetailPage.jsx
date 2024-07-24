@@ -66,19 +66,29 @@ const CommentReplyWrapper = styled.div`
 
 function BoardDetailPage() {
   const { response: getResponse, sendRequest: getPost } = useAxios();
+  const { response: getCommentResponse, sendRequest: getComment } = useAxios();
+  const { sendRequest: postComment } = useAxios();
 
   // router
   const { postId } = useParams();
 
   const [post, setPost] = useState({});
+  const [comment, setComment] = useState([]);
 
   useEffect(() => {
     getPost(`/posts/${postId}`, null, "get");
+    getComment(`/comments/${postId}`, null, "get");
   }, []);
 
   useEffect(() => {
     setPost(getResponse?.data);
+    console.log(getResponse);
   }, [getResponse]);
+
+  useEffect(() => {
+    setComment(getCommentResponse?.data);
+    console.log(getCommentResponse);
+  }, [getCommentResponse]);
 
   const comments = [
     { user: "사용자1", text: "이 이미지는 정말 멋지네요!" },
@@ -106,6 +116,7 @@ function BoardDetailPage() {
     });
   };
 
+
   return (
     <div>
       <TabBar />
@@ -127,7 +138,7 @@ function BoardDetailPage() {
         <MyComment>
           <Profile fileUrl="dd" name="김묘묘" date="2024.07.17" />
           <CommentReplyWrapper>
-            <ReplyForm isCancel={false} />
+            <ReplyForm parentId={-1} isCancel={false} />
           </CommentReplyWrapper>
         </MyComment>
 
