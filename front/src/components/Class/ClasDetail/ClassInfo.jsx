@@ -4,6 +4,7 @@ import ClassStepList from "./ClassStepList";
 import ClassKit from "./ClassKit";
 
 const ClassIntroductionContainer = styled.div`
+  width: 75%;
   display: flex;
   flex-direction: column;
 `;

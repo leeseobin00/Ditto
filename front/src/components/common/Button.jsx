@@ -45,7 +45,6 @@ const sizeStyle = css`
       return css`
         padding: 6px 8px;
         font-size: 14px;
-        font-weight: 500;
       `;
     }
 
@@ -53,7 +52,6 @@ const sizeStyle = css`
       return css`
         padding: 12px 48px;
         font-size: 18px;
-        font-weight: 600;
       `;
     }
 
@@ -61,7 +59,6 @@ const sizeStyle = css`
       return css`
         padding: 12px 60px;
         font-size: 18px;
-        font-weight: 600;
       `;
     }
 
@@ -69,7 +66,7 @@ const sizeStyle = css`
     return css`
       padding: 8px 32px;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
     `;
   }}
 `;
