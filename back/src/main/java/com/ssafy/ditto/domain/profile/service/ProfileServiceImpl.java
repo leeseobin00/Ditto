@@ -137,27 +137,21 @@ public class ProfileServiceImpl implements ProfileService {
         File file = fileRepository.findById(fileId).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
         user.changeFile(file);
         profileRepository.save(user);
-
-//        if (user.getFileId() != null) {
-//            try {
-//                fileService.deleteFile(user.getFileId().getFileId());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
     }
 
     @Override
     public void deleteImage(int userId) {
         User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        File currentFile = user.getFileId();
 
+        // 기본 프로필 이미지로 변경 위한 코드
         File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
         user.changeFile(defaultFile);
         profileRepository.save(user);
 
         if (user.getFileId() != null) {
             try {
-                fileService.deleteFile(user.getFileId().getFileId());
+                fileService.deleteFile(currentFile.getFileId());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
