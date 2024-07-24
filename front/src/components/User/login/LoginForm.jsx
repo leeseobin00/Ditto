@@ -163,7 +163,7 @@ const LoginForm = () => {
 
       const { accessToken, refreshToken, nickname } = response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
-      const userId = decodedToken.userId;
+      const userId = decodedToken.sub;
       const emailFromToken = decodedToken.email;
 
       dispatch(login({ accessToken, refreshToken, userId, nickname: nickname, email: emailFromToken })); // Redux 상태 업데이트

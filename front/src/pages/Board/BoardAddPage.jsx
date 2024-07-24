@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import useAxios from "../../hooks/useAxios";
+import useFormDataAxios from "../../hooks/useFormDataAxios";
 import Button from "../../components/common/Button";
 import OutlineButton from "../../components/common/OutlineButton";
 import TabBar from "../../components/Board/TabBar";
@@ -61,7 +63,8 @@ const Buttons = styled.div`
 
 function BoardAddPage() {
   const { response: getResponse, sendRequest: getPost } = useAxios();
-  const { sendRequest } = useAxios();
+  const { sendRequest } = useFormDataAxios();
+  const userId = useSelector(state => state.auth.userId);
   // router
   const navigate = useNavigate();
   const { postId } = useParams();
@@ -72,7 +75,7 @@ function BoardAddPage() {
   };
 
   const [postData, setPostData] = useState({
-    userId: 1,
+    userId: userId,
     username: "김싸피",
     boardId: 1,
     categoryId: 1,
@@ -92,7 +95,6 @@ function BoardAddPage() {
     if (getResponse) {
       setPostData({
         userId: 1,
-        username: "김싸피",
         boardId: getResponse?.data?.boardId,
         categoryId: getResponse?.data?.categoryId,
         tagId: getResponse?.data?.tagId,
@@ -165,16 +167,31 @@ function BoardAddPage() {
     }));
   };
 
+  const [files, setFiles] = useState([]);
+
+  const handleFiles = (event) => {
+    setFiles(event.target.files);
+  };
+
   const handleSave = async () => {
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
 
-    try {
-      await sendRequest(url, postData, method);
-      handleCancel();
-    } catch (error) {}
-  };
+    const formData = new FormData();
+    formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
+    console.log(formData);
+    for (const file of files) {
+      formData.append("files", file);
+    }
 
+    try {
+      await sendRequest(url, formData, method);
+      handleCancel();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   return (
     <div>
       <TabBar />
