@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.classes.domain;
 
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
