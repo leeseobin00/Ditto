@@ -11,12 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ClassRequest {
     private String className;
+
     private Integer userId;
+
     private Integer categoryId;
     private Integer tagId;
-
-    // FK
-    private String thumbnailUrl;
 
     private Integer classPrice;
     private Integer classHour;
@@ -26,5 +25,6 @@ public class ClassRequest {
     private String classExplanation;
 
     private KitRequest kit;
+
     private List<StepRequest> steps;
 }
