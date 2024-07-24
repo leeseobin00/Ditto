@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PaymentDetail from '../../../components/MyPage/Payment/PaymentDetail';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import PaymentDetail from '../../../components/MyPage/Payment/PaymentDetail';
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
+`;
+
+const Title = styled.h2`
+  align-self: flex-start;
+  margin-bottom: 20px;
 `;
 
 const LoadMoreButton = styled.button`
@@ -36,6 +44,7 @@ const dummyPayments = [
     hour: 12,
     minute: 0,
     payCancelTime: null,
+    classId: 101,
   },
   {
     paymentId: 2,
@@ -50,7 +59,9 @@ const dummyPayments = [
     hour: 12,
     minute: 0,
     payCancelTime: '2024-07-15T12:34:56Z',
+    classId: 102,
   },
+  // 더미 데이터에 classId 추가
   {
     paymentId: 3,
     payTime: '2024-07-20T12:34:56Z',
@@ -64,6 +75,7 @@ const dummyPayments = [
     hour: 14,
     minute: 30,
     payCancelTime: null,
+    classId: 103,
   },
   {
     paymentId: 4,
@@ -74,10 +86,11 @@ const dummyPayments = [
     classPrice: 35900,
     year: 2024,
     month: 6,
-    day: 20,
-    hour: 10,
+    day: 1,
+    hour: 14,
     minute: 0,
     payCancelTime: null,
+    classId: 104,
   },
 ];
 
@@ -123,7 +136,7 @@ const PaymentPage = () => {
 
   return (
     <Container>
-      <h2>결제 내역</h2>
+      <Title>결제/수강 내역</Title>
       <PaymentDetail payments={payments} />
       <LoadMoreButton onClick={loadMorePayments} disabled={loading}>
         {loading ? '불러오는 중...' : '더보기'}

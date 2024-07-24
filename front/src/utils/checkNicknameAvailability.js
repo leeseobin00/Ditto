@@ -1,12 +1,16 @@
 import axios from 'axios';
 
 export const checkNicknameAvailability = async (nickname) => {
-  if (nickname.length > 15) {
-    throw new Error('닉네임은 최대 15자까지 가능합니다.');
+  const trimmedNickname = nickname.trim();
+
+  if (nickname.length > 10) {
+    throw new Error('닉네임은 최대 10자까지 가능합니다.');
+  } else if (trimmedNickname === '') {
+    throw new Error('공백은 닉네임으로 사용할 수 없습니다.');
   }
 
   try {
-    const response = await axios.get(`https://localhost:8080/users/signup/nickname/${nickname}`);
+    const response = await axios.get(`http://localhost:8080/users/signup/nickname/${trimmedNickname}`);
     return response.status === 200;
   } catch (error) {
     if (error.response && error.response.status === 409) {

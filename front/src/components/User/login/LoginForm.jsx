@@ -139,7 +139,6 @@ const SignUpGroup = styled.div`
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const dispatch = useDispatch();
@@ -150,17 +149,16 @@ const LoginForm = () => {
     setLoading(true);
     setError('');
     
-    if (!email || !password || !nickname) {
-      setError('이메일, 비밀번호, 닉네임을 입력해 주세요.');
+    if (!email || !password) {
+      setError('이메일, 비밀번호을 입력해 주세요.');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/user/login', {
+      const response = await axios.post('http://localhost:8080/users/login', {
         email,
         password,
-        nickname,
       });
 
       const { accessToken, refreshToken, nickname } = response.data;
@@ -199,14 +197,6 @@ const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup>
-            <FormLabel>닉네임</FormLabel>
-            <FormInput
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
             />
           </FormGroup>
           {error && <p style={{ color: 'red' }}>{error}</p>}
