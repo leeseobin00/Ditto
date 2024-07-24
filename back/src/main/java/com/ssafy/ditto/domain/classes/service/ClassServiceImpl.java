@@ -11,14 +11,22 @@ import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.KitRepository;
 import com.ssafy.ditto.domain.classes.repository.StepRepository;
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.exception.FileException;
+import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
+import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
+import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +36,27 @@ public class ClassServiceImpl implements ClassService {
     private final StepRepository stepRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final FileRepository fileRepository;
 
     @Override
     @Transactional
-    public void createClass(ClassRequest classRequest) {
+    public void createClass(ClassRequest classRequest, Integer fileId) {
+        User user = userRepository.findById(classRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Kit kit = Kit.builder()
                 .kitName(classRequest.getKit().getKitName())
                 .kitExplanation(classRequest.getKit().getKitExplanation())
                 .build();
         kit = kitRepository.save(kit);
 
+        File file = null;
+        if (fileId != null) {
+            file = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
+        }
+
         DClass dClass = DClass.builder()
                 .className(classRequest.getClassName())
-                .userId(classRequest.getUserId())
+                .userId(user)
                 .categoryId(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new))
                 .tagId(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new))
                 .classPrice(classRequest.getClassPrice())
@@ -55,6 +71,7 @@ public class ClassServiceImpl implements ClassService {
                 .reviewCount(0)
                 .ratingSum(0)
                 .isDeleted(false)
+                .fileId(file)
                 .build();
         dClass = classRepository.save(dClass);
 
@@ -64,7 +81,7 @@ public class ClassServiceImpl implements ClassService {
                         .stepNo(stepRequest.getStepNo().byteValue())
                         .stepName(stepRequest.getStepName())
                         .stepDetail(stepRequest.getStepDetail())
-                        .fileId(stepRequest.getFileId())
+                        .fileId(stepRequest.getFileId() != null ? fileRepository.findById(stepRequest.getFileId()).orElse(null) : null)
                         .classId(finalDClass)
                         .build())
                 .collect(Collectors.toList());
@@ -73,8 +90,9 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     @Transactional
-    public void updateClass(Integer classId, ClassRequest classRequest) {
+    public void updateClass(Integer classId, ClassRequest classRequest, Integer fileId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(classRequest.getUserId()).orElseThrow(UserNotFoundException::new);
 
         Kit kit = dClass.getKitId();
         kit.setKitName(classRequest.getKit().getKitName());
@@ -82,7 +100,7 @@ public class ClassServiceImpl implements ClassService {
         kitRepository.save(kit);
 
         dClass.setClassName(classRequest.getClassName());
-        dClass.setUserId(classRequest.getUserId());
+        dClass.setUserId(user);
         dClass.setCategoryId(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new));
         dClass.setTagId(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new));
         dClass.setClassPrice(classRequest.getClassPrice());
@@ -90,6 +108,11 @@ public class ClassServiceImpl implements ClassService {
         dClass.setClassMinute(classRequest.getClassMinute().byteValue());
         dClass.setClassMax(classRequest.getClassMax().byteValue());
         dClass.setClassExplanation(classRequest.getClassExplanation());
+
+        if (fileId != null) {
+            File file = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
+            dClass.setFileId(file);
+        }
 
         List<Step> existingSteps = stepRepository.findAllByClassId(dClass);
         stepRepository.deleteAll(existingSteps);
@@ -99,7 +122,7 @@ public class ClassServiceImpl implements ClassService {
                         .stepNo(stepRequest.getStepNo().byteValue())
                         .stepName(stepRequest.getStepName())
                         .stepDetail(stepRequest.getStepDetail())
-                        .fileId(stepRequest.getFileId())
+                        .fileId(stepRequest.getFileId() != null ? fileRepository.findById(stepRequest.getFileId()).orElse(null) : null)
                         .classId(dClass)
                         .build())
                 .collect(Collectors.toList());

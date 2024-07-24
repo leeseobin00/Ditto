@@ -8,6 +8,9 @@ import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
+import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
+import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +23,14 @@ import java.util.stream.Collectors;
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
     private final ClassRepository classRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void createLecture(Integer classId, LectureRequest lectureRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+
         Lecture lecture = Lecture.builder()
                 .year(lectureRequest.getYear())
                 .month(lectureRequest.getMonth())
