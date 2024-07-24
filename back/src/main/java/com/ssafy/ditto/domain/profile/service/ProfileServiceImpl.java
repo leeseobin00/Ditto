@@ -22,6 +22,7 @@ import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -51,6 +52,7 @@ public class ProfileServiceImpl implements ProfileService {
     public final FileService fileService;
     public final FileRepository fileRepository;
 
+    @Transactional
     @Override
     public ProfileList searchUser(Map<String, String> map) {
         int curPage = Integer.parseInt(map.getOrDefault("page", "1"));
@@ -77,12 +79,12 @@ public class ProfileServiceImpl implements ProfileService {
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
                 .map(user -> {
                     List<UserTag> userTags = userTagRepository.findByUserId(user);
-                    List<Tag> tags = new ArrayList<>();
+                    List<String> tagNames = new ArrayList<>();
                     for(UserTag ut : userTags){
                         Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
-                        tags.add(tag);
+                        tagNames.add(tag.getTagName());
                     }
-                    return ProfileResponse.of(user, tags);
+                    return ProfileResponse.of(user, tagNames);
                 })
                 .collect(Collectors.toList());
 
@@ -94,44 +96,41 @@ public class ProfileServiceImpl implements ProfileService {
         return profileList;
     }
 
+    @Transactional
     @Override
     public ProfileResponse getProfile(int userId) {
         User user = profileRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
+        // UserTag를 기반으로 Tag 리스트를 가져오기
         List<UserTag> userTags = userTagRepository.findByUserId(user);
-
-        ProfileResponse profileResponse = new ProfileResponse();
-        profileResponse.setUserId(user.getUserId());
-        profileResponse.setRoleId(user.getRoleId().getRoleId());
-        profileResponse.setNickname(user.getNickname());
-        profileResponse.setUploadFileName(user.getFileId().getUploadFileName());
-        profileResponse.setFileUrl(user.getFileId().getFileUrl());
+        List<String> tagNames = userTags.stream()
+                .map(userTag -> userTag.getTagId().getTagName())
+                .toList();
 
         int likeCount = likeUserRepository.countLikesByUserId(userId);
-        profileResponse.setLikeCount(likeCount);
 
         Integer studentSum = profileRepository.getTotalStudentSumByUserId(userId);
-        profileResponse.setStudentSum(studentSum != null ? studentSum : 0);
-
         Integer ratingSum = profileRepository.getTotalRatingSumByUserId(userId);
         Integer reviewCount = profileRepository.getTotalReviewCountByUserId(userId);
+
         float avgRating = 0f;
         if (reviewCount != null && reviewCount > 0) {
             avgRating = ratingSum != null ? (float) ratingSum / reviewCount : 0f;
             avgRating = new BigDecimal(avgRating).setScale(2, RoundingMode.HALF_UP).floatValue();
         }
-        profileResponse.setAvgRating(avgRating);
 
-        profileResponse.setIntro(user.getIntro());
-
-        List<Tag> tags = new ArrayList<>();
-        for(UserTag ut : userTags){
-            Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
-            tags.add(tag);
-        }
-        profileResponse.setTags(tags);
-
-        return profileResponse;
+        return new ProfileResponse(
+                user.getUserId(),
+                user.getRoleId().getRoleId(),
+                user.getNickname(),
+                user.getFileId() != null ? user.getFileId().getUploadFileName() : null,
+                user.getFileId() != null ? user.getFileId().getFileUrl() : null,
+                likeCount,
+                studentSum != null ? studentSum : 0,
+                avgRating,
+                user.getIntro(),
+                tagNames
+        );
     }
 
     @Override

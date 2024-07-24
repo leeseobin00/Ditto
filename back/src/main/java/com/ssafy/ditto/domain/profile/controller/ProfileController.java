@@ -77,7 +77,6 @@ public class ProfileController {
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),null);
     }
 
-
     @GetMapping("/{userId}/like")
     public ResponseDto<Boolean> checkLikePost(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
         Boolean liked = profileService.checkLike(userId,seekerId);
