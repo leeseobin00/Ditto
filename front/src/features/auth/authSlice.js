@@ -18,10 +18,12 @@ const authSlice = createSlice({
       state.userId = action.payload.userId;
       state.nickname = action.payload.nickname;
       state.email = action.payload.email;
+      state.roleId = action.payload.roleId;
       localStorage.setItem("accessToken", action.payload.accessToken);
       localStorage.setItem("userId", action.payload.userId);
       localStorage.setItem("nickname", action.payload.nickname);
       localStorage.setItem("email", action.payload.email);
+      localStorage.setItem("roleId", action.payload.roleId);
       Cookies.set("refreshToken", action.payload.refreshToken, { expires: 7, secure: true, sameSite: 'strict' });
     },
     logout: (state) => {

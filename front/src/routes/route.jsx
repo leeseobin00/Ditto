@@ -13,8 +13,10 @@ import BoardAddPage from "../pages/Board/BoardAddPage";
 import ProfileDetailPage from "../pages/Profile/ProfileDetailPage";
 import ProfileSearchPage from "../pages/Profile/ProfileSearchPage";
 import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
-import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage"; // 추가된 라우트
+import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
+import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
+import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 
 const AppRoutes = () => {
   return (
@@ -31,6 +33,8 @@ const AppRoutes = () => {
       <Route path="/mypage/*" element={<MyPage />}> {/* Nested Routes */}
         <Route path="account" element={<UserInfoDetail />} />
         <Route path="payments" element={<PaymentPage />} />
+        <Route path="questions" element={<MyQuestionsPage />} />
+        <Route path="reviews" element={<ReviewListPage />} />
       </Route>
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route path="/board/:boardCategory/:postId" element={<BoardDetailPage />} />

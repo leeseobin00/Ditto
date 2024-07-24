@@ -158,7 +158,7 @@ const Header = () => {
           </Icon>
           {isAuthenticated ? (
             <Link to="/mypage">
-              <Icon>MyPage</Icon> // 로그인된 경우 사용자 이름 표시
+              <Icon>MyPage</Icon> 
             </Link>
           ) : (
             <Link to="/signup">
