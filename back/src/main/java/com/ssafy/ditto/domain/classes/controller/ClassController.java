@@ -5,11 +5,13 @@ import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import jdk.javadoc.doclet.Reporter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,17 +20,37 @@ import java.util.List;
 public class ClassController {
     private final ClassService classService;
     private final LectureService lectureService;
+    private final FileService fileService;
 
     @PostMapping
-    public ResponseDto<Void> createClass(@RequestBody ClassRequest classRequest) {
-        classService.createClass(classRequest);
-        return ResponseDto.of(201, "클래스가 성공적으로 생성되었습니다.");
+    public ResponseDto<Void> createClass(@RequestPart("classRequest") ClassRequest classRequest,
+                                         @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            Integer fileId = null;
+            if (file != null) {
+                fileId = fileService.saveFile(file);
+            }
+            classService.createClass(classRequest, fileId);
+            return ResponseDto.of(201, "클래스가 성공적으로 생성되었습니다.");
+        } catch (IOException e) {
+            return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
+        }
     }
 
     @PatchMapping("/{classId}")
-    public ResponseDto<Void> updateClass(@PathVariable Integer classId, @RequestBody ClassRequest classRequest) {
-        classService.updateClass(classId, classRequest);
-        return ResponseDto.of(200, "클래스가 성공적으로 수정되었습니다.");
+    public ResponseDto<Void> updateClass(@PathVariable Integer classId,
+                                         @RequestPart("classRequest") ClassRequest classRequest,
+                                         @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            Integer fileId = null;
+            if (file != null) {
+                fileId = fileService.saveFile(file);
+            }
+            classService.updateClass(classId, classRequest, fileId);
+            return ResponseDto.of(200, "클래스가 성공적으로 수정되었습니다.");
+        } catch (IOException e) {
+            return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
+        }
     }
 
     @DeleteMapping("/{classId}")
