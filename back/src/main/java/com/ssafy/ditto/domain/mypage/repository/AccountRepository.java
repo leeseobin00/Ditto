@@ -1,6 +1,6 @@
-package com.ssafy.ditto.domain.user.repository;
+package com.ssafy.ditto.domain.mypage.repository;
 
-import com.ssafy.ditto.domain.user.domain.Account;
+import com.ssafy.ditto.domain.mypage.domain.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

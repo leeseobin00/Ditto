@@ -1,9 +1,6 @@
 package com.ssafy.ditto.domain.user.controller;
 
-import com.ssafy.ditto.domain.user.dto.EmailCodeRequest;
-import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
-import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
-import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
+import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
 import com.ssafy.ditto.global.dto.ResponseDto;
@@ -77,12 +74,12 @@ public class UserController {
     //login_001
     //jwt에 있는 유저 정보 : 이메일
     @PostMapping("/login")
-    public ResponseDto<JwtResponse> login(@RequestBody UserLoginRequest userLoginRequest){
-        JwtResponse jwtResponse = userService.login(userLoginRequest);
-        if (jwtResponse == null){
+    public ResponseDto<LoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
+        LoginResponse loginResponse = userService.login(userLoginRequest);
+        if (loginResponse == null){
             return ResponseDto.of(400, "로그인 실패", null);
         } else {
-            return ResponseDto.of(201, "로그인 성공", jwtResponse);
+            return ResponseDto.of(201, "로그인 성공", loginResponse);
         }
     }
 }

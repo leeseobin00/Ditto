@@ -13,4 +13,6 @@ import java.util.List;
 public interface FileRepository extends JpaRepository<File, Integer>{
     @Query(value = "SELECT f.* FROM File f JOIN File_Post fp ON f.file_id = fp.file_id WHERE fp.post_id = :postId", nativeQuery = true)
     List<File> findByPostId(@Param("postId") int postId);
+
+    File findByFileId(int i);
 }

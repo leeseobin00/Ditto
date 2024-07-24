@@ -1,5 +1,6 @@
-package com.ssafy.ditto.domain.user.domain;
+package com.ssafy.ditto.domain.mypage.domain;
 
+import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 

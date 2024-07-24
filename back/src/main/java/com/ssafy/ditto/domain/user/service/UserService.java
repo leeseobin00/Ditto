@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.user.service;
 
+import com.ssafy.ditto.domain.user.dto.LoginResponse;
 import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
 import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
 import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
@@ -12,7 +13,7 @@ public interface UserService {
 
     void proSignup(ProSignUpRequest proSignUpRequest);
 
-    JwtResponse login(UserLoginRequest userLoginRequest);
+    LoginResponse login(UserLoginRequest userLoginRequest);
 
     boolean emailDuplicateCheck(String email);
 

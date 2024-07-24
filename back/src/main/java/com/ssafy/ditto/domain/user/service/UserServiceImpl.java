@@ -1,10 +1,13 @@
 package com.ssafy.ditto.domain.user.service;
 
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.Agree;
 import com.ssafy.ditto.domain.user.domain.Form;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.domain.UserTag;
+import com.ssafy.ditto.domain.user.dto.LoginResponse;
 import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
 import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
 import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
@@ -20,10 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final AccountRepository accountRepository;
-    private final AddressRepository addressRepository;
     private final AgreeRepository agreeRepository;
     private final FormRepository formRepository;
+    private final FileRepository fileRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,6 +35,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signup(UserSignUpRequest userSignUpRequest) {
+        File file = fileRepository.findByFileId(1);
+
         User user = User.builder()
                 .email(userSignUpRequest.getEmail())
                 .password(passwordEncoder.encode(userSignUpRequest.getPassword()))
@@ -41,7 +45,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
-                .fileId(null)
+                .fileId(file)
                 .build();
 
         user = userRepository.save(user);
@@ -106,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public JwtResponse login(UserLoginRequest userLoginRequest) {
+    public LoginResponse login(UserLoginRequest userLoginRequest) {
         User user;
         try {
             user = userRepository.findByEmail(userLoginRequest.getEmail());
@@ -118,16 +122,18 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        // 토큰에 유저 이메일만 있음
-        String accessToken = jwtProvider.createAccessToken(user.getEmail());
-        String refreshToken = jwtProvider.createRefreshToken(user.getEmail());
+        // 토큰에 유저 Id, 이메일
+        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getUserId()), user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail());
 
-        user.setRefreshToken(refreshToken);
+        user.changeRefreshToken(refreshToken);
         userRepository.save(user);
 
-        return JwtResponse.builder()
+        // 유저의 닉네임도 전송해야하기 때문에 JwtResponse 대신 닉네임도 들어있는 LoginResponse 사용
+        return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .nickname(user.getNickname())
                 .build();
     }
 

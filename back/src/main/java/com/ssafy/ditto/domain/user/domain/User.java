@@ -42,7 +42,6 @@ public class User extends BaseTimeEntity {
     @Column(name = "intro")
     private String intro;
 
-    @Setter
     @Column(name = "refresh_token")
     private String refreshToken;
 
@@ -58,6 +57,18 @@ public class User extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole roleId;
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
+
+    public void changeNickname(String newNickname){
+        this.nickname = newNickname;
+    }
+
+    public void changeRefreshToken(String newRefreshToken){
+        this.refreshToken = newRefreshToken;
+    }
 
     public void changeFile(File newFile) {
         this.fileId = newFile;

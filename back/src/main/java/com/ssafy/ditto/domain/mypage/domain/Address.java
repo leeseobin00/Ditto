@@ -1,5 +1,6 @@
-package com.ssafy.ditto.domain.user.domain;
+package com.ssafy.ditto.domain.mypage.domain;
 
+import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,8 @@ public class Address {
     @Column(name = "is_default")
     private boolean isDefault;
 
+    //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 }
