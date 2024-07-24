@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.mypage.service;
 
+import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
 import com.ssafy.ditto.domain.mypage.domain.Address;
 import com.ssafy.ditto.domain.mypage.dto.AddressRequest;
 import com.ssafy.ditto.domain.mypage.dto.MypageRequest;
@@ -7,12 +8,14 @@ import com.ssafy.ditto.domain.mypage.dto.MypageResponse;
 import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
 import com.ssafy.ditto.domain.mypage.repository.AddressRepository;
 import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.mypage.dto.PaymentResponse;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +25,7 @@ public class MypageServiceImpl implements MypageService{
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AddressRepository addressRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -117,5 +121,14 @@ public class MypageServiceImpl implements MypageService{
     @Override
     public void deleteAddress(int userId, int addressId) {
         addressRepository.deleteById(addressId);
+    }
+
+    @Override
+    public List<PaymentResponse> getPayment(int userId) {
+        List<PaymentResponse> paymentResponses = new ArrayList<>();
+
+        // 5개를 return해줘야함
+
+        return paymentResponses;
     }
 }

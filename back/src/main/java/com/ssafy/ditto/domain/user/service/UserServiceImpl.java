@@ -134,6 +134,7 @@ public class UserServiceImpl implements UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
+                .roleId(user.getRoleId().getRoleId())
                 .build();
     }
 
