@@ -327,7 +327,7 @@ const SignupForm = () => {
 
   const handleEmailVerification = async () => {
     try {
-      await axios.post('https://localhost:8080/users/signup/email', { email: formData.email });
+      await axios.post('http://localhost:8080/users/signup/email', { email: formData.email });
       alert("인증 코드가 이메일로 전송되었습니다.");
       setIsVerificationCodeInputVisible(true);
     } catch (error) {
@@ -338,7 +338,7 @@ const SignupForm = () => {
 
   const handleVerifyCode = async () => {
     try {
-      const response = await axios.post('https://localhost:8080/users/signup/auth', {
+      const response = await axios.post('http://localhost:8080/users/signup/auth', {
         code: formData.verificationCode,
         email: formData.email,
       });
@@ -407,20 +407,24 @@ const SignupForm = () => {
     };
   
     try {
-      const response = await axios.post('https://localhost:8080/users/signup', userData);
+      const response = await axios.post('http://localhost:8080/users/signup', userData);
       console.log(response.data);
       alert("회원가입 성공!");
       navigate('/'); // 홈화면으로 이동
     } catch (error) {
-      console.error(error);
-      alert("회원가입 중 오류가 발생했습니다.");
+      if (error.response && error.response.status === 409) {
+        alert("이미 사용중인 닉네임입니다.");
+      } else {
+        console.error(error);
+        alert("회원가입 중 오류가 발생했습니다.");
+      }
     }
   };
   
 
   const openTermsModal = async () => {
     try {
-      const response = await axios.get('https://localhost:8080/users/signup/0');
+      const response = await axios.get('http://localhost:8080/users/signup/0');
       setTermsContent(response.data.agree);
       setIsTermsModalOpen(true);
     } catch (error) {
@@ -435,7 +439,7 @@ const SignupForm = () => {
 
   const openPrivacyModal = async () => {
     try {
-      const response = await axios.get('https://localhost:8080/users/signup/1');
+      const response = await axios.get('http://localhost:8080/users/signup/1');
       setPrivacyContent(response.data.agree);
       setIsPrivacyModalOpen(true);
     } catch (error) {

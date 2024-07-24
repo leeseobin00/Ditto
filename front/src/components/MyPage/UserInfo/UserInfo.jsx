@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import defaultProfile from '../../../assets/default-profile.jpg';
 import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
-import { isPasswordMatch } from '../../../utils/passwordValidation'; // 비밀번호 확인 함수 임포트
+import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
 import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
 
 const UserInfoContainer = styled.div`
@@ -85,6 +85,7 @@ const UserInfo = ({ userData }) => {
   });
   const [error, setError] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isPasswordValidState, setIsPasswordValidState] = useState(true);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
   const [nicknameMessage, setNicknameMessage] = useState('');
 
@@ -98,6 +99,7 @@ const UserInfo = ({ userData }) => {
 
   useEffect(() => {
     setPasswordMatch(isPasswordMatch(formData.password, formData.confirmPassword));
+    setIsPasswordValidState(isPasswordValid(formData.password));
   }, [formData.password, formData.confirmPassword]);
 
   const handleChange = (e) => {
@@ -143,6 +145,11 @@ const UserInfo = ({ userData }) => {
       return;
     }
 
+    if (!isPasswordValidState) {
+      setError('비밀번호가 유효하지 않습니다.');
+      return;
+    }
+
     if (!isNicknameAvailable) {
       setError('사용할 수 없는 닉네임입니다.');
       return;
@@ -160,8 +167,12 @@ const UserInfo = ({ userData }) => {
         setError('수정 실패. 다시 시도해주세요.');
       }
     } catch (error) {
-      console.error('저장 에러:', error);
-      setError('저장 실패. 다시 시도해주세요.');
+      if (error.response && error.response.status === 409) {
+        setError('이미 사용중인 닉네임입니다.');
+      } else {
+        console.error('저장 에러:', error);
+        setError('저장 실패. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -184,6 +195,7 @@ const UserInfo = ({ userData }) => {
             value={formData.password}
             onChange={handleChange}
           />
+          {!isPasswordValidState && <ErrorMessage>영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.</ErrorMessage>}
         </ProfileField>
         <ProfileField>
           <InputLabel>PW 확인</InputLabel>
@@ -212,6 +224,7 @@ const UserInfo = ({ userData }) => {
         <Button $cancel onClick={handleCancel}>취소</Button>
         <Button onClick={handleSave}>수정</Button>
       </ButtonGroup>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </UserInfoContainer>
   );
 };

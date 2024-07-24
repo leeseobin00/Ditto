@@ -294,7 +294,7 @@ const ProSignupForm = ({ formData, setFormData }) => {
     };
   
     try {
-      const response = await axios.post('https://localhost:8080/users/signup/form', instructorData);
+      const response = await axios.post('http://localhost:8080/users/signup/form', instructorData);
       console.log('Submitted Data:', response.data);
       alert("가입 신청이 완료되었습니다.");
       navigate('/');
