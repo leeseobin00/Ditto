@@ -1,9 +1,16 @@
 // src/components/common/Header.js
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { styled } from "styled-components";
-import { useSelector } from "react-redux";  // 추가된 부분
+import { Link } from "react-router-dom";
+import { logout } from '../../features/auth/authSlice';
+import { useDispatch } from 'react-redux';
+import { useSelector } from "react-redux";
 import { BsCameraVideo, BsBell } from "react-icons/bs";
+import { IoIosLogOut } from "react-icons/io";
+import { SlLogout } from "react-icons/sl";
+import { BiVideo, BiBell,  BiLogOut  } from "react-icons/bi";
+
+import useAxios from "../../hooks/useAxios";
 
 const HeaderContainer = styled.header`
   width: 100%;
@@ -33,7 +40,38 @@ const Icons = styled.div`
   gap: 16px;
 `;
 
+const CustomVideoIcon = styled(BiVideo)`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--PRIMARY);
+}`
+
+const CustomBellIcon = styled(BiBell)`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--PRIMARY);
+}`
+
+const CustomLogoutIcon = styled(BiLogOut)`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--PRIMARY);
+}`
+
 const Icon = styled.div`
+  font-size: 16px;
   font-weight: 600;
   color: var(--TEXT_PRIMARY);
   cursor: pointer;
@@ -109,6 +147,7 @@ const MobileDropdownMenu = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+  width: 200px;
   height: 100%;
   background-color: var(--LIGHT);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -128,15 +167,28 @@ const Overlay = styled.div`
 `;
 
 const Header = () => {
+  const { response: getResponse, sendRequest: getPost } = useAxios();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);  // 추가된 부분
   const nickname = useSelector(state => state.auth.nickname);  // 추가된 부분
+  const dispatch = useDispatch();
 
   const handleOverlayClick = () => {
     setMenuOpen(false);
   };
 
-  return (
+  const handleLogout = async () => {
+    try {
+      //await axios.post('/auth/logout'); // 로그아웃 API 요청
+      dispatch(logout());
+      navigate('/');
+    } catch (error) {
+      console.error("Logout failed: ", error);
+    }
+  };
+  
+    return (
     <HeaderContainer>
       <Overlay open={menuOpen} onClick={handleOverlayClick} />
       <TopSection>
@@ -144,21 +196,18 @@ const Header = () => {
         <MobileDropdownMenu open={menuOpen}>
           <DropdownItem to="/">홈</DropdownItem>
           <DropdownItem to="/">카테고리</DropdownItem>
-          <DropdownItem to="/meeting">커뮤니티</DropdownItem>
-          <DropdownItem to="/meeting">프로필 찾기</DropdownItem>
-          <DropdownItem to="/meeting">내 프로필</DropdownItem>
+          <DropdownItem to="/board/all">커뮤니티</DropdownItem>
+          <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
+          <DropdownItem to="/profile/my">내 프로필</DropdownItem>
+          <DropdownItem to="/profile/my">로그아웃</DropdownItem>
         </MobileDropdownMenu>
         <Logo>MyLogo</Logo>
         <Icons>
-          <Icon>
-            <BsCameraVideo />
-          </Icon>
-          <Icon>
-            <BsBell />
-          </Icon>
+          <CustomVideoIcon />
+          <CustomBellIcon />
           {isAuthenticated ? (
             <Link to="/mypage">
-              <Icon>MyPage</Icon> // 로그인된 경우 사용자 이름 표시
+              <Icon>MyPage</Icon>
             </Link>
           ) : (
             <Link to="/signup">
@@ -166,12 +215,13 @@ const Header = () => {
             </Link>
           )}
           {isAuthenticated ? (
-            <Icon>{nickname}</Icon> // 로그인된 경우 사용자 이름 표시
+            <Icon>{nickname}</Icon>
           ) : (
             <Link to="/login">
               <Icon>로그인</Icon>
             </Link>
           )}
+          {isAuthenticated && <CustomLogoutIcon onClick={handleLogout} />}
         </Icons>
       </TopSection>
       <BottomSection>
@@ -181,14 +231,14 @@ const Header = () => {
         <Link to="/class">
           <MenuItem>카테고리</MenuItem>
         </Link>
-        <Link to="/meeting">
+        <Link to="/board/all">
           <MenuItem>커뮤니티</MenuItem>
         </Link>
         <MenuItem>
           프로필
           <DropdownMenu>
-            <DropdownItem to="/meeting">프로필 찾기</DropdownItem>
-            <DropdownItem to="/meeting">내 프로필</DropdownItem>
+            <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
+            <DropdownItem to="/profile/my">내 프로필</DropdownItem>
           </DropdownMenu>
         </MenuItem>
       </BottomSection>
