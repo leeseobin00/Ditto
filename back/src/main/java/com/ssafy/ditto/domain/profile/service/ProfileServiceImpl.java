@@ -59,9 +59,9 @@ public class ProfileServiceImpl implements ProfileService {
         int sizePage = Integer.parseInt(map.getOrDefault("size", "5"));
         int start = (curPage - 1) * sizePage;
 
-        Integer categoryId = map.get("categoryId") != null ? Integer.parseInt(map.get("categoryId")) : null;
-        Integer tagId = map.get("tagId") != null ? Integer.parseInt(map.get("tagId")) : null;
-        Integer role = map.get("role") != null ? Integer.parseInt(map.get("role")) : null;
+        Integer categoryId = map.get("categoryId") != null && !map.get("categoryId").isEmpty() ? Integer.parseInt(map.get("categoryId")) : null;
+        Integer tagId = map.get("tagId") != null && !map.get("tagId").isEmpty() ? Integer.parseInt(map.get("tagId")) : null;
+        Integer role = map.get("role") != null && !map.get("role").isEmpty() ? Integer.parseInt(map.get("role")) : null;
         String keyword = map.get("keyword");
 
         List<User> users = profileRepository.findUsers(categoryId, tagId, role, keyword);
@@ -169,17 +169,23 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public String modifyIntro(int userId, String intro) {
+    public String modifyIntro(int userId, Map<String, String> map) {
         User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-
+        String intro = map.get("intro");
         user.updateIntro(intro);
         profileRepository.save(user);
         return "소개 한마디 수정";
     }
 
     @Override
-    public String modifyTag(int userId, List<String> tags) {
+    public String modifyTag(int userId, Map<String, String> map) {
         User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        List<String> tags = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            tags.add(entry.getValue());
+        }
+
         List<UserTag> userTags = userTagRepository.findByUserId(user);
         userTagRepository.deleteAll(userTags);
 

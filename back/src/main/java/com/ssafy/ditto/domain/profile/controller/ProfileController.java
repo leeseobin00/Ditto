@@ -48,14 +48,14 @@ public class ProfileController {
     }
 
     @PatchMapping("/intro")
-    public ResponseDto<String> updateProfileIntro(@RequestParam("userId") int userId, @RequestBody String intro){
-        String response = profileService.modifyIntro(userId, intro);
+    public ResponseDto<String> updateProfileIntro(@RequestParam("userId") int userId, @RequestBody Map<String, String> map){
+        String response = profileService.modifyIntro(userId, map);
         return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
     }
 
     @PatchMapping("/tag")
-    public ResponseDto<String> updateProfileTag(@RequestParam("userId") int userId, @RequestBody List<String> tags) {
-        String response = profileService.modifyTag(userId, tags);
+    public ResponseDto<String> updateProfileTag(@RequestParam("userId") int userId, @RequestBody Map<String, String> map) {
+        String response = profileService.modifyTag(userId, map);
         return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
     }
 
@@ -78,19 +78,19 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}/like")
-    public ResponseDto<Boolean> checkLikePost(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
+    public ResponseDto<Boolean> checkLikeUser(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
         Boolean liked = profileService.checkLike(userId,seekerId);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),liked);
     }
 
     @PostMapping("/{userId}/like")
-    public ResponseDto<String> addLikePost(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
+    public ResponseDto<String> addLikeUser(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
         String response = profileService.addLike(userId,seekerId);
         return ResponseDto.of(OK.value(), SUCCESS_LIKE.getMessage(),response);
     }
 
     @DeleteMapping("/{userId}/like")
-    public ResponseDto<String> removeLikePost(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
+    public ResponseDto<String> removeLikeUser(@PathVariable("userId") int userId, @RequestParam("seekerId") int seekerId){
         String response = profileService.removeLike(userId,seekerId);
         return ResponseDto.of(OK.value(), SUCCESS_UNLIKE.getMessage(),response);
     }

@@ -15,8 +15,8 @@ public interface ProfileService {
     void modifyImage(int userId, MultipartFile requestFile);
     void deleteImage(int userId);
 
-    String modifyIntro(int userId, String intro);
-    String modifyTag(int userId, List<String> tags);
+    String modifyIntro(int userId, Map<String, String> map);
+    String modifyTag(int userId, Map<String, String> map);
 
     PostList userPost(int userId, Map<String,String> map);
 //    List<DClass> userClass(int userId);
