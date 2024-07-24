@@ -16,6 +16,7 @@ const ClassSideBarConatiner = styled.div`
   border-color: var(--BORDER_COLOR);
   padding: 15px;
   box-shadow: 1px 1px 5px #767676;
+  margin-left: 15px;
 `;
 
 const ClassPriceContainer = styled.div`

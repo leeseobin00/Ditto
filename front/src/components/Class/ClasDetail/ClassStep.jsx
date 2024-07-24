@@ -74,8 +74,6 @@ const DeleteButton = styled(MdClose)`
 `;
 
 function ClassStep({ isAdd = false, stepNo, step, onDelete }) {
-  console.log(stepNo);
-
   return (
     <ClassStepContainer>
       <StepNo>{stepNo + 1}</StepNo>
