@@ -11,7 +11,7 @@ public class PaymentResponse {
     private int paymentId;
     private LocalDateTime payTime;
     private LocalDateTime payCancelTime;
-    private int fileID;
+    private int fileId;
     private String fileUrl;
     private int classId;
     private String className;
