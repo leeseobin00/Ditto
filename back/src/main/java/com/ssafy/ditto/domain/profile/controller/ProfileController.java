@@ -36,15 +36,17 @@ public class ProfileController {
     }
 
     @PatchMapping("/image")
-    public ResponseDto<String> updateProfileImage(@RequestParam("userId") int userId, @RequestParam("file") MultipartFile file){
-        String response = profileService.modifyImage(userId, file);
-        return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
+    public ResponseDto<String> updateProfileImage(
+            @RequestParam("userId") int userId,
+            @RequestPart(value = "file") MultipartFile file){
+        profileService.modifyImage(userId, file);
+        return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), "프로필 사진 수정 성공");
     }
 
     @DeleteMapping("/image")
     public ResponseDto<String> deleteProfileImage(@RequestParam("userId") int userId){
-        String response = profileService.deleteImage(userId);
-        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), response);
+        profileService.deleteImage(userId);
+        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), "프로필 사진 삭제 성공");
     }
 
     @PatchMapping("/intro")

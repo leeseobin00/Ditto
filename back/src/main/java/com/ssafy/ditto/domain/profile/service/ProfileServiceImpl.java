@@ -124,17 +124,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public String modifyImage(int userId, MultipartFile requestFile) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-
-        if (user.getFileId() != null) {
-            try {
-                fileService.deleteFile(user.getFileId().getFileId());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public void modifyImage(int userId, MultipartFile requestFile) {
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
 
         int fileId = 1;
         try {
@@ -142,16 +133,27 @@ public class ProfileServiceImpl implements ProfileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         File file = fileRepository.findById(fileId).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
         user.changeFile(file);
         profileRepository.save(user);
-        return "";
+
+//        if (user.getFileId() != null) {
+//            try {
+//                fileService.deleteFile(user.getFileId().getFileId());
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
     @Override
-    public String deleteImage(int userId) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    public void deleteImage(int userId) {
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
+        user.changeFile(defaultFile);
+        profileRepository.save(user);
 
         if (user.getFileId() != null) {
             try {
@@ -159,12 +161,6 @@ public class ProfileServiceImpl implements ProfileService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
-            user.changeFile(defaultFile);
-            profileRepository.save(user);
-            return "프로필 이미지 삭제 성공";
-        } else {
-            return "삭제할 이미지가 없습니다.";
         }
     }
 
