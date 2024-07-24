@@ -40,16 +40,16 @@ public interface ProfileRepository extends JpaRepository<User,Integer> {
     // 좋아요 추가
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Like_Post (post_id, user_id, created_date) VALUES (:postId, :userId, now())", nativeQuery = true)
-    void addLike(@Param("postId") int postId, @Param("userId") int userId);
+    @Query(value = "INSERT INTO Like_User (like_getter_id, like_giver_id, created_date) VALUES (:likeGetterId, :likeGiverId, now())", nativeQuery = true)
+    void addLike(@Param("likeGetterId") int likeGetterId, @Param("likeGiverId") int likeGiverId);
 
     // 좋아요 삭제
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
-    void removeLike(@Param("postId") int postId, @Param("userId") int userId);
+    @Query(value = "DELETE FROM Like_User WHERE like_getter_id = :likeGetterId AND like_giver_id = :likeGiverId", nativeQuery = true)
+    void removeLike(@Param("likeGetterId") int likeGetterId, @Param("likeGiverId") int likeGiverId);
 
     // 좋아요 상태 확인
-    @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
-    int checkLike(@Param("postId") int postId, @Param("userId") int userId);
+    @Query(value = "SELECT COUNT(*) FROM Like_User WHERE like_getter_id = :likeGetterId AND like_giver_id = :likeGiverId", nativeQuery = true)
+    int checkLike(@Param("likeGetterId") int likeGetterId, @Param("likeGiverId") int likeGiverId);
 }

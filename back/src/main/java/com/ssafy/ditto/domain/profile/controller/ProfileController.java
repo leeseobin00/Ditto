@@ -36,25 +36,25 @@ public class ProfileController {
     }
 
     @PatchMapping("/image")
-    public ResponseDto<String> updateProfileImage(@RequestParam("userId") int userId, @RequestParam("file") MultipartFile file){
-        String response = profileService.modifyImage(userId, file);
-        return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
+    public ResponseDto<String> updateProfileImage(@RequestParam("userId") int userId, @RequestPart(value = "file") MultipartFile file){
+        profileService.modifyImage(userId, file);
+        return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), "프로필 사진 수정 성공");
     }
 
     @DeleteMapping("/image")
     public ResponseDto<String> deleteProfileImage(@RequestParam("userId") int userId){
-        String response = profileService.deleteImage(userId);
-        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), response);
+        profileService.deleteImage(userId);
+        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), "프로필 사진 삭제 성공");
     }
 
     @PatchMapping("/intro")
-    public ResponseDto<String> updateProfileIntro(@RequestParam("userId") int userId, @RequestParam("intro") String intro){
+    public ResponseDto<String> updateProfileIntro(@RequestParam("userId") int userId, @RequestBody String intro){
         String response = profileService.modifyIntro(userId, intro);
         return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
     }
 
     @PatchMapping("/tag")
-    public ResponseDto<String> updateProfileTag(@RequestParam("userId") int userId, @RequestParam("tags") List<String> tags) {
+    public ResponseDto<String> updateProfileTag(@RequestParam("userId") int userId, @RequestBody List<String> tags) {
         String response = profileService.modifyTag(userId, tags);
         return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), response);
     }

@@ -28,4 +28,9 @@ public class LikeUser extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "like_getter_id", nullable = false)
     private User likeGetter;
+
+    public LikeUser(User likeGetter, User likeGiver){
+        this.likeGetter=likeGetter;
+        this.likeGiver=likeGiver;
+    }
 }

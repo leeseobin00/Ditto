@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,12 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
                 .map(user -> {
-                    List<Tag> tags = userTagRepository.findByUserId(user.getUserId());
+                    List<UserTag> userTags = userTagRepository.findByUserId(user);
+                    List<Tag> tags = new ArrayList<>();
+                    for(UserTag ut : userTags){
+                        Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
+                        tags.add(tag);
+                    }
                     return ProfileResponse.of(user, tags);
                 })
                 .collect(Collectors.toList());
@@ -90,10 +96,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse getProfile(int userId) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = profileRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Tag> tags = userTagRepository.findByUserId(userId);
+        List<UserTag> userTags = userTagRepository.findByUserId(user);
 
         ProfileResponse profileResponse = new ProfileResponse();
         profileResponse.setUserId(user.getUserId());
@@ -118,23 +123,20 @@ public class ProfileServiceImpl implements ProfileService {
         profileResponse.setAvgRating(avgRating);
 
         profileResponse.setIntro(user.getIntro());
+
+        List<Tag> tags = new ArrayList<>();
+        for(UserTag ut : userTags){
+            Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
+            tags.add(tag);
+        }
         profileResponse.setTags(tags);
 
         return profileResponse;
     }
 
     @Override
-    public String modifyImage(int userId, MultipartFile requestFile) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-
-        if (user.getFileId() != null) {
-            try {
-                fileService.deleteFile(user.getFileId().getFileId());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public void modifyImage(int userId, MultipartFile requestFile) {
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
 
         int fileId = 1;
         try {
@@ -142,36 +144,34 @@ public class ProfileServiceImpl implements ProfileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         File file = fileRepository.findById(fileId).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
         user.changeFile(file);
         profileRepository.save(user);
-        return "";
     }
 
     @Override
-    public String deleteImage(int userId) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    public void deleteImage(int userId) {
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        File currentFile = user.getFileId();
+
+        // 기본 프로필 이미지로 변경 위한 코드
+        File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
+        user.changeFile(defaultFile);
+        profileRepository.save(user);
 
         if (user.getFileId() != null) {
             try {
-                fileService.deleteFile(user.getFileId().getFileId());
+                fileService.deleteFile(currentFile.getFileId());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
-            user.changeFile(defaultFile);
-            profileRepository.save(user);
-            return "프로필 이미지 삭제 성공";
-        } else {
-            return "삭제할 이미지가 없습니다.";
         }
     }
 
     @Override
     public String modifyIntro(int userId, String intro) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
 
         user.updateIntro(intro);
         profileRepository.save(user);
@@ -180,14 +180,15 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public String modifyTag(int userId, List<String> tags) {
-        User user = profileRepository.findById(userId)
-                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        List<UserTag> userTags = userTagRepository.findByUserId(user);
+        userTagRepository.deleteAll(userTags);
+
         for (String tagName : tags){
             UserTag userTag = UserTag.builder()
                     .userId(user)
                     .tagId(tagRepository.findByTagName(tagName))
                     .build();
-
             userTag = userTagRepository.save(userTag);
         }
         return "관심사 수정";

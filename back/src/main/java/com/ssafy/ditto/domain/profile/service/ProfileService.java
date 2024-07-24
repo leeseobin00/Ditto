@@ -12,8 +12,8 @@ public interface ProfileService {
     ProfileList searchUser(Map<String,String> map);
     ProfileResponse getProfile(int userId);
 
-    String modifyImage(int userId, MultipartFile requestFile);
-    String deleteImage(int userId);
+    void modifyImage(int userId, MultipartFile requestFile);
+    void deleteImage(int userId);
 
     String modifyIntro(int userId, String intro);
     String modifyTag(int userId, List<String> tags);
