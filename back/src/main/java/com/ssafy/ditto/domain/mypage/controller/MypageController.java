@@ -179,7 +179,7 @@ public class MypageController {
         return ResponseDto.of(200, "출금 신청 완료");
     }
 
-    //Pro_006
-    @GetMapping("question/{userId}")
-    public ResponseDto<>
+//    //Pro_006
+//    @GetMapping("question/{userId}")
+//    public ResponseDto<>
 }
