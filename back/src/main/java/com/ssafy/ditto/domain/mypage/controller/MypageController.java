@@ -80,7 +80,24 @@ public class MypageController {
         return ResponseDto.of(200, "결제/수강 취소 완료");
     }
 
-//    //Mypage_007
-//    @GetMapping("lecture/{lectureId}/summary")
-//    public ResponseDto<List<>>
+    //Mypage_007
+    @GetMapping("lecture/{lectureId}/summary")
+    public ResponseDto<List<SummaryResponse>> getSummary(@PathVariable("lectureId") int lectureId) {
+        List<SummaryResponse> summaryResponses = mypageService.getSummary(lectureId);
+        return ResponseDto.of(200, "요약 조회 성공", summaryResponses);
+    }
+
+    //Mypage_008
+    @GetMapping("{userId}/question")
+    public ResponseDto<List<QuestionResponse>> getMyQuestion(@PathVariable("userId") int userId){
+        List<QuestionResponse> questionResponses = mypageService.getMyQuestion(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "내 문의 조회 성공", questionResponses);
+    }
+
+    //Mypage_019
+    @GetMapping("{userId}/question-more")
+    public ResponseDto<List<QuestionResponse>> getMyQuestion(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<QuestionResponse> questionResponses = mypageService.getMyQuestion(userId, finalDate);
+        return ResponseDto.of(200, "내 문의 조회 성공", questionResponses);
+    }
 }

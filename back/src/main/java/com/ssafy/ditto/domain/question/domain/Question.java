@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.question.domain;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,10 +31,15 @@ public class Question extends BaseTimeEntity {
     @Column
     private Boolean isAnswered;
 
-    // FK
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private DClass classId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lecture_id")
+    private Lecture lectureId;
 }
