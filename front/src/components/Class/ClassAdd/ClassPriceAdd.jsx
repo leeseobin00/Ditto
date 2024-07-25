@@ -23,8 +23,9 @@ const InputContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 150px;
+  width: 80%;
 `;
+
 const Icon = styled.img`
   width: 30px;
   height: 30px;

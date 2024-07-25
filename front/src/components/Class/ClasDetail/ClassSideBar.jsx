@@ -2,20 +2,25 @@ import { styled } from "styled-components";
 
 import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
-import Heart from "../../../assets/icon/common/heart/heart.png";
+import Heart from "../../../assets/icon/common/heart/heart-secondary.png";
 import HeartActivated from "../../../assets/icon/common/heart/heart-activated.png";
 
 const ClassSideBarConatiner = styled.div`
+  position: sticky;
+  top: 85px;
   display: flex;
   flex-direction: column;
   width: 230px;
-  height: 300px;
+  height: 250px;
   border-style: solid;
   border-width: 0.5px;
   border-radius: 10px;
   border-color: var(--BORDER_COLOR);
   padding: 15px;
   box-shadow: 1px 1px 5px #767676;
+  margin-top: 25px;
+  margin-left: 15px;
+  justify-content: space-between;
 `;
 
 const ClassPriceContainer = styled.div`
@@ -39,23 +44,21 @@ const ClassPrice = styled.div`
 const SelectBoxContainer = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100px;
+  justify-content: space-between;
 `;
 
 const SelectBox = styled.select`
-  color: var(--BORDER_);
   border-radius: 25px;
+  border-color: var(--BORDER_COLOR);
   height: 40px;
-  font-size: 25px;
-`;
-
-const Button = styled.button`
-  background-color: var(--SECONDARY);
-  border-radius: 20px;
-  border-style: none;
-  height: 40px;
-  color: var(--LIGHT);
-  font-weight: 600;
   font-size: 20px;
+  padding-left: 10px;
+  &:focus {
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
 `;
 
 const LikeContainer = styled.div`
@@ -66,8 +69,23 @@ const LikeContainer = styled.div`
   justify-content: center;
 `;
 
+const LikeButton = styled.button`
+  width: 25px;
+  height: 25px;
+  background-color: transparent;
+  background-image: url(${Heart});
+  background-size: cover;
+  margin-right: 10px;
+  border-style: none;
+  cursor: pointer;
+  &:hover {
+    filter: drop-shadow(0px 0px 2px rgb(84, 84, 84));
+  }
+`;
+
 const LikeCount = styled.div`
   font-size: 18px;
+  color: var(--TEXT_SECONDARY);
 `;
 
 const formatNumber = (number) => {
@@ -79,7 +97,7 @@ function ClassSideBar({ classInfo, lectureList }) {
     <ClassSideBarConatiner>
       <ClassPriceContainer>
         <Icon src={Dollar} />
-        <ClassPrice>{classInfo.classPrice}</ClassPrice>
+        <ClassPrice>{formatNumber(classInfo.classPrice)}</ClassPrice>
       </ClassPriceContainer>
       <hr />
       <SelectBoxContainer>
@@ -89,7 +107,7 @@ function ClassSideBar({ classInfo, lectureList }) {
         <RoundButton label={"구매하기"} size="lg" />
       </SelectBoxContainer>
       <LikeContainer>
-        <Icon src={Heart} />
+        <LikeButton />
         <LikeCount>{formatNumber(classInfo.likeCount)}</LikeCount>
       </LikeContainer>
     </ClassSideBarConatiner>

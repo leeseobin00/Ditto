@@ -16,10 +16,19 @@ const ClassBody = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
-  padding: 5%;
+  padding: 1% 5%;
+`;
+
+const StickyContainer = styled.div`
+  position: sticky;
+  top: -1px;
+  z-index: 500;
+  background-color: white;
 `;
 
 function ClassDetailPage() {
+  const titleIds = ["1", "2", "3"];
+
   const classInfo = {
     classId: 1,
     className: "수제 비누 만들기 DIY 클래스",
@@ -68,9 +77,11 @@ function ClassDetailPage() {
   return (
     <ClassDetailPageContainer>
       <ClassThumbnail classInfo={classInfo} />
-      <TabBar />
+      <StickyContainer>
+        <TabBar titleIds={titleIds} />
+      </StickyContainer>
       <ClassBody>
-        <ClassInfo classInfo={classInfo} />
+        <ClassInfo classInfo={classInfo} titleIds={titleIds} />
         <ClassSideBar classInfo={classInfo} />
       </ClassBody>
     </ClassDetailPageContainer>

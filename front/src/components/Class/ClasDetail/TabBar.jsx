@@ -1,100 +1,99 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, animateScroll as scroll } from "react-scroll";
+import React, { useEffect, useState } from "react";
+import { Link, Events, scrollSpy } from "react-scroll";
 import { styled } from "styled-components";
 
 const TabBarContainer = styled.div`
   display: flex;
+  height: 50px;
+  width: 100%;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  height: 40px;
-  width: 100%;
+  background-color: var(--LIGHT);
+`;
+
+const VwContainer = styled.div`
+  height: 50px;
+  width: 100vw;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 auto;
+  z-index: -1;
+  box-shadow: 0px 5px 10px -8px rgba(0, 0, 0, 0.3);
 `;
 
 const Button = styled.button`
+  font-size: 16px;
   color: ${(props) => (props.active ? "var(--PRIMARY)" : "var(--DARK)")};
   border: none;
   cursor: pointer;
+  background: none;
   &:hover {
     color: var(--PRIMARY);
   }
+  width: 110px;
+  font-weight: 600;
 `;
 
-const Block = styled.div`
-  height: 40px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  color: ${(props) => props.color};
-`;
-
-const blocks = [
-  { id: "block1", label: "강의소개" },
-  { id: "block2", label: "리뷰" },
-  { id: "block3", label: "문의하기" },
-];
-
-function TabBar() {
-  const [activeBlock, setActiveBlock] = useState(null);
-  const blockRefs = useRef([]);
+function TabBar({ titleIds }) {
+  const [activeSection, setActiveSection] = useState();
 
   useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.5,
-    };
+    Events.scrollEvent.register("begin", function () {});
 
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveBlock(entry.target.id);
-        }
-      });
-    };
+    Events.scrollEvent.register("end", function () {});
 
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    blockRefs.current.forEach((block) => {
-      if (block) observer.observe(block);
-    });
+    scrollSpy.update();
 
     return () => {
-      if (blockRefs.current) {
-        blockRefs.current.forEach((block) => {
-          if (block) observer.unobserve(block);
-        });
-      }
+      Events.scrollEvent.remove("begin");
+      Events.scrollEvent.remove("end");
     };
   }, []);
 
   return (
     <TabBarContainer>
-      {blocks.map((block, index) => (
-        <Link
-          key={block.id}
-          to={block.id}
-          smooth={true}
-          duration={500}
-          offset={-50}
-        >
-          <Button active={activeBlock === block.id}>{block.label}</Button>
-        </Link>
-      ))}
-
-      {blocks.map((block, index) => (
-        <Block
-          key={block.id}
-          id={block.id}
-          color={block.color}
-          ref={(el) => (blockRefs.current[index] = el)}
-        >
-        </Block>
-      ))}
+      <VwContainer></VwContainer>
+      <Link
+        activeClass="active"
+        to={titleIds[0]}
+        spy={true}
+        smooth={true}
+        offset={-60}
+        duration={500}
+        onSetActive={() => setActiveSection(titleIds[0])}
+      >
+        <Button active={activeSection === titleIds[0] ? "true" : undefined}>
+          강의 소개
+        </Button>
+      </Link>
+      <Link
+        activeClass="active"
+        to={titleIds[1]}
+        spy={true}
+        smooth={true}
+        offset={-60}
+        duration={500}
+        onSetActive={() => setActiveSection(titleIds[1])}
+      >
+        <Button active={activeSection === titleIds[1] ? "true" : undefined}>
+          리뷰
+        </Button>
+      </Link>
+      <Link
+        activeClass="active"
+        to={titleIds[2]}
+        spy={true}
+        smooth={true}
+        offset={-60}
+        duration={500}
+        onSetActive={() => setActiveSection(titleIds[2])}
+      >
+        <Button active={activeSection === titleIds[2] ? "true" : undefined}>
+          Q & A
+        </Button>
+      </Link>
     </TabBarContainer>
   );
 }
