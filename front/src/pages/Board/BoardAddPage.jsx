@@ -63,16 +63,19 @@ const Buttons = styled.div`
 `;
 
 function BoardAddPage() {
-  const { response: getResponse, sendRequest: getPost } = useAxios();
-  const { response, sendRequest } = useFormDataAxios();
+  // redux
   const userId = useSelector(state => state.auth.userId);
+  const userName = useSelector(state => state.auth.nickname);
+  // axios
+  const { sendRequest: getPost } = useAxios();
+  const { sendRequest: postPost } = useFormDataAxios();
   // router
   const navigate = useNavigate();
   const { postId } = useParams();
   const isEdit = Boolean(postId);
 
   const handleCancel = () => {
-    navigate("/board/all");
+    navigate(-1);
   };
 
   const [postData, setPostData] = useState({
@@ -85,32 +88,40 @@ function BoardAddPage() {
     content: "",
   });
 
+  const handleGetPost = async() => {
+    const result = await getPost(`/posts/${postId}`, null, "get");
+    setPostData({
+      userId: userId,
+      boardId: result?.data?.boardId,
+      categoryId: result?.data?.categoryId,
+      tagId: result?.data?.tagId,
+      title: result?.data?.title,
+      content: result?.data?.content,
+    });
+
+    setCategory(result?.data?.categoryId);
+    setTag(getStartTagIdForCategory(result?.data?.tagId));
+  }
   useEffect(() => {
     if (isEdit) {
-      getPost(`/posts/${postId}`, null, "get");
+      handleGetPost();
     }
   }, [isEdit, postId]);
-
-  useEffect(() => {
-    if (getResponse) {
-      setPostData({
-        userId: 1,
-        boardId: getResponse?.data?.boardId,
-        categoryId: getResponse?.data?.categoryId,
-        tagId: getResponse?.data?.tagId,
-        title: getResponse?.data?.title,
-        content: getResponse?.data?.content,
-      });
-
-      setCategory(getResponse?.data?.categoryId);
-      setTag(getStartTagIdForCategory(getResponse?.data?.tagId));
-    }
-  }, [getResponse]);
 
   // form
   const [category, setCategory] = useState(1);
   const [tags, setTags] = useState(getTagsForCategory(1));
   const [tag, setTag] = useState(1);
+
+  const [files, setFiles] = useState([]);
+
+  const handleFiles = (event) => {
+    setFiles((prev) => [
+      ...prev,
+      ...Array.from(event.target.files)
+    ]);
+  };
+  
 
   useEffect(() => {
     setTags(getTagsForCategory(category));
@@ -172,12 +183,6 @@ function BoardAddPage() {
     }));
   };
 
-  const [files, setFiles] = useState([]);
-
-  const handleFiles = (event) => {
-    setFiles(event.target.files);
-  };
-
   const handleSave = async () => {
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
@@ -190,7 +195,7 @@ function BoardAddPage() {
     }
 
     try {
-      await sendRequest(url, formData, method);
+      await postPost(url, formData, method);
       handleCancel();
     } catch (error) {
       console.error(error);
@@ -211,7 +216,7 @@ function BoardAddPage() {
             />
           </Filter>
           <Filter title="작성자">
-            <NameInput>{postData?.username}</NameInput>
+            <NameInput>{userName}</NameInput>
           </Filter>
         </FilterWrapper>
         <FilterWrapper>

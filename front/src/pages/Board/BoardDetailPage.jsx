@@ -66,33 +66,46 @@ const CommentReplyWrapper = styled.div`
 `;
 
 function BoardDetailPage() {
-  const { response: getResponse, sendRequest: getPost } = useAxios();
-  const { response: getCommentResponse, sendRequest: getComment } = useAxios();
-  const { sendRequest: postComment } = useAxios();
+  // redux
   const userId = useSelector(state => state.auth.userId);  
   const userName = useSelector(state => state.auth.nickname);
-
+  // axios
+  const { sendRequest: getPost } = useAxios();
+  const { sendRequest: getComment } = useAxios();
+  const { sendRequest: postComment } = useAxios();
+  // router
   const { postId } = useParams();
-
+  // state: post, comments
   const [post, setPost] = useState({});
   const [comments, setComments] = useState([]);
+  // date
   const date = new Date();
   const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 
+  const handleGetPost = async() => {
+    const result = await getPost(`/posts/${postId}`, null, "get");
+    setPost(result?.data);
+  }
+
+  const handleGetComment = async() => {
+    const result = await getComment(`/comments/${postId}`, null, "get");
+    setComments(result?.data);
+  }
+
   useEffect(() => {
-    getPost(`/posts/${postId}`, null, "get");
-    getComment(`/comments/${postId}`, null, "get");
+    handleGetPost();
+    handleGetComment();
   }, []);
 
-  useEffect(() => {
-    setPost(getResponse?.data);
-    console.log(getResponse);
-  }, [getResponse]);
-
-  useEffect(() => {
-    setComments(getCommentResponse?.data);
-    console.log(getCommentResponse);
-  }, [getCommentResponse]);
+  const handlePostComment = async (content, parentId) => {
+    const postData = {
+      userId: userId,
+      content: content,
+      parentId: parentId,
+    };
+    await postComment(`/comments/${postId}`, postData, "post");
+    handleGetComment();
+  };
 
   const [showReplyForms, setShowReplyForms] = useState([]);
 
@@ -110,17 +123,6 @@ function BoardDetailPage() {
       newShowReplyForms[index] = false;
       return newShowReplyForms;
     });
-  };
-
-  const handleAddComment = async (content, parentId) => {
-    const postData = {
-      userId: userId,
-      content: content,
-      parentId: parentId,
-    };
-    await postComment(`/comments/${postId}`, postData, "post");
-    await getComment(`/comments/${postId}`, null, "get");
-    setComments(getCommentResponse?.data);
   };
 
   return (
@@ -144,7 +146,7 @@ function BoardDetailPage() {
         <MyComment>
           <Profile fileUrl="dd" name={userName} date={formattedDate} />
           <CommentReplyWrapper>
-            <ReplyForm parentId={-1} isCancel={false} onAddComment={handleAddComment} />
+            <ReplyForm parentId={-1} isCancel={false} onAddComment={handlePostComment} />
           </CommentReplyWrapper>
         </MyComment>
 
@@ -177,7 +179,7 @@ function BoardDetailPage() {
                     parentId={comment.commentId}
                     isCancel
                     onCancel={() => handleReplyFormClose(index)}
-                    onAddComment={handleAddComment}
+                    onAddComment={handlePostComment}
                   />
                 </CommentReplyWrapper>
               )}

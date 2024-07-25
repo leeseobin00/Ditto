@@ -113,7 +113,6 @@ function BoardListPage() {
 
     const result = await sendRequest(url, null, "get");
 
-    console.log(result);
     setPosts(result?.data?.posts || []);
     setTotalPageCount(result?.data?.totalPageCount);
   };
