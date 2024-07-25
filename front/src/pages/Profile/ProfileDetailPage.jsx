@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import Sidebar from "../../components/Profile/SideBar";
 import Section from "../../components/Profile/ProfileDetail/Section";
@@ -8,6 +9,7 @@ import CardList from "../../components/Profile/ProfileDetail/CardList";
 import ReviewList from "../../components/Profile/ProfileDetail/ReviewList";
 import PostList from "../../components/common/PostList";
 import ModifyIntro from "../../components/Profile/ProfileDetail/ModifyIntro";
+import useAxios from "../../hooks/useAxios";
 
 const Container = styled.div`
   display: flex;
@@ -27,48 +29,103 @@ const IntroContent = styled.div`
 `;
 
 function ProfileDetailPage() {
-  const location = useLocation();
-  const isMyProfile = location.pathname === "/profile/my";
+  // router
+  const loginUserId = useSelector(state => state.auth.userId);
+  const roleId = useSelector(state => state.auth.roleId);
 
-  const [posts, setPosts] = useState([
-    {
-      postId: 1,
-      title: "제목",
-      likeCount: "1024",
-      userName: "김싸피",
-      createdDate: "2024-07-19",
-    },
-    {
-      postId: 2,
-      title: "제목",
-      likeCount: "1024",
-      userName: "김싸피",
-      createdDate: "2024-07-19",
-    },
-  ]);
-  const [cards, setCards] = useState([
-    {
-      title: "제목",
-      name: "김싸피",
-      date: "2024-07-19",
-      tag: "향수",
-    },
-    {
-      title: "제목2",
-      name: "김디토",
-      date: "2024-07-19",
-      tag: "뜨개질",
-    },
-  ]);
+  const { userId } = useParams();
+  const [isMyProfile, setIsMyProfile] = useState(false);
+  useEffect(()=>{
+    if(loginUserId===userId){
+      setIsMyProfile(true);
+    }
+  },[]);
+  
+  // axios
+  const { sendRequest: getProfile} = useAxios();
+  const { sendRequest: getClasses} = useAxios();
+  const { sendRequest: getPosts} = useAxios();
+
+  const { sendRequest: postHeart} = useAxios();
+  const { sendRequest: deleteHeart } = useAxios();
+
+  const { sendRequest: getReviews } = useAxios();
+  const { sendRequest: getRating } = useAxios();
+
+  // state
+  const [classes, setClasses] = useState([]);
   const [reviews, setReviews] = useState([
     { rating: 4 },
     { rating: 3 },
     { rating: 5 },
   ]);
+  const [posts, setPosts] = useState([]);
+  const [studentSum, setStudentSum] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
+
+  const handleGetProfile = async() => {
+    const result = await getProfile(`/profiles/${userId}`, null, "get");
+
+  }
+
+  const handleGetClasses = async() => {
+    const result = await getClasses(`/profiles/${userId}/class`, null, "get");
+    if(result){
+      setClasses(result?.data);
+    }
+  }
+
+  const handleGetPosts = async() => {
+    const result = await getPosts(`/profiles/${userId}/post`, null, "get");
+    setPosts(result?.data?.posts);
+  }
+
+  const handlePostHeart = async() => {
+    await postHeart(`/profiles/${loginUserId}/like?seekerId=${userId}`, null, "post");
+  }
+
+  const handleDeleteHeart = async() => {
+    await deleteHeart(`/profiles/${loginUserId}/like?seekerId=${userId}`, null, "delete");
+  }
+
+  const handleGetReviews = async() => {
+    const result = await getReviews(`/profiles/${userId}/review`, null, "get");
+    if(result){
+      setReviews(result?.data);
+    }
+  }
+
+  const handleRating = async() => {
+    const result = await getRating(`/profiles/${userId}`)
+    if(result){
+      setStudentSum(result?.data?.studentSum);
+      setAvgRating(result?.data?.avgRating);
+    }
+  }
+
+  useEffect(()=>{
+    if(loginUserId){
+      handleGetProfile();
+      handleGetClasses();
+      handleGetPosts();
+      //강사일때만
+      if(roleId==2){
+        handleGetReviews();
+        handleRating();
+      }
+    }
+  },[loginUserId]);
 
   return (
     <Container>
-      <Sidebar isMyProfile={isMyProfile} />
+      <Sidebar 
+        isMyProfile={isMyProfile}
+        studentSum={studentSum}
+        avgRating={avgRating}
+        seekerId={userId}
+        postHeart={handlePostHeart}
+        deleteHeart={handleDeleteHeart}
+      />
       <Content>
         <Section
           id="intro"
@@ -82,12 +139,12 @@ function ProfileDetailPage() {
         </Section>
 
         <Section id="classes" title="참여 Class">
-          <CardList cards={cards} />
+          <CardList cards={classes} />
         </Section>
 
-        <Section id="reviews" title="강의 리뷰">
+        {roleId==2 && <Section id="reviews" title="강의 리뷰">
           <ReviewList reviews={reviews} />
-        </Section>
+        </Section>}
 
         <Section id="posts" title="작성한 글">
           <PostList posts={posts} />

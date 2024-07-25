@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { BsHeartFill } from "react-icons/bs";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
+import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
 
 const ProfileWrapper = styled.div`
@@ -31,8 +34,14 @@ const LikeCount = styled.p`
   margin-top: 8px;
 `;
 
+const CustomHeartIcon = styled(BsHeart)`
+  color: var(--TEXT_SECONDARY);
+  cursor: pointer;
+`;
+
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
+  cursor: pointer;
 `;
 
 const Tags = styled.div`
@@ -41,13 +50,43 @@ const Tags = styled.div`
   margin-top: 16px;
 `;
 
-function Profile() {
+function Profile({seekerId, postHeart, deleteHeart}) {
+  // redux
+  const userId = useSelector((state)=>state.auth.userId);
+  // axios
+  const {sendRequest:getHeart} = useAxios();
+
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [likeCount, setLikeCount] = useState(1024);
+
+  const handleHeartClick = () => {
+    if (isHeartFilled===true) {
+      setIsHeartFilled(false);
+      setLikeCount((prev) => prev - 1);
+      deleteHeart();
+    } else {
+      console.log("ss");
+      setIsHeartFilled(true);
+      setLikeCount((prev) => prev + 1);
+      postHeart();
+    }
+  };
+
+  const handleGetHeart = async() => {
+    const result = await getHeart(`/profiles/${userId}/like?seekerId=${seekerId}`,null, "get");
+    setIsHeartFilled(result?.data);
+  }
+
+  useEffect(()=>{
+    handleGetHeart();
+  },[]);
+
   return (
     <ProfileWrapper>
       <Image />
       <Name>김디토</Name>
-      <LikeCount>
-        <CustomFilledHeartIcon /> 1024
+      <LikeCount onClick={handleHeartClick}>
+      {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {likeCount}
       </LikeCount>
       <Tags>
         <Tag tagName="향수" />

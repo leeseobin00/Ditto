@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { styled } from "styled-components";
+import { useSelector } from "react-redux";
 
 import RoundButton from "../../common/RoundButton";
 import {
@@ -8,6 +9,7 @@ import {
   FOOD_OPTIONS,
   ART_OPTIONS,
 } from "../../../utils/options";
+import useAxios from "../../../hooks/useAxios";
 
 const ModalTitle = styled.p`
   color: var(--PRIMARY);
@@ -46,6 +48,12 @@ const TagList = styled.div`
 `;
 
 function ModifyTags({ onClose }) {
+  // redux
+  const userId = useSelector(state => state.auth.userId);
+
+  // axios
+  const { sendRequest:patchTags } = useAxios();
+  
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
@@ -83,6 +91,15 @@ function ModifyTags({ onClose }) {
   };
 
   const handleSubmit = () => {
+    if(userId){
+      const patchData = {  };
+      selectedTags.forEach((tag, index) => {
+        patchData[`tag${index + 1}`] = tag;
+      });
+      
+      patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
+    }
+
     onClose();
   };
 
