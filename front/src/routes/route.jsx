@@ -18,6 +18,7 @@ import ClassAddPage from "../pages/Class/ClassAddPage";
 import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
+import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage"
 
 const AppRoutes = () => {
   return (
@@ -32,11 +33,13 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/callback" element={<KakaoCallback />} />
       <Route path="/mypage/*" element={<MyPage />}> {/* Nested Routes */}
-        <Route path="account" element={<UserInfoDetail />} />
+        <Route path="userinfo" element={<UserInfoDetail />} />
         <Route path="payments" element={<PaymentPage />} />
         <Route path="questions" element={<MyQuestionsPage />} />
         <Route path="reviews" element={<ReviewListPage />} />
         <Route path="liked" element={<LikedPage />} />
+        <Route path="prouserinfo" element={<ProAccountPage />}>
+        </Route>
       </Route>
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route path="/board/:boardCategory/:postId" element={<BoardDetailPage />} />

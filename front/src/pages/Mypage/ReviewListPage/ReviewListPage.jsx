@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReviewList from '../../../components/MyPage/Review/ReviewList';
+import styled from 'styled-components';
+
+const Title = styled.h2`
+  color: var(--PRIMARY);
+  font-size: 20px;
+  margin: 20px 13px;
+`;
+
+const PageContainer = styled.div`
+  padding: 20px;
+`;
 
 // 더미 데이터
 const dummyReviews = [
@@ -72,13 +83,10 @@ const ReviewListPage = () => {
   const fetchMoreReviews = async () => {
     try {
       // 서버와 통신하는 부분 주석 처리
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/review-more`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/review-more?final-date=${finalDate}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      //   params: {
-      //     finalDate: finalDate,
-      //   },
+      //   }
       // });
       // const reviewData = response.data.reviews;
       const reviewData = dummyReviews; // 더미 데이터 사용
@@ -90,21 +98,16 @@ const ReviewListPage = () => {
     }
   };
 
-  const handleEdit = (reviewId) => {
-    // 편집 페이지로 이동
-  };
 
-  const handleClassClick = (classId) => {
-    // 클래스 상세 페이지로 이동
-  };
 
   return (
-    <ReviewList
-      reviews={reviews}
-      fetchMoreReviews={fetchMoreReviews}
-      handleEdit={handleEdit}
-      handleClassClick={handleClassClick}
-    />
+    <PageContainer>
+      <Title>작성한 리뷰</Title>
+      <ReviewList
+        reviews={reviews}
+        fetchMoreReviews={fetchMoreReviews}
+      />
+    </PageContainer>
   );
 };
 

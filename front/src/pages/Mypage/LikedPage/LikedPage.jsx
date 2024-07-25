@@ -111,7 +111,7 @@ const LikedPage = () => {
     const finalDate = likedClasses[likedClasses.length - 1].createdDate;
     setLoading(true);
     try {
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/class?final-date=${finalDate}`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/class-more?final-date=${finalDate}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
       //   }
@@ -129,7 +129,7 @@ const LikedPage = () => {
     const finalDate = likedUsers[likedUsers.length - 1].createdDate;
     setLoading(true);
     try {
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/user?final-date=${finalDate}`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/user-more?final-date=${finalDate}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
       //   }
