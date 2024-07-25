@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import EditReviewModal from './EditReviewModal';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -121,6 +122,7 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
   const [currentReview, setCurrentReview] = useState(null);
   const [editContent, setEditContent] = useState('');
   const [editRating, setEditRating] = useState(0);
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   const handleEdit = (review) => {
     setCurrentReview(review);
@@ -155,11 +157,15 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
     }
   };
 
+  const handleClassClick = (classId) => {
+    navigate(`/class/${classId}`); // Navigate 훅으로 페이지 이동 처리
+  };
+
   return (
     <ListContainer>
       {reviews.map((review) => (
         <ReviewItemContainer key={review.reviewId}>
-          <ClassInfo>
+          <ClassInfo onClick={() => handleClassClick(review.classId)}>
             <ClassImage src={review.fileUrl} alt={review.className} />
             <ClassDetails>
               <ClassName>{review.className}</ClassName>

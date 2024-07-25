@@ -11,6 +11,11 @@ const Title = styled.h2`
   margin: 20px 13px;
 `;
 
+const PageContainer = styled.div`
+  padding: 20px;
+`;
+
+
 const UserInfoDetail = () => {
   const userId = useSelector((state) => state.auth.userId);
   const [userData, setUserData] = useState({});
@@ -19,7 +24,7 @@ const UserInfoDetail = () => {
 
 // useEffect(() => {
   //   if (userId) {
-  //         axiosIntercepter.get(/mypage/${userId}/normal)
+  //         axiosIntercepter.get(`/mypage/${userId}/normal`)
   //           .then(response => {
   //                 setUserData(response.data); // fileURL 데이터 가져옴
   //                 setAddresses(response.data.addresses); // addresses 리스트 가져옴
@@ -89,10 +94,12 @@ fetchUserData();
 
   return (
     <>
+    <PageContainer>
       <Title>계정 정보</Title>
       <UserInfo userData={userData} />
       <Title>배송지 목록</Title>
       <AddressList addresses={addresses} />
+    </PageContainer>
     </>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import defaultProfile from '../../../assets/default-profile.jpg';
-import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
+// import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
 import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
 import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
 
@@ -156,16 +156,17 @@ const UserInfo = ({ userData }) => {
     }
 
     try {
-      const response = await axiosIntercepter.patch(`/mypage/${userId}`, {
-        password: formData.password,
-        nickname: formData.nickname,
-      });
+      // const response = await axiosIntercepter.patch(`/mypage/${userId}`, {
+      //   password: formData.password,
+      //   nickname: formData.nickname,
+      // });
 
-      if (response.status === 200) {
-        console.log('수정 성공:', formData);
-      } else {
-        setError('수정 실패. 다시 시도해주세요.');
-      }
+      // if (response.status === 200) {
+      //   console.log('수정 성공:', formData);
+      // } else {
+      //   setError('수정 실패. 다시 시도해주세요.');
+      // }
+      alert('수정 성공:', formData);
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setError('이미 사용중인 닉네임입니다.');
