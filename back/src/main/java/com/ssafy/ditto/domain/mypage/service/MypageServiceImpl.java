@@ -1,14 +1,21 @@
 package com.ssafy.ditto.domain.mypage.service;
 
+import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.classes.domain.Payment;
+import com.ssafy.ditto.domain.classes.domain.Summary;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
+import com.ssafy.ditto.domain.classes.repository.SummaryRepository;
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.mypage.domain.Address;
 import com.ssafy.ditto.domain.mypage.domain.Refund;
 import com.ssafy.ditto.domain.mypage.dto.*;
 import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
 import com.ssafy.ditto.domain.mypage.repository.AddressRepository;
 import com.ssafy.ditto.domain.mypage.repository.RefundRepository;
+import com.ssafy.ditto.domain.question.domain.Question;
+import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
@@ -30,6 +37,10 @@ public class MypageServiceImpl implements MypageService{
     private final PaymentRepository paymentRepository;
     private final RefundRepository refundRepository;
     private final LectureRepository lectureRepository;
+    private final SummaryRepository summaryRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final FileRepository fileRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -179,4 +190,56 @@ public class MypageServiceImpl implements MypageService{
 
         payment.setPayCancelTime(LocalDateTime.now());
     }
+
+    @Override
+    public List<SummaryResponse> getSummary(int lectureId) {
+        List<SummaryResponse> summaryResponseList = new ArrayList<>();
+        List<Summary> summaries = summaryRepository.findAllByLectureId(lectureRepository.findByLectureId(lectureId));
+        for(Summary summary : summaries){
+            SummaryResponse newSummaryResponse = SummaryResponse.builder()
+                    .summaryId(summary.getSummaryId())
+                    .stepId(summary.getStepId().getStepId())
+                    .summaryContent(summary.getSummaryContent())
+                    .build();
+
+            summaryResponseList.add(newSummaryResponse);
+        }
+
+        return summaryResponseList;
+    }
+
+    @Override
+    public List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime) {
+        List<Question> questions = questionRepository.getQuestions(userId, dateTime);
+        User user = userRepository.findByUserId(userId);
+        List<QuestionResponse> questionResponseList = new ArrayList<>();
+        for (Question question : questions){
+
+            QuestionResponse questionResponse = QuestionResponse.builder()
+                    .questionId(question.getQuestionId())
+                    .title(question.getTitle())
+                    .content(question.getContent())
+                    .createdDate(question.getCreatedDate())
+                    .modifiedDate(question.getModifiedDate())
+                    .isDeleted(question.getIsDeleted())
+                    .isAnswered(question.getIsAnswered())
+                    .fileId(question.getClassId().getFileId().getFileId())
+                    .fileUrl(question.getClassId().getFileId().getFileUrl())
+                    .lectureId(question.getLectureId().getLectureId())
+                    .classId(question.getClassId().getClassId())
+                    .className(question.getLectureId().getClassName())
+                    .year(question.getLectureId().getYear())
+                    .month(question.getLectureId().getMonth())
+                    .day(question.getLectureId().getDay())
+                    .hour(question.getLectureId().getHour())
+                    .minute(question.getLectureId().getMinute())
+                    .build();
+
+            questionResponseList.add(questionResponse);
+        }
+
+        return questionResponseList;
+    }
+
+
 }

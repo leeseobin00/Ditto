@@ -21,4 +21,8 @@ public interface MypageService {
     CancelResponse getRefund();
 
     void patchRefund(int userId, int lectureId);
+
+    List<SummaryResponse> getSummary(int lectureId);
+
+    List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime);
 }
