@@ -1,9 +1,9 @@
-// src/components/MyPage/Question/QuestionList.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 import { useSelector } from 'react-redux';
+import EditQuestionModal from './EditQuestionModal';
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -157,6 +157,7 @@ const QuestionList = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [finalDate, setFinalDate] = useState(null);
+  const [currentQuestionId, setCurrentQuestionId] = useState(null);
 
   useEffect(() => {
     fetchQuestions();
@@ -164,7 +165,7 @@ const QuestionList = () => {
 
   const fetchQuestions = async () => {
     try {
-      // const response = await axios.get(`/mypage/${userId}/question`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -225,7 +226,7 @@ const QuestionList = () => {
 
   const fetchMoreQuestions = async () => {
     try {
-      // const response = await axios.get(`/mypage/${userId}/question-more?final-date=${finalDate}`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question-more?final-date=${finalDate}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -268,7 +269,7 @@ const QuestionList = () => {
 
   const fetchQuestionAnswer = async (questionId) => {
     try {
-      // const response = await axios.get(`/mypage/${userId}/question/${questionId}`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/${questionId}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -294,15 +295,16 @@ const QuestionList = () => {
   const handleEdit = (questionId) => {
     const question = questions.find((q) => q.questionId === questionId);
     if (question) {
-      setIsEditing(true);
+      setCurrentQuestionId(questionId);
       setEditTitle(question.title);
       setEditContent(question.content);
+      setIsEditing(true);
     }
   };
 
   const handleDelete = async (questionId) => {
     try {
-      // const response = await axios.delete(`https://localhost:8080/questions/${questionId}`, {
+      // const response = await axios.delete(`http://localhost:8080/questions/${questionId}`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -318,10 +320,10 @@ const QuestionList = () => {
     }
   };
 
-  const handleSaveEdit = async (questionId) => {
+  const handleSaveEdit = async () => {
     try {
       // const response = await axios.patch(
-      //   `https://localhost:8080/questions/${questionId}`,
+      //   `http://localhost:8080/questions/${currentQuestionId}`,
       //   {
       //     title: editTitle,
       //     content: editContent,
@@ -335,7 +337,7 @@ const QuestionList = () => {
       // if (response.status === 200) {
         setQuestions(
           questions.map((q) =>
-            q.questionId === questionId
+            q.questionId === currentQuestionId
               ? { ...q, title: editTitle, content: editContent }
               : q
           )
@@ -423,8 +425,17 @@ const QuestionList = () => {
         </QuestionItemContainer>
       ))}
       <LoadMoreButtonContainer>
-         <LoadMoreButton onClick={fetchMoreQuestions}>더보기</LoadMoreButton>
+        <LoadMoreButton onClick={fetchMoreQuestions}>더보기</LoadMoreButton>
       </LoadMoreButtonContainer>
+      <EditQuestionModal
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSave={handleSaveEdit}
+        title={editTitle}
+        content={editContent}
+        setTitle={setEditTitle}
+        setContent={setEditContent}
+      />
     </ListContainer>
   );
 };
