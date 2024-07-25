@@ -17,6 +17,8 @@ import com.ssafy.ditto.domain.mypage.repository.AddressRepository;
 import com.ssafy.ditto.domain.mypage.repository.RefundRepository;
 import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
+import com.ssafy.ditto.domain.review.domain.Review;
+import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
@@ -42,6 +44,7 @@ public class MypageServiceImpl implements MypageService{
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final FileRepository fileRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -211,9 +214,12 @@ public class MypageServiceImpl implements MypageService{
 
     @Override
     public List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime) {
-        List<Question> questions = questionRepository.getQuestions(userId, dateTime);
-        User user = userRepository.findByUserId(userId);
         List<QuestionResponse> questionResponseList = new ArrayList<>();
+
+        // 일단 문의 목록 상위 3개를 가져옴
+        List<Question> questions = questionRepository.getQuestions(userId, dateTime);
+
+        // 가져온 문의 목록과 대조해서 DTO 생성 후 return
         for (Question question : questions){
 
             QuestionResponse questionResponse = QuestionResponse.builder()
@@ -253,6 +259,41 @@ public class MypageServiceImpl implements MypageService{
                 .modifiedDate(answer.getModifiedDate())
                 .isDeleted(answer.getIsDeleted())
                 .build();
+    }
+
+    @Override
+    public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
+        List<ReviewResponse> reviewResponseList = new ArrayList<>();
+
+        // 일단 리뷰 목록 3개를 가져옴.
+        List<Review> reviews = reviewRepository.getReviews(userId, dateTime);
+
+        // 가지고온 리뷰 목록과 대조해서 DTO 생성 후 return
+        for (Review review : reviews){
+
+            ReviewResponse reviewResponse = ReviewResponse.builder()
+                    .reviewId(review.getReviewId())
+                    .reviewContent(review.getReviewContent())
+                    .createdDate(review.getCreatedDate())
+                    .modifiedDate(review.getModifiedDate())
+                    .isDeleted(review.getIsDeleted())
+                    .rating(review.getRating())
+                    .fileId(review.getClassId().getFileId().getFileId())
+                    .fileUrl(review.getClassId().getFileId().getFileUrl())
+                    .classId(review.getClassId().getClassId())
+                    .className(review.getClassId().getClassName())
+                    .lectureId(review.getLectureId().getLectureId())
+                    .year(review.getLectureId().getYear())
+                    .month(review.getLectureId().getMonth())
+                    .day(review.getLectureId().getDay())
+                    .hour(review.getLectureId().getHour())
+                    .minute(review.getLectureId().getMinute())
+                    .build();
+
+            reviewResponseList.add(reviewResponse);
+        }
+
+        return reviewResponseList;
     }
 
 

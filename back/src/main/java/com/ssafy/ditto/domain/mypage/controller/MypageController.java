@@ -107,4 +107,18 @@ public class MypageController {
         AnswerResponse answerResponse = mypageService.getAnswer(userId, questionId);
         return ResponseDto.of(200, "내 문의에 달린 답변 조회 성공", answerResponse);
     }
+
+    //Mypage_010
+    @GetMapping("{userId}/review")
+    public ResponseDto<List<ReviewResponse>> getReviews(@PathVariable("userId") int userId){
+        List<ReviewResponse> reviewResponseList = mypageService.getReviews(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "내가 작성한 리뷰 조회 성공", reviewResponseList);
+    }
+
+    //Mypage_011
+    @GetMapping("{userId}/review-more")
+    public ResponseDto<List<ReviewResponse>> getReviews(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<ReviewResponse> reviewResponseList = mypageService.getReviews(userId, finalDate);
+        return ResponseDto.of(200, "내가 작성한 리뷰 조회 성공", reviewResponseList);
+    }
 }

@@ -27,4 +27,6 @@ public interface MypageService {
     List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime);
 
     AnswerResponse getAnswer(int userId, int questionId);
+
+    List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime);
 }
