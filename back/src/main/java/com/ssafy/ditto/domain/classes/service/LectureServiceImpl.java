@@ -73,7 +73,7 @@ public class LectureServiceImpl implements LectureService {
     @Transactional(readOnly = true)
     public List<LectureResponse> getLecturesByClassId(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        List<Lecture> lectures = lectureRepository.findAllByClassId(dClass);
+        List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
         return lectures.stream()
                 .map(lecture -> LectureResponse.builder()
                         .lectureId(lecture.getLectureId())

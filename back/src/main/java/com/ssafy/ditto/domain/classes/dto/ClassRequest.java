@@ -2,8 +2,6 @@ package com.ssafy.ditto.domain.classes.dto;
 
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
@@ -11,20 +9,16 @@ import java.util.List;
 @AllArgsConstructor
 public class ClassRequest {
     private String className;
-
     private Integer userId;
-
     private Integer categoryId;
     private Integer tagId;
-
     private Integer classPrice;
     private Integer classHour;
     private Integer classMinute;
     private Integer classMin;
     private Integer classMax;
     private String classExplanation;
-
     private KitRequest kit;
-
-    private List<StepRequest> steps;
+    private String kitFile;
+    private String classFile;
 }

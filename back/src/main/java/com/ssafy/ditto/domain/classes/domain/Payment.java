@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.classes.domain;
 
-import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
