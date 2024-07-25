@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/classes")
@@ -138,5 +139,12 @@ public class ClassController {
     public ResponseDto<Boolean> checkLikeStatus(@PathVariable Integer classId, @RequestParam Integer userId) {
         boolean liked = likeClassService.checkLikeStatus(userId, classId);
         return ResponseDto.of(200, "클래스 좋아요 상태 조회가 성공적으로 완료되었습니다.", liked);
+    }
+
+    @PostMapping("/{classId}/likes")
+    public ResponseDto<Void> likeClass(@PathVariable Integer classId, @RequestBody Map<String, Integer> requestBody) {
+        Integer userId = requestBody.get("userId");
+        likeClassService.likeClass(classId, userId);
+        return ResponseDto.of(201, "클래스 좋아요가 성공적으로 완료되었습니다.");
     }
 }
