@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,13 +52,12 @@ public class MypageController {
         return ResponseDto.of(200, "일반 유저 배송지 삭제 성공");
     }
 
-//    //Mypage_005
-//    @GetMapping("{userId}/payment")
-//    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId){
-//
-//        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId);
-//        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
-//    }
+    //Mypage_005
+    @GetMapping("{userId}/payment")
+    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId){
+        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
+    }
 
     //Mypage_006
     @GetMapping("{userId}/payment-more")
@@ -72,4 +72,15 @@ public class MypageController {
         CancelResponse cancelResponse = mypageService.getRefund();
         return ResponseDto.of(200, "환불 규정 조회 성공", cancelResponse);
     }
+
+    //Mypage_018
+    @PatchMapping("{userId}/payment/cancel")
+    public ResponseDto<Void> patchCancel(@PathVariable("userId") int userId, @RequestBody Map<String, Integer> lectureId) {
+        mypageService.patchRefund(userId, lectureId.get("lectureId"));
+        return ResponseDto.of(200, "결제/수강 취소 완료");
+    }
+
+//    //Mypage_007
+//    @GetMapping("lecture/{lectureId}/summary")
+//    public ResponseDto<List<>>
 }

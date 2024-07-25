@@ -19,4 +19,6 @@ public interface MypageService {
     List<PaymentResponse> getPayment(int userId, LocalDateTime finalDate);
 
     CancelResponse getRefund();
+
+    void patchRefund(int userId, int lectureId);
 }

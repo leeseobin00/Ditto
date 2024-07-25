@@ -120,6 +120,7 @@ public class MypageServiceImpl implements MypageService{
         newAddress = addressRepository.save(newAddress);
     }
 
+    @Transactional
     @Override
     public void deleteAddress(int userId, int addressId) {
         addressRepository.deleteById(addressId);
@@ -127,10 +128,9 @@ public class MypageServiceImpl implements MypageService{
 
     @Override
     public List<PaymentResponse> getPayment(int userId, LocalDateTime finalDate) {
-        LocalDateTime dateTime = LocalDateTime.now();
 
         // 입력한 날짜로 결제내역을 보여줌. 없으면 빈 list
-        List<Payment> payments = paymentRepository.getPaymentList(userId, dateTime);
+        List<Payment> payments = paymentRepository.getPaymentList(userId, finalDate);
 
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
@@ -168,5 +168,13 @@ public class MypageServiceImpl implements MypageService{
                 .build();
 
         return cancelResponse;
+    }
+
+    @Transactional
+    @Override
+    public void patchRefund(int userId, int lectureId) {
+        Payment payment = paymentRepository.findByUserIDAndLectureId(userId, lectureId);
+
+        payment.setPayCancelTime(LocalDateTime.now());
     }
 }

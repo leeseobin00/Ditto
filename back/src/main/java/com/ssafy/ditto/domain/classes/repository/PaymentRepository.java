@@ -15,9 +15,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     // 입력 날짜 이전의 결제 내역 5개 반환
     @Query(value = "SELECT * " +
-            "FROM Payment p " +
+            "FROM payment p " +
             "WHERE p.user_id = :userId AND p.pay_time < :dateTime " +
             "ORDER BY p.pay_time DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Payment> getPaymentList(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
+
+
+    Payment findByUserIDAndLectureId(int userId, int lectureId);
 }
