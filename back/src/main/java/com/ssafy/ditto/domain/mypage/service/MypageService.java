@@ -25,4 +25,6 @@ public interface MypageService {
     List<SummaryResponse> getSummary(int lectureId);
 
     List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime);
+
+    AnswerResponse getAnswer(int userId, int questionId);
 }

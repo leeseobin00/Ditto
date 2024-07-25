@@ -100,4 +100,11 @@ public class MypageController {
         List<QuestionResponse> questionResponses = mypageService.getMyQuestion(userId, finalDate);
         return ResponseDto.of(200, "내 문의 조회 성공", questionResponses);
     }
+
+    //Mypage_009
+    @GetMapping("{userId}/question/{questionId}")
+    public ResponseDto<AnswerResponse> getAnswer(@PathVariable("userId") int userId, @PathVariable("questionId") int questionId){
+        AnswerResponse answerResponse = mypageService.getAnswer(userId, questionId);
+        return ResponseDto.of(200, "내 문의에 달린 답변 조회 성공", answerResponse);
+    }
 }
