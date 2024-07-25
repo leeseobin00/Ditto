@@ -1,9 +1,6 @@
 package com.ssafy.ditto.domain.classes.controller;
 
-import com.ssafy.ditto.domain.classes.dto.ClassDetailResponse;
-import com.ssafy.ditto.domain.classes.dto.ClassRequest;
-import com.ssafy.ditto.domain.classes.dto.LectureRequest;
-import com.ssafy.ditto.domain.classes.dto.LectureResponse;
+import com.ssafy.ditto.domain.classes.dto.*;
 import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.classes.service.StepService;
@@ -106,5 +103,24 @@ public class ClassController {
     public ResponseDto<ClassDetailResponse> getClassDetail(@PathVariable Integer classId) {
         ClassDetailResponse classDetail = classService.getClassDetail(classId);
         return ResponseDto.of(200, "클래스 상세 정보 조회가 성공적으로 완료되었습니다.", classDetail);
+    }
+
+    @GetMapping
+    public ResponseDto<ClassListResponse> getClassList(@RequestParam Integer page,
+                                                       @RequestParam(required = false) Integer categoryId,
+                                                       @RequestParam(required = false) Integer tagId,
+                                                       @RequestParam(required = false) String searchBy,
+                                                       @RequestParam(required = false) String keyword,
+                                                       @RequestParam(required = false) String sortBy) {
+        ClassListRequest request = ClassListRequest.builder()
+                .page(page)
+                .categoryId(categoryId)
+                .tagId(tagId)
+                .searchBy(searchBy)
+                .keyword(keyword)
+                .sortBy(sortBy)
+                .build();
+        ClassListResponse classListResponse = classService.getClassList(request);
+        return ResponseDto.of(200, "클래스 목록 조회가 성공적으로 완료되었습니다.", classListResponse);
     }
 }
