@@ -21,10 +21,10 @@ public class Summary {
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Integer lectureId;
+    private Lecture lectureId;
 
     //FK
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "step_id")
-    private Integer stepId;
+    private Step stepId;
 }
