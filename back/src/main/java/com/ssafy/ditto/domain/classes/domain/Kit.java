@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.classes.domain;
 
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +24,7 @@ public class Kit {
     @Column
     private String kitExplanation;
 
-    // FK
-    private Integer fileId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id", nullable = true)
+    private File fileId;
 }

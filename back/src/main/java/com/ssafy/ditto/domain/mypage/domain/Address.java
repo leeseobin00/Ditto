@@ -35,10 +35,14 @@ public class Address {
     private String phoneNumber;
 
     @Column(name = "is_default")
-    private boolean isDefault;
+    private boolean ddefault;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User userId;
+
+    public void changeDefault(boolean newDefault){
+        this.ddefault = newDefault;
+    }
 }
