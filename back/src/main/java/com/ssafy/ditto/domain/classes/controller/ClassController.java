@@ -123,4 +123,9 @@ public class ClassController {
         ClassListResponse classListResponse = classService.getClassList(request);
         return ResponseDto.of(200, "클래스 목록 조회가 성공적으로 완료되었습니다.", classListResponse);
     }
+
+    @GetMapping("/weeklybest")
+    public ResponseDto<List<ClassResponse>> getPopularClasses() {
+        return ResponseDto.of(200, "인기 클래스 목록 조회 성공", classService.getPopularClasses());
+    }
 }
