@@ -50,7 +50,7 @@ const Tags = styled.div`
   margin-top: 16px;
 `;
 
-function Profile({seekerId, postHeart, deleteHeart}) {
+function Profile({seekerId, postHeart, deleteHeart, userName}) {
   // redux
   const userId = useSelector((state)=>state.auth.userId);
   // axios
@@ -84,7 +84,7 @@ function Profile({seekerId, postHeart, deleteHeart}) {
   return (
     <ProfileWrapper>
       <Image />
-      <Name>김디토</Name>
+      <Name>{userName}</Name>
       <LikeCount onClick={handleHeartClick}>
       {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {likeCount}
       </LikeCount>

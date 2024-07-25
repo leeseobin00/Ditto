@@ -79,9 +79,9 @@ const Profiles = styled.div`
 
 function ProfileSearchPage() {
   // redux
-  const userId = useSelector(state => state.auth.userId);
-  const userName = useSelector(state => state.auth.nickname);
-  const {sendRequest: getProfile} = useAxios();
+  const userId = useSelector((state) => state.auth.userId);
+  const userName = useSelector((state) => state.auth.nickname);
+  const { sendRequest: getProfile } = useAxios();
   // state
   const [categoryId, setCategoryId] = useState(0);
   const [tags, setTags] = useState([]);
@@ -103,7 +103,7 @@ function ProfileSearchPage() {
 
   const handleKeyword = (event) => {
     setKeyword(event.target.value);
-  }
+  };
 
   useEffect(() => {
     setTags(getTagsForCategory(categoryId));
@@ -117,61 +117,86 @@ function ProfileSearchPage() {
   const [currentTeacherPage, setCurrentTeacherPage] = useState(1);
   const [teacherTotalPage, setTeacherTotalPage] = useState(1);
 
-  const handleGetProfile = async() => {
-    if(currentPage<=totalPage){
+  const handleGetTeacherProfile = async () => {
+    if (currentTeacherPage <= teacherTotalPage) {
       const params = {
-        page: currentPage,
-        size: 5,
-        ...(categoryId == 0 ? { categoryId:"" } :{ categoryId: categoryId }),
-        ...(tagId == 0 ? { tagId:"" }: { tagId: tagId }),
-        role: 1,
-        keyword: keyword,
-      };
-  
-      const searchParams = new URLSearchParams(params).toString();
-      const url = `/profiles?${searchParams}`;
-  
-      const result = await getProfile(url, null, "get");
-      if (result?.data) {
-        console.log(result?.data?.profiles);
-        setProfiles(prevProfiles => [...prevProfiles, ...result?.data?.profiles]);
-      }
-      setCurrentPage((prev)=>prev+1);
-    }
-  }
-
-  const handleGetTeacherProfile = async() => {
-    if(currentTeacherPage<=teacherTotalPage){
-      const params = {
-        page: currentTeacherPage,
-        size: 5,
-        ...(categoryId == 0 ? { categoryId:"" } :{ categoryId: categoryId }),
-        ...(tagId == 0 ? { tagId:"" }: { tagId: tagId }),
+        page: 1,
+        size: currentTeacherPage*1,
+        ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
+        ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
         role: 2,
         keyword: keyword,
       };
-  
+
       const searchParams = new URLSearchParams(params).toString();
       const url = `/profiles?${searchParams}`;
-  
+
       const result = await getProfile(url, null, "get");
-      if (result?.data) {
-        console.log(result.data?.profiles);
-        setTeacherProfiles(prevProfiles => [...prevProfiles, ...result?.data.profiles]);
+      if (result) {
+        setTeacherProfiles(result?.data?.profiles);
+        setTeacherTotalPage(result?.data?.totalPageCount);
       }
-      setCurrentTeacherPage((prev)=>prev+1);
     }
+  };
+
+  const handleGetProfile = async () => {
+    if (currentPage <= totalPage) {
+      const params = {
+        page: 1,
+        size: currentPage*1,
+        ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
+        ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
+        role: 1,
+        keyword: keyword,
+      };
+
+      const searchParams = new URLSearchParams(params).toString();
+      const url = `/profiles?${searchParams}`;
+
+      const result = await getProfile(url, null, "get");
+      if (result) {
+        setProfiles(result?.data?.profiles);
+        setTotalPage(result?.data?.totalPageCount);
+      }
+    }
+  };
+
+  const handleTeacherPage = () => {
+    setCurrentTeacherPage((prev) => prev+1);
+  }
+
+  const handlePage = () => {
+    setCurrentPage((prev) => prev+1);
   }
 
   const handleSearch = () => {
+    setProfiles([]);
+    setTeacherProfiles([]);
+    setCurrentPage(1);
+    setCurrentTeacherPage(1);
     handleGetProfile();
     handleGetTeacherProfile();
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     handleGetProfile();
+  }, [currentPage]);
+
+  console.log(profiles);
+
+  useEffect(() => {
     handleGetTeacherProfile();
-  },[]);
+  }, [currentTeacherPage]);
+
+  const uniqueTeacherProfiles = teacherProfiles.filter(
+    (profile, index, self) =>
+        index === self.findIndex((p) => p.userId === profile.userId)
+  );
+
+  const uniqueProfiles = profiles.filter(
+    (profile, index, self) =>
+        index === self.findIndex((p) => p.userId === profile.userId)
+  );
 
   return (
     <Wrapper>
@@ -179,7 +204,7 @@ function ProfileSearchPage() {
       <Filters>
         <FilterWrapper>
           <Filter title="닉네임">
-            <Input vlaue={keyword} onChange={handleKeyword}/>
+            <Input value={keyword} onChange={handleKeyword} />
           </Filter>
           <Filter title="카테고리">
             <SelectBox
@@ -188,7 +213,7 @@ function ProfileSearchPage() {
               curOption={getCategoryLabelByValue(categoryId)}
             />
           </Filter>
-          <Button label={<CustomSearchIcon />} onClick={handleSearch}/>
+          <Button label={<CustomSearchIcon />} onClick={handleSearch} />
         </FilterWrapper>
         <FilterWrapper>
           <Filter title="태그">
@@ -197,24 +222,23 @@ function ProfileSearchPage() {
         </FilterWrapper>
       </Filters>
 
-      <Section title="강사" onClick={handleGetProfile}>
+      <Section title="강사" onClick={handleTeacherPage}>
         <Profiles>
-          <Link to={"/profile/1"}><Profile seekerId={1}/></Link>
-          {profiles?.map((profile, index)=>{
-            <Link to={"/profile/1"}>
-              <Profile key={index}/>
-            </Link>
-          })}
+          {uniqueTeacherProfiles.map((profile) => (
+            <Link to={`/profile/${profile.userId}`} key={profile.userId}>
+              <Profile userName={profile.nickname} seekerId={profile.userId} />
+          </Link>
+          ))}
         </Profiles>
       </Section>
 
-      <Section title="일반 회원" onClick={handleGetTeacherProfile}>
+      <Section title="일반 회원" onClick={handlePage}>
         <Profiles>
-          {teacherProfiles?.map((profile, index)=>{
-            <Link to={"/profile/1"}>
-              <Profile key={index}/>
-             </Link>
-          })}
+          {uniqueProfiles.map((profile) => (
+            <Link to={`/profile/${profile.userId}`} key={profile.userId}>
+              <Profile userName={profile.nickname} seekerId={profile.userId} />
+            </Link>
+          ))}
         </Profiles>
       </Section>
     </Wrapper>
