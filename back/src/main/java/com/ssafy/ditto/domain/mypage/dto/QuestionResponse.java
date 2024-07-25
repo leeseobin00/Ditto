@@ -15,6 +15,8 @@ public class QuestionResponse {
     private LocalDateTime modifiedDate;
     private Boolean isDeleted;
     private Boolean isAnswered;
+    private Integer userId;
+    private String nickname;
     private Integer fileId;
     private String fileUrl;
     private Integer lectureId;

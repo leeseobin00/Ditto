@@ -43,4 +43,6 @@ public interface MypageService {
     List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime);
 
     void userWithdraw(int userId, Integer requestMoney);
+
+    List<QuestionResponse> getProQuestion(int userId, LocalDateTime now);
 }

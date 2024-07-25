@@ -179,7 +179,21 @@ public class MypageController {
         return ResponseDto.of(200, "출금 신청 완료");
     }
 
-//    //Pro_006
-//    @GetMapping("question/{userId}")
-//    public ResponseDto<>
+    //Pro_006
+    @GetMapping("{userId}/question/pro")
+    public ResponseDto<List<QuestionResponse>> getProQuestion(@PathVariable("userId") int userId){
+        List<QuestionResponse> questionResponseList = mypageService.getProQuestion(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "강사 문의 내역 조회 완료", questionResponseList);
+    }
+
+    //Pro_006_1
+    @GetMapping("{userId}/question/pro-more")
+    public ResponseDto<List<QuestionResponse>> getProQuestion(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime dateTime){
+        List<QuestionResponse> questionResponseList = mypageService.getProQuestion(userId, dateTime);
+        return ResponseDto.of(200, "강사 문의 내역 더보기 완료", questionResponseList);
+    }
+
+//    //Pro_007
+//    @GetMapping("answer/{questionId}")
+//    public ResponseDto<AnswerResponse>
 }

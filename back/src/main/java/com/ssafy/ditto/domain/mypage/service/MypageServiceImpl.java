@@ -389,5 +389,43 @@ public class MypageServiceImpl implements MypageService{
         mileage.changeMileage(finalAmount);
     }
 
+    @Override
+    public List<QuestionResponse> getProQuestion(int userId, LocalDateTime dateTime) {
+        List<QuestionResponse> questionResponseList = new ArrayList<>();
+
+        List<Question> questions = questionRepository.getQuestionsPro(userId, dateTime);
+
+        // 가져온 문의 목록과 대조해서 DTO 생성 후 return
+        for (Question question : questions){
+
+            QuestionResponse questionResponse = QuestionResponse.builder()
+                    .questionId(question.getQuestionId())
+                    .title(question.getTitle())
+                    .content(question.getContent())
+                    .createdDate(question.getCreatedDate())
+                    .modifiedDate(question.getModifiedDate())
+                    .isDeleted(question.getIsDeleted())
+                    .isAnswered(question.getIsAnswered())
+                    .userId(question.getUserId().getUserId())
+                    .nickname(question.getUserId().getNickname())
+                    .fileId(question.getClassId().getFileId().getFileId())
+                    .fileUrl(question.getClassId().getFileId().getFileUrl())
+                    .lectureId(question.getLectureId().getLectureId())
+                    .classId(question.getClassId().getClassId())
+                    .className(question.getLectureId().getClassName())
+                    .year(question.getLectureId().getYear())
+                    .month(question.getLectureId().getMonth())
+                    .day(question.getLectureId().getDay())
+                    .hour(question.getLectureId().getHour())
+                    .minute(question.getLectureId().getMinute())
+                    .build();
+
+            questionResponseList.add(questionResponse);
+        }
+
+        return questionResponseList;
+
+    }
+
 
 }
