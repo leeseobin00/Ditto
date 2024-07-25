@@ -16,7 +16,7 @@ const ClassBody = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
-  padding: 3% 5%;
+  padding: 1% 5%;
 `;
 
 const StickyContainer = styled.div`

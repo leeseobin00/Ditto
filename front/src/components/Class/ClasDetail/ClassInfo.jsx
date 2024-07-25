@@ -3,6 +3,8 @@ import { styled } from "styled-components";
 import ClassStepList from "./ClassStepList";
 import ClassKit from "./ClassKit";
 import ReviewList from "../../Review/ReviewList";
+import QnAList from "../../QnA/QnAList";
+import Button from "../../common/Button";
 
 const ClassIntroductionContainer = styled.div`
   width: 75%;
@@ -14,7 +16,14 @@ const ContentContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px;
+  margin: 20px 0;
+`;
+
+const TitleLine = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const Title = styled.div`
@@ -28,6 +37,8 @@ const ClassExplanation = styled.div`
   margin: 15px 0;
 `;
 
+const ButtonContainer = styled.div``;
+
 function ClassInfo({ classInfo, titleIds }) {
   return (
     <ClassIntroductionContainer>
@@ -38,11 +49,19 @@ function ClassInfo({ classInfo, titleIds }) {
         <ClassKit kit={classInfo.kit} />
       </ContentContainer>
       <ContentContainer id={titleIds[1]}>
-        <Title>리뷰</Title>
+        <TitleLine>
+          <Title>리뷰</Title>
+          <Button label={"리뷰작성"} />
+        </TitleLine>
         <ReviewList />
       </ContentContainer>
       <ContentContainer id={titleIds[2]}>
-        <Title>Q & A</Title>
+        <TitleLine>
+          <Title>Q & A</Title>
+
+          <Button label={"문의하기"} />
+        </TitleLine>
+        <QnAList />
       </ContentContainer>
     </ClassIntroductionContainer>
   );

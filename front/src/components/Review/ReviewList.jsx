@@ -1,5 +1,7 @@
 import styled from "styled-components";
-import ReviewListItem from "./ReviewListItem";
+
+import ReviewItem from "./ReviewItem";
+import MoreButton from "../common/MoreButton";
 
 const ReviewListContainer = styled.div`
   display: flex;
@@ -33,8 +35,9 @@ function ReviewList() {
   return (
     <ReviewListContainer>
       {reviews.map((review, index) => (
-        <ReviewListItem key={index} review={review} />
+        <ReviewItem key={index} review={review} />
       ))}
+      <MoreButton />
     </ReviewListContainer>
   );
 }

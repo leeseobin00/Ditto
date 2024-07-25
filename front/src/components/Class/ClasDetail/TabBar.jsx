@@ -60,7 +60,7 @@ function TabBar({ titleIds }) {
         to={titleIds[0]}
         spy={true}
         smooth={true}
-        offset={-70}
+        offset={-60}
         duration={500}
         onSetActive={() => setActiveSection(titleIds[0])}
       >
@@ -73,7 +73,7 @@ function TabBar({ titleIds }) {
         to={titleIds[1]}
         spy={true}
         smooth={true}
-        offset={-70}
+        offset={-60}
         duration={500}
         onSetActive={() => setActiveSection(titleIds[1])}
       >
@@ -86,7 +86,7 @@ function TabBar({ titleIds }) {
         to={titleIds[2]}
         spy={true}
         smooth={true}
-        offset={-70}
+        offset={-60}
         duration={500}
         onSetActive={() => setActiveSection(titleIds[2])}
       >
