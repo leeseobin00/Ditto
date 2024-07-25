@@ -18,13 +18,13 @@ public class LikeClass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer likeClassId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id", nullable = false)
     private DClass classId;
 
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 }

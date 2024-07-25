@@ -10,5 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface LikeClassRepository extends JpaRepository<LikeClass, Integer> {
-    Optional<LikeClass> findByUserIdAndClassId(User userId, DClass classId);
+    Optional<LikeClass> findByUserIdAndClassId(User user, DClass dClass);
+
+    void deleteByUserIdAndClassId(User user, DClass dClass);
 }

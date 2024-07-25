@@ -3,7 +3,7 @@ package com.ssafy.ditto.domain.classes.controller;
 import com.ssafy.ditto.domain.classes.dto.*;
 import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
-import com.ssafy.ditto.domain.classes.service.StepService;
+import com.ssafy.ditto.domain.classes.service.LikeClassService;
 import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClassController {
     private final ClassService classService;
-    private final StepService stepService;
     private final LectureService lectureService;
     private final FileService fileService;
+    private final LikeClassService likeClassService;
 
     @PostMapping
     public ResponseDto<Void> createClass(@RequestPart("classRequest") ClassRequest classRequest,
@@ -126,11 +126,17 @@ public class ClassController {
 
     @GetMapping("/weeklybest")
     public ResponseDto<List<ClassResponse>> getPopularClasses() {
-        return ResponseDto.of(200, "인기 클래스 목록 조회 성공", classService.getPopularClasses());
+        return ResponseDto.of(200, "인기 클래스 목록 조회가 성공적으로 완료되었습니다.", classService.getPopularClasses());
     }
 
     @GetMapping("/weeklynew")
     public ResponseDto<List<ClassResponse>> getLatestClasses() {
-        return ResponseDto.of(200, "최신 클래스 목록 조회 성공", classService.getLatestClasses());
+        return ResponseDto.of(200, "최신 클래스 목록 조회가 성공적으로 완료되었습니다.", classService.getLatestClasses());
+    }
+
+    @GetMapping("/{classId}/like")
+    public ResponseDto<Boolean> checkLikeStatus(@PathVariable Integer classId, @RequestParam Integer userId) {
+        boolean liked = likeClassService.checkLikeStatus(userId, classId);
+        return ResponseDto.of(200, "클래스 좋아요 상태 조회가 성공적으로 완료되었습니다.", liked);
     }
 }
