@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.mypage.service;
 
 import com.ssafy.ditto.domain.classes.domain.Payment;
+import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
 import com.ssafy.ditto.domain.mypage.domain.Address;
 import com.ssafy.ditto.domain.mypage.domain.Refund;
@@ -28,6 +29,7 @@ public class MypageServiceImpl implements MypageService{
     private final AddressRepository addressRepository;
     private final PaymentRepository paymentRepository;
     private final RefundRepository refundRepository;
+    private final LectureRepository lectureRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -173,7 +175,7 @@ public class MypageServiceImpl implements MypageService{
     @Transactional
     @Override
     public void patchRefund(int userId, int lectureId) {
-        Payment payment = paymentRepository.findByUserIDAndLectureId(userId, lectureId);
+        Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
         payment.setPayCancelTime(LocalDateTime.now());
     }

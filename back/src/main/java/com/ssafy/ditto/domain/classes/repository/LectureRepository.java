@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LectureRepository extends JpaRepository<Lecture, Integer> {
+    Lecture findByLectureId(int lectureId);
     List<Lecture> findAllByClassId(DClass classId);
     List<Lecture> findAllByClassIdAndIsDeletedFalse(DClass classId);
+
 }

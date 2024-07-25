@@ -1,7 +1,8 @@
 package com.ssafy.ditto.domain.classes.repository;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.Payment;
-import org.springframework.data.domain.Pageable;
+import com.ssafy.ditto.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +23,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     List<Payment> getPaymentList(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 
 
-    Payment findByUserIDAndLectureId(int userId, int lectureId);
+    Payment findByUserIdAndLectureId(User userId, Lecture lectureId);
 }
