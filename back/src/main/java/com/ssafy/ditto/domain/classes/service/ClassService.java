@@ -1,9 +1,8 @@
 package com.ssafy.ditto.domain.classes.service;
 
-import com.ssafy.ditto.domain.classes.dto.ClassDetailResponse;
-import com.ssafy.ditto.domain.classes.dto.ClassListRequest;
-import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
-import com.ssafy.ditto.domain.classes.dto.ClassRequest;
+import com.ssafy.ditto.domain.classes.dto.*;
+
+import java.util.List;
 
 public interface ClassService {
     void createClass(ClassRequest classRequest, Integer classFileId, Integer kitFileId);
@@ -15,4 +14,7 @@ public interface ClassService {
     ClassDetailResponse getClassDetail(Integer classId);
 
     ClassListResponse getClassList(ClassListRequest request);
+
+    List<ClassResponse> getPopularClasses();
+
 }
