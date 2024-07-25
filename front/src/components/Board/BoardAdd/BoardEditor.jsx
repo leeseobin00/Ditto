@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { styled } from "styled-components";
+import axios from "axios";
 
 const EditorContainer = styled.div`
   padding: 20px;
@@ -27,7 +28,7 @@ const QuillWrapper = styled.div`
   }
   .ql-container {
     min-height: 500px; /* 텍스트 부분의 최소 높이 */
-  }s
+  }
 `;
 
 const BoardEditor = ({
@@ -53,10 +54,14 @@ const BoardEditor = ({
             ["blockquote", "code-block"],
             [{ list: "ordered" }, { list: "bullet" }],
             [{ align: [] }],
-            ["link", "image", "video"],
+            // ["link", "image", "video"],
             ["clean"],
           ],
         },
+      });
+
+      editorRef.current.getModule('toolbar').addHandler('image', () => {
+        selectLocalImage();
       });
 
       editorRef.current.on("text-change", () => {
@@ -67,13 +72,45 @@ const BoardEditor = ({
 
   useEffect(() => {
     if (editorRef.current) {
-      // 새로운 content 값이 올 때마다 에디터 업데이트
       const currentContent = editorRef.current.root.innerHTML;
       if (content !== currentContent) {
         editorRef.current.root.innerHTML = content;
       }
     }
   }, [content]);
+
+  // const selectLocalImage = () => {
+  //   const input = document.createElement('input');
+  //   input.setAttribute('type', 'file');
+  //   input.setAttribute('accept', 'image/*');
+  //   input.click();
+
+  //   input.onchange = async () => {
+  //     const file = input.files[0];
+  //     if (file) {
+  //       const formData = new FormData();
+  //       formData.append('file', file);
+
+  //       try {
+  //         const response = await axios.post('http://localhost:8080/files', formData, {
+  //           headers: {
+  //             'Content-Type': 'multipart/form-data',
+  //           },
+  //         });
+
+  //         const imageUrl = response.data.url;
+  //         insertToEditor(imageUrl);
+  //       } catch (error) {
+  //         console.error('Failed to upload image', error);
+  //       }
+  //     }
+  //   };
+  // };
+
+  const insertToEditor = (url) => {
+    const range = editorRef.current.getSelection();
+    editorRef.current.insertEmbed(range.index, 'image', url);
+  };
 
   const handleTitleChange = (event) => {
     onTitleChange(event);

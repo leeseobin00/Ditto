@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import useAxios from "../../hooks/useAxios";
+import useFormDataAxios from "../../hooks/useFormDataAxios";
 import Button from "../../components/common/Button";
 import OutlineButton from "../../components/common/OutlineButton";
 import TabBar from "../../components/Board/TabBar";
@@ -16,6 +18,7 @@ import {
   getTagsForCategory,
   getBoardTypeLabelByValue,
   getCategoryLabelByValue,
+  getStartTagIdForCategory
 } from "../../utils/options";
 
 const Wrapper = styled.div`
@@ -60,19 +63,23 @@ const Buttons = styled.div`
 `;
 
 function BoardAddPage() {
-  const { response: getResponse, sendRequest: getPost } = useAxios();
-  const { sendRequest } = useAxios();
+  // redux
+  const userId = useSelector(state => state.auth.userId);
+  const userName = useSelector(state => state.auth.nickname);
+  // axios
+  const { sendRequest: getPost } = useAxios();
+  const { sendRequest: postPost } = useFormDataAxios();
   // router
   const navigate = useNavigate();
   const { postId } = useParams();
   const isEdit = Boolean(postId);
 
   const handleCancel = () => {
-    navigate("/board/all");
+    navigate(-1);
   };
 
   const [postData, setPostData] = useState({
-    userId: 1,
+    userId: userId,
     username: "김싸피",
     boardId: 1,
     categoryId: 1,
@@ -81,30 +88,40 @@ function BoardAddPage() {
     content: "",
   });
 
+  const handleGetPost = async() => {
+    const result = await getPost(`/posts/${postId}`, null, "get");
+    setPostData({
+      userId: userId,
+      boardId: result?.data?.boardId,
+      categoryId: result?.data?.categoryId,
+      tagId: result?.data?.tagId,
+      title: result?.data?.title,
+      content: result?.data?.content,
+    });
+
+    setCategory(result?.data?.categoryId);
+    setTag(getStartTagIdForCategory(result?.data?.tagId));
+  }
   useEffect(() => {
     if (isEdit) {
-      getPost(`/posts/${postId}`, null, "get");
+      handleGetPost();
     }
   }, [isEdit, postId]);
 
-  useEffect(() => {
-    console.log(getResponse);
-    if (getResponse) {
-      setPostData({
-        userId: 1,
-        username: "김싸피",
-        boardId: getResponse?.data?.boardId,
-        categoryId: getResponse?.data?.categoryId,
-        tagId: getResponse?.data?.tagId,
-        title: getResponse?.data?.title,
-        content: getResponse?.data?.content,
-      });
-    }
-  }, [getResponse]);
-
   // form
-  const [category, setCategory] = useState(postData?.categoryId);
-  const [tags, setTags] = useState(getTagsForCategory(postData?.categoryId));
+  const [category, setCategory] = useState(1);
+  const [tags, setTags] = useState(getTagsForCategory(1));
+  const [tag, setTag] = useState(1);
+
+  const [files, setFiles] = useState([]);
+
+  const handleFiles = (event) => {
+    setFiles((prev) => [
+      ...prev,
+      ...Array.from(event.target.files)
+    ]);
+  };
+  
 
   useEffect(() => {
     setTags(getTagsForCategory(category));
@@ -145,6 +162,7 @@ function BoardAddPage() {
   };
 
   const handleTag = (tagId) => {
+    setTag(tagId);
     setPostData((prevState) => ({
       ...prevState,
       tagId,
@@ -169,12 +187,21 @@ function BoardAddPage() {
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
 
-    try {
-      await sendRequest(url, postData, method);
-      handleCancel();
-    } catch (error) {}
-  };
+    const formData = new FormData();
+    formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
+    console.log(formData);
+    for (const file of files) {
+      formData.append("files", file);
+    }
 
+    try {
+      await postPost(url, formData, method);
+      handleCancel();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   return (
     <div>
       <TabBar />
@@ -189,7 +216,7 @@ function BoardAddPage() {
             />
           </Filter>
           <Filter title="작성자">
-            <NameInput>{postData?.username}</NameInput>
+            <NameInput>{userName}</NameInput>
           </Filter>
         </FilterWrapper>
         <FilterWrapper>
@@ -203,7 +230,7 @@ function BoardAddPage() {
           <Filter title="태그">
             <SelectTag
               tags={tags}
-              curTag={postData?.tagId}
+              curTag={tag}
               handleTag={handleTag}
             />
           </Filter>
