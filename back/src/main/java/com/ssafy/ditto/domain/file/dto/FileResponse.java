@@ -1,15 +1,13 @@
 package com.ssafy.ditto.domain.file.dto;
 
 import com.ssafy.ditto.domain.file.domain.File;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
+@Builder
 public class FileResponse {
     private Integer fileId;
     private String uploadFileName;
