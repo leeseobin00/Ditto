@@ -9,6 +9,7 @@ import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
 import com.ssafy.ditto.domain.classes.repository.SummaryRepository;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
+import com.ssafy.ditto.domain.mypage.domain.Account;
 import com.ssafy.ditto.domain.mypage.domain.Address;
 import com.ssafy.ditto.domain.mypage.domain.Refund;
 import com.ssafy.ditto.domain.mypage.dto.*;
@@ -294,6 +295,45 @@ public class MypageServiceImpl implements MypageService{
         }
 
         return reviewResponseList;
+    }
+
+    @Override
+    public List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime dateTime) {
+        List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
+
+        // 일단 좋아요 한 클래스 Id를 3개 가져옴
+        //List<String> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
+
+        return likeClassResponseList;
+    }
+
+
+
+    // 프로 마이페이지 시작 부분
+    @Override
+    public ProMypageResponse getProMypage(int userId) {
+        User user = userRepository.findByUserId(userId);
+        Account account = accountRepository.findByUserId(user);
+
+        return ProMypageResponse.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .fileUrl(user.getFileId().getFileUrl())
+                .accountId(account.getAccountId())
+                .accountNumber(account.getAccountNumber())
+                .bank(account.getBank())
+                .receiver(account.getReceiver())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public void modifyAccount(int userId, AccountRequest accountRequest) {
+        Account account = accountRepository.findByUserId(userRepository.findByUserId(userId));
+
+        account.changeAccountNumber(accountRequest.getAccountNumber());
+        account.changeBank(accountRequest.getBank());
+        account.changeReceiver(accountRequest.getReceiver());
     }
 
 

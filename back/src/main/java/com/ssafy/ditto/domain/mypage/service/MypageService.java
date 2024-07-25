@@ -29,4 +29,12 @@ public interface MypageService {
     AnswerResponse getAnswer(int userId, int questionId);
 
     List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime);
+
+    List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime finalDate);
+
+
+    // 프로 마이페이지 시작부분
+    ProMypageResponse getProMypage(int userId);
+
+    void modifyAccount(int userId, AccountRequest accountRequest);
 }
