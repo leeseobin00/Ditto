@@ -65,7 +65,7 @@ function ProfileDetailPage() {
 
   const handleGetProfile = async() => {
     const result = await getProfile(`/profiles/${userId}`, null, "get");
-
+    console.log(result);
   }
 
   const handleGetClasses = async() => {

@@ -52,8 +52,8 @@ function ModifyTags({ onClose }) {
   const userId = useSelector(state => state.auth.userId);
 
   // axios
-  const { sendRequest:patchTags } = useAxios();
-  
+  const { sendRequest: patchTags } = useAxios();
+
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
@@ -74,14 +74,14 @@ function ModifyTags({ onClose }) {
       if (prevSelectedTags.includes(value)) {
         setTags((prevTags) =>
           prevTags.map((tag) =>
-            tag.value === value ? { ...tag, selected: false } : tag
+            tag.label === value ? { ...tag, selected: false } : tag
           )
         );
         return prevSelectedTags.filter((tag) => tag !== value);
       } else if (prevSelectedTags.length < 3) {
         setTags((prevTags) =>
           prevTags.map((tag) =>
-            tag.value === value ? { ...tag, selected: true } : tag
+            tag.label === value ? { ...tag, selected: true } : tag
           )
         );
         return [...prevSelectedTags, value];
@@ -91,12 +91,12 @@ function ModifyTags({ onClose }) {
   };
 
   const handleSubmit = () => {
-    if(userId){
-      const patchData = {  };
+    if (userId) {
+      const patchData = {};
       selectedTags.forEach((tag, index) => {
         patchData[`tag${index + 1}`] = tag;
       });
-      
+
       patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
     }
 
@@ -112,7 +112,7 @@ function ModifyTags({ onClose }) {
           <TagButton
             key={index}
             $selected={tag.selected ? "true" : "false"}
-            onClick={() => handleTagClick(tag.value)}
+            onClick={() => handleTagClick(tag.label)}
           >
             {tag.label}
           </TagButton>

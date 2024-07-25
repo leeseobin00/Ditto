@@ -172,6 +172,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);  // 추가된 부분
   const nickname = useSelector(state => state.auth.nickname);  // 추가된 부분
+  const userId = useSelector(state => state.auth.userId);
   const dispatch = useDispatch();
 
   const handleOverlayClick = () => {
@@ -198,7 +199,7 @@ const Header = () => {
           <DropdownItem to="/">카테고리</DropdownItem>
           <DropdownItem to="/board/all">커뮤니티</DropdownItem>
           <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
-          <DropdownItem to="/profile/my">내 프로필</DropdownItem>
+          <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           <DropdownItem to="/profile/my">로그아웃</DropdownItem>
         </MobileDropdownMenu>
         <Logo>MyLogo</Logo>
@@ -238,7 +239,7 @@ const Header = () => {
           프로필
           <DropdownMenu>
             <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
-            <DropdownItem to="/profile/my">내 프로필</DropdownItem>
+            <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           </DropdownMenu>
         </MenuItem>
       </BottomSection>
