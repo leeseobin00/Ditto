@@ -17,6 +17,7 @@ import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
 import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
+import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const AppRoutes = () => {
         <Route path="payments" element={<PaymentPage />} />
         <Route path="questions" element={<MyQuestionsPage />} />
         <Route path="reviews" element={<ReviewListPage />} />
+        <Route path="liked" element={<LikedPage />} />
       </Route>
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route path="/board/:boardCategory/:postId" element={<BoardDetailPage />} />

@@ -1,9 +1,10 @@
-// src/pages/Mypage/PaymentDetail.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import SummaryModal from './SummaryModal'; // SummaryModal 컴포넌트 경로 수정
 import RefundPolicyModal from './RefundPolicyModal'; // RefundPolicyModal 컴포넌트 경로 수정
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -117,80 +118,65 @@ const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
 `;
 
-const PaymentDetail = ({ payments }) => {
+const PaymentDetail = ({ payments, setPayments }) => {
   const navigate = useNavigate();
+  const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
   const [modalMessage, setModalMessage] = useState('');
   const [summaries, setSummaries] = useState([]);
   const [refundPolicy, setRefundPolicy] = useState('');
+  const [currentLectureId, setCurrentLectureId] = useState(null);
 
   const handleClassClick = (classId) => {
     navigate(`/class/${classId}`);
   };
 
-  const handleCancelClick = async () => {
-    // 서버와 통신하는 부분 주석 처리
-    // try {
-    //   const response = await axios.get('http://localhost:8080/mypage/payment/cancel', {
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-    //     }
-    //   });
+  const handleCancelClick = async (lectureId) => {
+    setCurrentLectureId(lectureId);
+    try {
+      const response = await axios.get(`http://localhost:8080/mypage/payment/cancel`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
 
-    //   if (response.status === 200) {
-    //     setRefundPolicy(response.data.refund);
-    //     setIsRefundPolicy(true);
-    //     setIsModalOpen(true);
-    //   } else {
-    //     alert('환불 규정 조회 실패. 다시 시도해주세요.');
-    //   }
-    // } catch (error) {
-    //   alert('환불 규정 조회 실패. 다시 시도해주세요.');
-    //   console.error('환불 규정 조회 에러:', error);
-    // }
-
-    // 테스트를 위한 더미 데이터
-    const dummyRefundPolicy = `
-      환불 규정:
-      1. 환불 요청 기간: 강의 시작 7일 이전: 전액 환불, 강의 시작 7일 이내: 환불 불가.
-      2. 환불 절차: 구매 취소 후 환불이 승인되면, 승인일로부터 7영업일 이내에 결제수단으로 환불 처리됩니다.
-      3. 예외 사항: 강의가 취소되거나 일정이 변경된 경우, 전액 환불해 드립니다.
-    `;
-    setRefundPolicy(dummyRefundPolicy);
-    setIsRefundPolicy(true);
-    setIsModalOpen(true);
+      if (response.status === 200) {
+        setRefundPolicy(response.data.refund);
+        setIsRefundPolicy(true);
+        setIsModalOpen(true);
+      } else {
+        alert('환불 규정 조회 실패. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('환불 규정 조회 실패. 다시 시도해주세요.');
+      console.error('환불 규정 조회 에러:', error);
+    }
   };
 
   const handleSummaryClick = async (lectureId) => {
-    // 서버와 통신하는 부분 주석 처리
-    // try {
-    //   const response = await axios.get(`http://localhost:8080/mypage/lecture/${lectureId}/summary`, {
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-    //     }
-    //   });
+    try {
+      const response = await axios.get(`http://localhost:8080/mypage/lecture/${lectureId}/summary`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
 
-    //   if (response.status === 200) {
-    //     setSummaries(response.data.summaries);
-    //     setIsRefundPolicy(false);
-    //     setIsModalOpen(true);
-    //   } else {
-    //     alert('요약 조회 실패. 다시 시도해주세요.');
-    //   }
-    // } catch (error) {
-    //   alert('요약 조회 실패. 다시 시도해주세요.');
-    //   console.error('요약 조회 에러:', error);
-    // }
+      if (response.status === 200) {
+        setSummaries(response.data.summaries);
+        setIsRefundPolicy(false);
+        setIsModalOpen(true);
+      } else {
+        alert('요약 조회 실패. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('요약 조회 실패. 다시 시도해주세요.');
+      console.error('요약 조회 에러:', error);
+    }
+  };
 
-    // 테스트를 위한 더미 데이터
-    const dummySummaries = [
-      { summaryId: 1, stepId: 1, summaryContent: '첫 번째 단계 요약 내용입니다.' },
-      { summaryId: 2, stepId: 2, summaryContent: '두 번째 단계 요약 내용입니다.' },
-    ];
-    setSummaries(dummySummaries);
-    setIsRefundPolicy(false);
-    setIsModalOpen(true);
+  const handleReviewClick = (classId) => {
+    navigate(`/class/${classId}`);
   };
 
   const closeModal = () => {
@@ -202,30 +188,36 @@ const PaymentDetail = ({ payments }) => {
   };
 
   const handleConfirmCancel = async () => {
-    // 서버와 통신하는 부분 주석 처리
-    // try {
-    //   const response = await axios.patch(`http://localhost:8080/mypage/${userId}/payment/cancel`, {
-    //     userId
-    //   }, {
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-    //     }
-    //   });
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/mypage/${userId}/payment/cancel`,
+        { lectureId: currentLectureId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
 
-    //   if (response.status === 200) {
-    //     setModalMessage('결제/수강 취소 성공');
-    //   } else {
-    //     alert('취소 실패. 다시 시도해주세요.');
-    //   }
-    // } catch (error) {
-    //   alert('취소 실패. 다시 시도해주세요.');
-    //   console.error('취소 에러:', error);
-    // }
-
-    // 테스트를 위한 더미 데이터
-    setModalMessage('결제/수강 취소 성공');
-    setIsRefundPolicy(false);
-    setIsModalOpen(true);
+      if (response.status === 200) {
+        setModalMessage('결제/수강 취소 성공');
+        setPayments(
+          payments.map((payment) =>
+            payment.lectureId === currentLectureId
+              ? { ...payment, payCancelTime: new Date() }
+              : payment
+          )
+        );
+      } else {
+        alert('취소 실패. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('취소 실패. 다시 시도해주세요.');
+      console.error('취소 에러:', error);
+    } finally {
+      setIsRefundPolicy(false);
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -262,7 +254,7 @@ const PaymentDetail = ({ payments }) => {
               <PaymentPriceContainer>
                 <PaymentActions>
                   {!payCancelTime && classStartDateTime > now && (
-                    <ActionButton $cancel onClick={handleCancelClick}>구매 취소</ActionButton>
+                    <ActionButton $cancel onClick={() => handleCancelClick(payment.lectureId)}>구매 취소</ActionButton>
                   )}
                   {payCancelTime && (
                     <CancleMessage>
@@ -272,8 +264,8 @@ const PaymentDetail = ({ payments }) => {
                   )}
                   {!payCancelTime && classStartDateTime <= now && (
                     <>
-                      <ActionButton onClick={() => handleSummaryClick(payment.classId)}>요약 보기</ActionButton>
-                      <ActionButton>리뷰 작성</ActionButton>
+                      <ActionButton onClick={() => handleSummaryClick(payment.lectureId)}>요약 보기</ActionButton>
+                      <ActionButton onClick={() => handleReviewClick(payment.classId)}>리뷰 작성</ActionButton>
                     </>
                   )}
                 </PaymentActions>

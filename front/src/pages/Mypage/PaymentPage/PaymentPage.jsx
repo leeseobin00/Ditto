@@ -1,4 +1,3 @@
-// src/pages/PaymentPage.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -48,6 +47,7 @@ const dummyPayments = [
     minute: 0,
     payCancelTime: null,
     classId: 101,
+    lectureId: 1,
   },
   {
     paymentId: 2,
@@ -63,6 +63,7 @@ const dummyPayments = [
     minute: 0,
     payCancelTime: '2024-07-15T12:34:56Z',
     classId: 102,
+    lectureId: 2,
   },
   {
     paymentId: 3,
@@ -78,6 +79,7 @@ const dummyPayments = [
     minute: 30,
     payCancelTime: null,
     classId: 103,
+    lectureId: 3,
   },
   {
     paymentId: 4,
@@ -93,6 +95,7 @@ const dummyPayments = [
     minute: 0,
     payCancelTime: null,
     classId: 104,
+    lectureId: 4,
   },
 ];
 
@@ -108,7 +111,7 @@ const PaymentPage = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      // const response = await axios.get(`/mypage/${userId}/payment`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/payment`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -145,7 +148,7 @@ const PaymentPage = () => {
   return (
     <Container>
       <Title>결제/수강 내역</Title>
-      <PaymentDetail payments={payments} />
+      <PaymentDetail payments={payments} setPayments={setPayments} />
       <LoadMoreButton onClick={loadMorePayments} disabled={loading}>
         {loading ? '불러오는 중...' : '더보기'}
       </LoadMoreButton>

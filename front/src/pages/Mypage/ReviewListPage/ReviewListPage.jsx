@@ -28,7 +28,7 @@ const dummyReviews = [
     createdDate: '2024-07-20T12:34:56Z',
     modifiedDate: '2024-07-21T12:34:56Z',
     isDeleted: false,
-    rating: 3.5,
+    rating: 3,
     fileId: 2,
     fileUrl: '/path/to/image2.jpg',
     classId: 102,
@@ -54,7 +54,7 @@ const ReviewListPage = () => {
   const fetchReviews = async () => {
     try {
       // 서버와 통신하는 부분 주석 처리
-      // const response = await axios.get(`https://localhost:8080/mypage/${userId}/review`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/review`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
@@ -72,7 +72,7 @@ const ReviewListPage = () => {
   const fetchMoreReviews = async () => {
     try {
       // 서버와 통신하는 부분 주석 처리
-      // const response = await axios.get(`https://localhost:8080/mypage/${userId}/review-more`, {
+      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/review-more`, {
       //   headers: {
       //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       //   },
