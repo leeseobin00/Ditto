@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.answer.domain;
 
 import com.ssafy.ditto.domain.question.domain.Question;
+import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,8 +24,9 @@ public class Answer extends BaseTimeEntity {
     @Column
     private Boolean isDeleted;
 
-    // FK
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User userId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")

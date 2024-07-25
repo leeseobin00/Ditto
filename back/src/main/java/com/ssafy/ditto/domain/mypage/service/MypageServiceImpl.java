@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.mypage.service;
 
+import com.ssafy.ditto.domain.answer.domain.Answer;
 import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.classes.domain.Payment;
 import com.ssafy.ditto.domain.classes.domain.Summary;
@@ -239,6 +240,19 @@ public class MypageServiceImpl implements MypageService{
         }
 
         return questionResponseList;
+    }
+
+    @Override
+    public AnswerResponse getAnswer(int userId, int questionId) {
+        Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId));
+
+        return AnswerResponse.builder()
+                .answerId(answer.getAnswerId())
+                .answer(answer.getAnswer())
+                .createdDate(answer.getCreatedDate())
+                .modifiedDate(answer.getModifiedDate())
+                .isDeleted(answer.getIsDeleted())
+                .build();
     }
 
 

@@ -16,4 +16,6 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
             "ORDER BY q.createdDate DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Question> getQuestions(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
+
+    Question findByQuestionId(int questionId);
 }
