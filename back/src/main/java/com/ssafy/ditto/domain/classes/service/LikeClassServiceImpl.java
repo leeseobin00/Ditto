@@ -44,4 +44,14 @@ public class LikeClassServiceImpl implements LikeClassService {
             likeClassRepository.save(likeClass);
         }
     }
+
+    @Override
+    @Transactional
+    public void unlikeClass(Integer classId, Integer userId) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+
+        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
+        likeClassRepository.deleteByUserIdAndClassId(user, dClass);
+    }
 }
