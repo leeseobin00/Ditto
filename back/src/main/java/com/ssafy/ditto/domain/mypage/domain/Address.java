@@ -14,7 +14,7 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
-    private int addressId;
+    private Integer addressId;
 
     @Column(name = "zip_code")
     private String zipCode;
@@ -35,7 +35,7 @@ public class Address {
     private String phoneNumber;
 
     @Column(name = "is_default")
-    private boolean ddefault;
+    private Boolean isDefault;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +43,6 @@ public class Address {
     private User userId;
 
     public void changeDefault(boolean newDefault){
-        this.ddefault = newDefault;
+        this.isDefault = newDefault;
     }
 }

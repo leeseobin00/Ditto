@@ -13,7 +13,7 @@ public class Refund {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refund_id")
-    private int refundId;
+    private Integer refundId;
 
     @Column(name = "refund")
     private String refund;

@@ -11,7 +11,7 @@ public class UserSignUpRequest {
     private String email;
     private String password;
     private String nickname;
-    private int role;
-    private boolean agreeTOS;
-    private boolean agreePICU;
+    private Integer role;
+    private Boolean agreeTOS;
+    private Boolean agreePICU;
 }

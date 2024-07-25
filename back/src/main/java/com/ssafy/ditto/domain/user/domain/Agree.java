@@ -13,7 +13,7 @@ public class Agree {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "agree_id")
-    private int agreeId;
+    private Integer agreeId;
 
     @Column(name = "agree")
     private String agree;

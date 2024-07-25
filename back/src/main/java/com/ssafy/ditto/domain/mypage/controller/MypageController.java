@@ -1,12 +1,14 @@
 package com.ssafy.ditto.domain.mypage.controller;
 
-import com.ssafy.ditto.domain.mypage.dto.AddressRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageRequest;
-import com.ssafy.ditto.domain.mypage.dto.MypageResponse;
+import com.ssafy.ditto.domain.mypage.dto.*;
 import com.ssafy.ditto.domain.mypage.service.MypageService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,4 +51,36 @@ public class MypageController {
         mypageService.deleteAddress(userId, addressId);
         return ResponseDto.of(200, "일반 유저 배송지 삭제 성공");
     }
+
+    //Mypage_005
+    @GetMapping("{userId}/payment")
+    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId){
+        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
+    }
+
+    //Mypage_006
+    @GetMapping("{userId}/payment-more")
+    public ResponseDto<List<PaymentResponse>> getPayment(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<PaymentResponse> paymentResponses = mypageService.getPayment(userId, finalDate);
+        return ResponseDto.of(200, "일반 유저 결제/수강 내역 조회 성공", paymentResponses);
+    }
+
+    //Mypage_017
+    @GetMapping("payment/cancel")
+    public ResponseDto<CancelResponse> getCancel(){
+        CancelResponse cancelResponse = mypageService.getRefund();
+        return ResponseDto.of(200, "환불 규정 조회 성공", cancelResponse);
+    }
+
+    //Mypage_018
+    @PatchMapping("{userId}/payment/cancel")
+    public ResponseDto<Void> patchCancel(@PathVariable("userId") int userId, @RequestBody Map<String, Integer> lectureId) {
+        mypageService.patchRefund(userId, lectureId.get("lectureId"));
+        return ResponseDto.of(200, "결제/수강 취소 완료");
+    }
+
+//    //Mypage_007
+//    @GetMapping("lecture/{lectureId}/summary")
+//    public ResponseDto<List<>>
 }

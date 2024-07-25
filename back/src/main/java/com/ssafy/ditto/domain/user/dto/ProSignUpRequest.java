@@ -15,14 +15,14 @@ public class ProSignUpRequest {
     private String email;
     private String password;
     private String nickname;
-    private int role;
+    private Integer role;
     private String name;
     private String phoneNumber;
     private LocalDateTime startDate;
     private Byte minActive;
     private String experience;
     private String comment;
-    private boolean agreeTOS;
-    private boolean agreePICU;
+    private Boolean agreeTOS;
+    private Boolean agreePICU;
     private List<String> tagName;
 }

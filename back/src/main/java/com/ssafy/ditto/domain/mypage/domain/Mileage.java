@@ -14,10 +14,10 @@ public class Mileage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mileage_id")
-    private int mileageId;
+    private Integer mileageId;
 
     @Column(name = "mileage")
-    private int mileage;
+    private Integer mileage;
 
     //FK
     @OneToOne(fetch = FetchType.LAZY)

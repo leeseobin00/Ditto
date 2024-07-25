@@ -12,5 +12,5 @@ public class AddressRequest {
     private String address2;
     private String receiver;
     private String phoneNumber;
-    private boolean ddefault;
+    private Boolean isDefault;
 }

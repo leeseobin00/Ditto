@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,19 +18,19 @@ public class MileageHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "history_id")
-    private int historyId;
+    private Integer historyId;
 
     @Column(name = "mileage_amount")
-    private int mileageAmount;
+    private Integer mileageAmount;
 
     @Column(name = "time")
-    private Date time;
+    private LocalDateTime time;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "final_amount")
-    private int finalAmount;
+    private Integer finalAmount;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
