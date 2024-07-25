@@ -19,12 +19,17 @@ import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,6 +129,7 @@ public class ClassServiceImpl implements ClassService {
 
         List<Step> steps = stepRepository.findAllByClassId(dClass);
         List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
+        UserResponse userResponse = UserResponse.of(dClass.getUserId());
 
         return ClassDetailResponse.builder()
                 .classId(dClass.getClassId())
@@ -174,6 +180,56 @@ public class ClassServiceImpl implements ClassService {
                         .minute(lecture.getMinute())
                         .userCount(lecture.getUserCount())
                         .build()).collect(Collectors.toList()))
+                .user(userResponse)
+                .build();
+    }
+
+    @Transactional
+    public ClassListResponse getClassList(ClassListRequest request) {
+        Sort sort = Sort.by(Sort.Order.desc(request.getSortBy() != null ? request.getSortBy() : "createdDate"));
+        Pageable pageable = PageRequest.of(request.getPage(), 10, sort);
+
+        List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            if (request.getCategoryId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("categoryId").get("id"), request.getCategoryId()));
+            }
+            if (request.getTagId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("tagId").get("id"), request.getTagId()));
+            }
+            if (request.getSearchBy() != null && request.getKeyword() != null) {
+                predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
+            }
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        }, pageable).getContent();
+
+        List<ClassResponse> classResponses = classList.stream().map(dClass -> ClassResponse.builder()
+                .classId(dClass.getClassId())
+                .className(dClass.getClassName())
+                .classPrice(dClass.getClassPrice())
+                .classHour(dClass.getClassHour())
+                .classMinute(dClass.getClassMinute())
+                .classExplanation(dClass.getClassExplanation())
+                .classMin(dClass.getClassMin())
+                .classMax(dClass.getClassMax())
+                .studentSum(dClass.getStudentSum())
+                .createdDate(dClass.getCreatedDate())
+                .modifiedDate(dClass.getModifiedDate())
+                .isDeleted(dClass.getIsDeleted())
+                .likeCount(dClass.getLikeCount())
+                .reviewCount(dClass.getReviewCount())
+                .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
+                .userNickname(dClass.getUserId().getNickname())
+                .file(dClass.getFileId() != null ? FileResponse.builder()
+                        .fileId(dClass.getFileId().getFileId())
+                        .uploadFileName(dClass.getFileId().getUploadFileName())
+                        .fileUrl(dClass.getFileId().getFileUrl())
+                        .build() : null)
+                .user(UserResponse.of(dClass.getUserId()))
+                .build()).collect(Collectors.toList());
+
+        return ClassListResponse.builder()
+                .classList(classResponses)
                 .build();
     }
 }

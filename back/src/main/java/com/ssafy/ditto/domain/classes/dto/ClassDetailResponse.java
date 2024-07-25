@@ -2,6 +2,7 @@ package com.ssafy.ditto.domain.classes.dto;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
+import com.ssafy.ditto.domain.user.dto.UserResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -33,8 +34,9 @@ public class ClassDetailResponse {
     private KitDetailResponse kit;
     private List<StepDetailResponse> steps;
     private List<LectureResponse> lectures;
+    private UserResponse user;
 
-    public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses) {
+    public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses, UserResponse userResponse) {
         return ClassDetailResponse.builder()
                 .classId(dClass.getClassId())
                 .className(dClass.getClassName())
@@ -55,6 +57,7 @@ public class ClassDetailResponse {
                 .kit(kitDetailResponse)
                 .steps(stepDetailResponses)
                 .lectures(lectureResponses)
+                .user(userResponse)
                 .build();
     }
 }
