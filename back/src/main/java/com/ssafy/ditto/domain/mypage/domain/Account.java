@@ -28,4 +28,16 @@ public class Account {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
+
+    public void changeAccountNumber(String newAccountNumber){
+        this.accountNumber = newAccountNumber;
+    }
+
+    public void changeBank(String newBank){
+        this.bank = newBank;
+    }
+
+    public void changeReceiver(String newReceiver){
+        this.receiver = newReceiver;
+    }
 }

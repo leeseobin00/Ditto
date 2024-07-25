@@ -121,4 +121,33 @@ public class MypageController {
         List<ReviewResponse> reviewResponseList = mypageService.getReviews(userId, finalDate);
         return ResponseDto.of(200, "내가 작성한 리뷰 조회 성공", reviewResponseList);
     }
+
+    //Mypage_012
+    @GetMapping("{userId}/like/class")
+    public ResponseDto<List<LikeClassResponse>> getLikedClasses(@PathVariable("userId") int userId){
+        List<LikeClassResponse> likeClassResponseList = mypageService.getLikedClasses(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "내 관심 class 목록 조회 완료", likeClassResponseList);
+    }
+
+    //Mypage_013
+    @GetMapping("{userId}/like/class-more")
+    public ResponseDto<List<LikeClassResponse>> getLikedClasses(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<LikeClassResponse> likeClassResponseList = mypageService.getLikedClasses(userId, finalDate);
+        return ResponseDto.of(200, "내 관심 class 목록 조회 완료", likeClassResponseList);
+    }
+
+
+    //Pro_001
+    @GetMapping("pro/{userId}")
+    public ResponseDto<ProMypageResponse> getProMypage(@PathVariable("userId") int userId){
+        ProMypageResponse proMypageResponse = mypageService.getProMypage(userId);
+        return ResponseDto.of(200, "강사 마이페이지 조회 성공", proMypageResponse);
+    }
+
+    //Pro_002
+    @PatchMapping("account/{userId}")
+    public ResponseDto<Void> modifyAccount(@PathVariable("userId") int userId, @RequestBody AccountRequest accountRequest){
+        mypageService.modifyAccount(userId, accountRequest);
+        return ResponseDto.of(200, "계좌 수정 완료");
+    }
 }
