@@ -19,6 +19,4 @@ public class ClassRequest {
     private Integer classMax;
     private String classExplanation;
     private KitRequest kit;
-    private String kitFile;
-    private String classFile;
 }
