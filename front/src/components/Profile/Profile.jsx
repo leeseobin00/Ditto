@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
+import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
 
 const ProfileWrapper = styled.div`
@@ -48,8 +50,12 @@ const Tags = styled.div`
   margin-top: 16px;
 `;
 
-function Profile({heartStatus, postHeart, deleteHeart}) {
-  console.log("heartStatus",heartStatus);
+function Profile({seekerId, postHeart, deleteHeart}) {
+  // redux
+  const userId = useSelector((state)=>state.auth.userId);
+  // axios
+  const {sendRequest:getHeart} = useAxios();
+
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [likeCount, setLikeCount] = useState(1024);
 
@@ -66,9 +72,14 @@ function Profile({heartStatus, postHeart, deleteHeart}) {
     }
   };
 
+  const handleGetHeart = async() => {
+    const result = await getHeart(`/profiles/${userId}/like?seekerId=${seekerId}`,null, "get");
+    setIsHeartFilled(result?.data);
+  }
+
   useEffect(()=>{
-    setIsHeartFilled(heartStatus);
-  },[heartStatus]);
+    handleGetHeart();
+  },[]);
 
   return (
     <ProfileWrapper>

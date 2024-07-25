@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 import { BsPersonFill, BsStarFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 import Profile from "./Profile";
 import MyProfile from "./MyProfile";
@@ -82,30 +83,32 @@ const NavLink = styled.a`
   }
 `;
 
-function Sidebar({ isMyProfile, heartStatus, postHeart, deleteHeart }) {
+function Sidebar({ isMyProfile, studentSum, avgRating, seekerId, postHeart, deleteHeart }) {
+  const roleId = useSelector(state => state.auth.roleId);
+
   return (
     <SidebarWrapper>
-      {isMyProfile ? <MyProfile /> : 
+      {isMyProfile ? <MyProfile seekerId={seekerId}/> : 
       <Profile
-        heartStatus={heartStatus} 
+        seekerId={seekerId}
         postHeart={postHeart} 
         deleteHeart={deleteHeart} />}
-      <LectureDetails>
+      {roleId==2 && <LectureDetails>
         <LectureDetail>
           <DetailTitle>수강생 수</DetailTitle>
           <DetailContent>
             <CustomPersonIcon />
-            52,356
+            {(studentSum).toLocaleString()}
           </DetailContent>
         </LectureDetail>
         <LectureDetail>
           <DetailTitle>평점</DetailTitle>
           <DetailContent>
             <CustomStarIcon />
-            4.8
+            {avgRating}
           </DetailContent>
         </LectureDetail>
-      </LectureDetails>
+      </LectureDetails>}
       <NavList>
         <NavItem>
           <NavLink href="#intro">소개글</NavLink>

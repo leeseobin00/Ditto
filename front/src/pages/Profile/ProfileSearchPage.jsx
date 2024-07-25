@@ -118,7 +118,7 @@ function ProfileSearchPage() {
   const [teacherTotalPage, setTeacherTotalPage] = useState(1);
 
   const handleGetProfile = async() => {
-    if(currentPage<totalPage){
+    if(currentPage<=totalPage){
       const params = {
         page: currentPage,
         size: 5,
@@ -141,7 +141,7 @@ function ProfileSearchPage() {
   }
 
   const handleGetTeacherProfile = async() => {
-    if(currentTeacherPage<teacherTotalPage){
+    if(currentTeacherPage<=teacherTotalPage){
       const params = {
         page: currentTeacherPage,
         size: 5,
@@ -199,7 +199,7 @@ function ProfileSearchPage() {
 
       <Section title="강사" onClick={handleGetProfile}>
         <Profiles>
-          <Link to={"/profile/1"}><Profile/></Link>
+          <Link to={"/profile/1"}><Profile seekerId={1}/></Link>
           {profiles?.map((profile, index)=>{
             <Link to={"/profile/1"}>
               <Profile key={index}/>
