@@ -1,5 +1,9 @@
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
+import useAxios from "../../hooks/useAxios";
 import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
 import ClassInfo from "../../components/Class/ClasDetail/ClassInfo";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
@@ -19,67 +23,63 @@ const ClassBody = styled.div`
   padding: 1% 5%;
 `;
 
-const StickyContainer = styled.div`
-  position: sticky;
-  top: -1px;
-  z-index: 500;
-  background-color: white;
-`;
+// const StickyContainer = styled.div`
+//   position: sticky;
+//   top: -1px;
+//   z-index: 500;
+//   background-color: white;
+// `;
 
 function ClassDetailPage() {
   const titleIds = ["1", "2", "3"];
 
-  const classInfo = {
-    classId: 1,
-    className: "수제 비누 만들기 DIY 클래스",
-    classPrice: 43000,
-    classHour: 2,
-    classMinute: 0,
-    classExplanation: "초보자도 쉽게 할 수 있는 비누 만들기 입문 강의입니다.",
-    likeCount: 5263,
-    reviewCount: 100,
-    averageRating: 4.2,
-    tagName: "뜨개질",
-    userNickname: "이강사",
-    classMax: 12,
-    file: {
-      fileUrl:
-        "https://ecimg.cafe24img.com/pg137b87168944095/monthlytoy/web/product/big/20240516/9ecbcd4d7452568bfb1878108bc58d01.jpg",
-    },
-    kit: {
-      kitName: "수제 비누 만들기 DIY 키트",
-      kitExplanation:
-        "비누 베이스, 색소, 향료(라벤더, 레몬, 로즈마리 3종), 실리콘 몰드, 계량컵 등 포함",
-      fileUrl:
-        "https://ecimg.cafe24img.com/pg137b87168944095/monthlytoy/web/product/big/20240516/9ecbcd4d7452568bfb1878108bc58d01.jpg",
-    },
-    steps: [
-      {
-        stepNo: 1,
-        stepName: "뜨개질의 기초 다지기",
-        stepDetail:
-          "뜨개질을 처음 시작하는 분들을 위한 단계입니다. 뜨개질에 필요한 기본 도구를 소개하고, 올바른 실 선택 방법과 뜨개질의 기본 기술(코잡기, 겉뜨기, 안뜨기)을 배웁니다. 이 단계를 통해 뜨개질의 기초를 다질 수 있습니다.",
-        fileUrl:
-          "https://ecimg.cafe24img.com/pg137b87168944095/monthlytoy/web/product/big/20240516/9ecbcd4d7452568bfb1878108bc58d01.jpg",
-      },
-      {
-        stepNo: 2,
-        stepName: "뜨개질의 기초 다지기",
-        stepDetail:
-          "뜨개질을 처음 시작하는 분들을 위한 단계입니다. 뜨개질에 필요한 기본 도구를 소개하고, 올바른 실 선택 방법과 뜨개질의 기본 기술(코잡기, 겉뜨기, 안뜨기)을 배웁니다. 이 단계를 통해 뜨개질의 기초를 다질 수 있습니다.",
-        fileUrl:
-          "https://ecimg.cafe24img.com/pg137b87168944095/monthlytoy/web/product/big/20240516/9ecbcd4d7452568bfb1878108bc58d01.jpg",
-      },
-    ],
+  // redux
+  const userId = useSelector((state) => state.auth.userId);
+  const userName = useSelector((state) => state.auth.nickname);
+  // axios
+  const { sendRequest: getClassInfo } = useAxios();
+
+  // router
+  const { classId } = useParams();
+  // state: post, comments
+  const [classInfo, setClassInfo] = useState({});
+  // const [comments, setComments] = useState([]);
+  // date
+  const date = new Date();
+  const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
+
+  const handleGetClass = async () => {
+    const result = await getClassInfo(`/classes/${classId}`, null, "get");
+    setClassInfo(result?.data);
+  };
+
+  useEffect(() => {
+    handleGetClass();
+  }, []);
+
+  // const handlePostComment = async (content, parentId) => {
+  //   const postData = {
+  //     userId: userId,
+  //     content: content,
+  //     parentId: parentId,
+  //   };
+  //   await postComment(`/comments/${postId}`, postData, "post");
+  //   handleGetComment();
+  // };
+
+  const handleReplyFormOpen = (index) => {
+    setShowReplyForms((prev) => {
+      const newShowReplyForms = [...prev];
+      newShowReplyForms[index] = true;
+      return newShowReplyForms;
+    });
   };
 
   // 나중에 props 전달 방법 바꾸기 {...classInfo} -> ({classInfo, steps, 등})
   return (
     <ClassDetailPageContainer>
       <ClassThumbnail classInfo={classInfo} />
-      <StickyContainer>
-        <TabBar titleIds={titleIds} />
-      </StickyContainer>
+      <TabBar titleIds={titleIds} />
       <ClassBody>
         <ClassInfo classInfo={classInfo} titleIds={titleIds} />
         <ClassSideBar classInfo={classInfo} />

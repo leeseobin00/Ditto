@@ -10,6 +10,10 @@ const TabBarContainer = styled.div`
   flex-direction: row;
   align-items: center;
   background-color: var(--LIGHT);
+  position: sticky;
+  top: -1px;
+  z-index: 500;
+  background-color: white;
 `;
 
 const VwContainer = styled.div`
