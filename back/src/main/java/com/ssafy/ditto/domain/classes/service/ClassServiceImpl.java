@@ -8,10 +8,7 @@ import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.Step;
 import com.ssafy.ditto.domain.classes.dto.*;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
-import com.ssafy.ditto.domain.classes.repository.ClassRepository;
-import com.ssafy.ditto.domain.classes.repository.KitRepository;
-import com.ssafy.ditto.domain.classes.repository.LectureRepository;
-import com.ssafy.ditto.domain.classes.repository.StepRepository;
+import com.ssafy.ditto.domain.classes.repository.*;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.exception.FileException;
@@ -29,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +44,7 @@ public class ClassServiceImpl implements ClassService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final LikeClassRepository likeClassRepository;
 
     @Override
     @Transactional
@@ -184,6 +183,7 @@ public class ClassServiceImpl implements ClassService {
                 .build();
     }
 
+    @Override
     @Transactional
     public ClassListResponse getClassList(ClassListRequest request) {
         Sort sort = Sort.by(Sort.Order.desc(request.getSortBy() != null ? request.getSortBy() : "createdDate"));
@@ -192,10 +192,10 @@ public class ClassServiceImpl implements ClassService {
         List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
             List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
             if (request.getCategoryId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("categoryId").get("id"), request.getCategoryId()));
+                predicates.add(criteriaBuilder.equal(root.get("categoryId"), request.getCategoryId()));
             }
             if (request.getTagId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("tagId").get("id"), request.getTagId()));
+                predicates.add(criteriaBuilder.equal(root.get("tagId"), request.getTagId()));
             }
             if (request.getSearchBy() != null && request.getKeyword() != null) {
                 predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
@@ -232,4 +232,38 @@ public class ClassServiceImpl implements ClassService {
                 .classList(classResponses)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public List<ClassResponse> getPopularClasses() {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("likeCount")));
+        List<DClass> popularClasses = classRepository.findPopularClasses(oneWeekAgo, pageable);
+
+        return popularClasses.stream().map(dClass -> ClassResponse.builder()
+                .classId(dClass.getClassId())
+                .className(dClass.getClassName())
+                .classPrice(dClass.getClassPrice())
+                .classHour(dClass.getClassHour())
+                .classMinute(dClass.getClassMinute())
+                .classExplanation(dClass.getClassExplanation())
+                .classMin(dClass.getClassMin())
+                .classMax(dClass.getClassMax())
+                .studentSum(dClass.getStudentSum())
+                .createdDate(dClass.getCreatedDate())
+                .modifiedDate(dClass.getModifiedDate())
+                .isDeleted(dClass.getIsDeleted())
+                .likeCount(dClass.getLikeCount())
+                .reviewCount(dClass.getReviewCount())
+                .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
+                .userNickname(dClass.getUserId().getNickname())
+                .file(dClass.getFileId() != null ? FileResponse.builder()
+                        .fileId(dClass.getFileId().getFileId())
+                        .uploadFileName(dClass.getFileId().getUploadFileName())
+                        .fileUrl(dClass.getFileId().getFileUrl())
+                        .build() : null)
+                .user(UserResponse.of(dClass.getUserId()))
+                .build()).collect(Collectors.toList());
+    }
+
 }
