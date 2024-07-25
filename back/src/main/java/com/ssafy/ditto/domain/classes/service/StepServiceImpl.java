@@ -57,4 +57,36 @@ public class StepServiceImpl implements StepService {
 
         stepRepository.saveAll(steps);
     }
+
+    @Transactional
+    @Override
+    public void updateSteps(Integer classId, List<StepRequest> stepRequests, List<MultipartFile> stepFiles) throws IOException {
+        if (stepRequests.size() != stepFiles.size()) {
+            throw new IllegalArgumentException("스텝 정보와 파일의 수가 일치하지 않습니다.");
+        }
+
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+
+        List<Step> existingSteps = stepRepository.findAllByClassId(dClass);
+        stepRepository.deleteAll(existingSteps);
+
+        List<Step> steps = stepRequests.stream().map(stepRequest -> Step.builder()
+                .stepNo(stepRequest.getStepNo().byteValue())
+                .stepName(stepRequest.getStepName())
+                .stepDetail(stepRequest.getStepDetail())
+                .classId(dClass)
+                .build()).collect(Collectors.toList());
+
+        stepRepository.saveAll(steps);
+
+        for (int i = 0; i < steps.size(); i++) {
+            Step step = steps.get(i);
+            MultipartFile file = stepFiles.get(i);
+            Integer fileId = fileService.saveFile(file);
+            File savedFile = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
+            step.setFileId(savedFile);
+        }
+
+        stepRepository.saveAll(steps);
+    }
 }
