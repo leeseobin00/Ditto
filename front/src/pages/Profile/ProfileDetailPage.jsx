@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import Sidebar from "../../components/Profile/SideBar";
 import Section from "../../components/Profile/ProfileDetail/Section";
@@ -8,6 +9,7 @@ import CardList from "../../components/Profile/ProfileDetail/CardList";
 import ReviewList from "../../components/Profile/ProfileDetail/ReviewList";
 import PostList from "../../components/common/PostList";
 import ModifyIntro from "../../components/Profile/ProfileDetail/ModifyIntro";
+import useAxios from "../../hooks/useAxios";
 
 const Container = styled.div`
   display: flex;
@@ -27,26 +29,30 @@ const IntroContent = styled.div`
 `;
 
 function ProfileDetailPage() {
+  // router
+  const loginUserId = useSelector(state => state.auth.userId);
+  const { userId } = useParams();
   const location = useLocation();
   const isMyProfile = location.pathname === "/profile/my";
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(loginUserId===userId){
+      navigate("/profile/my");
+    }
+  },[]);
+  // axios
+  const { sendRequest: getProfile} = useAxios();
+  const { sendRequest: getClass} = useAxios();
+  const { sendRequest: getPost} = useAxios();
 
-  const [posts, setPosts] = useState([
-    {
-      postId: 1,
-      title: "제목",
-      likeCount: "1024",
-      userName: "김싸피",
-      createdDate: "2024-07-19",
-    },
-    {
-      postId: 2,
-      title: "제목",
-      likeCount: "1024",
-      userName: "김싸피",
-      createdDate: "2024-07-19",
-    },
-  ]);
-  const [cards, setCards] = useState([
+  const { sendRequest: getHeart } = useAxios();
+  const { sendRequest: postHeart} = useAxios();
+  const { sendRequest: deleteHeart } = useAxios();
+
+  // state
+  const [heartStatus, setHeartStatus] = useState(false);
+
+  const [classes, setClasses] = useState([
     {
       title: "제목",
       name: "김싸피",
@@ -65,10 +71,60 @@ function ProfileDetailPage() {
     { rating: 3 },
     { rating: 5 },
   ]);
+  
+  const [posts, setPosts] = useState([]);
+
+  const handleGetProfile = async() => {
+    const result = await getProfile(`/profiles/${loginUserId}`, null, "get");
+    console.log(result);
+  }
+
+  const handleGetClass = async() => {
+    const result = await getClass(`/profiles/${loginUserId}/class`, null, "get");
+    if(result){
+      setClasses(result?.data);
+    }
+    console.log(result);
+  }
+
+  const handleGetPost = async() => {
+    const result = await getPost(`/profiles/${loginUserId}/post`, null, "get");
+    setPosts(result?.data?.posts);
+    console.log(result)
+  }
+
+  const handleGetHeart = async() => {
+    const result = await getHeart(`/profiles/${loginUserId}/like?seekerId=${userId}`,null, "get");
+    setHeartStatus(result?.data);
+    console.log(result?.data);
+  }
+
+  const handlePostHeart = async() => {
+    console.log("===============>postHeart");
+    await postHeart(`/profiles/${loginUserId}/like?seekerId=${userId}`, null, "post");
+  }
+
+  const handleDeleteHeart = async() => {
+    await deleteHeart(`/profiles/${loginUserId}/like?seekerId=${userId}`, null, "delete");
+  }
+
+  useEffect(()=>{
+    if(loginUserId){
+      handleGetPost();
+      handleGetClass();
+      handleGetProfile();
+      handleGetHeart();
+    }
+  },[loginUserId]);
 
   return (
     <Container>
-      <Sidebar isMyProfile={isMyProfile} />
+      <Sidebar 
+        isMyProfile={isMyProfile}
+        heartStatus={heartStatus}
+        postHeart={handlePostHeart}
+        deleteHeart={handleDeleteHeart}
+      />
       <Content>
         <Section
           id="intro"
@@ -82,7 +138,7 @@ function ProfileDetailPage() {
         </Section>
 
         <Section id="classes" title="참여 Class">
-          <CardList cards={cards} />
+          <CardList cards={classes} />
         </Section>
 
         <Section id="reviews" title="강의 리뷰">

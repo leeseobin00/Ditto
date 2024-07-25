@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { styled } from "styled-components";
+import { useSelector } from "react-redux";
 
+import useAxios from "../../../hooks/useAxios";
 import RoundButton from "../../common/RoundButton";
 
 const ModalTitle = styled.p`
@@ -26,6 +28,11 @@ const Textarea = styled.textarea`
 `;
 
 function ModifyIntro({ onClose }) {
+  // redux
+  const userId = useSelector(state => state.auth.userId);
+  // axios
+  const { sendRequest:patchIntro } = useAxios();
+
   const [intro, setIntro] = useState("");
 
   const handleTextAreaChange = (event) => {
@@ -33,6 +40,12 @@ function ModifyIntro({ onClose }) {
   };
 
   const handleSubmit = () => {
+    if(userId){
+      const patchData = { "intro": intro };
+      
+      patchIntro(`/profiles/intro?userId=${userId}`, patchData, "patch");
+    }
+
     onClose();
   };
 

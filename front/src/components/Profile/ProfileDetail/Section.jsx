@@ -81,7 +81,7 @@ function Section({
       {children}
       {onClick && (
         <ButtonWrapper>
-          <OutlineButton label="더보기" color="default" />
+          <OutlineButton label="더보기" color="default" onClick={onClick}/>
         </ButtonWrapper>
       )}
 

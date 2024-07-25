@@ -82,10 +82,14 @@ const NavLink = styled.a`
   }
 `;
 
-function Sidebar({ isMyProfile }) {
+function Sidebar({ isMyProfile, heartStatus, postHeart, deleteHeart }) {
   return (
     <SidebarWrapper>
-      {isMyProfile ? <MyProfile /> : <Profile />}
+      {isMyProfile ? <MyProfile /> : 
+      <Profile
+        heartStatus={heartStatus} 
+        postHeart={postHeart} 
+        deleteHeart={deleteHeart} />}
       <LectureDetails>
         <LectureDetail>
           <DetailTitle>수강생 수</DetailTitle>
