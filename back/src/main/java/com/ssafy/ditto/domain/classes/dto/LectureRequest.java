@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.classes.dto;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 @Getter

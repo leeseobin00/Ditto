@@ -1,12 +1,14 @@
 package com.ssafy.ditto.domain.classes.controller;
 
-import com.ssafy.ditto.domain.classes.dto.*;
+import com.ssafy.ditto.domain.classes.dto.ClassDetailResponse;
+import com.ssafy.ditto.domain.classes.dto.ClassRequest;
+import com.ssafy.ditto.domain.classes.dto.LectureRequest;
+import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.classes.service.StepService;
 import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,12 +47,6 @@ public class ClassController {
             return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
         }
     }
-
-//    @PostMapping("/{classId}/steps")
-//    public ResponseDto<Void> addSteps(@PathVariable Integer classId, @RequestBody List<StepRequest> stepRequests) {
-//        stepService.addSteps(classId, stepRequests);
-//        return ResponseDto.of(201, "스텝이 성공적으로 추가되었습니다.");
-//    }
 
     @PatchMapping("/{classId}")
     public ResponseDto<Void> updateClass(@PathVariable Integer classId,

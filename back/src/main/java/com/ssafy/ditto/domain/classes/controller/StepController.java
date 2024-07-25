@@ -3,7 +3,6 @@ package com.ssafy.ditto.domain.classes.controller;
 import com.ssafy.ditto.domain.classes.dto.StepRequest;
 import com.ssafy.ditto.domain.classes.service.StepService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

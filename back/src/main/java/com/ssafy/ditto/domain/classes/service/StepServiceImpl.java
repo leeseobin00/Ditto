@@ -1,25 +1,23 @@
 package com.ssafy.ditto.domain.classes.service;
 
-import com.ssafy.ditto.domain.classes.dto.StepRequest;
-import com.ssafy.ditto.domain.file.repository.FileRepository;
-import org.springframework.stereotype.Service;
-
 import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.domain.Step;
+import com.ssafy.ditto.domain.classes.dto.StepRequest;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
+import com.ssafy.ditto.domain.classes.repository.StepRepository;
+import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.exception.FileException;
+import com.ssafy.ditto.domain.file.repository.FileRepository;
+import com.ssafy.ditto.domain.file.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.ssafy.ditto.domain.classes.domain.Step;
-import com.ssafy.ditto.domain.file.domain.File;
-import com.ssafy.ditto.domain.file.service.FileService;
-import com.ssafy.ditto.domain.file.exception.FileException;
-
-import com.ssafy.ditto.domain.classes.repository.StepRepository;
 
 import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
 

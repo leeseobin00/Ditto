@@ -1,8 +1,8 @@
 package com.ssafy.ditto.domain.classes.dto;
 
+import com.ssafy.ditto.domain.classes.domain.Step;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import lombok.*;
-import com.ssafy.ditto.domain.classes.domain.Step;
 
 @Getter
 @Setter

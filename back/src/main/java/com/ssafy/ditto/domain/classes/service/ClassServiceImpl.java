@@ -1,20 +1,19 @@
 package com.ssafy.ditto.domain.classes.service;
 
-import com.ssafy.ditto.domain.category.domain.Category;
 import com.ssafy.ditto.domain.category.exception.CategoryNotFoundException;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
-import com.ssafy.ditto.domain.classes.domain.Kit;
 import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.domain.Kit;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.Step;
-import com.ssafy.ditto.domain.classes.dto.ClassDetailResponse;
-import com.ssafy.ditto.domain.classes.dto.ClassRequest;
+import com.ssafy.ditto.domain.classes.dto.*;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.KitRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.classes.repository.StepRepository;
 import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.exception.FileException;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
@@ -25,10 +24,6 @@ import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.ssafy.ditto.domain.file.dto.FileResponse;
-import com.ssafy.ditto.domain.classes.dto.StepDetailResponse;
-import com.ssafy.ditto.domain.classes.dto.KitDetailResponse;
-import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
