@@ -30,9 +30,10 @@ public class STTServiceImpl implements STTService{
                     .build();
             RecognitionConfig recognitionConfig =
                     RecognitionConfig.newBuilder()
-                            .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16) // WAV 파일의 인코딩
-                            //.setEncoding(RecognitionConfig.AudioEncoding.FLAC)
-                            .setSampleRateHertz(24000) // wav
+//                            .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16) // WAV 파일의 인코딩
+                            .setEncoding(RecognitionConfig.AudioEncoding.FLAC) // FLAC 으로 전달
+//                            .setSampleRateHertz(24000) // wav
+                            .setSampleRateHertz(44100)
                             .setLanguageCode("ko-KR")
                             .build();
 
@@ -40,9 +41,11 @@ public class STTServiceImpl implements STTService{
             RecognizeResponse response = speechClient.recognize(recognitionConfig, recognitionAudio);
             List<SpeechRecognitionResult> results = response.getResultsList();
 
-            for(SpeechRecognitionResult result:results)
-                System.out.println(result.getAlternatives(0).getTranscript());
+            for(SpeechRecognitionResult result:results) {
+                for(int i=0; i<result.getAlternativesCount(); i++)
+                    System.out.println(result.getAlternatives(i).getTranscript());
 
+            }
             if (!results.isEmpty()) {
                 // 주어진 말 뭉치에 대해 여러 가능한 스크립트를 제공. 0번(가장 가능성 있는)을 사용한다.
                 SpeechRecognitionResult result = results.get(0);
