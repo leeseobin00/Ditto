@@ -15,7 +15,15 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
             "WHERE q.user_id = :userId AND q.createdDate < :dateTime AND q.is_deleted = false " +
             "ORDER BY q.createdDate DESC " +
             "LIMIT 3", nativeQuery = true)
-    List<Question> getQuestions(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
+    List<Question> getQuestionsUser(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
+
+    @Query(value =
+            "SELECT * " +
+            "FROM Question q " +
+            "WHERE q.user_id = :userId AND q.createdDate < :dateTime AND q.is_deleted = false " +
+            "ORDER BY q.createdDate DESC " +
+            "LIMIT 3", nativeQuery = true)
+    List<Question> getQuestionsPro(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 
     Question findByQuestionId(int questionId);
 }

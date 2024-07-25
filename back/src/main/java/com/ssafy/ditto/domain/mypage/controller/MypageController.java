@@ -150,4 +150,36 @@ public class MypageController {
         mypageService.modifyAccount(userId, accountRequest);
         return ResponseDto.of(200, "계좌 수정 완료");
     }
+
+    //Pro_003
+    @GetMapping("{userId}/mileage")
+    public ResponseDto<MileageResponse> getMileage(@PathVariable("userId") int userId){
+        MileageResponse mileageResponse = mypageService.getMileage(userId);
+        return ResponseDto.of(200, "마일리지 조회 완료", mileageResponse);
+    }
+
+    //Pro_004
+    @GetMapping("{userId}/mileage/history")
+    public ResponseDto<List<MilageHistoryResponse>> getMileageHistory(@PathVariable("userId") int userId){
+        List<MilageHistoryResponse> milageHistoryResponseList = mypageService.getMileageHistory(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "마일리지 출금기록 조회 완료", milageHistoryResponseList);
+    }
+
+    //Pro_004_1
+    @GetMapping("{userId}/mileage/history-more")
+    public ResponseDto<List<MilageHistoryResponse>> getMileageHistory(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime dateTime){
+        List<MilageHistoryResponse> milageHistoryResponseList = mypageService.getMileageHistory(userId, dateTime);
+        return ResponseDto.of(200, "마일리지 출금기록 조회 완료", milageHistoryResponseList);
+    }
+
+    //Pro_005
+    @PostMapping("{userId}/withdraw")
+    public ResponseDto<Void> userWithdraw(@PathVariable("userId") int userId, @RequestBody Map<String, Integer> requestMoney){
+        mypageService.userWithdraw(userId, requestMoney.get("requestMoney"));
+        return ResponseDto.of(200, "출금 신청 완료");
+    }
+
+//    //Pro_006
+//    @GetMapping("question/{userId}")
+//    public ResponseDto<>
 }
