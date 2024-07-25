@@ -147,4 +147,11 @@ public class ClassController {
         likeClassService.likeClass(classId, userId);
         return ResponseDto.of(201, "클래스 좋아요가 성공적으로 완료되었습니다.");
     }
+
+    @DeleteMapping("/{classId}/likes")
+    public ResponseDto<Void> unlikeClass(@PathVariable Integer classId, @RequestBody Map<String, Integer> requestBody) {
+        Integer userId = requestBody.get("userId");
+        likeClassService.unlikeClass(classId, userId);
+        return ResponseDto.of(204, "클래스 좋아요 취소가 성공적으로 완료되었습니다.");
+    }
 }
