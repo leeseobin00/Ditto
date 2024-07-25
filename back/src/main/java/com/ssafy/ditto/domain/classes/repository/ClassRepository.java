@@ -15,4 +15,6 @@ public interface ClassRepository extends JpaRepository<DClass, Integer>, JpaSpec
     @Query("SELECT c FROM DClass c JOIN LikeClass lc ON c.classId = lc.classId.classId WHERE lc.createdDate > :oneWeekAgo GROUP BY c ORDER BY COUNT(lc) DESC")
     List<DClass> findPopularClasses(LocalDateTime oneWeekAgo, Pageable pageable);
 
+    @Query("SELECT c FROM DClass c WHERE c.createdDate > :oneWeekAgo ORDER BY c.createdDate DESC")
+    List<DClass> findRecentClasses(LocalDateTime oneWeekAgo, Pageable pageable);
 }
