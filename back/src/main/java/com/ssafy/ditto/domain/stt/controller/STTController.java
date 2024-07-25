@@ -24,6 +24,8 @@ public class STTController {
     @PostMapping(value = "/audio", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseDto<String> handleAudioMessage(@RequestParam("audio") MultipartFile audioFile) throws IOException {
         String transcribe = sttService.transcribe(audioFile);
+        // 변환된 조각조각의 텍스트를 모아 하나의 텍스트로 연결한 후
+        // 파이썬으로 넘겨 전처리 - 요약해서 다시 넘겨 받는 과정 추가적으로 필요
         return ResponseDto.of(OK.value(), SUCCESS_CONVERT.getMessage(),transcribe);
     }
 }
