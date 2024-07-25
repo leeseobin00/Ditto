@@ -27,4 +27,16 @@ public class StepController {
             return ResponseDto.of(500, "스텝 정보와 파일 추가 중 오류가 발생했습니다.");
         }
     }
+
+    @PatchMapping
+    public ResponseDto<Void> updateSteps(@PathVariable Integer classId,
+                                         @RequestPart("stepRequests") List<StepRequest> stepRequests,
+                                         @RequestPart("stepFiles") List<MultipartFile> stepFiles) {
+        try {
+            stepService.updateSteps(classId, stepRequests, stepFiles);
+            return ResponseDto.of(200, "스텝 정보와 파일이 성공적으로 수정되었습니다.");
+        } catch (IOException e) {
+            return ResponseDto.of(500, "스텝 정보와 파일 수정 중 오류가 발생했습니다.");
+        }
+    }
 }
