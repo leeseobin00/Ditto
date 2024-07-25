@@ -19,6 +19,7 @@ import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -124,6 +125,7 @@ public class ClassServiceImpl implements ClassService {
 
         List<Step> steps = stepRepository.findAllByClassId(dClass);
         List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
+        UserResponse userResponse = UserResponse.of(dClass.getUserId());
 
         return ClassDetailResponse.builder()
                 .classId(dClass.getClassId())
@@ -174,6 +176,7 @@ public class ClassServiceImpl implements ClassService {
                         .minute(lecture.getMinute())
                         .userCount(lecture.getUserCount())
                         .build()).collect(Collectors.toList()))
+                .user(userResponse)
                 .build();
     }
 }
