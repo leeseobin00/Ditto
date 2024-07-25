@@ -128,4 +128,9 @@ public class ClassController {
     public ResponseDto<List<ClassResponse>> getPopularClasses() {
         return ResponseDto.of(200, "인기 클래스 목록 조회 성공", classService.getPopularClasses());
     }
+
+    @GetMapping("/weeklynew")
+    public ResponseDto<List<ClassResponse>> getLatestClasses() {
+        return ResponseDto.of(200, "최신 클래스 목록 조회 성공", classService.getLatestClasses());
+    }
 }
