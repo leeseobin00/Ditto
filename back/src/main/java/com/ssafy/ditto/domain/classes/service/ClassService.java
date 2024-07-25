@@ -1,6 +1,8 @@
 package com.ssafy.ditto.domain.classes.service;
 
 import com.ssafy.ditto.domain.classes.dto.ClassDetailResponse;
+import com.ssafy.ditto.domain.classes.dto.ClassListRequest;
+import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
 import com.ssafy.ditto.domain.classes.dto.ClassRequest;
 
 public interface ClassService {
@@ -11,4 +13,6 @@ public interface ClassService {
     void deleteClass(Integer classId);
 
     ClassDetailResponse getClassDetail(Integer classId);
+
+    ClassListResponse getClassList(ClassListRequest request);
 }
