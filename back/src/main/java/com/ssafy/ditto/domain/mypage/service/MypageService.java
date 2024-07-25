@@ -37,4 +37,10 @@ public interface MypageService {
     ProMypageResponse getProMypage(int userId);
 
     void modifyAccount(int userId, AccountRequest accountRequest);
+
+    MileageResponse getMileage(int userId);
+
+    List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime);
+
+    void userWithdraw(int userId, Integer requestMoney);
 }

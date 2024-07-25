@@ -7,15 +7,10 @@ import com.ssafy.ditto.domain.classes.domain.Summary;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.classes.repository.PaymentRepository;
 import com.ssafy.ditto.domain.classes.repository.SummaryRepository;
-import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
-import com.ssafy.ditto.domain.mypage.domain.Account;
-import com.ssafy.ditto.domain.mypage.domain.Address;
-import com.ssafy.ditto.domain.mypage.domain.Refund;
+import com.ssafy.ditto.domain.mypage.domain.*;
+import com.ssafy.ditto.domain.mypage.repository.*;
 import com.ssafy.ditto.domain.mypage.dto.*;
-import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
-import com.ssafy.ditto.domain.mypage.repository.AddressRepository;
-import com.ssafy.ditto.domain.mypage.repository.RefundRepository;
 import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
@@ -46,6 +41,8 @@ public class MypageServiceImpl implements MypageService{
     private final AnswerRepository answerRepository;
     private final FileRepository fileRepository;
     private final ReviewRepository reviewRepository;
+    private final MileageRepository mileageRepository;
+    private final MileageHistoryRepository mileageHistoryRepository;
 
     @Override
     public MypageResponse getUserMypage(int userId) {
@@ -145,10 +142,10 @@ public class MypageServiceImpl implements MypageService{
     }
 
     @Override
-    public List<PaymentResponse> getPayment(int userId, LocalDateTime finalDate) {
+    public List<PaymentResponse> getPayment(int userId, LocalDateTime dateTime) {
 
         // 입력한 날짜로 결제내역을 보여줌. 없으면 빈 list
-        List<Payment> payments = paymentRepository.getPaymentList(userId, finalDate);
+        List<Payment> payments = paymentRepository.getPaymentList(userId, dateTime);
 
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
@@ -218,7 +215,7 @@ public class MypageServiceImpl implements MypageService{
         List<QuestionResponse> questionResponseList = new ArrayList<>();
 
         // 일단 문의 목록 상위 3개를 가져옴
-        List<Question> questions = questionRepository.getQuestions(userId, dateTime);
+        List<Question> questions = questionRepository.getQuestionsUser(userId, dateTime);
 
         // 가져온 문의 목록과 대조해서 DTO 생성 후 return
         for (Question question : questions){
@@ -266,7 +263,7 @@ public class MypageServiceImpl implements MypageService{
     public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();
 
-        // 일단 리뷰 목록 3개를 가져옴.
+        // 일단 리뷰 목록 3개를 최신순으로 가져옴.
         List<Review> reviews = reviewRepository.getReviews(userId, dateTime);
 
         // 가지고온 리뷰 목록과 대조해서 DTO 생성 후 return
@@ -297,6 +294,7 @@ public class MypageServiceImpl implements MypageService{
         return reviewResponseList;
     }
 
+    //미완성
     @Override
     public List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime dateTime) {
         List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
@@ -306,8 +304,6 @@ public class MypageServiceImpl implements MypageService{
 
         return likeClassResponseList;
     }
-
-
 
     // 프로 마이페이지 시작 부분
     @Override
@@ -334,6 +330,63 @@ public class MypageServiceImpl implements MypageService{
         account.changeAccountNumber(accountRequest.getAccountNumber());
         account.changeBank(accountRequest.getBank());
         account.changeReceiver(accountRequest.getReceiver());
+    }
+
+    @Override
+    public MileageResponse getMileage(int userId) {
+        User user = userRepository.findByUserId(userId);
+        Account account = accountRepository.findByUserId(user);
+
+        return MileageResponse.builder()
+                .mileage(mileageRepository.findByUserId(user).getMileage())
+                .accountNumber(account.getAccountNumber())
+                .bank(account.getBank())
+                .receiver(account.getReceiver())
+                .build();
+    }
+
+    @Override
+    public List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime) {
+        List<MilageHistoryResponse> milageHistoryResponseList = new ArrayList<>();
+
+        // 일단 정산 내역 10개를 최신순으로 가져옴.
+        List<MileageHistory> mileageHistories = mileageHistoryRepository.getMileageHistoryList(userId, dateTime);
+
+        // 가져온 정산내역 목록으로 DTO 생성 후 return
+        for (MileageHistory mileageHistory : mileageHistories){
+
+            MilageHistoryResponse milageHistoryResponse = MilageHistoryResponse.builder()
+                    .historyId(mileageHistory.getHistoryId())
+                    .className(mileageHistory.getLectureId().getClassName())
+                    .mileageAmount(mileageHistory.getMileageAmount())
+                    .time(mileageHistory.getTime())
+                    .state(mileageHistory.getState())
+                    .finalAmount(mileageHistory.getFinalAmount())
+                    .build();
+
+            milageHistoryResponseList.add(milageHistoryResponse);
+        }
+
+        return milageHistoryResponseList;
+    }
+
+    @Transactional
+    @Override
+    public void userWithdraw(int userId, Integer requestMoney) {
+        User user = userRepository.findByUserId(userId);
+        Mileage mileage = mileageRepository.findByUserId(user);
+        int finalAmount = mileage.getMileage() - requestMoney;
+
+        MileageHistory mileageHistory = MileageHistory.builder()
+                .mileageAmount(requestMoney)
+                .time(LocalDateTime.now())
+                .state(2)
+                .finalAmount(finalAmount)
+                .build();
+
+        mileageHistory = mileageHistoryRepository.save(mileageHistory);
+
+        mileage.changeMileage(finalAmount);
     }
 
 

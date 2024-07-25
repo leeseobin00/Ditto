@@ -23,4 +23,8 @@ public class Mileage {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
+
+    public void changeMileage(int newMileage){
+        this.mileage = newMileage;
+    }
 }
