@@ -17,4 +17,5 @@ public interface ClassService {
 
     List<ClassResponse> getPopularClasses();
 
+    List<ClassResponse> getLatestClasses();
 }
