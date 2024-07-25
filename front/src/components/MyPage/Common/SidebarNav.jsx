@@ -32,7 +32,7 @@ const SidebarNav = () => {
   return (
     <Sidebar>
       <NavItem to="prouserinfo">계정 정보</NavItem>
-          <NavItem to="manage-classes">마일리지 출금</NavItem>
+          <NavItem to="mileage">마일리지 출금</NavItem>
           <NavItem to="manage-classes">문의 내역</NavItem>
       {roleId === 2 && (
         <>
@@ -46,7 +46,7 @@ const SidebarNav = () => {
       {roleId === 3 && (
         <>
           <NavItem to="prouserinfo">계정 정보</NavItem>
-          <NavItem to="manage-classes">마일리지 출금</NavItem>
+          <NavItem to="mileage">마일리지 출금</NavItem>
           <NavItem to="manage-classes">문의 내역</NavItem>
         </>
       )}
