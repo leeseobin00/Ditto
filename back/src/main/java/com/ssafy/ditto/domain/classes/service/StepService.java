@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface StepService {
     void addSteps(Integer classId, List<StepRequest> stepRequests, List<MultipartFile> stepFiles) throws IOException;
+
+    void updateSteps(Integer classId, List<StepRequest> stepRequests, List<MultipartFile> stepFiles) throws IOException;
 }
