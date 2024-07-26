@@ -7,6 +7,7 @@ import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.dto.ReviewRequest;
+import com.ssafy.ditto.domain.review.exception.ReviewNotFoundException;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
@@ -40,6 +41,22 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
         dClass.setRatingSum(dClass.getRatingSum() + reviewRequest.getRating());
         dClass.setReviewCount(dClass.getReviewCount() + 1);
+        reviewRepository.save(review);
+    }
+
+    @Override
+    @Transactional
+    public void updateReview(int classId, int reviewId, ReviewRequest reviewRequest) {
+        User user = userRepository.findById(reviewRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+
+        dClass.setRatingSum(dClass.getRatingSum() - review.getRating());
+
+        review.setReviewContent(reviewRequest.getReviewContent());
+        review.setRating(reviewRequest.getRating());
+
+        dClass.setRatingSum(dClass.getRatingSum() + reviewRequest.getRating());
         reviewRepository.save(review);
     }
 }
