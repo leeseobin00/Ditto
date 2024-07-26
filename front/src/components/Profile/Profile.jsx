@@ -46,28 +46,31 @@ const CustomFilledHeartIcon = styled(BsHeartFill)`
 
 const Tags = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 `;
 
-function Profile({seekerId, postHeart, deleteHeart, userName}) {
+function Profile({seekerId, userName, likeCount, tags, postHeart, deleteHeart}) {
   // redux
   const userId = useSelector((state)=>state.auth.userId);
   // axios
   const {sendRequest:getHeart} = useAxios();
 
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const [likeCount, setLikeCount] = useState(1024);
+  const [curLikeCount, setCurLikeCount] = useState(1024);
 
   const handleHeartClick = () => {
     if (isHeartFilled===true) {
       setIsHeartFilled(false);
-      setLikeCount((prev) => prev - 1);
+      setCurLikeCount((prev) => prev - 1);
       deleteHeart();
     } else {
       console.log("ss");
       setIsHeartFilled(true);
-      setLikeCount((prev) => prev + 1);
+      setCurLikeCount((prev) => prev + 1);
       postHeart();
     }
   };
@@ -79,6 +82,7 @@ function Profile({seekerId, postHeart, deleteHeart, userName}) {
 
   useEffect(()=>{
     handleGetHeart();
+    setCurLikeCount(likeCount);
   },[]);
 
   return (
@@ -86,11 +90,10 @@ function Profile({seekerId, postHeart, deleteHeart, userName}) {
       <Image />
       <Name>{userName}</Name>
       <LikeCount onClick={handleHeartClick}>
-      {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {likeCount}
+      {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {curLikeCount}
       </LikeCount>
       <Tags>
-        <Tag tagName="향수" />
-        <Tag tagName="뜨개질" />
+        {tags?.map((tag, index)=><Tag key={index} tagName={tag} />)}
       </Tags>
     </ProfileWrapper>
   );

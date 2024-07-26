@@ -62,10 +62,11 @@ function ProfileDetailPage() {
   const [posts, setPosts] = useState([]);
   const [studentSum, setStudentSum] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
+  const [profile, setProfile] = useState({});
 
   const handleGetProfile = async() => {
     const result = await getProfile(`/profiles/${userId}`, null, "get");
-    console.log(result);
+    setProfile(result?.data);
   }
 
   const handleGetClasses = async() => {
@@ -116,13 +117,17 @@ function ProfileDetailPage() {
     }
   },[loginUserId]);
 
+  console.log(profile);
+  
   return (
     <Container>
-      <Sidebar 
+      <Sidebar
         isMyProfile={isMyProfile}
+        profile={profile}
+        seekerId={userId}
         studentSum={studentSum}
         avgRating={avgRating}
-        seekerId={userId}
+        refresh={handleGetProfile}
         postHeart={handlePostHeart}
         deleteHeart={handleDeleteHeart}
       />
@@ -132,9 +137,10 @@ function ProfileDetailPage() {
           title="소개글"
           isMyProfile={isMyProfile}
           modalContent={ModifyIntro}
+          refresh={handleGetProfile}
         >
           <IntroContent>
-            안녕하세요, 조향과 뜨개질에 관심이 많은 김디토입니다! 소통해요~
+            {profile?.intro}
           </IntroContent>
         </Section>
 
