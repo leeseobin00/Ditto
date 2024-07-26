@@ -217,5 +217,5 @@ public class MypageController {
     public ResponseDto<Void> deleteAnswer(@PathVariable("answerId") int answerId){
         mypageService.deleteAnswer(answerId);
         return ResponseDto.of(200, "답변 삭제 성공");
-    }git 
+    }
 }
