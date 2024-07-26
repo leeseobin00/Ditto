@@ -23,7 +23,7 @@ const Cards = styled.div`
 function CardList({ cards }) {
   return (
     <Cards>
-      {cards.map((card, index) => (
+      {cards?.map((card, index) => (
         <Card
           key={index}
           title={card?.title}

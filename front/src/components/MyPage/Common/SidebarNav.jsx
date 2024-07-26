@@ -31,9 +31,14 @@ const SidebarNav = () => {
 
   return (
     <Sidebar>
-      <NavItem to="prouserinfo">계정 정보</NavItem>
-          <NavItem to="manage-classes">마일리지 출금</NavItem>
-          <NavItem to="manage-classes">문의 내역</NavItem>
+          {/*<NavItem to="prouserinfo">계정 정보</NavItem>
+          <NavItem to="mileage">마일리지 출금</NavItem>
+          <NavItem to="proquestion">문의 내역</NavItem>
+          <NavItem to="userinfo">계정 정보</NavItem>
+          <NavItem to="payments">결제 내역</NavItem>
+          <NavItem to="questions">작성한 문의</NavItem>
+          <NavItem to="reviews">작성한 리뷰</NavItem>
+          <NavItem to="liked">관심 목록</NavItem> */}
       {roleId === 2 && (
         <>
           <NavItem to="userinfo">계정 정보</NavItem>
@@ -46,8 +51,8 @@ const SidebarNav = () => {
       {roleId === 3 && (
         <>
           <NavItem to="prouserinfo">계정 정보</NavItem>
-          <NavItem to="manage-classes">마일리지 출금</NavItem>
-          <NavItem to="manage-classes">문의 내역</NavItem>
+          <NavItem to="mileage">마일리지 출금</NavItem>
+          <NavItem to="proquestion">문의 내역</NavItem>
         </>
       )}
     </Sidebar>

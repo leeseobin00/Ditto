@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { BsHeartFill } from "react-icons/bs";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
+import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
 
 const ProfileWrapper = styled.div`
@@ -31,27 +34,66 @@ const LikeCount = styled.p`
   margin-top: 8px;
 `;
 
+const CustomHeartIcon = styled(BsHeart)`
+  color: var(--TEXT_SECONDARY);
+  cursor: pointer;
+`;
+
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
+  cursor: pointer;
 `;
 
 const Tags = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 `;
 
-function Profile() {
+function Profile({seekerId, userName, likeCount, tags, postHeart, deleteHeart}) {
+  // redux
+  const userId = useSelector((state)=>state.auth.userId);
+  // axios
+  const {sendRequest:getHeart} = useAxios();
+
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [curLikeCount, setCurLikeCount] = useState(1024);
+
+  const handleHeartClick = () => {
+    if (isHeartFilled===true) {
+      setIsHeartFilled(false);
+      setCurLikeCount((prev) => prev - 1);
+      deleteHeart();
+    } else {
+      console.log("ss");
+      setIsHeartFilled(true);
+      setCurLikeCount((prev) => prev + 1);
+      postHeart();
+    }
+  };
+
+  const handleGetHeart = async() => {
+    const result = await getHeart(`/profiles/${userId}/like?seekerId=${seekerId}`,null, "get");
+    setIsHeartFilled(result?.data);
+  }
+
+  useEffect(()=>{
+    handleGetHeart();
+    setCurLikeCount(likeCount);
+  },[]);
+
   return (
     <ProfileWrapper>
       <Image />
-      <Name>김디토</Name>
-      <LikeCount>
-        <CustomFilledHeartIcon /> 1024
+      <Name>{userName}</Name>
+      <LikeCount onClick={handleHeartClick}>
+      {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {curLikeCount}
       </LikeCount>
       <Tags>
-        <Tag tagName="향수" />
-        <Tag tagName="뜨개질" />
+        {tags?.map((tag, index)=><Tag key={index} tagName={tag} />)}
       </Tags>
     </ProfileWrapper>
   );

@@ -96,9 +96,9 @@ function ClassImgAddModal({ show, modalTitle, onClose, onChange }) {
       <Title>{modalTitle}</Title>
       <ClassModalContent>
         <FileUploadContainer>
-          <FileInput value={fileName} placeholder="첨부파일" />
+          <FileInput value={fileName} readOnly placeholder="첨부파일" />
           <HiddenFileInput type="file" id="file" onChange={handleFileChange} />
-          <Label for="file">파일찾기</Label>
+          <Label htmlFor="file">파일찾기</Label>
         </FileUploadContainer>
         <OutlineButton size={"sm"} label={"등록"} onClick={handleModalClose} />
       </ClassModalContent>

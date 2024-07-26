@@ -1,4 +1,6 @@
+import { useState, useEffect, useCallback } from "react";
 import { styled } from "styled-components";
+
 import ClassStepAdd from "./ClassStepAdd";
 import ClassKitAdd from "./ClassKitAdd";
 
@@ -16,7 +18,7 @@ const ClassAddDetailContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const ClassIntroductionInput = styled.textarea`
+const ExplanationInput = styled.textarea`
   font-family: inherit;
   font-size: inherit;
   width: 100%;
@@ -45,20 +47,48 @@ const Title = styled.div`
   font-weight: 700;
 `;
 
-function ClassInfoAdd() {
+function ClassInfoAdd({ onChange }) {
+  const [classExplanation, setClassExplanation] = useState("");
+  const [steps, setSteps] = useState([]);
+  const [kit, setKit] = useState({});
+
+  const handleClassExplanationChange = (e) => {
+    setClassExplanation(e.target.value);
+  };
+
+  const handleStepsChange = (newSteps) => {
+    setSteps(newSteps);
+  };
+
+  const handleKitChange = (newKit) => {
+    setKit(newKit);
+  };
+
+  const updateInfoData = useCallback(() => {
+    onChange({ classExplanation, steps, kit });
+  }, [classExplanation, steps, kit, onChange]);
+
+  useEffect(() => {
+    updateInfoData();
+  }, [classExplanation, steps, kit, updateInfoData]);
+
   return (
     <ClassInfoAddContainer>
       <ClassAddDetailContainer>
         <Title>강의 소개</Title>
-        <ClassIntroductionInput placeholder="강의에 대한 소개를 입력해주세요." />
+        <ExplanationInput
+          placeholder="강의에 대한 소개를 입력해주세요."
+          value={classExplanation}
+          onChange={handleClassExplanationChange}
+        />
       </ClassAddDetailContainer>
       <ClassAddDetailContainer>
         <Title>진행 과정</Title>
-        <ClassStepAdd />
+        <ClassStepAdd onChange={handleStepsChange} />
       </ClassAddDetailContainer>
       <ClassAddDetailContainer>
         <Title>제공 키트</Title>
-        <ClassKitAdd />
+        <ClassKitAdd onChange={handleKitChange} />
       </ClassAddDetailContainer>
     </ClassInfoAddContainer>
   );

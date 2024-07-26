@@ -57,6 +57,7 @@ function Section({
   onClick,
   isMyProfile,
   modalContent: ModalContentComponent,
+  refresh
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -65,6 +66,7 @@ function Section({
   };
 
   const handleCloseModal = () => {
+    refresh();
     setIsModalOpen(false);
   };
 
@@ -81,7 +83,7 @@ function Section({
       {children}
       {onClick && (
         <ButtonWrapper>
-          <OutlineButton label="더보기" color="default" />
+          <OutlineButton label="더보기" color="default" onClick={onClick}/>
         </ButtonWrapper>
       )}
 

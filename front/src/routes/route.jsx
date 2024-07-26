@@ -18,7 +18,10 @@ import ClassAddPage from "../pages/Class/ClassAddPage";
 import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
-import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
+import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage"
+import MileagePage from "../pages/Mypage/Mileage/MileagePage";
+import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
+import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 
 const AppRoutes = () => {
   return (
@@ -40,8 +43,11 @@ const AppRoutes = () => {
         <Route path="questions" element={<MyQuestionsPage />} />
         <Route path="reviews" element={<ReviewListPage />} />
         <Route path="liked" element={<LikedPage />} />
-        <Route path="prouserinfo" element={<ProAccountPage />}></Route>
+        <Route path="prouserinfo" element={<ProAccountPage />} />
+        <Route path="mileage" element={<MileagePage />} />
+        <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
+      <Route path="/myclassroom" element={<MyClassroomPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route
         path="/board/:boardCategory/:postId"
@@ -49,8 +55,7 @@ const AppRoutes = () => {
       />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
-      <Route path="/profile" element={<ProfileDetailPage />} />
-      <Route path="/profile/my" element={<ProfileDetailPage />} />
+      <Route path="/profile/:userId" element={<ProfileDetailPage />} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
     </Routes>
   );

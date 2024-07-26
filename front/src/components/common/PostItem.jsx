@@ -40,7 +40,7 @@ function PostItem({ title, likeCount, userName, createdDate }) {
       <PostTitle>{title}</PostTitle>
       <PostLike>{likeCount}</PostLike>
       <PostUser>{userName}</PostUser>
-      <PostDate>{createdDate}</PostDate>
+      {/* <PostDate>{createdDate}</PostDate> */}
     </Item>
   );
 }

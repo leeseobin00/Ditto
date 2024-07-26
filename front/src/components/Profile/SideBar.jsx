@@ -1,10 +1,12 @@
 import { styled } from "styled-components";
 import { BsPersonFill, BsStarFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 import Profile from "./Profile";
 import MyProfile from "./MyProfile";
 
 import StarIcon from "../../assets/icon/class/star.png";
+import { useEffect, useState } from "react";
 
 const SidebarWrapper = styled.nav`
   background-color: white;
@@ -82,26 +84,48 @@ const NavLink = styled.a`
   }
 `;
 
-function Sidebar({ isMyProfile }) {
+function Sidebar({ isMyProfile, profile, studentSum, avgRating, seekerId, refresh, postHeart, deleteHeart }) {
+  const roleId = useSelector(state => state.auth.roleId);
+  const [userName, setUserName] = useState("");
+  const [likeCount, setLikeCount] = useState(0);
+  const [tags, setTags] = useState([]);
+
+  useEffect(()=>{
+    setUserName(profile?.nickname);
+    setLikeCount(profile?.likeCount);
+    setTags(profile?.tags);
+  },[profile]);
+
   return (
     <SidebarWrapper>
-      {isMyProfile ? <MyProfile /> : <Profile />}
-      <LectureDetails>
+      {isMyProfile ? <MyProfile userName={userName}
+        likeCount={likeCount}        
+        tags={tags}  
+        seekerId={seekerId}
+        refresh={refresh}/> : 
+      <Profile
+        userName={userName}
+        likeCount={likeCount}
+        tags={tags}
+        seekerId={seekerId}
+        postHeart={postHeart} 
+        deleteHeart={deleteHeart} />}
+      {roleId==2 && <LectureDetails>
         <LectureDetail>
           <DetailTitle>수강생 수</DetailTitle>
           <DetailContent>
             <CustomPersonIcon />
-            52,356
+            {(studentSum).toLocaleString()}
           </DetailContent>
         </LectureDetail>
         <LectureDetail>
           <DetailTitle>평점</DetailTitle>
           <DetailContent>
             <CustomStarIcon />
-            4.8
+            {avgRating}
           </DetailContent>
         </LectureDetail>
-      </LectureDetails>
+      </LectureDetails>}
       <NavList>
         <NavItem>
           <NavLink href="#intro">소개글</NavLink>
