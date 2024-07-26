@@ -6,6 +6,7 @@ const ClassStepContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  min-height: 120px;
   background-color: var(--TERTIARY);
   padding: 2%;
   border-radius: 10px;
@@ -49,7 +50,7 @@ const StepExplation = styled.div`
 const Img = styled.img`
   width: 120px;
   height: 100%;
-  max-height: 120px;
+  max-height: 110px;
   margin: auto 0;
   border-radius: 10px;
 `;
@@ -58,6 +59,7 @@ const DeleteButton = styled(MdClose)`
   background-color: transparent;
   width: 20px;
   height: 20px;
+  margin-left: 10px;
   border-style: none;
   text-align: center;
   color: var(--TEXT_SECONDARY);

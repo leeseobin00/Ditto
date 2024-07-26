@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
 
 import AddButton from "./AddButton";
@@ -14,7 +14,6 @@ const KitAddContainer = styled.div`
   border-radius: 10px;
   border-color: var(--BORDER_COLOR);
   padding: 2%;
-  width: 100%;
   justify-content: space-between;
   margin: 25px 0;
 `;
@@ -84,8 +83,10 @@ const KitExplanationInput = styled.textarea`
   resize: none;
 `;
 
-function ClassKitAdd() {
+function ClassKitAdd({ onChange }) {
   const [showModal, setShowModal] = useState(false);
+  const [kitName, setKitName] = useState("");
+  const [kitExplanation, setKitExplanation] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -99,6 +100,19 @@ function ClassKitAdd() {
     reader.onloadend = () => setPreview(reader.result);
     if (selectedFile) reader.readAsDataURL(selectedFile);
   };
+
+  const handleKitNameChange = (e) => {
+    setKitName(e.target.value);
+  };
+
+  const handleKitExplanationChange = (e) => {
+    setKitExplanation(e.target.value);
+  };
+
+  useEffect(() => {
+    const kitData = { kitName, kitExplanation, file };
+    onChange(kitData);
+  }, [kitName, kitExplanation, file]);
 
   return (
     <KitAddContainer>
@@ -114,8 +128,17 @@ function ClassKitAdd() {
         />
       </ImgInputContainer>
       <ClassKitDetail>
-        <KitNameInput type="text" placeholder="키트 이름을 입력해주세요." />
-        <KitExplanationInput placeholder="키트 구성품과 설명을 입력해주세요." />
+        <KitNameInput
+          type="text"
+          placeholder="키트 이름을 입력해주세요."
+          value={kitName}
+          onChange={handleKitNameChange}
+        />
+        <KitExplanationInput
+          placeholder="키트 구성품과 설명을 입력해주세요."
+          value={kitExplanation}
+          onChange={handleKitExplanationChange}
+        />
       </ClassKitDetail>
     </KitAddContainer>
   );

@@ -14,11 +14,22 @@ const useAxios = () => {
     setError(null);
     try {
       const url = `${baseURL}${endpoint}`;
-      const result = await axios({ method, url, data });
+      const result = await axios({
+        method,
+        url,
+        data,
+        headers: {
+          "Content-Type":
+            data instanceof FormData
+              ? "multipart/form-data"
+              : "application/json",
+        },
+      });
       setResponse(result.data);
       return result.data;
     } catch (err) {
       setError(err);
+      throw err;
     } finally {
       setLoading(false);
     }
