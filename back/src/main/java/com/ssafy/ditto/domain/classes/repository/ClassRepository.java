@@ -17,4 +17,6 @@ public interface ClassRepository extends JpaRepository<DClass, Integer>, JpaSpec
 
     @Query("SELECT c FROM DClass c WHERE c.createdDate > :oneWeekAgo ORDER BY c.createdDate DESC")
     List<DClass> findRecentClasses(LocalDateTime oneWeekAgo, Pageable pageable);
+
+    DClass findByClassId(Integer classId);
 }

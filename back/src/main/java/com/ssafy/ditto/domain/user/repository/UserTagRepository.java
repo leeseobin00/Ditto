@@ -13,4 +13,12 @@ import java.util.List;
 @Repository
 public interface UserTagRepository extends JpaRepository<UserTag, Integer> {
     List<UserTag> findByUserId(@Param("userId") User user);
+
+    @Query(value =
+            "SELECT t.* " +
+                    "FROM Tag t " +
+                    "JOIN User_Tag ut ON t.tag_id = ut.tag_id " +
+                    "WHERE lu.user_id = :userId",
+            nativeQuery = true)
+    List<Tag> getTagList(User userId);
 }
