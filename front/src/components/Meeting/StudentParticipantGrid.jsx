@@ -62,14 +62,14 @@ const CompleteButton = styled(Button)`
   background-color: var(--GREEN);
 `;
 
-function StudentParticipantGrid({ isOpen }) {
+function StudentParticipantGrid({ track, isOpen }) {
   return (
     <ParticipantGrid open={isOpen}>
       <TeacherContainer open={isOpen}>
         <Participant name="이강사" imgSrc="/mnt/data/image.png" />
       </TeacherContainer>
       <StudentContainer open={isOpen}>
-        <Participant name="한예슬" imgSrc="/mnt/data/image.png" />
+        <Participant track={track} name="한예슬" imgSrc="/mnt/data/image.png" />
         <ButtonContainer>
           <HelpButton>도움이 필요해요</HelpButton>
           <CompleteButton>단계를 완료했어요</CompleteButton>
