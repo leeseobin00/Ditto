@@ -2,6 +2,7 @@ package com.ssafy.ditto.domain.classes.dto;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
+import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
 import lombok.*;
 
@@ -36,7 +37,9 @@ public class ClassDetailResponse {
     private List<LectureResponse> lectures;
     private UserResponse user;
 
-    public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses, UserResponse userResponse) {
+    private TagResponse tag;
+
+    public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses, UserResponse userResponse, TagResponse tagResponse) {
         return ClassDetailResponse.builder()
                 .classId(dClass.getClassId())
                 .className(dClass.getClassName())
@@ -58,6 +61,7 @@ public class ClassDetailResponse {
                 .steps(stepDetailResponses)
                 .lectures(lectureResponses)
                 .user(userResponse)
+                .tag(tagResponse)
                 .build();
     }
 }

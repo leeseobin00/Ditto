@@ -17,4 +17,10 @@ public class ReviewController {
         reviewService.createReview(classId, reviewRequest);
         return ResponseDto.of(201, "리뷰 작성이 성공적으로 완료되었습니다.");
     }
+
+    @PatchMapping("/{reviewId}")
+    public ResponseDto<Void> updateReview(@PathVariable Integer classId, @PathVariable Integer reviewId, @RequestBody ReviewRequest reviewRequest) {
+        reviewService.updateReview(classId, reviewId, reviewRequest);
+        return ResponseDto.of(200, "리뷰 수정이 성공적으로 완료되었습니다.");
+    }
 }
