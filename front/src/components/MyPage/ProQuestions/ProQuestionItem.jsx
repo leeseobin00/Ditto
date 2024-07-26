@@ -94,14 +94,27 @@ const Button = styled.button`
   }
 `;
 
-const EditButton = styled(Button)`
-  background-color: var(--SECONDARY);
+const EditButton = styled.button`
+  color: var(--SECONDARY);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--SECONDARY);
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.9);
+  }
 `;
 
-const DeleteButton = styled(Button)`
-  background-color: var(--LIGHT);
+const DeleteButton = styled.button`
   color: var(--RED);
   border: 1px solid var(--RED);
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.9);
+  }
 `;
 
 const AnswerToggle = styled.button`
@@ -126,6 +139,7 @@ const AnswerText = styled.p`
   font-size: 16px;
   color: var(--TEXT_PRIMARY);
 `;
+
 
 const AnswerMetaData = styled.div`
   font-size: 14px;
@@ -172,10 +186,10 @@ const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
           <AnswerText>{question.answer.answer}</AnswerText>
           <AnswerMetaData>
             <div>{new Date(question.answer.createdDate).toLocaleDateString()}</div>
-            <div>
+            <ButtonGroup>
               <EditButton onClick={() => onEdit(question)}>수정</EditButton>
               <DeleteButton onClick={() => onDelete(question.answer.answerId)}>삭제</DeleteButton>
-            </div>
+            </ButtonGroup>
           </AnswerMetaData>
         </AnswerContainer>
       )}
