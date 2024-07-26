@@ -5,7 +5,7 @@ import com.ssafy.ditto.domain.classes.dto.*;
 import java.util.List;
 
 public interface ClassService {
-    void createClass(ClassRequest classRequest, Integer classFileId, Integer kitFileId);
+    Integer createClass(ClassRequest classRequest, Integer classFileId, Integer kitFileId);
 
     void updateClass(Integer classId, ClassRequest classRequest, Integer classFileId, Integer kitFileId);
 

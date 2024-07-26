@@ -24,9 +24,9 @@ public class ClassController {
     private final LikeClassService likeClassService;
 
     @PostMapping
-    public ResponseDto<Void> createClass(@RequestPart("classRequest") ClassRequest classRequest,
-                                         @RequestPart(value = "classFile", required = false) MultipartFile classFile,
-                                         @RequestPart(value = "kitFile", required = false) MultipartFile kitFile) {
+    public ResponseDto<?> createClass(@RequestPart("classRequest") ClassRequest classRequest,
+                                      @RequestPart(value = "classFile", required = false) MultipartFile classFile,
+                                      @RequestPart(value = "kitFile", required = false) MultipartFile kitFile) {
         try {
             Integer classFileId = null;
             Integer kitFileId = null;
@@ -39,8 +39,8 @@ public class ClassController {
                 kitFileId = fileService.saveFile(kitFile);
             }
 
-            classService.createClass(classRequest, classFileId, kitFileId);
-            return ResponseDto.of(201, "클래스가 성공적으로 생성되었습니다.");
+            int classId = classService.createClass(classRequest, classFileId, kitFileId);
+            return ResponseDto.of(201, "클래스가 성공적으로 생성되었습니다.", classId);
         } catch (IOException e) {
             return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
         }
