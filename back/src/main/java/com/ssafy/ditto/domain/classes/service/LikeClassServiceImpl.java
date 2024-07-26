@@ -41,6 +41,8 @@ public class LikeClassServiceImpl implements LikeClassService {
             likeClass.setClassId(dClass);
             likeClass.setUserId(user);
             likeClassRepository.save(likeClass);
+
+            dClass.setLikeCount(dClass.getLikeCount() + 1);
         }
     }
 
@@ -52,5 +54,7 @@ public class LikeClassServiceImpl implements LikeClassService {
 
         Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
         likeClassRepository.deleteByUserIdAndClassId(user, dClass);
+
+        dClass.setLikeCount(dClass.getLikeCount() - 1);
     }
 }
