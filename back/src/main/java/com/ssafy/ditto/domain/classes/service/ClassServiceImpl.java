@@ -44,11 +44,10 @@ public class ClassServiceImpl implements ClassService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final LikeClassRepository likeClassRepository;
 
     @Override
     @Transactional
-    public void createClass(ClassRequest classRequest, Integer classFileId, Integer kitFileId) {
+    public Integer createClass(ClassRequest classRequest, Integer classFileId, Integer kitFileId) {
         User user = userRepository.findById(classRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Kit kit = Kit.builder()
                 .kitName(classRequest.getKit().getKitName())
@@ -81,7 +80,8 @@ public class ClassServiceImpl implements ClassService {
                 .reviewCount(0)
                 .ratingSum(0)
                 .build();
-        classRepository.save(dClass);
+        dClass = classRepository.save(dClass);
+        return dClass.getClassId();
     }
 
     @Override
