@@ -14,7 +14,7 @@ const ClassStepAddContainer = styled.div`
   align-items: center;
 `;
 
-function ClassStepAdd() {
+function ClassStepAdd({ onChange }) {
   const [showInput, setShowInput] = useState(false);
   const [steps, setSteps] = useState([]);
 
@@ -23,12 +23,16 @@ function ClassStepAdd() {
   }
 
   function handleStepAdd(newStep) {
-    setSteps([...steps, newStep]);
+    const updatedSteps = [...steps, newStep];
+    setSteps(updatedSteps);
     setShowInput(false);
+    onChange(updatedSteps); // 상위 컴포넌트로 전달
   }
 
   function handleStepDelete(stepIndex) {
-    setSteps(steps.filter((_, index) => index !== stepIndex));
+    const updatedSteps = steps.filter((_, index) => index !== stepIndex);
+    setSteps(updatedSteps);
+    onChange(updatedSteps); // 상위 컴포넌트로 전달
   }
 
   return (

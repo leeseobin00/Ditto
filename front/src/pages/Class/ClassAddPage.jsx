@@ -1,6 +1,7 @@
-import { styled } from "styled-components";
 import { useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { styled } from "styled-components";
 
 import useAxios from "../../hooks/useAxios";
 import ClassThumbnailAdd from "../../components/Class/ClassAdd/ClassThumbnailAdd";
@@ -31,19 +32,13 @@ function ClassAdePage() {
   const userId = useSelector((state) => state.auth.userId);
   const userNickname = useSelector((state) => state.auth.nickname);
   // axios
-  const { sendRequest, response, error, loading } = useAxios();
+  const { sendRequest, error, loading } = useAxios();
 
-  const [thumbnailData, setThumbnailData] = useState({
-    className: "",
-    categoryId: 0,
-    tagId: 0,
-    classHour: 0,
-    classMinute: 0,
-    classMax: 0,
-    classFile: null,
-  });
+  const [thumbnailData, setThumbnailData] = useState({});
   const [infoData, setInfoData] = useState({});
   const [priceData, setPriceData] = useState("");
+
+  const { classId } = useParams();
 
   const handleThumbnailChange = useCallback((data) => {
     setThumbnailData((prev) => ({ ...prev, ...data }));
@@ -58,29 +53,29 @@ function ClassAdePage() {
   }, []);
 
   const handlePostClass = async () => {
-    const formData = new FormData();
+    const classData = new FormData();
 
     // 파일과 데이터를 FormData에 추가
-    if (thumbnailData.classFile) {
-      formData.append("classFile", thumbnailData.classFile);
+    if (thumbnailData?.classFile) {
+      classData.append("classFile", thumbnailData?.classFile);
     }
 
     const kitFile = infoData.kit?.kitFile;
     if (kitFile) {
-      formData.append("kitFile", kitFile);
+      classData.append("kitFile", kitFile);
     }
 
     // JSON 데이터를 FormData에 추가
     const classRequest = {
-      className: thumbnailData.className,
+      className: thumbnailData?.className,
       userId: userId,
-      categoryId: thumbnailData.categoryId,
-      tagId: thumbnailData.tagId,
+      categoryId: thumbnailData?.categoryId,
+      tagId: thumbnailData?.tagId,
       classPrice: priceData,
-      classHour: thumbnailData.classHour,
-      classMinute: thumbnailData.classMinute,
+      classHour: thumbnailData?.classHour,
+      classMinute: thumbnailData?.classMinute,
       classMin: 0,
-      classMax: thumbnailData.classMax,
+      classMax: thumbnailData?.classMax,
       classExplanation: infoData.classExplanation,
       kit: {
         kitName: infoData.kit?.kitName,
@@ -88,7 +83,7 @@ function ClassAdePage() {
       },
     };
 
-    formData.append(
+    classData.append(
       "classRequest",
       new Blob([JSON.stringify(classRequest)], {
         type: "application/json",
@@ -96,9 +91,33 @@ function ClassAdePage() {
     );
 
     try {
-      const result = await sendRequest("/classes", formData, "post");
+      const response = await sendRequest("/classes", classData, "post");
+      const createdClassId = response.data;
 
-      console.log("Success:", result);
+      const stepRequests = infoData.steps.map((step, index) => ({
+        stepNo: index + 1,
+        stepName: step.stepName,
+        stepDetail: step.stepDetail,
+        stepFile: step.stepFile ? step.stepFile.name : null,
+      }));
+
+      const stepFiles = infoData.steps.map((step) => step.stepFile);
+
+      const stepsData = new FormData();
+      stepsData.append(
+        "stepRequests",
+        new Blob([JSON.stringify({ stepRequests })], {
+          type: "application/json",
+        })
+      );
+
+      stepFiles.forEach((file, index) => {
+        if (file) {
+          stepsData.append(`stepFiles`, file);
+        }
+      });
+
+      await sendRequest(`/classes/${createdClassId}/steps`, stepsData, "post");
     } catch (error) {
       console.error("Error:", error);
     }
@@ -122,7 +141,6 @@ function ClassAdePage() {
           disabled={loading}
         />
       </ButtonContainer>
-      {error && <p>Error: {error.message}</p>}
     </ClassAddPageContainer>
   );
 }

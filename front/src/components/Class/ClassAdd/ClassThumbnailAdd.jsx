@@ -143,6 +143,9 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
   const [selectedCategory, setSelectedCategory] = useState(
     CATEGORY_OPTIONS[0].value
   );
+  const [selectedTag, setSelectedTag] = useState(
+    getTagsForCategory(CATEGORY_OPTIONS[0].value)[0].value
+  );
   const [tags, setTags] = useState(
     getTagsForCategory(CATEGORY_OPTIONS[0].value)
   );
@@ -171,10 +174,13 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
 
   useEffect(() => {
     setTags(getTagsForCategory(selectedCategory));
+    setSelectedTag(getTagsForCategory(selectedCategory)[0].value);
   }, [selectedCategory]);
 
   const handleCategoryChange = (e) =>
     setSelectedCategory(parseInt(e.target.value, 10));
+
+  const handleTagChange = (e) => setSelectedTag(parseInt(e.target.value, 10));
 
   const incrementTime = (field) => {
     setClassTime((prevTime) => {
@@ -208,20 +214,28 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
     onChange({
       className,
       categoryId: selectedCategory,
-      tagId: tags,
+      tagId: selectedTag,
       classHour: classTime.hour,
       classMinute: classTime.minute,
       classMax: classMax,
       classFile: file,
     });
-  }, [className, selectedCategory, tags, classTime, classMax, file, onChange]);
+  }, [
+    className,
+    selectedCategory,
+    selectedTag,
+    classTime,
+    classMax,
+    file,
+    onChange,
+  ]);
 
   useEffect(() => {
     updateThumbnailData();
   }, [
     className,
     selectedCategory,
-    tags,
+    selectedTag,
     classTime,
     classMax,
     file,
@@ -253,7 +267,12 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
               </option>
             ))}
           </SelectBox>
-          <SelectBox name="tag" id="tag">
+          <SelectBox
+            name="tag"
+            id="tag"
+            value={selectedTag}
+            onChange={handleTagChange}
+          >
             {tags.map((tag) => (
               <option key={tag.value} value={tag.value}>
                 {tag.label}
