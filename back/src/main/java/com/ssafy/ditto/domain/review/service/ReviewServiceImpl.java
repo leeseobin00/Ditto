@@ -59,4 +59,15 @@ public class ReviewServiceImpl implements ReviewService {
         dClass.setRatingSum(dClass.getRatingSum() + reviewRequest.getRating());
         reviewRepository.save(review);
     }
+
+    @Override
+    @Transactional
+    public void deleteReview(int classId, int reviewId) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+
+        review.setIsDeleted(true);
+        dClass.setRatingSum(dClass.getRatingSum() - review.getRating());
+        dClass.setReviewCount(dClass.getReviewCount() - 1);
+    }
 }
