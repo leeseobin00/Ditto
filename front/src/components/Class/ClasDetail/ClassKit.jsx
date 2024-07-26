@@ -22,6 +22,7 @@ const ClassKitInfo = styled.div`
   width: 100%;
   justify-content: space-between;
   margin: 15px 0;
+  min-height: 130px;
 `;
 
 const ClassKitDetail = styled.div`

@@ -23,13 +23,6 @@ const ClassBody = styled.div`
   padding: 1% 5%;
 `;
 
-// const StickyContainer = styled.div`
-//   position: sticky;
-//   top: -1px;
-//   z-index: 500;
-//   background-color: white;
-// `;
-
 function ClassDetailPage() {
   const titleIds = ["1", "2", "3"];
 
@@ -41,49 +34,39 @@ function ClassDetailPage() {
 
   // router
   const { classId } = useParams();
-  // state: post, comments
-  const [classInfo, setClassInfo] = useState({});
-  // const [comments, setComments] = useState([]);
-  // date
-  const date = new Date();
-  const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
+
+  const [classInfo, setClassInfo] = useState(null);
 
   const handleGetClass = async () => {
-    const result = await getClassInfo(`/classes/${classId}`, null, "get");
-    setClassInfo(result?.data);
+    try {
+      const result = await getClassInfo(`/classes/${classId}`, null, "get");
+      setClassInfo(result?.data);
+    } catch (error) {
+      console.error("Error fetching class info:", error);
+    }
   };
 
   useEffect(() => {
     handleGetClass();
-  }, []);
+  }, [handleGetClass]);
 
-  // const handlePostComment = async (content, parentId) => {
-  //   const postData = {
-  //     userId: userId,
-  //     content: content,
-  //     parentId: parentId,
-  //   };
-  //   await postComment(`/comments/${postId}`, postData, "post");
-  //   handleGetComment();
-  // };
-
-  const handleReplyFormOpen = (index) => {
-    setShowReplyForms((prev) => {
-      const newShowReplyForms = [...prev];
-      newShowReplyForms[index] = true;
-      return newShowReplyForms;
-    });
-  };
-
-  // 나중에 props 전달 방법 바꾸기 {...classInfo} -> ({classInfo, steps, 등})
   return (
     <ClassDetailPageContainer>
-      <ClassThumbnail classInfo={classInfo} />
-      <TabBar titleIds={titleIds} />
-      <ClassBody>
-        <ClassInfo classInfo={classInfo} titleIds={titleIds} />
-        <ClassSideBar classInfo={classInfo} />
-      </ClassBody>
+      {classInfo && (
+        <>
+          <ClassThumbnail
+            classInfo={classInfo}
+            file={classInfo?.file}
+            instructor={classInfo?.user}
+            tag={classInfo.tag}
+          />
+          <TabBar titleIds={titleIds} />
+          <ClassBody>
+            <ClassInfo classInfo={classInfo} titleIds={titleIds} />
+            <ClassSideBar classInfo={classInfo} />
+          </ClassBody>
+        </>
+      )}
     </ClassDetailPageContainer>
   );
 }

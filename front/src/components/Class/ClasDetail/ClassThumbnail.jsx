@@ -1,3 +1,4 @@
+import React from "react";
 import { styled } from "styled-components";
 
 import Star from "../../../assets/icon/class/star.png";
@@ -75,16 +76,18 @@ const Icon = styled.img`
   margin-right: 10px;
 `;
 
-function ClassThumbnail({ classInfo }) {
+function ClassThumbnail({ classInfo, file, instructor, tag }) {
   return (
     <ClassThumbnailContainer>
       <ThumbnailImg
-        style={{ backgroundImage: `url(${classInfo.file.fileUrl})` }}
+        style={{
+          backgroundImage: `url(${file.fileUrl})`,
+        }}
       />
       <ClassTitle>
-        <SecondaryColor>#{classInfo.tagName}</SecondaryColor>
+        <SecondaryColor>#{tag.tagName}</SecondaryColor>
         <ClassName>{classInfo.className}</ClassName>
-        <MediumFont>{classInfo.userNickname}</MediumFont>
+        <MediumFont>{instructor.nickName}</MediumFont>
       </ClassTitle>
       <ClassDetailLine>
         <Icon src={Star} />

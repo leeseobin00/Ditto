@@ -19,7 +19,7 @@ function ClassStepList({ steps }) {
     <ClassStepListContainer>
       <Title>진행 과정</Title>
       {steps.map((step, index) => (
-        <ClassStep key={index} stepNo={index} step={step} />
+        <ClassStep key={index} step={step} />
       ))}
     </ClassStepListContainer>
   );

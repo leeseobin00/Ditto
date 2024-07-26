@@ -25,7 +25,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/classes" element={<ClassListPage />} />
-      <Route path="/classes/:classCategory" element={<ClassListPage />} />
+      {/* <Route path="/classes/:classCategory" element={<ClassListPage />} /> */}
       <Route path="/classes/:classId" element={<ClassDetailPage />} />
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/meeting" element={<MeetingPage />} />

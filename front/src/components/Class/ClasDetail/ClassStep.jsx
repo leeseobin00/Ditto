@@ -73,15 +73,15 @@ const DeleteButton = styled(MdClose)`
   }
 `;
 
-function ClassStep({ isAdd = false, stepNo, step, onDelete }) {
+function ClassStep({ isAdd = false, step, onDelete }) {
   return (
     <ClassStepContainer>
-      <StepNo>{stepNo + 1}</StepNo>
+      <StepNo>{step.stepNo}</StepNo>
       <StepDetail>
         <StepName>{step.stepName}</StepName>
         <StepExplation>{step.stepDetail}</StepExplation>
       </StepDetail>
-      <Img src={isAdd ? step.preview : step.fileUrl} />
+      <Img src={isAdd ? step.preview : step.file.fileUrl} />
       {isAdd && <DeleteButton onClick={onDelete} />}
     </ClassStepContainer>
   );
