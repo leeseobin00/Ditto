@@ -96,11 +96,11 @@ const ButtonGroup = styled.div`
 `;
 
 const EditButton = styled.button`
-  background-color: var(--SECONDARY);
-  color: var(--LIGHT);
+  color: var(--SECONDARY);
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
+  border: 1px solid var(--SECONDARY);
   cursor: pointer;
   &:hover {
     filter: brightness(0.9);
@@ -108,7 +108,6 @@ const EditButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-  background-color: var(--LIGHT);
   color: var(--RED);
   border: 1px solid var(--RED);
   padding: 5px 10px;
