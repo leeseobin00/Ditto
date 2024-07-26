@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { styled } from "styled-components";
 
 import {
@@ -135,14 +135,30 @@ const PlusButton = styled(Button)`
   background-size: cover;
 `;
 
-function ClassThumbnailAdd({ userNickname }) {
+function ClassThumbnailAdd({ onChange, userNickname }) {
   const [showModal, setShowModal] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [className, setClassName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(
+    CATEGORY_OPTIONS[0].value
+  );
+  const [tags, setTags] = useState(
+    getTagsForCategory(CATEGORY_OPTIONS[0].value)
+  );
   const [classTime, setClassTime] = useState({ hour: 0, minute: 0 });
   const [classMax, setClassMax] = useState(0);
 
   const toggleModal = () => setShowModal(!showModal);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setClassName(value); // update state for className
+    onChange((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleFileSubmit = (e) => {
     const selectedFile = e.target.files[0];
@@ -152,13 +168,6 @@ function ClassThumbnailAdd({ userNickname }) {
     reader.onloadend = () => setPreview(reader.result);
     if (selectedFile) reader.readAsDataURL(selectedFile);
   };
-
-  const [selectedCategory, setSelectedCategory] = useState(
-    CATEGORY_OPTIONS[0].value
-  );
-  const [tags, setTags] = useState(
-    getTagsForCategory(CATEGORY_OPTIONS[0].value)
-  );
 
   useEffect(() => {
     setTags(getTagsForCategory(selectedCategory));
@@ -194,6 +203,30 @@ function ClassThumbnailAdd({ userNickname }) {
     setClassMax((prevMax) => (prevMax < 15 ? prevMax + 1 : prevMax));
   const decrementMax = () =>
     setClassMax((prevMax) => (prevMax > 0 ? prevMax - 1 : prevMax));
+
+  const updateThumbnailData = useCallback(() => {
+    onChange({
+      className,
+      categoryId: selectedCategory,
+      tagId: tags,
+      classHour: classTime.hour,
+      classMinute: classTime.minute,
+      classMax: classMax,
+      classFile: file,
+    });
+  }, [className, selectedCategory, tags, classTime, classMax, file, onChange]);
+
+  useEffect(() => {
+    updateThumbnailData();
+  }, [
+    className,
+    selectedCategory,
+    tags,
+    classTime,
+    classMax,
+    file,
+    updateThumbnailData,
+  ]);
 
   return (
     <ClassThumbnailAddContainer>
@@ -232,8 +265,10 @@ function ClassThumbnailAdd({ userNickname }) {
           name="className"
           id="className"
           placeholder="강의 제목을 입력해주세요."
+          value={className}
+          onChange={handleInputChange}
         />
-        <MediumDetailLine>{userNickname}이강사</MediumDetailLine>
+        <MediumDetailLine>{userNickname}</MediumDetailLine>
         <ButtonContainer>
           <AddButton onClick={toggleModal} />
         </ButtonContainer>
