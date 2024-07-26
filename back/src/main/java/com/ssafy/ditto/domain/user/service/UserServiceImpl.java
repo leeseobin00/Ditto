@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
                 .fileId(file)
                 .build();
 
-        user = userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 .userId(user)
                 .build();
 
-        form = formRepository.save(form);
+        formRepository.save(form);
 
 
         // 강사 관심사 태그 등록
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
                     .tagId(tagRepository.findByTagName(tagName))
                     .build();
 
-            userTag = userTagRepository.save(userTag);
+            userTagRepository.save(userTag);
         }
 
 

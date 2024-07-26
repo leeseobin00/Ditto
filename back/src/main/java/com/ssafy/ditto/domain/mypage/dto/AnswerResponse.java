@@ -13,7 +13,5 @@ public class AnswerResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Boolean isDeleted;
-    private Integer userId;
-    private Integer questionId;
     private String nickname;
 }
