@@ -34,7 +34,7 @@ const LikeNum = styled.div`
   justify-content: center;
   align-items: center;
   color: var(--LIGHT);
-  filter: drop-shadow(5px 5px 4px rgb(84, 84, 84));
+  filter: drop-shadow(3px 3px 2px rgb(84, 84, 84));
 `;
 
 const ClassItemText = styled.div`

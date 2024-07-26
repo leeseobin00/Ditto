@@ -33,7 +33,7 @@ const Title = styled.div`
 `;
 
 const ClassExplanation = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   margin: 15px 0;
 `;
 
@@ -58,7 +58,6 @@ function ClassInfo({ classInfo, titleIds }) {
       <ContentContainer id={titleIds[2]}>
         <TitleLine>
           <Title>Q & A</Title>
-
           <Button label={"문의하기"} />
         </TitleLine>
         <QnAList />
