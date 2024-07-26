@@ -11,8 +11,8 @@ public class LikeClassResponse {
     private Integer classId;
     private String className;
     private Integer classPrice;
-    private Integer classHour;
-    private Integer classMinute;
+    private Byte classHour;
+    private Byte classMinute;
     private Integer likeCount;
     private Integer reviewCount;
     private Integer ratingSum;

@@ -30,6 +30,11 @@ public interface MypageService {
 
     List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime finalDate);
 
+    void deleteLikedClass(int userId, int classId);
+
+    List<LikeUserResponse> getLikedUsers(int userId, LocalDateTime dateTime);
+
+    void deleteLikedUser(int likeGiverId, int likeGetterId);
 
     // 프로 마이페이지 시작부분
     ProMypageResponse getProMypage(int userId);
@@ -50,5 +55,8 @@ public interface MypageService {
 
     void modifyAnswer(int answerId, String ans);
 
-    void deleteAnswer(int answerId);
+    void softDeleteAnswer(int answerId);
+
+
+
 }

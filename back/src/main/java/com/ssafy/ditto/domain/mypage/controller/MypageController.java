@@ -133,6 +133,33 @@ public class MypageController {
         return ResponseDto.of(200, "내 관심 class 목록 조회 완료", likeClassResponseList);
     }
 
+    //Mypage_014
+    @DeleteMapping("{userId}/like/class/{classId}")
+    public ResponseDto<Void> deleteLikedClass(@PathVariable("userId") int userId, @PathVariable("classId") int classId){
+        mypageService.deleteLikedClass(userId, classId);
+        return ResponseDto.of(200, "좋아요 삭제 완료");
+    }
+
+    //Mypage_020
+    @GetMapping("{userId}/like/user")
+    public ResponseDto<List<LikeUserResponse>> getLikedUsers(@PathVariable("userId") int userId){
+        List<LikeUserResponse> likeUserResponseList = mypageService.getLikedUsers(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "좋아요한 유저 조회 완료");
+    }
+
+    //Mypage_015
+    @GetMapping("{userId}/like/user-more")
+    public ResponseDto<List<LikeUserResponse>> getLikedUsers(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
+        List<LikeUserResponse> likeUserResponseList = mypageService.getLikedUsers(userId, finalDate);
+        return ResponseDto.of(200, "좋아요한 유저 조회 완료");
+    }
+
+    //Mypage_016
+    @DeleteMapping("{userId}/like/user/{cancelUserId}")
+    public ResponseDto<Void> deleteLikedUsers(@PathVariable("userId") int likeGiverId, @PathVariable("cancelUserId") int likeGetterId){
+        mypageService.deleteLikedUser(likeGiverId, likeGetterId);
+        return ResponseDto.of(200, "유저 좋아요 취소 완료");
+    }
 
     //Pro_001
     @GetMapping("pro/{userId}")
@@ -215,7 +242,7 @@ public class MypageController {
     //Pro_010
     @DeleteMapping("answer/{answerId}")
     public ResponseDto<Void> deleteAnswer(@PathVariable("answerId") int answerId){
-        mypageService.deleteAnswer(answerId);
+        mypageService.softDeleteAnswer(answerId);
         return ResponseDto.of(200, "답변 삭제 성공");
     }
 }
