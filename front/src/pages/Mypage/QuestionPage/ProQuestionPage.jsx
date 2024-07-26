@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import ProQuestionItem from '../../../components/MyPage/ProQuestions/ProQuestionItem';
-import AnswerModal from '../../../components/MyPage/ProQuestions/AnswerModal';
+import AnswerCreateModal from '../../../components/MyPage/ProQuestions/AnswerCreateModal';
+import AnswerEditModal from '../../../components/MyPage/ProQuestions/AnswerEditModal';
 import axios from 'axios';
 
 const Container = styled.div`
@@ -38,119 +39,56 @@ const MoreButton = styled.button`
 const ProQuestionPage = () => {
   const { userId } = useSelector((state) => state.auth);
   const [questions, setQuestions] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [mode, setMode] = useState('답변'); // '답변' or '수정'
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        // setQuestions(response.data.questions);
-
-        // 더미 데이터 사용
-        const dummyQuestions = [
-          {
-            questionId: 1,
-            title: '오늘부터 나도 작가! 독서 클래스',
-            content: '수강했는데 어떠한 개선이 있어야 할지 궁금합니다.',
-            createdDate: '2024-08-03',
-            modifiedDate: '2024-08-03',
-            isDeleted: false,
-            isAnswered: true,
-            userId: 1,
-            nickname: '이강사',
-            fileId: 1,
-            fileUrl: 'https://example.com/file1.png',
-            lectureId: 1,
-            classId: 1,
-            className: '독서 클래스',
-            year: 2024,
-            month: 8,
-            day: 3,
-            hour: 12,
-            minute: 0,
-            answer: {
-              answerId: 1,
-              content: '답변 내용입니다.',
-              createdDate: '2024-08-04',
-              modifiedDate: '2024-08-04',
-              isDeleted: false,
-              userId: 1,
-              questionId: 1,
-            }
+        const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
-          {
-            questionId: 2,
-            title: '입문자도 바로 할 수 있는 간단한 그림 그리기 클래스',
-            content: '수업의 퀄리티가 너무 낮은 것 같습니다. 어떻게 하면 좋을까요?',
-            createdDate: '2024-07-11',
-            modifiedDate: '2024-07-11',
-            isDeleted: false,
-            isAnswered: false,
-            userId: 1,
-            nickname: '김학생',
-            fileId: 2,
-            fileUrl: 'https://example.com/file2.png',
-            lectureId: 2,
-            classId: 2,
-            className: '그림 클래스',
-            year: 2024,
-            month: 7,
-            day: 11,
-            hour: 15,
-            minute: 0
-          }
-        ];
-        setQuestions(dummyQuestions);
+        });
+        setQuestions(response.data.questions);
       } catch (error) {
         console.error('Error fetching questions:', error);
+        setQuestions([]); // 에러가 발생해도 빈 배열로 초기화
       }
     };
 
     fetchQuestions();
   }, [userId]);
 
+  const fetchQuestionAnswer = async (questionId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/mypage/${userId}/answer/${questionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      const answerData = response.data;
+      setQuestions((prevQuestions) =>
+        prevQuestions.map((q) =>
+          q.questionId === questionId ? { ...q, answer: answerData } : q
+        )
+      );
+    } catch (error) {
+      console.error('Error fetching answer:', error);
+    }
+  };
+
   const handleMore = async () => {
     const lastDate = questions[questions.length - 1]?.createdDate;
     if (lastDate) {
       try {
-        // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro-more?final-date=${lastDate}`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        // setQuestions([...questions, ...response.data.questions]);
-
-        // 더미 데이터 추가
-        const moreDummyQuestions = [
-          {
-            questionId: 3,
-            title: '추가된 질문 제목',
-            content: '추가된 질문 내용입니다.',
-            createdDate: '2024-07-10',
-            modifiedDate: '2024-07-10',
-            isDeleted: false,
-            isAnswered: false,
-            userId: 1,
-            nickname: '추가된 학생',
-            fileId: 3,
-            fileUrl: 'https://example.com/file3.png',
-            lectureId: 3,
-            classId: 3,
-            className: '추가된 클래스',
-            year: 2024,
-            month: 7,
-            day: 10,
-            hour: 10,
-            minute: 0
-          }
-        ];
-        setQuestions([...questions, ...moreDummyQuestions]);
+        const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro-more?final-date=${lastDate}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        });
+        setQuestions([...questions, ...response.data.questions]);
       } catch (error) {
         console.error('Error fetching more questions:', error);
       }
@@ -159,80 +97,86 @@ const ProQuestionPage = () => {
 
   const handleAnswer = (question) => {
     setSelectedQuestion(question);
-    setMode('답변');
-    setIsModalOpen(true);
+    setIsCreateModalOpen(true);
   };
 
   const handleEdit = (question) => {
     setSelectedQuestion(question);
-    setMode('수정');
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (questionId) => {
+  const handleDelete = async (answerId) => {
     try {
-      // await axios.delete(`http://localhost:8080/mypage/answer/${questionId}`, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      // });
-      setQuestions(questions.map(q => q.questionId === questionId ? { ...q, answer: null, isAnswered: false } : q));
+      await axios.delete(`http://localhost:8080/mypage/answer/${answerId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      setQuestions(questions.map(q => q.answer?.answerId === answerId ? { ...q, answer: null, isAnswered: false } : q));
     } catch (error) {
       console.error('Error deleting answer:', error);
     }
   };
 
-  const handleModalSubmit = async (answer) => {
+  const handleCreateModalSubmit = async (answer) => {
     try {
-      if (mode === '답변') {
-        // await axios.post(`http://localhost:8080/mypage/answer/${selectedQuestion.questionId}`, {
-        //   answer,
-        //   userId,
-        //   questionId: selectedQuestion.questionId,
-        // }, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: { content: answer }, isAnswered: true } : q));
-      } else {
-        // await axios.patch(`http://localhost:8080/mypage/answer/${selectedQuestion.questionId}`, {
-        //   answer,
-        //   answerId: selectedQuestion.answer.answerId,
-        // }, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: { ...q.answer, content: answer } } : q));
-      }
-      setIsModalOpen(false);
+      const response = await axios.post(`http://localhost:8080/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
+        answer,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response.data, isAnswered: true } : q));
+      setIsCreateModalOpen(false);
     } catch (error) {
-      console.error(`Error ${mode === '답변' ? 'posting' : 'editing'} answer:`, error);
+      console.error('Error posting answer:', error);
+    }
+  };
+
+  const handleEditModalSubmit = async (answer) => {
+    try {
+      const response = await axios.patch(`http://localhost:8080/mypage/answer/${selectedQuestion.answer.answerId}`, {
+        answer,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response.data } : q));
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error('Error editing answer:', error);
     }
   };
 
   return (
     <Container>
       <Header>작성한 문의</Header>
-      {questions.map((question) => (
+      {questions?.map((question) => (
         <ProQuestionItem
           key={question.questionId}
           question={question}
           onAnswer={handleAnswer}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onToggleAnswer={fetchQuestionAnswer}
+          isAnswerVisible={question.isAnswered && question.answer}
         />
       ))}
       <MoreButtonContainer>
         <MoreButton onClick={handleMore}>더보기</MoreButton>
       </MoreButtonContainer>
-      <AnswerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleModalSubmit}
-        initialContent={selectedQuestion?.answer?.content || ''}
-        mode={mode}
+      <AnswerCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateModalSubmit}
+      />
+      <AnswerEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleEditModalSubmit}
+        initialContent={selectedQuestion?.answer?.answer || ''}
       />
     </Container>
   );

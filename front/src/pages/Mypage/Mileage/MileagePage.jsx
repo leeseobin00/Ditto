@@ -1,4 +1,3 @@
-// src/pages/Mypage/MileagePage.js
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -150,28 +149,14 @@ const MileagePage = () => {
   useEffect(() => {
     const fetchMileage = async () => {
       try {
-        // const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        // const { mileage, accountNumber, bank, receiver } = response.data;
-        // setBalance(mileage);
-        // setAccountDetails({ accountNumber, bank, receiver });
-
-        // 더미 데이터 사용
-        const dummyData = {
-          mileage: 523000,
-          accountNumber: '123-456-7890',
-          bank: '신한은행',
-          receiver: '강의자'
-        };
-        setBalance(dummyData.mileage);
-        setAccountDetails({
-          accountNumber: dummyData.accountNumber,
-          bank: dummyData.bank,
-          receiver: dummyData.receiver
+        const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
         });
+        const { mileage, accountNumber, bank, receiver } = response.data;
+        setBalance(mileage);
+        setAccountDetails({ accountNumber, bank, receiver });
       } catch (error) {
         console.error('Error fetching mileage:', error);
       }
@@ -179,41 +164,12 @@ const MileagePage = () => {
 
     const fetchHistory = async () => {
       try {
-        // const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage/history`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        // setHistories(response.data.histories);
-
-        // 더미 데이터 사용
-        const dummyHistories = [
-          {
-            historyId: 1,
-            className: '사용자 출금',
-            mileageAmount: -300000,
-            time: '2024-07-15',
-            state: 1,
-            finalAmount: 523000
+        const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage/history`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
-          {
-            historyId: 2,
-            className: '사용자 출금',
-            mileageAmount: -200000,
-            time: '2024-06-11',
-            state: 2,
-            finalAmount: 823000
-          },
-          {
-            historyId: 3,
-            className: '내가 원하는 대로! 커스텀 향수 만들기 입문',
-            mileageAmount: 300000,
-            time: '2024-06-11',
-            state: 0,
-            finalAmount: 1123000
-          }
-        ];
-        setHistories(dummyHistories);
+        });
+        setHistories(response.data.histories);
       } catch (error) {
         console.error('Error fetching mileage history:', error);
       }
@@ -227,25 +183,12 @@ const MileagePage = () => {
     const lastDate = histories[histories.length - 1]?.time;
     if (lastDate) {
       try {
-        // const response = await axios.get(`http://localhost:8080/mypage/mileage/history-more?final-date=${lastDate}`, {
-        //   headers: {
-        //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        //   },
-        // });
-        // setHistories([...histories, ...response.data.histories]);
-
-        // 더미 데이터 추가
-        const moreDummyHistories = [
-          {
-            historyId: 4,
-            className: '클래스 4',
-            mileageAmount: 50000,
-            time: '2023-07-18T12:34:56Z',
-            state: 0,
-            finalAmount: 50000
-          }
-        ];
-        setHistories([...histories, ...moreDummyHistories]);
+        const response = await axios.get(`http://localhost:8080/mypage/mileage/history-more?final-date=${lastDate}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        });
+        setHistories([...histories, ...response.data.histories]);
       } catch (error) {
         console.error('Error fetching more mileage history:', error);
       }

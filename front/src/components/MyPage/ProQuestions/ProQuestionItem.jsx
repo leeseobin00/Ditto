@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -12,6 +13,35 @@ const Container = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
+const ClassInfo = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--BORDER_COLOR);
+  cursor: pointer;
+`;
+
+const ClassImage = styled.img`
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  margin-right: 20px;
+`;
+
+const ClassDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ClassName = styled.div`
+  font-weight: bold;
+  color: var(--TEXT_PRIMARY);
+`;
+
+const ClassDate = styled.div`
+  color: var(--TEXT_SECONDARY);
+`;
+
 const QuestionHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -22,7 +52,6 @@ const QuestionHeader = styled.div`
 const Title = styled.h3`
   font-size: 18px;
   color: var(--TEXT_PRIMARY);
-  margin-bottom: 5px;
 `;
 
 const Content = styled.p`
@@ -30,6 +59,13 @@ const Content = styled.p`
   color: var(--TEXT_SECONDARY);
   margin-bottom: 10px;
 `;
+
+const Subtitle = styled.div`
+  color: var(--TEXT_PRIMARY);
+  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: bold;
+`
 
 const MetaData = styled.div`
   font-size: 14px;
@@ -47,7 +83,7 @@ const ButtonGroup = styled.div`
 
 const Button = styled.button`
   padding: 8px 15px;
-  background-color: var(--PRIMARY);
+  background-color: var(--SECONDARY);
   color: white;
   border: none;
   border-radius: 5px;
@@ -100,9 +136,21 @@ const AnswerMetaData = styled.div`
 
 const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClassClick = (classId) => {
+    navigate(`/class/${classId}`);
+  };
 
   return (
     <Container>
+      <ClassInfo onClick={() => handleClassClick(question.classId)}>
+        <ClassImage src={question.fileUrl} alt={question.className} />
+        <ClassDetails>
+          <ClassName>{question.className}</ClassName>
+          <ClassDate>{`${question.year}.${String(question.month).padStart(2, '0')}.${String(question.day).padStart(2, '0')} ${String(question.hour).padStart(2, '0')}:${String(question.minute).padStart(2, '0')}`}</ClassDate>
+        </ClassDetails>
+      </ClassInfo>
       <QuestionHeader>
         <Title>{question.title}</Title>
         <div style={{ color: question.isAnswered ? 'var(--GREEN)' : 'var(--RED)' }}>
@@ -120,12 +168,13 @@ const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
       )}
       {isAnswerVisible && question.isAnswered && (
         <AnswerContainer>
-          <AnswerText>{question.answer.content}</AnswerText>
+          <Subtitle>{question.answer.nickname}</Subtitle>
+          <AnswerText>{question.answer.answer}</AnswerText>
           <AnswerMetaData>
             <div>{new Date(question.answer.createdDate).toLocaleDateString()}</div>
             <div>
               <EditButton onClick={() => onEdit(question)}>수정</EditButton>
-              <DeleteButton onClick={() => onDelete(question.questionId)}>삭제</DeleteButton>
+              <DeleteButton onClick={() => onDelete(question.answer.answerId)}>삭제</DeleteButton>
             </div>
           </AnswerMetaData>
         </AnswerContainer>
