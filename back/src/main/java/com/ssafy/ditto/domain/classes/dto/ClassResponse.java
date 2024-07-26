@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.classes.dto;
 
 import com.ssafy.ditto.domain.file.dto.FileResponse;
+import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
 import lombok.*;
 
@@ -30,4 +31,5 @@ public class ClassResponse {
     private String userNickname;
     private FileResponse file;
     private UserResponse user;
+    private TagResponse tag;
 }
