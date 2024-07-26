@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.classes.service;
 
-
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
