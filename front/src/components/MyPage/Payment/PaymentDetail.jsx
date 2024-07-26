@@ -118,7 +118,7 @@ const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
 `;
 
-const PaymentDetail = ({ payments, setPayments }) => {
+const PaymentDetail = ({ payments = [], setPayments }) => {
   const navigate = useNavigate();
   const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);

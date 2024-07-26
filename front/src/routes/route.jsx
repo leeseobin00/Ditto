@@ -20,6 +20,7 @@ import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
 import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage"
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
+import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         <Route path="liked" element={<LikedPage />} />
         <Route path="prouserinfo" element={<ProAccountPage />} />
         <Route path="mileage" element={<MileagePage />} />
+        <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
       <Route path="/board/:boardCategory/:postId" element={<BoardDetailPage />} />

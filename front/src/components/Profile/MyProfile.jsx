@@ -71,6 +71,9 @@ const CustomFilledHeartIcon = styled(BsHeartFill)`
 
 const Tags = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 `;
@@ -86,7 +89,7 @@ const TagsEditButton = styled.button`
   align-items: center;
 `;
 
-function Profile() {
+function MyProfile({userName, likeCount, tags, refresh}) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -101,10 +104,12 @@ function Profile() {
 
   const handleCloseProfileModal = () => {
     setIsProfileModalOpen(false);
+    refresh();
   };
 
   const handleCloseTagsModal = () => {
     setIsTagsModalOpen(false);
+    refresh();
   };
 
   return (
@@ -121,13 +126,12 @@ function Profile() {
           <ProfileIconImage src={WriteIcon} alt="Edit Icon" />
         </ProfileEditButton>
       </ImageWrapper>
-      <Name>김디토</Name>
+      <Name>{userName}</Name>
       <LikeCount>
-        <CustomFilledHeartIcon /> 1024
+        <CustomFilledHeartIcon /> {likeCount}
       </LikeCount>
       <Tags>
-        <Tag tagName="향수" />
-        <Tag tagName="뜨개질" />
+        {tags?.map((tag, index)=><Tag key={index} tagName={tag} />)}
         <TagsEditButton onClick={handleTagsEditClick}>
           <ProfileIconImage src={WriteIcon} alt="Edit Icon" />
         </TagsEditButton>
@@ -148,4 +152,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default MyProfile;

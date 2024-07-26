@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
+import axios from 'axios';
 import { useSelector } from 'react-redux';
 import EditQuestionModal from './EditQuestionModal';
 
@@ -72,6 +72,13 @@ const QuestionDate = styled.div`
 const AnswerDate = styled.div`
   margin-top: 5px;
   color: var(--TEXT_SECONDARY);
+`;
+
+const Subtitle = styled.div`
+  color: var(--TEXT_PRIMARY);
+  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: bold;
 `;
 
 const AnswerContent = styled.div`
@@ -165,57 +172,12 @@ const QuestionList = () => {
 
   const fetchQuestions = async () => {
     try {
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question`, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      // });
-      // const questionData = response.data.questions;
-      const questionData = [
-        {
-          questionId: 1,
-          title: '문의 제목 1',
-          content: '문의 내용 1',
-          createdDate: '2023-07-21T12:34:56Z',
-          modifiedDate: '2023-07-22T12:34:56Z',
-          isDeleted: false,
-          isAnswered: true,
-          fileId: 1,
-          fileUrl: '/path/to/image1.jpg',
-          classId: 101,
-          className: '오늘부터 나도 갓생! 독서 클래스',
-          year: 2023,
-          month: 7,
-          day: 21,
-          hour: 12,
-          minute: 34,
-          answer: {
-            answerId: 1,
-            answer: '답변 내용 1',
-            createdDate: '2023-07-23T12:34:56Z',
-            modifiedDate: '2023-07-23T12:34:56Z',
-            isDeleted: false,
-          }
+      const response = await axios.get(`http://localhost:8080/mypage/${userId}/question`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
-        {
-          questionId: 2,
-          title: '문의 제목 2',
-          content: '문의 내용 2',
-          createdDate: '2023-07-20T12:34:56Z',
-          modifiedDate: '2023-07-21T12:34:56Z',
-          isDeleted: false,
-          isAnswered: false,
-          fileId: 2,
-          fileUrl: '/path/to/image2.jpg',
-          classId: 102,
-          className: '입문자도 바로 할 수 있는 2주 완성 그림의 기본기 클래스',
-          year: 2023,
-          month: 7,
-          day: 20,
-          hour: 12,
-          minute: 34,
-        },
-      ];
+      });
+      const questionData = response.data.questions;
       setQuestions(questionData);
       setFinalDate(questionData[questionData.length - 1].createdDate);
     } catch (error) {
@@ -226,39 +188,12 @@ const QuestionList = () => {
 
   const fetchMoreQuestions = async () => {
     try {
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question-more?final-date=${finalDate}`, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      // });
-      // const questionData = response.data.questions;
-      const questionData = [
-        {
-          questionId: 3,
-          title: '문의 제목 3',
-          content: '문의 내용 3',
-          createdDate: '2023-07-19T12:34:56Z',
-          modifiedDate: '2023-07-20T12:34:56Z',
-          isDeleted: false,
-          isAnswered: true,
-          fileId: 3,
-          fileUrl: '/path/to/image3.jpg',
-          classId: 103,
-          className: '또 다른 클래스',
-          year: 2023,
-          month: 7,
-          day: 19,
-          hour: 12,
-          minute: 34,
-          answer: {
-            answerId: 2,
-            answer: '답변 내용 2',
-            createdDate: '2023-07-24T12:34:56Z',
-            modifiedDate: '2023-07-24T12:34:56Z',
-            isDeleted: false,
-          }
+      const response = await axios.get(`http://localhost:8080/mypage/${userId}/question-more?final-date=${finalDate}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
-      ];
+      });
+      const questionData = response.data.questions;
       setQuestions((prevQuestions) => [...prevQuestions, ...questionData]);
       setFinalDate(questionData[questionData.length - 1].createdDate);
     } catch (error) {
@@ -269,19 +204,12 @@ const QuestionList = () => {
 
   const fetchQuestionAnswer = async (questionId) => {
     try {
-      // const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/${questionId}`, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      // });
-      // const answerData = response.data;
-      const answerData = {
-        answerId: 1,
-        answer: '답변 내용 1',
-        createdDate: '2023-07-23T12:34:56Z',
-        modifiedDate: '2023-07-23T12:34:56Z',
-        isDeleted: false,
-      };
+      const response = await axios.get(`http://localhost:8080/mypage/${userId}/answer/${questionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      const answerData = response.data;
       setQuestions((prevQuestions) =>
         prevQuestions.map((q) =>
           q.questionId === questionId ? { ...q, answer: answerData } : q
@@ -304,16 +232,16 @@ const QuestionList = () => {
 
   const handleDelete = async (questionId) => {
     try {
-      // const response = await axios.delete(`http://localhost:8080/questions/${questionId}`, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //   },
-      // });
-      // if (response.status === 200) {
+      const response = await axios.delete(`http://localhost:8080/questions/${questionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      if (response.status === 200) {
         setQuestions(questions.filter((q) => q.questionId !== questionId));
-      // } else {
-      //   alert('삭제 실패. 다시 시도해주세요.');
-      // }
+      } else {
+        alert('삭제 실패. 다시 시도해주세요.');
+      }
     } catch (error) {
       alert('삭제 실패. 다시 시도해주세요.');
       console.error('삭제 에러:', error);
@@ -322,19 +250,19 @@ const QuestionList = () => {
 
   const handleSaveEdit = async () => {
     try {
-      // const response = await axios.patch(
-      //   `http://localhost:8080/questions/${currentQuestionId}`,
-      //   {
-      //     title: editTitle,
-      //     content: editContent,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //     },
-      //   }
-      // );
-      // if (response.status === 200) {
+      const response = await axios.patch(
+        `http://localhost:8080/questions/${currentQuestionId}`,
+        {
+          title: editTitle,
+          content: editContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        }
+      );
+      if (response.status === 200) {
         setQuestions(
           questions.map((q) =>
             q.questionId === currentQuestionId
@@ -343,9 +271,9 @@ const QuestionList = () => {
           )
         );
         setIsEditing(false);
-      // } else {
-      //   alert('수정 실패. 다시 시도해주세요.');
-      // }
+      } else {
+        alert('수정 실패. 다시 시도해주세요.');
+      }
     } catch (error) {
       alert('수정 실패. 다시 시도해주세요.');
       console.error('수정 에러:', error);
@@ -415,6 +343,7 @@ const QuestionList = () => {
           {openQuestionId === question.questionId && question.answer && (
             <AnswerContainer>
               <AnswerContent>
+                <Subtitle>{question.answer.nickname}</Subtitle>
                 {question.answer.answer}
                 <AnswerDate>
                   {new Date(question.answer.createdDate).toLocaleDateString()}
