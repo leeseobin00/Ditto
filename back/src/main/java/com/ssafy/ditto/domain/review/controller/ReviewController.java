@@ -23,4 +23,10 @@ public class ReviewController {
         reviewService.updateReview(classId, reviewId, reviewRequest);
         return ResponseDto.of(200, "리뷰 수정이 성공적으로 완료되었습니다.");
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseDto<Void> deleteReview(@PathVariable Integer classId, @PathVariable Integer reviewId) {
+        reviewService.deleteReview(classId, reviewId);
+        return ResponseDto.of(204, "리뷰 삭제가 성공적으로 완료되었습니다.");
+    }
 }
