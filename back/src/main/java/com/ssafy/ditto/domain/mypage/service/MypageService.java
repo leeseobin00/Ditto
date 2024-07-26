@@ -26,8 +26,6 @@ public interface MypageService {
 
     List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime);
 
-    AnswerResponse getAnswer(int userId, int questionId);
-
     List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime);
 
     List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime finalDate);
@@ -43,4 +41,14 @@ public interface MypageService {
     List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime);
 
     void userWithdraw(int userId, Integer requestMoney);
+
+    List<QuestionResponse> getProQuestion(int userId, LocalDateTime now);
+
+    AnswerResponse getAnswer(int userId, int questionId);
+
+    void insertAnswer(int userId, int questionId, String ans);
+
+    void modifyAnswer(int answerId, String ans);
+
+    void deleteAnswer(int answerId);
 }

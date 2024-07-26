@@ -31,4 +31,12 @@ public class Answer extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question questionId;
+
+    public void changeAnswer(String newAnswer){
+        this.answer = newAnswer;
+    }
+
+    public void changeIsDeleted(Boolean newBoolean){
+        this.isDeleted = newBoolean;
+    }
 }

@@ -103,7 +103,7 @@ public class MypageServiceImpl implements MypageService{
                 .userId(user)
                 .build();
 
-        newAddress = addressRepository.save(newAddress);
+        addressRepository.save(newAddress);
     }
 
     @Transactional
@@ -132,7 +132,7 @@ public class MypageServiceImpl implements MypageService{
                 .userId(user)
                 .build();
 
-        newAddress = addressRepository.save(newAddress);
+        addressRepository.save(newAddress);
     }
 
     @Transactional
@@ -177,12 +177,11 @@ public class MypageServiceImpl implements MypageService{
     @Override
     public CancelResponse getRefund() {
         Refund refund = refundRepository.findByRefundId(1);
-        CancelResponse cancelResponse = CancelResponse.builder()
+
+        return CancelResponse.builder()
                 .refundId(refund.getRefundId())
                 .refund(refund.getRefund())
                 .build();
-
-        return cancelResponse;
     }
 
     @Transactional
@@ -244,19 +243,6 @@ public class MypageServiceImpl implements MypageService{
         }
 
         return questionResponseList;
-    }
-
-    @Override
-    public AnswerResponse getAnswer(int userId, int questionId) {
-        Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId));
-
-        return AnswerResponse.builder()
-                .answerId(answer.getAnswerId())
-                .answer(answer.getAnswer())
-                .createdDate(answer.getCreatedDate())
-                .modifiedDate(answer.getModifiedDate())
-                .isDeleted(answer.getIsDeleted())
-                .build();
     }
 
     @Override
@@ -384,9 +370,93 @@ public class MypageServiceImpl implements MypageService{
                 .finalAmount(finalAmount)
                 .build();
 
-        mileageHistory = mileageHistoryRepository.save(mileageHistory);
+        mileageHistoryRepository.save(mileageHistory);
 
         mileage.changeMileage(finalAmount);
+    }
+
+    @Override
+    public List<QuestionResponse> getProQuestion(int userId, LocalDateTime dateTime) {
+        List<QuestionResponse> questionResponseList = new ArrayList<>();
+
+        List<Question> questions = questionRepository.getQuestionsPro(userId, dateTime);
+
+        // 가져온 문의 목록과 대조해서 DTO 생성 후 return
+        for (Question question : questions){
+
+            QuestionResponse questionResponse = QuestionResponse.builder()
+                    .questionId(question.getQuestionId())
+                    .title(question.getTitle())
+                    .content(question.getContent())
+                    .createdDate(question.getCreatedDate())
+                    .modifiedDate(question.getModifiedDate())
+                    .isDeleted(question.getIsDeleted())
+                    .isAnswered(question.getIsAnswered())
+                    .userId(question.getUserId().getUserId())
+                    .nickname(question.getUserId().getNickname())
+                    .fileId(question.getClassId().getFileId().getFileId())
+                    .fileUrl(question.getClassId().getFileId().getFileUrl())
+                    .lectureId(question.getLectureId().getLectureId())
+                    .classId(question.getClassId().getClassId())
+                    .className(question.getLectureId().getClassName())
+                    .year(question.getLectureId().getYear())
+                    .month(question.getLectureId().getMonth())
+                    .day(question.getLectureId().getDay())
+                    .hour(question.getLectureId().getHour())
+                    .minute(question.getLectureId().getMinute())
+                    .build();
+
+            questionResponseList.add(questionResponse);
+        }
+
+        return questionResponseList;
+
+    }
+
+    @Override
+    public AnswerResponse getAnswer(int userId, int questionId) {
+        Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId));
+
+        return AnswerResponse.builder()
+                .answerId(answer.getAnswerId())
+                .answer(answer.getAnswer())
+                .createdDate(answer.getCreatedDate())
+                .modifiedDate(answer.getModifiedDate())
+                .isDeleted(answer.getIsDeleted())
+                .nickname(answer.getUserId().getNickname())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public void insertAnswer(int userId, int questionId, String ans) {
+        Question question = questionRepository.findByQuestionId(questionId);
+
+        Answer answer = Answer.builder()
+                .answer(ans)
+                .isDeleted(false)
+                .userId(userRepository.findByUserId(userId))
+                .questionId(question)
+                .build();
+
+        answerRepository.save(answer);
+
+        question.changeIsAnswered(true);
+    }
+
+    @Transactional
+    @Override
+    public void modifyAnswer(int answerId, String ans) {
+        Answer answer = answerRepository.findByAnswerId(answerId);
+
+        answer.changeAnswer(ans);
+    }
+
+    @Override
+    public void deleteAnswer(int answerId) {
+        Answer answer = answerRepository.findByAnswerId(answerId);
+
+        answer.changeIsDeleted(true);
     }
 
 

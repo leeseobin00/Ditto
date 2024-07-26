@@ -42,4 +42,12 @@ public class Question extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
     private Lecture lectureId;
+
+    public void changeIsDeleted(Boolean newBoolean){
+        this.isDeleted = newBoolean;
+    }
+
+    public void changeIsAnswered(Boolean newBoolean){
+        this.isAnswered = newBoolean;
+    }
 }

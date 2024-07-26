@@ -13,4 +13,5 @@ public class AnswerResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Boolean isDeleted;
+    private String nickname;
 }

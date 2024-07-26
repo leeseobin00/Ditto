@@ -102,11 +102,8 @@ public class MypageController {
     }
 
     //Mypage_009
-    @GetMapping("{userId}/question/{questionId}")
-    public ResponseDto<AnswerResponse> getAnswer(@PathVariable("userId") int userId, @PathVariable("questionId") int questionId){
-        AnswerResponse answerResponse = mypageService.getAnswer(userId, questionId);
-        return ResponseDto.of(200, "내 문의에 달린 답변 조회 성공", answerResponse);
-    }
+    //Pro_007과 병합
+
 
     //Mypage_010
     @GetMapping("{userId}/review")
@@ -179,7 +176,46 @@ public class MypageController {
         return ResponseDto.of(200, "출금 신청 완료");
     }
 
-//    //Pro_006
-//    @GetMapping("question/{userId}")
-//    public ResponseDto<>
+    //Pro_006
+    @GetMapping("{userId}/question/pro")
+    public ResponseDto<List<QuestionResponse>> getProQuestion(@PathVariable("userId") int userId){
+        List<QuestionResponse> questionResponseList = mypageService.getProQuestion(userId, LocalDateTime.now());
+        return ResponseDto.of(200, "강사 문의 내역 조회 완료", questionResponseList);
+    }
+
+    //Pro_006_1
+    @GetMapping("{userId}/question/pro-more")
+    public ResponseDto<List<QuestionResponse>> getProQuestion(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime dateTime){
+        List<QuestionResponse> questionResponseList = mypageService.getProQuestion(userId, dateTime);
+        return ResponseDto.of(200, "강사 문의 내역 더보기 완료", questionResponseList);
+    }
+
+    //Pro_007
+    //Mypage_009
+    @GetMapping("{userId}/answer/{questionId}")
+    public ResponseDto<AnswerResponse> getAnswer(@PathVariable("userId") int userId, @PathVariable("questionId") int questionId){
+        AnswerResponse answerResponse = mypageService.getAnswer(userId, questionId);
+        return ResponseDto.of(200, "답변 조회 성공", answerResponse);
+    }
+
+    //Pro_008
+    @PostMapping("{userId}/answer/{questionId}")
+    public ResponseDto<Void> insertAnswer(@PathVariable("userId") int userId, @PathVariable("questionId") int questionId, @RequestBody Map<String, String> answer){
+        mypageService.insertAnswer(userId, questionId, answer.get("answer"));
+        return ResponseDto.of(200, "답변 작성 성공");
+    }
+
+    //Pro_009
+    @PatchMapping("answer/{answerId}")
+    public ResponseDto<Void> modifyAnswer(@PathVariable("answerId") int answerId, @RequestBody Map<String, String> answer){
+        mypageService.modifyAnswer(answerId, answer.get("answer"));
+        return ResponseDto.of(200, "답변 수정 성공");
+    }
+
+    //Pro_010
+    @DeleteMapping("answer/{answerId}")
+    public ResponseDto<Void> deleteAnswer(@PathVariable("answerId") int answerId){
+        mypageService.deleteAnswer(answerId);
+        return ResponseDto.of(200, "답변 삭제 성공");
+    }git 
 }
