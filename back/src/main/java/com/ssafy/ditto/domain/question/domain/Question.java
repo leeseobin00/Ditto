@@ -10,6 +10,7 @@ import com.ssafy.ditto.domain.classes.domain.DClass;
 @Entity
 @Table
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

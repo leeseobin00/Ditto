@@ -31,6 +31,8 @@ public enum ErrorCode {
     STEP_NOT_FOUND(404, "STEP_NOT_FOUND", "단계를 찾을 수 없습니다."),
     LIKE_USER_NOT_FOUND(404, "LIKE_USER_NOT_FOUND", "사용자 좋아요를 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(404, "REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다."),
+    QUESTION_NOT_FOUND(404, "QUESITON_NOT_FOUND", "문의를 찾을 수 없습니다."),
+    ANSWER_NOT_FOUND(404, "ANSWER_NOT_FOUND", "답변을 찾을 수 없습니다."),
 
     // 중복 관련 오류
     DUPLICATE_RESOURCE(409, "DUPLICATE_RESOURCE", "중복된 리소스가 있습니다."),

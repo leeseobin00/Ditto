@@ -3,6 +3,8 @@ package com.ssafy.ditto.domain.question.service;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
+import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
+import com.ssafy.ditto.domain.question.exception.QuestionNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.question.domain.Question;
@@ -39,6 +41,19 @@ public class QuestionServiceImpl implements QuestionService {
                 .isAnswered(false)
                 .isDeleted(false)
                 .build();
+        questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional
+    public void updateQuestion(Integer classId, Integer questionId, QuestionRequest questionRequest) {
+        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(questionRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Lecture lecture = lectureRepository.findById(questionRequest.getLectureId()).orElseThrow(LectureNotFoundException::new);
+
+        question.setTitle(questionRequest.getTitle());
+        question.setContent(questionRequest.getContent());
         questionRepository.save(question);
     }
 }
