@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
-import { logout } from '../../features/auth/authSlice';
-import { useDispatch } from 'react-redux';
+import { logout } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { BsCameraVideo, BsBell } from "react-icons/bs";
 import { IoIosLogOut } from "react-icons/io";
 import { SlLogout } from "react-icons/sl";
-import { BiVideo, BiBell,  BiLogOut  } from "react-icons/bi";
+import { BiVideo, BiBell, BiLogOut } from "react-icons/bi";
 
 import useAxios from "../../hooks/useAxios";
 
@@ -48,7 +48,8 @@ const CustomVideoIcon = styled(BiVideo)`
 
   &:hover {
     color: var(--PRIMARY);
-}`
+  }
+`;
 
 const CustomBellIcon = styled(BiBell)`
   font-size: 18px;
@@ -58,7 +59,8 @@ const CustomBellIcon = styled(BiBell)`
 
   &:hover {
     color: var(--PRIMARY);
-}`
+  }
+`;
 
 const CustomLogoutIcon = styled(BiLogOut)`
   font-size: 18px;
@@ -68,7 +70,8 @@ const CustomLogoutIcon = styled(BiLogOut)`
 
   &:hover {
     color: var(--PRIMARY);
-}`
+  }
+`;
 
 const Icon = styled.div`
   font-size: 16px;
@@ -183,20 +186,20 @@ const Header = () => {
     try {
       //await axios.post('/auth/logout'); // 로그아웃 API 요청
       dispatch(logout());
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Logout failed: ", error);
     }
   };
-  
-    return (
+
+  return (
     <HeaderContainer>
       <Overlay open={menuOpen} onClick={handleOverlayClick} />
       <TopSection>
         <MenuButton onClick={() => setMenuOpen(!menuOpen)}>메뉴</MenuButton>
         <MobileDropdownMenu open={menuOpen}>
           <DropdownItem to="/">홈</DropdownItem>
-          <DropdownItem to="/">카테고리</DropdownItem>
+          <DropdownItem to="/classes">카테고리</DropdownItem>
           <DropdownItem to="/board/all">커뮤니티</DropdownItem>
           <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
           <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
@@ -229,7 +232,7 @@ const Header = () => {
         <Link to="/">
           <MenuItem>홈</MenuItem>
         </Link>
-        <Link to="/class">
+        <Link to="/classes">
           <MenuItem>카테고리</MenuItem>
         </Link>
         <Link to="/board/all">

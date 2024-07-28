@@ -20,20 +20,24 @@ import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
 import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage"
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
+import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
+import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/class/:classCategory" element={<ClassListPage />} />
-      <Route path="/class/:classId" element={<ClassDetailPage />} />
-      <Route path="/class" element={<ClassDetailPage />} />
-      <Route path="/class/add" element={<ClassAddPage />} />
+      <Route path="/classes" element={<ClassListPage />} />
+      {/* <Route path="/classes/:classCategory" element={<ClassListPage />} /> */}
+      <Route path="/classes/:classId" element={<ClassDetailPage />} />
+      <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/callback" element={<KakaoCallback />} />
-      <Route path="/mypage/*" element={<MyPage />}> {/* Nested Routes */}
+      <Route path="/mypage/*" element={<MyPage />}>
+        {" "}
+        {/* Nested Routes */}
         <Route path="userinfo" element={<UserInfoDetail />} />
         <Route path="payments" element={<PaymentPage />} />
         <Route path="questions" element={<MyQuestionsPage />} />
@@ -41,9 +45,14 @@ const AppRoutes = () => {
         <Route path="liked" element={<LikedPage />} />
         <Route path="prouserinfo" element={<ProAccountPage />} />
         <Route path="mileage" element={<MileagePage />} />
+        <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
+      <Route path="/myclassroom" element={<MyClassroomPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
-      <Route path="/board/:boardCategory/:postId" element={<BoardDetailPage />} />
+      <Route
+        path="/board/:boardCategory/:postId"
+        element={<BoardDetailPage />}
+      />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
       <Route path="/profile/:userId" element={<ProfileDetailPage />} />

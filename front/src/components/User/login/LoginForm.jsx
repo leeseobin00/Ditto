@@ -1,12 +1,12 @@
 // src/pages/Login/LoginForm.jsx
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import axios from 'axios';
-import { login } from '../../../features/auth/authSlice';
-import KakaoLogin from './KaKaoLogin';
-import { jwtDecode } from 'jwt-decode';  // jwt-decode 패키지 가져오기
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import axios from "axios";
+import { login } from "../../../features/auth/authSlice";
+import KakaoLogin from "./KaKaoLogin";
+import { jwtDecode } from "jwt-decode"; // jwt-decode 패키지 가져오기
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -81,7 +81,7 @@ const Divider = styled.div`
   margin: 20px 0;
   &::before,
   &::after {
-    content: '';
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--BORDER_COLOR);
   }
@@ -100,7 +100,7 @@ const LoginDivider = styled.div`
   margin: 10px 0px;
   &::before,
   &::after {
-    content: '';
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--BORDER_COLOR);
   }
@@ -137,26 +137,26 @@ const SignUpGroup = styled.div`
 `;
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError('');
-    
+    setError("");
+
     if (!email || !password) {
-      setError('이메일, 비밀번호을 입력해 주세요.');
+      setError("이메일, 비밀번호을 입력해 주세요.");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/users/login', {
+      const response = await axios.post("http://localhost:8080/users/login", {
         email,
         password,
       });
@@ -166,12 +166,21 @@ const LoginForm = () => {
       const userId = decodedToken.sub;
       const emailFromToken = decodedToken.email;
 
-      dispatch(login({ accessToken, refreshToken, userId, nickname: nickname, email: emailFromToken, roleId: roleId })); // Redux 상태 업데이트
+      dispatch(
+        login({
+          accessToken,
+          refreshToken,
+          userId,
+          nickname: nickname,
+          email: emailFromToken,
+          roleId: roleId,
+        })
+      ); // Redux 상태 업데이트
       alert("로그인 성공!");
-      navigate('/'); // 로그인 성공 시 메인 페이지로 이동
+      navigate("/"); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error("로그인 에러:", error);
-      setError('로그인 실패. 다시 시도해주세요.');
+      setError("로그인 실패. 다시 시도해주세요.");
     } finally {
       setLoading(false);
     }
@@ -199,13 +208,13 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </FormGroup>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </LoginGroup>
         <SubmitButton type="submit" disabled={loading}>
-          {loading ? '로그인 중...' : '로그인'}
+          {loading ? "로그인 중..." : "로그인"}
         </SubmitButton>
         <Divider>간편 로그인</Divider>
-        <SocialGroup>       
+        <SocialGroup>
           <KakaoLogin />
         </SocialGroup>
         <SignUpGroup>

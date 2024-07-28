@@ -62,8 +62,12 @@ const Currency = styled.div`
   margin-left: 5px;
 `;
 
-function ClassPriceAdd() {
+function ClassPriceAdd({ onChange }) {
   const [classPrice, setClassPrice] = useState("");
+
+  useEffect(() => {
+    onChange(classPrice);
+  }, [classPrice, onChange]);
 
   function handleInputChange(e) {
     setClassPrice(e.target.value);
