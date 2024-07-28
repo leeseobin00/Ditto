@@ -56,4 +56,14 @@ public class QuestionServiceImpl implements QuestionService {
         question.setContent(questionRequest.getContent());
         questionRepository.save(question);
     }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(Integer classId, Integer questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+
+        question.setIsDeleted(true);
+        questionRepository.save(question);
+    }
 }
