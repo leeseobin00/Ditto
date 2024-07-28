@@ -120,7 +120,12 @@ const TimerDisplay = styled.div`
   color: var(--SECONDARY);
 `;
 
-function MeetingFooter({ handleIsOpen }) {
+function MeetingFooter({ 
+  audioEnabled, 
+  handleAudioEnabled,
+  videoEnabled,
+  handleVideoEnabled,
+  handleIsOpen }) {
   const summaries = [
     {
       title: "1단계. 향수 기본 구성요소 설명",
@@ -154,6 +159,22 @@ function MeetingFooter({ handleIsOpen }) {
     setIsTimerWindow((prev) => !prev);
   };
 
+  const handleMicToggle = () => {
+    setIsMicActive((prev) => !prev);
+    handleAudioEnabled();
+  };
+  
+  const handleVideoToggle = () => {
+    setIsVideoActive((prev) => !prev);
+    handleVideoEnabled();
+  };
+
+  useEffect(()=>{
+    setIsMicActive(!audioEnabled);
+    setIsVideoActive(!videoEnabled);
+  },[audioEnabled, videoEnabled]);
+
+
   const handleContentWindow = () => {
     setIsContentWindow((prev) => !prev);
   };
@@ -166,14 +187,6 @@ function MeetingFooter({ handleIsOpen }) {
     if (isChatWindow === true || isContentWindow === true) handleIsOpen(true);
     else handleIsOpen(false);
   }, [isChatWindow, isContentWindow]);
-
-  const handleMicToggle = () => {
-    setIsMicActive((prev) => !prev);
-  };
-
-  const handleVideoToggle = () => {
-    setIsVideoActive((prev) => !prev);
-  };
 
   const [inputMinute, setInputMinute] = useState(1);
   const [inputSecond, setInputSecond] = useState(0);

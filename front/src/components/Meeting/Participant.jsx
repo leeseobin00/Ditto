@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-
 import Crown from "../../assets/icon/profile/crown.png";
 
 const ParticipantTile = styled.div`
@@ -88,7 +87,36 @@ const CrownIcon = styled.img`
   margin-right: 4px;
 `;
 
-function Participant({ name, imgSrc, isHelp, isHighlighted, isInstructor }) {
+const Video = styled.video`
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+`;
+
+function Participant({ 
+  track,
+  name, 
+  imgSrc, 
+  isHelp, 
+  isHighlighted, 
+  isInstructor,
+  children,
+}) {
+  const videoElement = useRef(null);
+
+  useEffect(() => {
+    if (videoElement.current) {
+      track?.attach(videoElement.current);
+    }
+
+    return () => {
+      if (videoElement.current) {
+        track?.detach(videoElement.current);
+      }
+    };
+  }, [track]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -111,9 +139,10 @@ function Participant({ name, imgSrc, isHelp, isHighlighted, isInstructor }) {
           </Menu>
         </>
       )}
-      <UserIcon>
+      { children }
+      {/* <UserIcon>
         <img src={imgSrc} alt={`${name} profile`} />
-      </UserIcon>
+      </UserIcon> */}
     </ParticipantTile>
   );
 }
