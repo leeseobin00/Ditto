@@ -82,10 +82,43 @@ function BoardDetailPage() {
   const date = new Date();
   const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
   const handleGetPost = async() => {
     const result = await getPost(`/posts/${postId}`, null, "get");
-    setPost(result?.data);
-  }
+    const postData = result?.data;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(postData?.content, 'text/html');
+    const images = doc.querySelectorAll('img');
+    const files = postData?.files;
+
+    const updateImageSrc = async () => {
+      for (let i = 0; i < images.length; i++) {
+        if (i < files.length) {
+          const fileResponse = await fetch("/src/" + files[i].fileUrl.split('src')[1].substring(1));
+          const fileBlob = await fileResponse.blob();
+          const base64 = await toBase64(fileBlob);
+          images[i].src = base64;
+        }
+      }
+
+      const updatedContent = doc.body.innerHTML;
+      setPost((prev) => ({
+        ...prev,
+        ...postData,
+        content: updatedContent,
+      }));
+    };
+
+    updateImageSrc();
+  };
+
 
   const handleGetComment = async() => {
     const result = await getComment(`/comments/${postId}`, null, "get");
@@ -131,11 +164,11 @@ function BoardDetailPage() {
       <Wrapper>
         <Post
           title={post?.title}
-          username={post?.username}
+          username={post?.nickname}
           createdDate="2024.07.11"
           viewCount={post?.viewCount}
-          fileName="img.png"
-          fileUrl="ddd"
+          // fileName="img.png"
+          // fileUrl="ddd"
           content={post?.content}
           likeCount={post?.likeCount}
           tagName={post?.tagName}

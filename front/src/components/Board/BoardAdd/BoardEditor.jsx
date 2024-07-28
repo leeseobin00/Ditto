@@ -54,15 +54,15 @@ const BoardEditor = ({
             ["blockquote", "code-block"],
             [{ list: "ordered" }, { list: "bullet" }],
             [{ align: [] }],
-            // ["link", "image", "video"],
+            ["link", "image", "video"],
             ["clean"],
           ],
         },
       });
 
-      editorRef.current.getModule('toolbar').addHandler('image', () => {
-        selectLocalImage();
-      });
+      // editorRef.current.getModule('toolbar').addHandler('image', () => {
+      //   selectLocalImage();
+      // });
 
       editorRef.current.on("text-change", () => {
         onEditorChange(editorRef.current.root.innerHTML);

@@ -9,7 +9,8 @@ import Button from "../../common/Button";
 import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
 
-const PostWrapper = styled.div``;
+const PostWrapper = styled.div`
+`;
 
 const Header = styled.div`
   display: flex;
@@ -52,6 +53,8 @@ const Image = styled.img`
 
 const Content = styled.div`
   margin-top: 16px;
+  display: flex;
+  justify-content: center;
 `;
 
 function HTMLContent({ html }) {
@@ -230,7 +233,7 @@ function Post({
         <Info>{username}</Info>
       </Header>
       <SubHeader>
-        <SubInfo>{createdDate}</SubInfo>
+        {/* <SubInfo>{createdDate}</SubInfo> */}
         <SubInfo>조회수 {viewCount}</SubInfo>
       </SubHeader>
       <Hr />
@@ -241,8 +244,8 @@ function Post({
           <DropdownItem onClick={handleDelete}>삭제</DropdownItem>
         </DropdownMenu>
       </MenuIconWrapper>
-      <SubInfo>첨부파일 {fileName}</SubInfo>
-      <Image src={fileUrl} alt={fileName} />
+      {fileName && <SubInfo>첨부파일 {fileName}</SubInfo>}
+      {fileUrl && <Image src={fileUrl} alt={fileName} />}
       <Content>
         <HTMLContent html={content} />
       </Content>
