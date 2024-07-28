@@ -88,8 +88,9 @@ function BoardAddPage() {
     content: "",
   });
 
-  const handleGetPost = async() => {
+  const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
+    console.log(result);
     setPostData({
       userId: userId,
       boardId: result?.data?.boardId,
@@ -98,10 +99,50 @@ function BoardAddPage() {
       title: result?.data?.title,
       content: result?.data?.content,
     });
+  
+    const files = result?.data?.files;
+  
+    // DOMParser를 사용하여 HTML 문자열을 파싱
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(result?.data?.content, 'text/html');
+  
+    // 이미지 태그들을 선택
+    const images = doc.querySelectorAll('img');
+  
+    // 파일을 base64로 변환하는 함수
+    const toBase64 = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  
+    // 이미지를 base64로 변환하여 src에 할당
+    const updateImageSrc = async () => {
+      for (let i = 0; i < images.length; i++) {
+        if (i < files.length) {
+          const fileResponse = await fetch("/src/" + files[i].fileUrl.split('src')[1].substring(1));
+          const fileBlob = await fileResponse.blob();
+          const base64 = await toBase64(fileBlob);
+          images[i].src = base64;
+        }
+      }
+  
+      // 변경된 HTML 내용을 문자열로 변환
+      const updatedContent = doc.body.innerHTML;
+  
+      setPostData((prev) => ({
+        ...prev,
+        content: updatedContent,
+      }));
+  
+      setCategory(result?.data?.categoryId);
+      setTag(getStartTagIdForCategory(result?.data?.tagId));
+    };
+  
+    updateImageSrc();
+  };  
 
-    setCategory(result?.data?.categoryId);
-    setTag(getStartTagIdForCategory(result?.data?.tagId));
-  }
   useEffect(() => {
     if (isEdit) {
       handleGetPost();
@@ -112,16 +153,6 @@ function BoardAddPage() {
   const [category, setCategory] = useState(1);
   const [tags, setTags] = useState(getTagsForCategory(1));
   const [tag, setTag] = useState(1);
-
-  const [files, setFiles] = useState([]);
-
-  const handleFiles = (event) => {
-    setFiles((prev) => [
-      ...prev,
-      ...Array.from(event.target.files)
-    ]);
-  };
-  
 
   useEffect(() => {
     setTags(getTagsForCategory(category));
@@ -187,12 +218,52 @@ function BoardAddPage() {
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
 
+    console.log(postData?.content);
+
+    //1. HTML에서 img 태그의 src 값 추출
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(postData?.content, 'text/html');
+    const imgTags = doc.querySelectorAll('img');
+    const srcArray = Array.from(imgTags).map(img => img.src);
+    console.log(srcArray);
+
+    const base64ToBlob = (base64, mime) => {
+      const byteString = atob(base64.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mime });
+    };
+
+    const filesArray = srcArray.map((src, index) => {
+        const mime = src.match(/data:(.*);base64,/)[1];
+        const blob = base64ToBlob(src, mime);
+        return new File([blob], `image${index}.${mime.split('/')[1]}`);
+    });
+
+    // 2. src 값을 파일 인덱스로 대체한 새로운 HTML 콘텐츠 생성
+    let updatedContent = postData?.content;
+
+    srcArray.forEach((src, index) => {
+        updatedContent = updatedContent.replace(`src="${src}"`, `src={files[${index}]}`);
+    });
+
+    // setPostData를 사용하여 상태 업데이트
+    setPostData((prevState) => ({
+      ...prevState,
+      content: updatedContent
+    }));
+
     const formData = new FormData();
-    formData.append("post", new Blob([JSON.stringify(postData)], { type: "application/json" }));
-    console.log(formData);
-    for (const file of files) {
+    formData.append("post", new Blob([JSON.stringify({...postData, content:updatedContent})], { type: "application/json" }));
+    filesArray.forEach((file, index) => {
       formData.append("files", file);
-    }
+    });
+    // for (const file of files) {
+    //   formData.append("files", file);
+    // }
 
     try {
       await postPost(url, formData, method);
@@ -201,7 +272,7 @@ function BoardAddPage() {
       console.error(error);
     }
   };
-  
+
   return (
     <div>
       <TabBar />
