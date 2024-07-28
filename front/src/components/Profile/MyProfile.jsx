@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { styled } from "styled-components";
 import { BsHeartFill } from "react-icons/bs";
 
 import WriteIcon from "../../assets/icon/profile/write-white.png";
 import Modal from "../common/Modal";
-import RoundButton from "../common/RoundButton";
-
 import ModifyTags from "./ProfileDetail/ModifyTags";
 import Tag from "./Tag";
 import ModifyProfileImage from "./ProfileDetail/ModifyProfileImage";
+import DefaultProfileImage from "../../assets/img/profile-user.png";
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -27,7 +26,6 @@ const ImageWrapper = styled.div`
 `;
 
 const Image = styled.img`
-  background-color: lightgray;
   width: 160px;
   height: 160px;
   border-radius: 100%;
@@ -89,10 +87,16 @@ const TagsEditButton = styled.button`
   align-items: center;
 `;
 
-function MyProfile({userName, likeCount, tags, refresh}) {
+function MyProfile({
+    profileImageURL, 
+    handleProfileImageURL,
+    tags,
+    handleTags,
+    userName, 
+    likeCount
+  }) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
 
   const handleProfileEditClick = () => {
     setIsProfileModalOpen(true);
@@ -104,21 +108,16 @@ function MyProfile({userName, likeCount, tags, refresh}) {
 
   const handleCloseProfileModal = () => {
     setIsProfileModalOpen(false);
-    refresh();
   };
 
   const handleCloseTagsModal = () => {
     setIsTagsModalOpen(false);
-    refresh();
   };
 
   return (
     <ProfileWrapper>
       <ImageWrapper>
-        <Image
-          src={profileImage || "path/to/default/image.png"}
-          alt="Profile"
-        />
+        <Image src={profileImageURL || DefaultProfileImage}  alt="Profile Image"/>
         <ProfileEditButton
           position={{ top: "10px", left: "120px" }}
           onClick={handleProfileEditClick}
@@ -139,13 +138,19 @@ function MyProfile({userName, likeCount, tags, refresh}) {
 
       {isProfileModalOpen && (
         <Modal onClose={handleCloseProfileModal}>
-          <ModifyProfileImage onClose={handleCloseProfileModal} />
+          <ModifyProfileImage
+            curProfileImageURL={profileImageURL}
+            handleProfileImageURL={handleProfileImageURL}
+            onClose={handleCloseProfileModal} />
         </Modal>
       )}
 
       {isTagsModalOpen && (
         <Modal onClose={handleCloseTagsModal}>
-          <ModifyTags onClose={handleCloseTagsModal} />
+          <ModifyTags
+            curTags={tags}
+            handleTags={handleTags} 
+            onClose={handleCloseTagsModal} />
         </Modal>
       )}
     </ProfileWrapper>

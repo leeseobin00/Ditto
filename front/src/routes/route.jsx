@@ -55,7 +55,7 @@ const AppRoutes = () => {
       />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
-      <Route path="/profile/:userId" element={<ProfileDetailPage />} />
+      <Route path="/profile/:profileId" element={<ProfileDetailPage />} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
     </Routes>
   );

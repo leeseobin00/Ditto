@@ -56,8 +56,9 @@ function Section({
   children,
   onClick,
   isMyProfile,
+  curIntro,
+  handleIntro,
   modalContent: ModalContentComponent,
-  refresh
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,7 +67,6 @@ function Section({
   };
 
   const handleCloseModal = () => {
-    refresh();
     setIsModalOpen(false);
   };
 
@@ -89,7 +89,7 @@ function Section({
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalContentComponent onClose={handleCloseModal} />
+          <ModalContentComponent curIntro={curIntro} handleIntro={handleIntro} onClose={handleCloseModal} />
         </Modal>
       )}
     </SectionWrapper>

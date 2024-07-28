@@ -182,8 +182,6 @@ function ProfileSearchPage() {
     handleGetProfile();
   }, [currentPage]);
 
-  console.log(profiles);
-
   useEffect(() => {
     handleGetTeacherProfile();
   }, [currentTeacherPage]);
@@ -226,7 +224,7 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueTeacherProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile userName={profile.nickname} seekerId={profile.userId} />
+              <Profile userName={profile.nickname} profileId={profile.userId} />
           </Link>
           ))}
         </Profiles>
@@ -236,7 +234,7 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile userName={profile.nickname} seekerId={profile.userId} />
+              <Profile userName={profile.nickname} profileId={profile.userId} />
             </Link>
           ))}
         </Profiles>

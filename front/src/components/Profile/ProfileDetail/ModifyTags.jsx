@@ -47,7 +47,7 @@ const TagList = styled.div`
   margin-bottom: 48px;
 `;
 
-function ModifyTags({ onClose }) {
+function ModifyTags({ curTags, handleTags, onClose }) {
   // redux
   const userId = useSelector(state => state.auth.userId);
 
@@ -55,7 +55,7 @@ function ModifyTags({ onClose }) {
   const { sendRequest: patchTags } = useAxios();
 
   const [tags, setTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(curTags);
 
   useEffect(() => {
     // 필요한 태그들을 불러옵니다.
@@ -64,10 +64,13 @@ function ModifyTags({ onClose }) {
       ...FABRIC_OPTIONS,
       ...FOOD_OPTIONS,
       ...ART_OPTIONS,
-    ].map((tag) => ({ ...tag, selected: false }));
+    ].map((tag) => ({
+      ...tag,
+      selected: curTags.includes(tag.label),
+    }));
 
     setTags(allTags);
-  }, []);
+  }, [curTags]);
 
   const handleTagClick = (value) => {
     setSelectedTags((prevSelectedTags) => {
@@ -100,6 +103,7 @@ function ModifyTags({ onClose }) {
       patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
     }
 
+    handleTags(selectedTags);
     onClose();
   };
 
