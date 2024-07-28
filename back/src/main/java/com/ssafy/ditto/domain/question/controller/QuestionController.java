@@ -17,4 +17,11 @@ public class QuestionController {
         questionService.createQuestion(classId, questionRequest);
         return ResponseDto.of(204, "리뷰가 성공적으로 생성되었습니다.");
     }
+
+    @PatchMapping("/{questionId}")
+    public ResponseDto<Void> updateQuestion(@PathVariable Integer classId, @PathVariable Integer questionId, @RequestBody QuestionRequest questionRequest) {
+        questionService.updateQuestion(classId, questionId, questionRequest);
+        return ResponseDto.of(200, "클래스 문의가 성공적으로 수정되었습니다.");
+    }
+
 }
