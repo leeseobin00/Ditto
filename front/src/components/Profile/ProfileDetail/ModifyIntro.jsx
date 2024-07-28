@@ -27,7 +27,7 @@ const Textarea = styled.textarea`
   }
 `;
 
-function ModifyIntro({ content, onClose }) {
+function ModifyIntro({ curIntro, handleIntro, onClose }) {
   // redux
   const userId = useSelector(state => state.auth.userId);
   // axios
@@ -46,12 +46,15 @@ function ModifyIntro({ content, onClose }) {
       patchIntro(`/profiles/intro?userId=${userId}`, patchData, "patch");
     }
 
+    handleIntro(intro);
     onClose();
   };
 
   useEffect(()=>{
-    setIntro(content);
-  },[content]);
+    if(curIntro){
+      setIntro(curIntro);
+    }
+  },[curIntro]);
 
   return (
     <>

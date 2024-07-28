@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { styled } from "styled-components";
 import { useSelector } from "react-redux";
+
 import useFormDataAxios from "../../../hooks/useFormDataAxios";
 import RoundButton from "../../common/RoundButton";
+import OutlineButton from "../../common/OutlineButton";
+import DefaultProfileImage from "../../../assets/img/profile-user.png";
 
 const ModalTitle = styled.p`
   color: var(--PRIMARY);
@@ -16,7 +19,6 @@ const ProfileImage = styled.img`
   height: 160px;
   border-radius: 50%;
   border: 2px solid orange;
-  margin-bottom: 16px;
 `;
 
 const FileInput = styled.input`
@@ -29,42 +31,57 @@ const FileInputLabel = styled.label`
   cursor: pointer;
 `;
 
-function ModifyProfileImage({ onClose }) {
+const ButtonsWrapper = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
+function ModifyProfileImage({ curProfileImageURL, handleProfileImageURL, onClose }) {
   // redux
   const userId = useSelector((state) => state.auth.userId);
   // axios
   const { sendRequest: patchImage } = useFormDataAxios();
+  const { sendRequest: deleteImage } = useFormDataAxios(); 
 
-  const [profileImage, setProfileImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("path/to/default/image.png");
+  const [image, setImage] = useState(curProfileImageURL);
+  const [imagePreview, setImagePreview] = useState(image);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(file);
+      setImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async () => {
-    if (userId && profileImage) {
+    if (userId && image !== null) {
       const formData = new FormData();
       formData.append("userId", userId);
-      formData.append("file", profileImage); // Base64 데이터에서 불필요한 부분 제거
+      formData.append("file", image);
 
-      try {
-        await patchImage(`/profiles/image`, formData, "patch");
-        onClose();
-      } catch (error) {
-        console.error("Error updating profile image:", error);
-      }
+      await patchImage(`/profiles/image`, formData, "patch");
+      handleProfileImageURL(URL.createObjectURL(image));
+      onClose();
     }
   };
+
+  const handleDelete = async() => {
+    const formData = new FormData();
+    formData.append("userId", userId);
+    formData.append("file", image);
+
+    await deleteImage(`/profiles/image`, formData, "delete");
+    setImage(null);
+    setImagePreview(null);
+    handleProfileImageURL(null);
+    onClose();
+  }
 
   return (
     <>
       <ModalTitle>프로필 이미지</ModalTitle>
-      <ProfileImage src={imagePreview} alt="Profile" />
+      <ProfileImage src={imagePreview || DefaultProfileImage} alt="Profile Image" />
       <FileInputLabel htmlFor="file-upload">파일 선택</FileInputLabel>
       <FileInput
         id="file-upload"
@@ -72,7 +89,10 @@ function ModifyProfileImage({ onClose }) {
         accept="image/*"
         onChange={handleImageChange}
       />
-      <RoundButton label="수정" onClick={handleSubmit} />
+      <ButtonsWrapper>
+        <RoundButton label="수정" onClick={handleSubmit} />
+        <OutlineButton label="삭제" color="default" onClick={handleDelete} />
+      </ButtonsWrapper>
     </>
   );
 }
