@@ -1,9 +1,12 @@
 package com.ssafy.ditto.domain.review.controller;
 
+import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
 import com.ssafy.ditto.domain.review.dto.ReviewRequest;
 import com.ssafy.ditto.domain.review.service.ReviewService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,5 +31,14 @@ public class ReviewController {
     public ResponseDto<Void> deleteReview(@PathVariable Integer classId, @PathVariable Integer reviewId) {
         reviewService.deleteReview(classId, reviewId);
         return ResponseDto.of(204, "리뷰 삭제가 성공적으로 완료되었습니다.");
+    }
+
+    @GetMapping
+    public ResponseDto<Page<ReviewDetailResponse>> getClassReviews(@PathVariable Integer classId,
+                                                                   @RequestParam int page,
+                                                                   @RequestParam int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<ReviewDetailResponse> reviews = reviewService.getClassReviews(classId, pageRequest);
+        return ResponseDto.of(200, "리뷰 조회가 성공적으로 완료되었습니다.", reviews);
     }
 }
