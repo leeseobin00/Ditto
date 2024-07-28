@@ -24,4 +24,9 @@ public class QuestionController {
         return ResponseDto.of(200, "클래스 문의가 성공적으로 수정되었습니다.");
     }
 
+    @DeleteMapping("/{questionId}")
+    public ResponseDto<Void> deleteQuestion(@PathVariable Integer classId, @PathVariable Integer questionId) {
+        questionService.deleteQuestion(classId, questionId);
+        return ResponseDto.of(200, "클래스 문의가 성공적으로 삭제되었습니다.");
+    }
 }
