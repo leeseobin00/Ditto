@@ -6,6 +6,7 @@ import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
+import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
 import com.ssafy.ditto.domain.review.dto.ReviewRequest;
 import com.ssafy.ditto.domain.review.exception.ReviewNotFoundException;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
@@ -14,6 +15,8 @@ import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,7 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = Review.builder()
                 .reviewContent(reviewRequest.getReviewContent())
                 .rating(reviewRequest.getRating())
-                .userId(user)
+                .user(user)
                 .classId(dClass)
                 .lectureId(lecture)
                 .isDeleted(false)
@@ -69,5 +72,19 @@ public class ReviewServiceImpl implements ReviewService {
         review.setIsDeleted(true);
         dClass.setRatingSum(dClass.getRatingSum() - review.getRating());
         dClass.setReviewCount(dClass.getReviewCount() - 1);
+    }
+
+    @Override
+    @Transactional
+    public Page<ReviewDetailResponse> getClassReviews(int classId, Pageable pageable) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+
+        return reviewRepository.findByClassId(dClass, pageable).map(review -> {
+            User user = userRepository.findById(review.getUser().getUserId())
+                    .orElseThrow(UserNotFoundException::new);
+            User teacher = userRepository.findById(dClass.getUserId().getUserId())
+                    .orElseThrow(UserNotFoundException::new);
+            return ReviewDetailResponse.of(review, user, teacher);
+        });
     }
 }
