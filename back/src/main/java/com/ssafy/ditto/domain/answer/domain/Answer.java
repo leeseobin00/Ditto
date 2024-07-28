@@ -26,17 +26,17 @@ public class Answer extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private Question questionId;
+    private Question question;
 
-    public void changeAnswer(String newAnswer){
+    public void changeAnswer(String newAnswer) {
         this.answer = newAnswer;
     }
 
-    public void changeIsDeleted(Boolean newBoolean){
+    public void changeIsDeleted(Boolean newBoolean) {
         this.isDeleted = newBoolean;
     }
 }
