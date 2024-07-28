@@ -88,6 +88,25 @@ function ProfileSearchPage() {
   const [tagId, setTagId] = useState(0);
   const [keyword, setKeyword] = useState("");
 
+  const [profiles, setProfiles] = useState([]);
+  const [teacherProfiles, setTeacherProfiles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [currentTeacherPage, setCurrentTeacherPage] = useState(1);
+  const [teacherTotalPage, setTeacherTotalPage] = useState(1);
+
+  const [isReset, setIsReset] = useState(false);
+
+  const resetResult = () => {
+    setProfiles([]);
+    setTeacherProfiles([]);
+    setCurrentPage(1);
+    setTotalPage(1);
+    setCurrentTeacherPage(1);
+    setTeacherTotalPage(1);
+    setIsReset(true);
+  }
+
   const handleCategory = (event) => {
     setCategoryId(event.target.value);
     setTagId(0);
@@ -109,19 +128,24 @@ function ProfileSearchPage() {
     setTags(getTagsForCategory(categoryId));
   }, [categoryId]);
 
-  const [profiles, setProfiles] = useState([]);
-  const [teacherProfiles, setTeacherProfiles] = useState([]);
+  useEffect(() => {
+    if (isReset) {
+      handleGetProfile();
+      handleGetTeacherProfile();
+      setIsReset(false); 
+    }
+  }, [isReset]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(1);
-  const [currentTeacherPage, setCurrentTeacherPage] = useState(1);
-  const [teacherTotalPage, setTeacherTotalPage] = useState(1);
+  const handleSearch = () => {
+    resetResult();
+  };
+
 
   const handleGetTeacherProfile = async () => {
     if (currentTeacherPage <= teacherTotalPage) {
       const params = {
-        page: 1,
-        size: currentTeacherPage*1,
+        page: currentTeacherPage,
+        size: 1,
         ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
         ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
         role: 2,
@@ -132,18 +156,19 @@ function ProfileSearchPage() {
       const url = `/profiles?${searchParams}`;
 
       const result = await getProfile(url, null, "get");
-      if (result) {
-        setTeacherProfiles(result?.data?.profiles);
-        setTeacherTotalPage(result?.data?.totalPageCount);
-      }
+      setTeacherProfiles((prev) => [
+        ...prev,
+        ...result?.data?.profiles
+      ]);
+      setTeacherTotalPage(result?.data?.totalPageCount);
     }
   };
 
   const handleGetProfile = async () => {
     if (currentPage <= totalPage) {
       const params = {
-        page: 1,
-        size: currentPage*1,
+        page: currentPage,
+        size: 1,
         ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
         ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
         role: 1,
@@ -154,10 +179,11 @@ function ProfileSearchPage() {
       const url = `/profiles?${searchParams}`;
 
       const result = await getProfile(url, null, "get");
-      if (result) {
-        setProfiles(result?.data?.profiles);
-        setTotalPage(result?.data?.totalPageCount);
-      }
+      setProfiles((prev) => [
+        ...prev,
+        ...result?.data?.profiles
+      ]);
+      setTotalPage(result?.data?.totalPageCount);
     }
   };
 
@@ -168,15 +194,6 @@ function ProfileSearchPage() {
   const handlePage = () => {
     setCurrentPage((prev) => prev+1);
   }
-
-  const handleSearch = () => {
-    setProfiles([]);
-    setTeacherProfiles([]);
-    setCurrentPage(1);
-    setCurrentTeacherPage(1);
-    handleGetProfile();
-    handleGetTeacherProfile();
-  };
 
   useEffect(() => {
     handleGetProfile();
@@ -224,7 +241,11 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueTeacherProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile userName={profile.nickname} profileId={profile.userId} />
+              <Profile 
+                profileImageURL={"/"+profile?.fileUrl.substring(profile?.fileUrl.indexOf("src"))}
+                userName={profile?.nickname} 
+                profileId={profile?.userId} 
+              />
           </Link>
           ))}
         </Profiles>
@@ -234,7 +255,10 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile userName={profile.nickname} profileId={profile.userId} />
+              <Profile 
+                profileImageURL={"/"+profile?.fileUrl.substring(profile?.fileUrl.indexOf("src"))}
+                userName={profile?.nickname} 
+                profileId={profile?.userId} />
             </Link>
           ))}
         </Profiles>
