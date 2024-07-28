@@ -32,7 +32,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MypageServiceImpl implements MypageService{
+public class MypageServiceImpl implements MypageService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
@@ -90,10 +90,10 @@ public class MypageServiceImpl implements MypageService{
     public void insertAddress(int userId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어온 경우
-        if (addressRequest.getIsDefault()){
+        if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
             Address address = addressRepository.findByUserIdAndIsDefault(user, true);
-            if (!(address == null)){
+            if (!(address == null)) {
                 address.changeDefault(false);
             }
         }
@@ -117,10 +117,10 @@ public class MypageServiceImpl implements MypageService{
     public void modifyAddress(int userId, int addressId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어오면
-        if (addressRequest.getIsDefault()){
+        if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
             Address address = addressRepository.findByUserIdAndIsDefault(user, true);
-            if (!(address == null)){
+            if (!(address == null)) {
                 address.changeDefault(false);
             }
         }
@@ -157,7 +157,7 @@ public class MypageServiceImpl implements MypageService{
 
         User user = userRepository.findByUserId(userId);
 
-        for (Payment payment : payments){
+        for (Payment payment : payments) {
             PaymentResponse paymentResponse = PaymentResponse.builder()
                     .paymentId(payment.getPaymentId())
                     .payTime(payment.getPayTime())
@@ -202,7 +202,7 @@ public class MypageServiceImpl implements MypageService{
     public List<SummaryResponse> getSummary(int lectureId) {
         List<SummaryResponse> summaryResponseList = new ArrayList<>();
         List<Summary> summaries = summaryRepository.findAllByLectureId(lectureRepository.findByLectureId(lectureId));
-        for(Summary summary : summaries){
+        for (Summary summary : summaries) {
             SummaryResponse newSummaryResponse = SummaryResponse.builder()
                     .summaryId(summary.getSummaryId())
                     .stepId(summary.getStepId().getStepId())
@@ -223,7 +223,7 @@ public class MypageServiceImpl implements MypageService{
         List<Question> questions = questionRepository.getQuestionsUser(userId, dateTime);
 
         // 가져온 문의 목록과 대조해서 DTO 생성 후 return
-        for (Question question : questions){
+        for (Question question : questions) {
 
             QuestionResponse questionResponse = QuestionResponse.builder()
                     .questionId(question.getQuestionId())
@@ -233,16 +233,16 @@ public class MypageServiceImpl implements MypageService{
                     .modifiedDate(question.getModifiedDate())
                     .isDeleted(question.getIsDeleted())
                     .isAnswered(question.getIsAnswered())
-                    .fileId(question.getClassId().getFileId().getFileId())
-                    .fileUrl(question.getClassId().getFileId().getFileUrl())
-                    .lectureId(question.getLectureId().getLectureId())
-                    .classId(question.getClassId().getClassId())
-                    .className(question.getLectureId().getClassName())
-                    .year(question.getLectureId().getYear())
-                    .month(question.getLectureId().getMonth())
-                    .day(question.getLectureId().getDay())
-                    .hour(question.getLectureId().getHour())
-                    .minute(question.getLectureId().getMinute())
+                    .fileId(question.getDclass().getFileId().getFileId())
+                    .fileUrl(question.getDclass().getFileId().getFileUrl())
+                    .lectureId(question.getLecture().getLectureId())
+                    .classId(question.getDclass().getClassId())
+                    .className(question.getLecture().getClassName())
+                    .year(question.getLecture().getYear())
+                    .month(question.getLecture().getMonth())
+                    .day(question.getLecture().getDay())
+                    .hour(question.getLecture().getHour())
+                    .minute(question.getLecture().getMinute())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -259,7 +259,7 @@ public class MypageServiceImpl implements MypageService{
         List<Review> reviews = reviewRepository.getReviews(userId, dateTime);
 
         // 가지고온 리뷰 목록과 대조해서 DTO 생성 후 return
-        for (Review review : reviews){
+        for (Review review : reviews) {
 
             ReviewResponse reviewResponse = ReviewResponse.builder()
                     .reviewId(review.getReviewId())
@@ -293,7 +293,7 @@ public class MypageServiceImpl implements MypageService{
         // 일단 좋아요 한 클래스 Id를 3개 가져옴
         List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
 
-        for (DClass dClass : likeclasses){
+        for (DClass dClass : likeclasses) {
             Optional<LikeClass> likeClass = likeClassRepository.findByUserIdAndClassId(userRepository.findByUserId(userId), dClass);
 
             LikeClassResponse likeClassResponse = LikeClassResponse.builder()
@@ -336,7 +336,7 @@ public class MypageServiceImpl implements MypageService{
         // 일단 내가 좋아요한 유저를 시간순서로 4명 가져옴
         List<User> users = likeUserRepository.getLikeUser(userId, dateTime);
 
-        for (User getterUser : users){
+        for (User getterUser : users) {
             LikeUser likeUser = likeUserRepository.findByLikeGiverAndLikeGetter(giverUser, getterUser);
 
             //getter 유저를 토대로 UserTag랑 Tag를 조인해서 반환
@@ -412,7 +412,7 @@ public class MypageServiceImpl implements MypageService{
         List<MileageHistory> mileageHistories = mileageHistoryRepository.getMileageHistoryList(userId, dateTime);
 
         // 가져온 정산내역 목록으로 DTO 생성 후 return
-        for (MileageHistory mileageHistory : mileageHistories){
+        for (MileageHistory mileageHistory : mileageHistories) {
 
             MilageHistoryResponse milageHistoryResponse = MilageHistoryResponse.builder()
                     .historyId(mileageHistory.getHistoryId())
@@ -455,7 +455,7 @@ public class MypageServiceImpl implements MypageService{
         List<Question> questions = questionRepository.getQuestionsPro(userId, dateTime);
 
         // 가져온 문의 목록과 대조해서 DTO 생성 후 return
-        for (Question question : questions){
+        for (Question question : questions) {
 
             QuestionResponse questionResponse = QuestionResponse.builder()
                     .questionId(question.getQuestionId())
@@ -465,18 +465,18 @@ public class MypageServiceImpl implements MypageService{
                     .modifiedDate(question.getModifiedDate())
                     .isDeleted(question.getIsDeleted())
                     .isAnswered(question.getIsAnswered())
-                    .userId(question.getUserId().getUserId())
-                    .nickname(question.getUserId().getNickname())
-                    .fileId(question.getClassId().getFileId().getFileId())
-                    .fileUrl(question.getClassId().getFileId().getFileUrl())
-                    .lectureId(question.getLectureId().getLectureId())
-                    .classId(question.getClassId().getClassId())
-                    .className(question.getLectureId().getClassName())
-                    .year(question.getLectureId().getYear())
-                    .month(question.getLectureId().getMonth())
-                    .day(question.getLectureId().getDay())
-                    .hour(question.getLectureId().getHour())
-                    .minute(question.getLectureId().getMinute())
+                    .userId(question.getUser().getUserId())
+                    .nickname(question.getUser().getNickname())
+                    .fileId(question.getDclass().getFileId().getFileId())
+                    .fileUrl(question.getDclass().getFileId().getFileUrl())
+                    .lectureId(question.getLecture().getLectureId())
+                    .classId(question.getDclass().getClassId())
+                    .className(question.getLecture().getClassName())
+                    .year(question.getLecture().getYear())
+                    .month(question.getLecture().getMonth())
+                    .day(question.getLecture().getDay())
+                    .hour(question.getLecture().getHour())
+                    .minute(question.getLecture().getMinute())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -488,7 +488,7 @@ public class MypageServiceImpl implements MypageService{
 
     @Override
     public AnswerResponse getAnswer(int userId, int questionId) {
-        Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId));
+        Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId).getQuestionId());
 
         return AnswerResponse.builder()
                 .answerId(answer.getAnswerId())
@@ -496,7 +496,7 @@ public class MypageServiceImpl implements MypageService{
                 .createdDate(answer.getCreatedDate())
                 .modifiedDate(answer.getModifiedDate())
                 .isDeleted(answer.getIsDeleted())
-                .nickname(answer.getUserId().getNickname())
+                .nickname(answer.getUser().getNickname())
                 .build();
     }
 
@@ -508,8 +508,8 @@ public class MypageServiceImpl implements MypageService{
         Answer answer = Answer.builder()
                 .answer(ans)
                 .isDeleted(false)
-                .userId(userRepository.findByUserId(userId))
-                .questionId(question)
+                .user(userRepository.findByUserId(userId))
+                .question(question)
                 .build();
 
         answerRepository.save(answer);
