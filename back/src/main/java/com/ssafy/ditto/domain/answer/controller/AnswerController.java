@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/answers")
 @RequiredArgsConstructor
-@Tag(name = "태그")
+@Tag(name = "Answer")
 public class AnswerController {
 }
