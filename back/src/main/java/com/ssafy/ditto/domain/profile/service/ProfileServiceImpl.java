@@ -1,7 +1,11 @@
 package com.ssafy.ditto.domain.profile.service;
 
+import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
+import com.ssafy.ditto.domain.classes.dto.ClassResponse;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.exception.FileException;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.file.service.FileService;
@@ -12,14 +16,21 @@ import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
 import com.ssafy.ditto.domain.profile.repository.LikeUserRepository;
 import com.ssafy.ditto.domain.profile.repository.ProfileRepository;
+import com.ssafy.ditto.domain.review.domain.Review;
+import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
+import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.domain.UserTag;
+import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import com.ssafy.ditto.global.error.ServiceException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -204,6 +215,72 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId)
                 .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
         return postService.userPost(userId, map);
+    }
+
+    @Override
+    public ClassListResponse userClass(int userId) {
+        List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
+            Join<Object, Object> learningJoin = root.join("learningList", JoinType.INNER);
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(learningJoin.get("studentId"), userId));
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        });
+
+        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
+            TagResponse tagResponse = TagResponse.builder()
+                    .tagId(dClass.getTagId().getTagId())
+                    .tagName(dClass.getTagId().getTagName())
+                    .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                    .build();
+            return ClassResponse.builder()
+                    .classId(dClass.getClassId())
+                    .className(dClass.getClassName())
+                    .classPrice(dClass.getClassPrice())
+                    .classHour(dClass.getClassHour())
+                    .classMinute(dClass.getClassMinute())
+                    .classExplanation(dClass.getClassExplanation())
+                    .classMin(dClass.getClassMin())
+                    .classMax(dClass.getClassMax())
+                    .studentSum(dClass.getStudentSum())
+                    .createdDate(dClass.getCreatedDate())
+                    .modifiedDate(dClass.getModifiedDate())
+                    .isDeleted(dClass.getIsDeleted())
+                    .likeCount(dClass.getLikeCount())
+                    .reviewCount(dClass.getReviewCount())
+                    .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
+                    .userNickname(dClass.getUserId().getNickname())
+                    .file(dClass.getFileId() != null ? FileResponse.builder()
+                            .fileId(dClass.getFileId().getFileId())
+                            .uploadFileName(dClass.getFileId().getUploadFileName())
+                            .fileUrl(dClass.getFileId().getFileUrl())
+                            .build() : null)
+                    .user(UserResponse.of(dClass.getUserId()))
+                    .tag(tagResponse)
+                    .build();
+        }).collect(Collectors.toList());
+
+        return ClassListResponse.builder()
+                .classList(classResponses)
+                .build();
+    }
+
+    @Override
+    public Page<ReviewDetailResponse> userReview(int userId, PageRequest pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Order.desc("createdDate")));
+
+        Page<Review> reviewPage = reviewRepository.findAll((root, query, criteriaBuilder) -> {
+            Join<Review, DClass> classJoin = root.join("classId");
+            return criteriaBuilder.equal(classJoin.get("userId"), userId);
+        }, pageable);
+
+        List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {
+            User reviewer = review.getUser();
+            User teacher = review.getClassId().getUserId();
+
+            return ReviewDetailResponse.of(review, reviewer, teacher);
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(reviewResponses, pageable, reviewPage.getTotalElements());
     }
 
     @Override
