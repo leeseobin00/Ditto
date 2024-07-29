@@ -70,18 +70,21 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}/class")
-    public ResponseDto<ClassListResponse> getUserClass(@PathVariable("userId") int userId){
-        ClassListResponse classList = profileService.userClass(userId);
+    public ResponseDto<ClassListResponse> getUserClass(@PathVariable("userId") int userId,
+                                                       @RequestParam int page,
+                                                       @RequestParam int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ClassListResponse classList = profileService.userClass(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),classList);
     }
 
     @GetMapping("/{userId}/review")
-    public ResponseDto<List<Review>> getUserReview(@PathVariable("userId") int userId,
-                                                   @RequestParam int page,
-                                                   @RequestParam int size) {
+    public ResponseDto<Page<ReviewDetailResponse>> getUserReview(@PathVariable("userId") int userId,
+                                                                 @RequestParam int page,
+                                                                 @RequestParam int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<ReviewDetailResponse> reviewList = profileService.userReview(userId, pageRequest);
-        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),null);
+        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),reviewList);
     }
 
     @GetMapping("/{userId}/like")
