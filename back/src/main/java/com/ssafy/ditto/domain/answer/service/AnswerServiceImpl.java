@@ -2,10 +2,11 @@ package com.ssafy.ditto.domain.answer.service;
 
 import com.ssafy.ditto.domain.answer.domain.Answer;
 import com.ssafy.ditto.domain.answer.dto.AnswerRequest;
+import com.ssafy.ditto.domain.answer.dto.AnswerResponse;
+import com.ssafy.ditto.domain.answer.exception.AnswerNotFoundException;
 import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.exception.QuestionNotFoundException;
-import com.ssafy.ditto.domain.answer.exception.AnswerNotFoundException;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
@@ -54,5 +55,13 @@ public class AnswerServiceImpl implements AnswerService {
         Answer answer = answerRepository.findById(answerId).orElseThrow(AnswerNotFoundException::new);
         answer.setIsDeleted(true);
         answerRepository.save(answer);
+    }
+
+    @Override
+    @Transactional
+    public AnswerResponse getAnswer(Integer questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        Answer answer = answerRepository.findByQuestion(question).orElseThrow(AnswerNotFoundException::new);
+        return AnswerResponse.of(answer);
     }
 }
