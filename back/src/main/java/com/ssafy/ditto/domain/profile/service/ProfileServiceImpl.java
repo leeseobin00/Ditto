@@ -1,9 +1,11 @@
 package com.ssafy.ditto.domain.profile.service;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.domain.Learning;
 import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
 import com.ssafy.ditto.domain.classes.dto.ClassResponse;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
+import com.ssafy.ditto.domain.classes.repository.LearningRepository;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.exception.FileException;
@@ -58,6 +60,7 @@ public class ProfileServiceImpl implements ProfileService {
     public final PostRepository postRepository;
     public final TagRepository tagRepository;
     public final UserTagRepository userTagRepository;
+    public final LearningRepository learningRepository;
     public final ClassRepository classRepository;
     public final ReviewRepository reviewRepository;
     public final FileService fileService;
@@ -218,13 +221,17 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ClassListResponse userClass(int userId) {
-        List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
-            Join<Object, Object> learningJoin = root.join("learningList", JoinType.INNER);
-            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(learningJoin.get("studentId"), userId));
-            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
-        });
+    public ClassListResponse userClass(int userId, PageRequest pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
+
+        // Learning 엔티티를 통해 DClass를 조회
+        Page<Learning> learningPage = learningRepository.findAll((root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get("studentId").get("userId"), userId);
+        }, pageable);
+
+        List<DClass> classList = learningPage.getContent().stream()
+                .map(Learning::getClassId)
+                .toList();
 
         List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
@@ -264,13 +271,14 @@ public class ProfileServiceImpl implements ProfileService {
                 .build();
     }
 
+
     @Override
     public Page<ReviewDetailResponse> userReview(int userId, PageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Order.desc("createdDate")));
 
         Page<Review> reviewPage = reviewRepository.findAll((root, query, criteriaBuilder) -> {
             Join<Review, DClass> classJoin = root.join("classId");
-            return criteriaBuilder.equal(classJoin.get("userId"), userId);
+            return criteriaBuilder.equal(classJoin.get("userId").get("userId"), userId);
         }, pageable);
 
         List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {

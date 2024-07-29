@@ -25,7 +25,7 @@ public interface ProfileService {
     String modifyTag(int userId, Map<String, String> map);
 
     PostList userPost(int userId, Map<String,String> map);
-    ClassListResponse userClass(int userId);
+    ClassListResponse userClass(int userId, PageRequest pageRequest);
     Page<ReviewDetailResponse> userReview(int userId, PageRequest pageRequest);
 
     String addLike(int likeGetterId, int likeGiverId);
