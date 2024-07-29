@@ -10,6 +10,7 @@ const authSlice = createSlice({
     userId: localStorage.getItem("userId") || null,
     nickname: localStorage.getItem("nickname") || null,
     email: localStorage.getItem("email") || null,
+    roleId: localStorage.getItem("roleId") || null,
   },
   reducers: {
     login: (state, action) => {
@@ -37,6 +38,7 @@ const authSlice = createSlice({
       localStorage.removeItem("nickname");
       localStorage.removeItem("email");
       Cookies.remove("refreshToken");
+      localStorage.removeItem("roleId");
     },
     refresh: (state, action) => {
       state.accessToken = action.payload;
@@ -52,6 +54,7 @@ const authSlice = createSlice({
       localStorage.removeItem("userId");
       localStorage.removeItem("nickname");
       localStorage.removeItem("email");
+      localStorage.removeItem("roleId");
     },
   },
 });

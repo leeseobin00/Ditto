@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import KakaoLogin from '../login/KaKaoLogin';
+
+import useAxios from "../../../hooks/useAxios";
 import { useNavigate } from 'react-router-dom';
 import { MdClose } from "react-icons/md"; // 아이콘 import
 import ProSignupForm from "../signup/ProSignupForm";
@@ -282,13 +284,16 @@ const Modal = ({ onClose, children }) => {
 };
 
 const SignupForm = () => {
+  const {sendRequest} = useAxios();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     verificationCode: '',
     password: '',
     confirmPassword: '',
     nickname: '',
-    role: 1, // 1 관리자, 2 일반, 3 강사
+    role: 1, // 1: 사용자, 2: 강사, 3: 운영자
     agreeTOS: false,
     agreePICU: false,
   });
@@ -303,7 +308,6 @@ const SignupForm = () => {
   const [termsContent, setTermsContent] = useState('');
   const [privacyContent, setPrivacyContent] = useState('');
   const [isInstructorStep, setIsInstructorStep] = useState(false); // 강사 추가 정보 입력 단계 여부
-  const navigate = useNavigate();
 
   useEffect(() => {
     setIsPasswordMatchState(isPasswordMatch(formData.password, formData.confirmPassword));
@@ -325,6 +329,41 @@ const SignupForm = () => {
     setFormData({ ...formData, role });
   };
 
+  const handleNicknameChange = async (event) => {
+    const name = event.target.value;
+    setFormData({
+      ...formData,
+      nickname: name,
+    });
+    
+    if (name.length > 10 || name.length < 2) {
+      setIsNicknameAvailable(false);
+      setNicknameMessage("닉네임은 2자 이상 10자 이하여야 합니다.")
+      return;
+    }
+    if (name.trim() === '') {
+      setIsNicknameAvailable(false);
+      setNicknameMessage("공백은 닉네임으로 사용할 수 없습니다.");
+      return;
+    }
+    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
+    if (specialCharPattern.test(name)) {
+      setIsNicknameAvailable(false);
+      setNicknameMessage("닉네임에 특수문자를 포함할 수 없습니다.");
+      return;
+    }
+    
+    //이메일 중복 확인 검사
+    const result = await sendRequest(`/users/signup/nickname/${name}`, null, "get");
+    if(result.code===201){
+      setIsNicknameAvailable(true);
+      setNicknameMessage(result?.message);
+    }else{
+      setIsNicknameAvailable(false);
+      setNicknameMessage(result?.message);
+    }
+  };
+
   const handleEmailVerification = async () => {
     try {
       await axios.post('http://localhost:8080/users/signup/email', { email: formData.email });
@@ -337,42 +376,25 @@ const SignupForm = () => {
   };
 
   const handleVerifyCode = async () => {
-    try {
-      const response = await axios.post('http://localhost:8080/users/signup/auth', {
-        code: formData.verificationCode,
-        email: formData.email,
-      });
-      if (response.status === 200) {
+    const postData = {
+      "code": formData.verificationCode,
+      "email": formData.email,
+    }
+    try{
+      const result = await sendRequest("/users/signup/auth",postData, "post");
+      if(result.code===201){
         setIsVerified(true);
-        alert("인증 성공!");
-      } else if (response.status === 409) {
-        alert("인증 코드가 일치하지 않습니다.");
+        alert(result?.message);
+      }else{
+        setIsVerified(false);
+        alert(result?.message);
       }
-    } catch (error) {
-      console.error("인증 코드 확인 에러:", error);
+    }catch(error){
+      setIsNicknameAvailable(false);
       alert("인증 코드 확인 중 오류가 발생했습니다.");
     }
   };
 
-  const handleNicknameChange = async (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    if (value) {
-      try {
-        const isAvailable = await checkNicknameAvailability(value);
-        setIsNicknameAvailable(isAvailable);
-        setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
-      } catch (error) {
-        console.error(error.message);
-        setIsNicknameAvailable(false);
-        setNicknameMessage(error.message);
-      }
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -425,7 +447,7 @@ const SignupForm = () => {
   const openTermsModal = async () => {
     try {
       const response = await axios.get('http://localhost:8080/users/signup/0');
-      setTermsContent(response.data.agree);
+      setTermsContent(response?.data?.data);
       setIsTermsModalOpen(true);
     } catch (error) {
       console.error("이용약관 불러오기 에러:", error);
@@ -440,7 +462,7 @@ const SignupForm = () => {
   const openPrivacyModal = async () => {
     try {
       const response = await axios.get('http://localhost:8080/users/signup/1');
-      setPrivacyContent(response.data.agree);
+      setPrivacyContent(response?.data?.data);
       setIsPrivacyModalOpen(true);
     } catch (error) {
       console.error("개인정보 처리방침 불러오기 에러:", error);
@@ -475,15 +497,15 @@ const SignupForm = () => {
           <RoleToggle>
             <RoleButton
               type="button"
-              $active={formData.role === 2 ? 'true' : 'false'}
-              onClick={() => handleRoleChange(2)}
+              $active={formData.role === 1 ? 'true' : 'false'}
+              onClick={() => handleRoleChange(1)}
             >
               일반
             </RoleButton>
             <RoleButton
               type="button"
-              $active={formData.role === 3 ? 'true' : 'false'}
-              onClick={() => handleRoleChange(3)}
+              $active={formData.role === 2 ? 'true' : 'false'}
+              onClick={() => handleRoleChange(2)}
             >
               강사
             </RoleButton>

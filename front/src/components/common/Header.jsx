@@ -1,14 +1,11 @@
 // src/components/common/Header.js
 import { useState } from "react";
 import { styled } from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { BsCameraVideo, BsBell } from "react-icons/bs";
-import { IoIosLogOut } from "react-icons/io";
-import { SlLogout } from "react-icons/sl";
-import { BiVideo, BiBell, BiLogOut } from "react-icons/bi";
+import { BiVideo, BiBell, BiLogOut, BiMenu } from "react-icons/bi";
 
 import useAxios from "../../hooks/useAxios";
 
@@ -34,10 +31,23 @@ const Logo = styled.div`
 `;
 
 const Icons = styled.div`
+  min-width: 240px;
   display: flex;
   flex-direction: center;
   align-items: center;
   gap: 16px;
+`;
+
+const CustomMenuIcon = styled(BiMenu)`  
+  display: flex;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--PRIMARY);
+  }
 `;
 
 const CustomVideoIcon = styled(BiVideo)`
@@ -177,7 +187,8 @@ const Header = () => {
   const nickname = useSelector(state => state.auth.nickname);  // 추가된 부분
   const userId = useSelector(state => state.auth.userId);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  
   const handleOverlayClick = () => {
     setMenuOpen(false);
   };
@@ -196,7 +207,7 @@ const Header = () => {
     <HeaderContainer>
       <Overlay open={menuOpen} onClick={handleOverlayClick} />
       <TopSection>
-        <MenuButton onClick={() => setMenuOpen(!menuOpen)}>메뉴</MenuButton>
+        <MenuButton onClick={() => setMenuOpen(!menuOpen)}><CustomMenuIcon /></MenuButton>
         <MobileDropdownMenu open={menuOpen}>
           <DropdownItem to="/">홈</DropdownItem>
           <DropdownItem to="/classes">카테고리</DropdownItem>
@@ -205,12 +216,12 @@ const Header = () => {
           <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           <DropdownItem to="/profile/my">로그아웃</DropdownItem>
         </MobileDropdownMenu>
-        <Logo>MyLogo</Logo>
+        <Link to="/"><Logo>Ditto</Logo></Link>
         <Icons>
           <CustomVideoIcon />
           <CustomBellIcon />
           {isAuthenticated ? (
-            <Link to="/mypage">
+            <Link to="/mypage/userinfo">
               <Icon>MyPage</Icon>
             </Link>
           ) : (

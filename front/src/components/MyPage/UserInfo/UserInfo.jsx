@@ -156,16 +156,16 @@ const UserInfo = ({ userData }) => {
     }
 
     try {
-      // const response = await axiosIntercepter.patch(`/mypage/${userId}`, {
-      //   password: formData.password,
-      //   nickname: formData.nickname,
-      // });
+      const response = await axiosIntercepter.patch(`/mypage/${userId}`, {
+        password: formData.password,
+        nickname: formData.nickname,
+      });
 
-      // if (response.status === 200) {
-      //   console.log('수정 성공:', formData);
-      // } else {
-      //   setError('수정 실패. 다시 시도해주세요.');
-      // }
+      if (response.status === 200) {
+        console.log('수정 성공:', formData);
+      } else {
+        setError('수정 실패. 다시 시도해주세요.');
+      }
       alert('수정 성공:', formData);
     } catch (error) {
       if (error.response && error.response.status === 409) {

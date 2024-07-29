@@ -45,8 +45,8 @@ const UserInfoDetail = () => {
       <PageContainer>
         <Title>계정 정보</Title>
         <UserInfo userData={userData} />
-        <Title>배송지 목록</Title>
-        <AddressList addresses={addresses} />
+        {/* <Title>배송지 목록</Title>
+        <AddressList addresses={addresses} /> */}
       </PageContainer>
     </>
   );
