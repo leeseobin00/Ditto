@@ -23,6 +23,9 @@ import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -202,17 +205,22 @@ public class ClassServiceImpl implements ClassService {
         Pageable pageable = PageRequest.of(request.getPage(), 10, sort);
 
         List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
-            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            List<Predicate> predicates = new ArrayList<>();
             if (request.getCategoryId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("categoryId"), request.getCategoryId()));
+                predicates.add(criteriaBuilder.equal(root.get("categoryId").get("categoryId"), request.getCategoryId()));
             }
             if (request.getTagId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("tagId"), request.getTagId()));
+                predicates.add(criteriaBuilder.equal(root.get("tagId").get("tagId"), request.getTagId()));
             }
             if (request.getSearchBy() != null && request.getKeyword() != null) {
-                predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
+                if (request.getSearchBy().equals("nickname")) {
+                    Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
+                    predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
+                } else {
+                    predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
+                }
             }
-            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable).getContent();
 
         List<ClassResponse> classResponses = classList.stream().map(dClass -> {
