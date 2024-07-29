@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.post.service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -10,12 +9,14 @@ import com.ssafy.ditto.domain.category.repository.CategoryRepository;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.post.domain.Board;
+import com.ssafy.ditto.domain.post.domain.LikePost;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
 import com.ssafy.ditto.domain.post.dto.PostResponse;
 import com.ssafy.ditto.domain.post.exception.BoardException;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.BoardRepository;
+import com.ssafy.ditto.domain.post.repository.LikePostRepository;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.tag.exception.TagNotFoundException;
@@ -40,6 +41,7 @@ import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
     public final PostRepository postRepository;
+    public final LikePostRepository likePostRepository;
     public final BoardRepository boardRepository;
     public final CategoryRepository categoryRepository;
     public final TagRepository tagRepository;
@@ -51,10 +53,9 @@ public class PostServiceImpl implements PostService {
     public int writePost(PostRequest postReq) {
         Board board = boardRepository.findById(postReq.getBoardId())
                 .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
-        System.out.println(board);
         Category category = categoryRepository.findById(postReq.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
-        Tag tag = tagRepository.findById(postReq.getCategoryId())
+        Tag tag = tagRepository.findById(postReq.getTagId())
                 .orElseThrow(TagNotFoundException::new);
         User user = userRepository.findById(postReq.getUserId())
                 .orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
@@ -196,21 +197,36 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String addLike(int postId, int userId) {
-        postRepository.addLike(postId,userId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+        Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
+        if(likePostList.isEmpty()) {
+            // 좋아요를 추가 및 업데이트
+            postRepository.addLike(postId, userId);
+            int likeCount = postRepository.countLikes(postId);
+            postRepository.likeCountUpdate(postId, likeCount);
+        }
         return postId+"번 게시글 "+userId+"번 유저 좋아요 누름";
     }
 
     @Override
     public String removeLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
-        postRepository.removeLike(postId,userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+        Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
+        if(likePostList.isPresent()) {
+            // 좋아요를 제거 및 업데이트
+            postRepository.removeLike(postId, userId);
+            int likeCount = postRepository.countLikes(postId);
+            postRepository.likeCountUpdate(postId, likeCount);
+        }
         return postId+"번 게시글 "+userId+"번 유저 좋아요 취소";
     }
 
     @Override
     public Boolean checkLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
-        int count = postRepository.checkLike(postId,userId);
-        return count==1;
+        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
+        return likePostRepository.findByUserAndPost(user,post).isPresent();
     }
 }
