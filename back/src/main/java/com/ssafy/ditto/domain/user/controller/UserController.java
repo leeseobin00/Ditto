@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.user.controller;
 
+import com.ssafy.ditto.domain.user.auth.KakaoTokenJsonData;
+import com.ssafy.ditto.domain.user.auth.KakaoUserInfo;
 import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
@@ -18,6 +20,8 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final KakaoTokenJsonData kakaoTokenJsonData;
+    private final KakaoUserInfo kakaoUserInfo;
 
     // signup_001
     @PostMapping("/signup")
@@ -83,4 +87,15 @@ public class UserController {
             return ResponseDto.of(201, "로그인 성공", loginResponse);
         }
     }
+
+    //login_002
+    //카카오 로그인
+    @PostMapping("/sociallogin")
+    public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request){
+        String code = request.get("code");
+        KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
+        KakaoUserInfoResponse userInfo = kakaoUserInfo.getUserInfo(kakaoTokenResponse.getAccess_token());
+        return ResponseDto.of(200, "카카오로그인 성공", loginResponse);
+    }
+
 }
