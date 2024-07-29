@@ -5,7 +5,6 @@ import SidebarNav from '../../components/MyPage/Common/SidebarNav';
 
 const Container = styled.div`
   display: flex;
-  margin: 20px;
 `;
 
 const Content = styled.div`

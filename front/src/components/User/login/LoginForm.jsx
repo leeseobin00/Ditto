@@ -161,6 +161,7 @@ const LoginForm = () => {
         password,
       });
 
+      console.log(response);
       const { accessToken, refreshToken, nickname, roleId } = response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
       const userId = decodedToken.sub;

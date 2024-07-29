@@ -2,7 +2,6 @@ import { styled } from "styled-components";
 import { useSelector } from "react-redux";
 
 const SidebarWrapper = styled.nav`
-  background-color: white;
   width: 240px;
   border-right: 1px solid var(--BORDER_COLOR);
 `;
