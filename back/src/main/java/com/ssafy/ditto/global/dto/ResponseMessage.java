@@ -2,6 +2,7 @@ package com.ssafy.ditto.global.dto;
 
 public enum ResponseMessage {
     // Success messages
+    SUCCESS("Successfully"),
     SUCCESS_WRITE("Successfully created."),
     SUCCESS_UPDATE("Successfully updated."),
     SUCCESS_DELETE("Successfully deleted."),
