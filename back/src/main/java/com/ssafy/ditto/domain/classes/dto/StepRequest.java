@@ -11,5 +11,4 @@ public class StepRequest {
     private Integer stepNo;
     private String stepName;
     private String stepDetail;
-    private String stepFile;
 }
