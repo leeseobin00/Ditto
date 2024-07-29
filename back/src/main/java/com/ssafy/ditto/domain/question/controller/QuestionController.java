@@ -1,10 +1,14 @@
 package com.ssafy.ditto.domain.question.controller;
 
+import com.ssafy.ditto.domain.question.dto.QuestionPageResponse;
 import com.ssafy.ditto.domain.question.dto.QuestionRequest;
 import com.ssafy.ditto.domain.question.service.QuestionService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/classes/{classId}/questions")
@@ -28,5 +32,12 @@ public class QuestionController {
     public ResponseDto<Void> deleteQuestion(@PathVariable Integer classId, @PathVariable Integer questionId) {
         questionService.deleteQuestion(classId, questionId);
         return ResponseDto.of(200, "클래스 문의가 성공적으로 삭제되었습니다.");
+    }
+
+    @GetMapping
+    public ResponseDto<QuestionPageResponse> getClassQuestions(@PathVariable Integer classId, @RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        QuestionPageResponse response = questionService.getClassQuestions(classId, pageable);
+        return ResponseDto.of(200, "클래스 문의 목록 조회가 성공적으로 완료되었습니다.", response);
     }
 }
