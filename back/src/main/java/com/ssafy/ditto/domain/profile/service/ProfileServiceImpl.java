@@ -137,6 +137,7 @@ public class ProfileServiceImpl implements ProfileService {
                 user.getUserId(),
                 user.getRoleId().getRoleId(),
                 user.getNickname(),
+                user.getFileId() != null ? user.getFileId().getFileId() : null,
                 user.getFileId() != null ? user.getFileId().getUploadFileName() : null,
                 user.getFileId() != null ? user.getFileId().getFileUrl() : null,
                 likeCount,
