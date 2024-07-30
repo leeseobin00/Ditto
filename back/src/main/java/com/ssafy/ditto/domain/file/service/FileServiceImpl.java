@@ -3,6 +3,7 @@ package com.ssafy.ditto.domain.file.service;
 import com.ssafy.ditto.domain.file.FileStore;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.domain.FilePost;
+import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.dto.UploadFile;
 import com.ssafy.ditto.domain.file.exception.FileException;
 import com.ssafy.ditto.domain.file.repository.FilePostRepository;
@@ -19,19 +20,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ssafy.ditto.domain.file.exception.FileErrorCode.*;
+import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
 import static com.ssafy.ditto.domain.post.exception.PostErrorCode.POST_NOT_EXIST;
 
 @Component
 @Service
 @RequiredArgsConstructor
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
     private final PostRepository postRepository;
     private final FileRepository fileRepository;
     private final FilePostRepository filePostRepository;
     private final FileStore fileStore;
 
-    // 1장 저장
     public int saveFile(MultipartFile requestFile) throws IOException {
         UploadFile uploadFile = fileStore.storeFile(requestFile);
 
@@ -42,11 +42,9 @@ public class FileServiceImpl implements FileService{
         file.setFileUrl(fileStore.getFullPath(uploadFile.getStoreFileName()));
 
         fileRepository.save(file);
-        return file.getFileId(); // 저장된 fildId return
+        return file.getFileId();
     }
 
-
-    // 게시글 파일 여러장 저장
     public void saveList(int postId, List<MultipartFile> requestFiles) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         List<UploadFile> uploadFiles = fileStore.storeFiles(requestFiles);
@@ -99,5 +97,11 @@ public class FileServiceImpl implements FileService{
             filePostRepository.deleteAll(filePosts);
         }
         fileRepository.deleteAll(files);
+    }
+
+    @Override
+    public FileResponse getFile(int fileId) {
+        File file = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
+        return FileResponse.of(file);
     }
 }

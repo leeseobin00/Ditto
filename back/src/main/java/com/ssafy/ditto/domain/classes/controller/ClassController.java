@@ -112,7 +112,8 @@ public class ClassController {
                                                        @RequestParam(required = false) Integer tagId,
                                                        @RequestParam(required = false) String searchBy,
                                                        @RequestParam(required = false) String keyword,
-                                                       @RequestParam(required = false) String sortBy) {
+                                                       @RequestParam(required = false) String sortBy,
+                                                       @RequestParam(required = false) String userNickname) {
         ClassListRequest request = ClassListRequest.builder()
                 .page(page)
                 .categoryId(categoryId)
@@ -124,6 +125,7 @@ public class ClassController {
         ClassListResponse classListResponse = classService.getClassList(request);
         return ResponseDto.of(200, "클래스 목록 조회가 성공적으로 완료되었습니다.", classListResponse);
     }
+
 
     @GetMapping("/weeklybest")
     public ResponseDto<List<ClassResponse>> getPopularClasses() {

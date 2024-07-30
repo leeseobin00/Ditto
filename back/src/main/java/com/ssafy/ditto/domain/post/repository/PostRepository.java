@@ -65,6 +65,14 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     @Query(value = "DELETE FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
     void removeLike(@Param("postId") int postId, @Param("userId") int userId);
 
+    @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId", nativeQuery = true)
+    int countLikes(@Param("postId") int postId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Post p SET p.likeCount = :likeCount WHERE p.id = :postId")
+    void likeCountUpdate(@Param("postId") int postId, @Param("likeCount") int likeCount);
+
     // 좋아요 상태 확인
     @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
     int checkLike(@Param("postId") int postId, @Param("userId") int userId);
