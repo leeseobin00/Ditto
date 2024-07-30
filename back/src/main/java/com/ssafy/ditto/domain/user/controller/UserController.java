@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.user.controller;
 
+import com.ssafy.ditto.domain.user.auth.KakaoTokenJsonData;
+import com.ssafy.ditto.domain.user.auth.KakaoUserInfo;
 import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
@@ -18,6 +20,8 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final KakaoTokenJsonData kakaoTokenJsonData;
+    private final KakaoUserInfo kakaoUserInfo;
 
     // signup_001
     @PostMapping("/signup")
@@ -83,4 +87,20 @@ public class UserController {
             return ResponseDto.of(201, "로그인 성공", loginResponse);
         }
     }
+
+    //login_002
+    //카카오 로그인
+    @PostMapping("/sociallogin")
+    public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request) throws NoSuchAlgorithmException {
+        // 프론트에서 인가코드를 받음
+        String code = request.get("code");
+        // 카카오 서버에서 토큰 받아옴
+        KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
+        // 사용자정보 (이메일, 닉네임) 받아옴
+        KakaoUserLoginRequest kakaoUserLoginRequest = kakaoUserInfo.getUserInfo(kakaoTokenResponse.getAccessToken());
+        // 로그인처리
+        LoginResponse loginResponse = userService.kakaoLogin(kakaoUserLoginRequest);
+        return ResponseDto.of(200, "카카오로그인 성공", loginResponse);
+    }
+
 }
