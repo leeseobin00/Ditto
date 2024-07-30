@@ -28,8 +28,8 @@ public class ReviewDetailResponse {
                 .rating(review.getRating())
                 .reviewer(UserResponse.of(reviewer))
                 .teacher(UserResponse.of(teacher))
-                .classDetail(ClassDetailResponse.of(review.getClassId(), null, null, null, null, null, null))
-                .lectureDetail(LectureResponse.of(review.getLectureId()))
+                .classDetail(ClassDetailResponse.of(review.getDclass(), null, null, null, null, null, null))
+                .lectureDetail(LectureResponse.of(review.getLecture()))
                 .build();
     }
 }

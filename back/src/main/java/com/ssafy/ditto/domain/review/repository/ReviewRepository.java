@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> , JpaSpecificationExecutor<Review> {
     @Query(value = "SELECT * " +
@@ -21,5 +20,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> , JpaSp
             "LIMIT 3", nativeQuery = true)
     List<Review> getReviews(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 
-    Page<Review> findByClassId(DClass classId, Pageable pageable);
+    Page<Review> findByDclass(DClass classId, Pageable pageable);
 }
