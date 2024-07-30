@@ -1,11 +1,10 @@
 package com.ssafy.ditto.domain.liveroom.service;
 
 import com.ssafy.ditto.domain.classes.domain.Lecture;
-import com.ssafy.ditto.domain.classes.repository.LearningRepository;
+import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
 import com.ssafy.ditto.domain.liveroom.repository.LiveRoomRepository;
-import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LiveRoomServiceImpl implements LiveRoomService {
     private final LiveRoomRepository liveRoomRepository;
-    private final UserRepository userRepository;
     private final LearningRepository learningRepository;
     private final LectureRepository lectureRepository;
 
@@ -34,7 +32,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 라이브 참여
     @Override
-    public Integer enterLiveRoom(int lectureId) throws Exception {
+    public Integer enterLiveRoom(int lectureId) throws Exception{
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         int currentCount = liveRoom.getCurrentCount();
         int maxCount = liveRoom.getMaxCount();
@@ -51,7 +49,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 라이브 모두 떠나기
     @Override
-    public void leaveLiveRoom(int lectureId) throws Exception {
+    public void leaveLiveRoom(int lectureId) throws Exception{
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         liveRoom.setCurrentCount((byte)0);
         liveRoomRepository.save(liveRoom);
@@ -59,7 +57,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 현재 인원 확인용
     @Override
-    public int getUserCount(int lectureId) {
+    public int getUserCount(int lectureId) throws Exception{
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         return liveRoom.getCurrentCount();
     }

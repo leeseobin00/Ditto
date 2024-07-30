@@ -1,11 +1,8 @@
 package com.ssafy.ditto.domain.liveroom.controller;
 
+import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,19 +17,50 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/live-rooms")
 public class LiveRoomController {
     private final LiveRoomService liveRoomService;
+    private final LearningService learningService;
 
     @GetMapping("/{lectureId}")
     public ResponseDto<Integer> getUserCount(@PathVariable int lectureId) {
-        int userCount = liveRoomService.getUserCount(lectureId);
+        int userCount = 0;
+        try {
+            userCount = liveRoomService.getUserCount(lectureId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return ResponseDto.of(200, "라이브 참여 인원 조회가 성공적으로 완료되었습니다.",userCount);
     }
 
     @GetMapping("/enter/{lectureId}")
-    public ResponseDto<String> getSessionName(@PathVariable int lectureId) {
+    public ResponseDto<String> getSessionName(@PathVariable int lectureId, @RequestParam Integer userId) {
 
         return ResponseDto.of(200, "라이브 참여 세션명 조회가 성공적으로 완료되었습니다.",null);
     }
 
+    @PutMapping("/enter/{lectureId}")
+    public ResponseDto<Void> enterLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
+        boolean isValidUser = learningService.isValidUser(userId,lectureId);
+        if(isValidUser){
+            try {
+                Integer userCnt = liveRoomService.enterLiveRoom(lectureId);
+                if(userCnt == null) {
+                    return ResponseDto.of(200, "라이브 정원이 초과되었습니다.");
+                }
+                return ResponseDto.of(200, "라이브 참여 완료되었습니다.");
+            } catch (Exception e) {
+                return ResponseDto.of(500, "라이브 참여 오류");
+            }
+        }
+        return ResponseDto.of(403, "접근할 수 없는 페이지입니다.");
+    }
 
+    @PutMapping("/leave/{lectureId}")
+    public ResponseDto<Void> leaveLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
+        try {
+            liveRoomService.leaveLiveRoom(lectureId);
+        } catch (Exception e) {
+            return ResponseDto.of(500, "라이브 종료 오류");
+        }
 
+        return ResponseDto.of(200, "라이브 종료 완료되었습니다.");
+    }
 }
