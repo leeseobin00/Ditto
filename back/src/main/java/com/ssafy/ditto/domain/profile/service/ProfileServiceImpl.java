@@ -284,7 +284,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {
             User reviewer = review.getUser();
-            User teacher = review.getClassId().getUserId();
+            User teacher = review.getDclass().getUserId();
 
             return ReviewDetailResponse.of(review, reviewer, teacher);
         }).collect(Collectors.toList());

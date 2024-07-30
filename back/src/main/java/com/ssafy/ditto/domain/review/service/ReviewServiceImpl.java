@@ -38,8 +38,8 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewContent(reviewRequest.getReviewContent())
                 .rating(reviewRequest.getRating())
                 .user(user)
-                .classId(dClass)
-                .lectureId(lecture)
+                .dclass(dClass)
+                .lecture(lecture)
                 .isDeleted(false)
                 .build();
         dClass.setRatingSum(dClass.getRatingSum() + reviewRequest.getRating());
@@ -79,7 +79,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Page<ReviewDetailResponse> getClassReviews(int classId, Pageable pageable) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
-        return reviewRepository.findByClassId(dClass, pageable).map(review -> {
+        return reviewRepository.findByDclass(dClass, pageable).map(review -> {
             User user = userRepository.findById(review.getUser().getUserId())
                     .orElseThrow(UserNotFoundException::new);
             User teacher = userRepository.findById(dClass.getUserId().getUserId())
