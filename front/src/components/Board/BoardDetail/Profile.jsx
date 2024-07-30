@@ -13,6 +13,7 @@ const ProfileImage = styled.img`
   border: 1px solid black;
   width: 40px;
   height: 40px;
+  display: none;
 `;
 
 const ProfileInfo = styled.div`

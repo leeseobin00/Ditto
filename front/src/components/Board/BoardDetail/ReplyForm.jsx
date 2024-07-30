@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import OutlineButton from "../../common/OutlineButton";
-import Button from "../../common/Button";
+import RoundButton from "../../common/RoundButton";
 
 const Form = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: flex-end;
+  width: 100%;
 `;
 
 const TextArea = styled.textarea`
@@ -28,7 +29,7 @@ const ButtonWrapper = styled.div`
   gap: 8px;
 `;
 
-function ReplyForm({ isCancel, onCancel, parentId, onAddComment }) {
+function ReplyForm({ isCancel, onCancel, commentId, parentId, onAddComment, initialContent, onUpdateComment }) {
   const [content, setContent] = useState("");
 
   const handleContent = (event) => {
@@ -36,10 +37,21 @@ function ReplyForm({ isCancel, onCancel, parentId, onAddComment }) {
   };
 
   const handleAdd = () => {
-    onAddComment(content, parentId);
-    setContent("");
+    if(onAddComment){
+      onAddComment(content, parentId);
+      setContent("");
+    }
+    if(onUpdateComment){
+      onUpdateComment(content, commentId, parentId);
+    }
     if (isCancel) onCancel();
   };
+
+  useEffect(()=>{
+    if(initialContent){
+      setContent(initialContent);
+    }
+  },[initialContent]);
 
   return (
     <Form>
@@ -53,7 +65,7 @@ function ReplyForm({ isCancel, onCancel, parentId, onAddComment }) {
             size="sm"
           />
         )}
-        <Button onClick={handleAdd} label="등록" size="sm" />
+        <RoundButton onClick={handleAdd} label="등록" size="sm" />
       </ButtonWrapper>
     </Form>
   );
