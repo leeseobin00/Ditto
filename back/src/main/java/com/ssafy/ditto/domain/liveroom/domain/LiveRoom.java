@@ -1,7 +1,6 @@
 package com.ssafy.ditto.domain.liveroom.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ssafy.ditto.domain.classes.domain.Learning;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,8 +35,8 @@ public class LiveRoom {
     @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "liveroom_state", length = 10)
-    private String liveRoomState;
+    @Column(name = "is_finished")
+    private Boolean isFinished;
 
     @Column(name = "open_time")
     private LocalDateTime openTime;

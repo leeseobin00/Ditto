@@ -1,7 +1,7 @@
-package com.ssafy.ditto.domain.classes.domain;
+package com.ssafy.ditto.domain.liveroom.domain;
 
-import com.ssafy.ditto.domain.file.domain.File;
-import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
+import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;

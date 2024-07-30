@@ -1,11 +1,11 @@
 package com.ssafy.ditto.domain.profile.service;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
-import com.ssafy.ditto.domain.classes.domain.Learning;
+import com.ssafy.ditto.domain.liveroom.domain.Learning;
 import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
 import com.ssafy.ditto.domain.classes.dto.ClassResponse;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
-import com.ssafy.ditto.domain.classes.repository.LearningRepository;
+import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.exception.FileException;
@@ -30,7 +30,6 @@ import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
