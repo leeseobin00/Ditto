@@ -32,8 +32,17 @@ public class LiveRoomController {
 
     @GetMapping("/enter/{lectureId}")
     public ResponseDto<String> getSessionName(@PathVariable int lectureId, @RequestParam Integer userId) {
-
-        return ResponseDto.of(200, "라이브 참여 세션명 조회가 성공적으로 완료되었습니다.",null);
+        // 클래스 주최하는 강사인지 확인
+        boolean isValidTeacher = learningService.isValidTeacher(userId,lectureId);
+        if(isValidTeacher) {
+            try {
+                String sessionName = liveRoomService.getSessionName(lectureId);
+                return ResponseDto.of(200, "라이브 참여 세션명 조회가 성공적으로 완료되었습니다.",sessionName);
+            } catch (Exception e) {
+                return ResponseDto.of(500, "라이브 종료 오류");
+            }
+        }
+        return ResponseDto.of(403, "접근할 수 없는 페이지입니다.");
     }
 
     @PutMapping("/enter/{lectureId}")
@@ -55,12 +64,18 @@ public class LiveRoomController {
 
     @PutMapping("/leave/{lectureId}")
     public ResponseDto<Void> leaveLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
-        try {
-            liveRoomService.leaveLiveRoom(lectureId);
-        } catch (Exception e) {
-            return ResponseDto.of(500, "라이브 종료 오류");
+        // 클래스 주최하는 강사인지 확인
+        boolean isValidTeacher = learningService.isValidTeacher(userId,lectureId);
+        if(isValidTeacher) {
+            // 확인 후 클래스 종료
+            try {
+                liveRoomService.leaveLiveRoom(lectureId); // 선생님의 클래스 종료
+                learningService.changeStatus(lectureId); // 수강생들의 상태 변경
+                return ResponseDto.of(200, "라이브 종료 완료되었습니다.");
+            } catch (Exception e) {
+                return ResponseDto.of(500, "라이브 종료 오류");
+            }
         }
-
-        return ResponseDto.of(200, "라이브 종료 완료되었습니다.");
+        return ResponseDto.of(403, "접근할 수 없는 페이지입니다.");
     }
 }

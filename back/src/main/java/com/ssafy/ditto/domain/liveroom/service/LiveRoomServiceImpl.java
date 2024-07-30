@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Component
 @Service
 @RequiredArgsConstructor
@@ -22,12 +24,19 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     public void createLiveRoom(String liveSessionName, int lectureId) {
         LiveRoom liveRoom = new LiveRoom();
         Lecture lecture = lectureRepository.findByLectureId(lectureId);
-        liveRoom.setLiveRoomState("진행 전");
+        liveRoom.setIsFinished(false);
         int learnCount = learningRepository.countByLectureId(lectureId);
         liveRoom.setMaxCount((byte)learnCount);
         liveRoom.setCurrentCount((byte)0);
         liveRoom.setName(liveSessionName);
+        liveRoom.setOpenTime(LocalDateTime.now());
         liveRoomRepository.save(liveRoom);
+    }
+
+    @Override
+    public String getSessionName(int lectureId) throws Exception{
+        LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
+        return liveRoom.getName();
     }
 
     // 라이브 참여
@@ -49,15 +58,16 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 라이브 모두 떠나기
     @Override
-    public void leaveLiveRoom(int lectureId) throws Exception{
+    public void leaveLiveRoom(int lectureId) throws Exception {
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         liveRoom.setCurrentCount((byte)0);
+        liveRoom.setIsFinished(true);
         liveRoomRepository.save(liveRoom);
     }
 
     // 현재 인원 확인용
     @Override
-    public int getUserCount(int lectureId) throws Exception{
+    public int getUserCount(int lectureId) throws Exception {
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         return liveRoom.getCurrentCount();
     }
