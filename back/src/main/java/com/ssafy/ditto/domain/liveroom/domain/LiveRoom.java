@@ -1,0 +1,52 @@
+package com.ssafy.ditto.domain.liveroom.domain;
+
+import com.ssafy.ditto.domain.classes.domain.Learning;
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+@Entity
+@Table(name = "LiveRoom")
+public class LiveRoom {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "liveroom_id")
+    private Integer liveRoomId;
+
+    @OneToMany(mappedBy = "LiveRoom")
+    private List<Learning> liveUsers = new ArrayList<>();
+
+    @Column(name = "url", length = 1000)
+    private String url;
+
+    @Column(name = "name", length = 50)
+    private String name;
+
+    @Column(name = "liveroom_state", length = 10)
+    private String liveRoomState;
+
+    @Column(name = "open_time")
+    private LocalDateTime openTime;
+
+    @Column(name = "limit")
+    private Byte limit;
+
+    @Column(name = "current_count")
+    private Byte currentCount;
+
+    @OneToOne
+    @JoinColumn(name = "lecture_id")
+    private Lecture lecture;
+}
