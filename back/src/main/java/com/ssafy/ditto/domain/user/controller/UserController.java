@@ -81,6 +81,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseDto<LoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
         LoginResponse loginResponse = userService.login(userLoginRequest);
+        System.out.println("just Login");
         if (loginResponse == null){
             return ResponseDto.of(400, "로그인 실패", null);
         } else {
