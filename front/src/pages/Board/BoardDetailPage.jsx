@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
 import Post from "../../components/Board/BoardDetail/Post";
@@ -73,6 +74,7 @@ function BoardDetailPage() {
   const { sendRequest: getPost } = useAxios();
   const { sendRequest: getComment } = useAxios();
   const { sendRequest: postComment } = useAxios();
+  const { sendRequest: getFile } = useAxios();
   // router
   const { postId } = useParams();
   // state: post, comments
@@ -101,8 +103,13 @@ function BoardDetailPage() {
     const updateImageSrc = async () => {
       for (let i = 0; i < images.length; i++) {
         if (i < files.length) {
-          const fileResponse = await fetch("/src/" + files[i].fileUrl.split('src')[1].substring(1));
-          const fileBlob = await fileResponse.blob();
+          const baseUrl = import.meta.env.VITE_BASE_URL;
+          const fileId = files[i]?.fileId;
+          const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+            responseType: 'blob'
+          });
+          // axios에서는 response.data가 Blob 객체입니다.
+          const fileBlob = response.data;
           const base64 = await toBase64(fileBlob);
           images[i].src = base64;
         }

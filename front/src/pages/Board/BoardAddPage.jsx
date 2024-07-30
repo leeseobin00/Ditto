@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import useFormDataAxios from "../../hooks/useFormDataAxios";
 import Button from "../../components/common/Button";
@@ -90,7 +91,7 @@ function BoardAddPage() {
 
   const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
-    console.log(result);
+
     setPostData({
       userId: userId,
       boardId: result?.data?.boardId,
@@ -121,8 +122,12 @@ function BoardAddPage() {
     const updateImageSrc = async () => {
       for (let i = 0; i < images.length; i++) {
         if (i < files.length) {
-          const fileResponse = await fetch("/src/" + files[i].fileUrl.split('src')[1].substring(1));
-          const fileBlob = await fileResponse.blob();
+          const baseUrl = import.meta.env.VITE_BASE_URL;
+          const fileId = files[i]?.fileId;
+          const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+            responseType: 'blob'
+          });
+          const fileBlob = response.data;
           const base64 = await toBase64(fileBlob);
           images[i].src = base64;
         }
@@ -217,8 +222,6 @@ function BoardAddPage() {
   const handleSave = async () => {
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
-
-    console.log(postData?.content);
 
     //1. HTML에서 img 태그의 src 값 추출
     const parser = new DOMParser();
