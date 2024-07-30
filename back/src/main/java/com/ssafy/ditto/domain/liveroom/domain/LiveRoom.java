@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.liveroom.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ssafy.ditto.domain.classes.domain.Learning;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import jakarta.persistence.*;
@@ -25,7 +26,8 @@ public class LiveRoom {
     @Column(name = "liveroom_id")
     private Integer liveRoomId;
 
-    @OneToMany(mappedBy = "LiveRoom")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "liveRoom")
     private List<Learning> liveUsers = new ArrayList<>();
 
     @Column(name = "url", length = 1000)
@@ -40,8 +42,8 @@ public class LiveRoom {
     @Column(name = "open_time")
     private LocalDateTime openTime;
 
-    @Column(name = "limit")
-    private Byte limit;
+    @Column(name = "max_count")
+    private Byte maxCount;
 
     @Column(name = "current_count")
     private Byte currentCount;
