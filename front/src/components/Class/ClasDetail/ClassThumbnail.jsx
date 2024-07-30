@@ -81,7 +81,7 @@ function ClassThumbnail({ classInfo, file, instructor, tag }) {
     <ClassThumbnailContainer>
       <ThumbnailImg
         style={{
-          backgroundImage: `url(${file.fileUrl})`,
+          backgroundImage: `url(http://i11a106.p.ssafy.io:8080/files/download/${file.fileId})`,
         }}
       />
       <ClassTitle>

@@ -79,7 +79,7 @@ const LikeButton = styled.button`
   border-style: none;
   cursor: pointer;
   &:hover {
-    filter: drop-shadow(0px 0px 2px rgb(84, 84, 84));
+    filter: drop-shadow(0px 0px 2px rgb(237, 43, 43));
   }
 `;
 

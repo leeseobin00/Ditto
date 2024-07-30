@@ -83,7 +83,13 @@ function ClassStep({ isAdd = false, stepNo, step, onDelete }) {
         <StepName>{step.stepName}</StepName>
         <StepExplation>{step.stepDetail}</StepExplation>
       </StepDetail>
-      <Img src={isAdd ? step.preview : step.file.fileUrl} />
+      <Img
+        src={
+          isAdd
+            ? step.preview
+            : `http://i11a106.p.ssafy.io:8080/files/download/${step.file.fileId}`
+        }
+      />
       {isAdd && <DeleteButton onClick={onDelete} />}
     </ClassStepContainer>
   );

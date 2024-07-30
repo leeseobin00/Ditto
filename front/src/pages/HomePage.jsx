@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 
+import useAxios from "../hooks/useAxios";
 import Banner from "../components/Home/Banner";
-import BestClass from "../components/Home/ClassList/BestClass";
-import NewClass from "../components/Home/ClassList/NewClass";
+import ClassList from "../components/Home/ClassList";
 import BestBoard from "../components/Home/BoardList/BestBoard";
 
 const HomePageContainer = styled.div`
@@ -10,13 +11,59 @@ const HomePageContainer = styled.div`
   flex-direction: column;
 `;
 
+const ClassListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 3%;
+  padding: 0 20px;
+`;
+
+const Title = styled.div`
+  font-size: 25px;
+  font-weight: 700;
+`;
+
 function HomePage() {
+  const { sendRequest } = useAxios();
+
+  const [bestClasses, setBestClasses] = useState([]);
+  const [newClasses, setNewClasses] = useState([]);
+  const [bestPosts, setBestPosts] = useState([]);
+
+  const getBestClasses = async () => {
+    const response = await sendRequest("/classes/weeklybest", null, "get");
+    setBestClasses(response?.data);
+  };
+
+  const getNewClasses = async () => {
+    const response = await sendRequest("/classes/weeklynew", null, "get");
+    setNewClasses(response?.data);
+  };
+
+  const getBestPosts = async () => {
+    const response = await sendRequest("/board/weeklybest", null, "get");
+    setBestPosts(response?.data);
+  };
+
+  useEffect(() => {
+    getBestClasses();
+    getNewClasses();
+    getBestPosts();
+  }, []);
+
   return (
     <HomePageContainer>
       <Banner />
-      <BestClass />
-      <NewClass />
-      <BestBoard />
+      <ClassListContainer>
+        <Title>Best Class</Title>
+        <ClassList classList={bestClasses} />
+      </ClassListContainer>
+      <ClassListContainer>
+        <Title>New Class</Title>
+        <ClassList classList={newClasses} />
+      </ClassListContainer>
+
+      <BestBoard bestPosts={bestPosts} />
     </HomePageContainer>
   );
 }
