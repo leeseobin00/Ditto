@@ -157,6 +157,7 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
+    @Transactional
     @Override
     public LoginResponse kakaoLogin(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException {
         // 여기까지 왔으면 카카오에서 계정 인증은 이미 받은 상태
