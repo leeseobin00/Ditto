@@ -7,8 +7,11 @@ import useAxios from "../../../hooks/useAxios";
 import { useNavigate } from 'react-router-dom';
 import { MdClose } from "react-icons/md"; // 아이콘 import
 import ProSignupForm from "../signup/ProSignupForm";
-import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
-import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
+import { checkNicknameAvailability } from "../../../utils/checkNicknameAvailability"; // 닉네임 중복 확인 함수 임포트
+import {
+  isPasswordMatch,
+  isPasswordValid,
+} from "../../../utils/passwordValidation"; // 비밀번호 확인 및 유효성 검사 함수 임포트
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -43,9 +46,13 @@ const RoleToggle = styled.div`
 const RoleButton = styled.button`
   flex: 1;
   padding: 10px;
-  border: 1px solid ${({ $active }) => ($active === 'true' ? 'var(--PRIMARY)' : 'var(--BORDER_COLOR)')};
-  background-color: ${({ $active }) => ($active === 'true' ? 'var(--PRIMARY)' : 'transparent')};
-  color: ${({ $active }) => ($active === 'true' ? '#fff' : 'var(--TEXT_SECONDARY)')};
+  border: 1px solid
+    ${({ $active }) =>
+      $active === "true" ? "var(--PRIMARY)" : "var(--BORDER_COLOR)"};
+  background-color: ${({ $active }) =>
+    $active === "true" ? "var(--PRIMARY)" : "transparent"};
+  color: ${({ $active }) =>
+    $active === "true" ? "#fff" : "var(--TEXT_SECONDARY)"};
   cursor: pointer;
 
   &:first-child {
@@ -128,7 +135,7 @@ const Divider = styled.div`
   margin: 20px 0;
   &::before,
   &::after {
-    content: '';
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--BORDER_COLOR);
   }
@@ -147,7 +154,7 @@ const SignDivider = styled.div`
   margin: 10px 0px;
   &::before,
   &::after {
-    content: '';
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--BORDER_COLOR);
   }
@@ -210,7 +217,7 @@ const MessageWrapper = styled.div`
 `;
 
 const PasswordMatchMessage = styled.div`
-  color: ${({ $isMatch }) => ($isMatch ? 'green' : 'red')};
+  color: ${({ $isMatch }) => ($isMatch ? "green" : "red")};
   font-size: 14px;
   margin-top: 5px;
 `;
@@ -222,7 +229,7 @@ const PasswordValidMessage = styled.div`
 `;
 
 const NicknameCheckMessage = styled.div`
-  color: ${({ $isAvailable }) => ($isAvailable ? 'green' : 'red')};
+  color: ${({ $isAvailable }) => ($isAvailable ? "green" : "red")};
   font-size: 14px;
   margin-top: 5px;
 `;
@@ -300,17 +307,20 @@ const SignupForm = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [isPasswordMatchState, setIsPasswordMatchState] = useState(true);
   const [isPasswordValidState, setIsPasswordValidState] = useState(true);
-  const [isVerificationCodeInputVisible, setIsVerificationCodeInputVisible] = useState(false);
+  const [isVerificationCodeInputVisible, setIsVerificationCodeInputVisible] =
+    useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
-  const [nicknameMessage, setNicknameMessage] = useState('');
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
-  const [termsContent, setTermsContent] = useState('');
-  const [privacyContent, setPrivacyContent] = useState('');
+  const [termsContent, setTermsContent] = useState("");
+  const [privacyContent, setPrivacyContent] = useState("");
   const [isInstructorStep, setIsInstructorStep] = useState(false); // 강사 추가 정보 입력 단계 여부
 
   useEffect(() => {
-    setIsPasswordMatchState(isPasswordMatch(formData.password, formData.confirmPassword));
+    setIsPasswordMatchState(
+      isPasswordMatch(formData.password, formData.confirmPassword)
+    );
   }, [formData.password, formData.confirmPassword]);
 
   useEffect(() => {
@@ -321,7 +331,7 @@ const SignupForm = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -366,7 +376,9 @@ const SignupForm = () => {
 
   const handleEmailVerification = async () => {
     try {
-      await axios.post('http://localhost:8080/users/signup/email', { email: formData.email });
+      await axios.post("http://localhost:8080/users/signup/email", {
+        email: formData.email,
+      });
       alert("인증 코드가 이메일로 전송되었습니다.");
       setIsVerificationCodeInputVisible(true);
     } catch (error) {
@@ -395,6 +407,29 @@ const SignupForm = () => {
     }
   };
 
+  const handleNicknameChange = async (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+
+    if (value) {
+      try {
+        const isAvailable = await checkNicknameAvailability(value);
+        setIsNicknameAvailable(isAvailable);
+        setNicknameMessage(
+          isAvailable
+            ? "사용 가능한 닉네임입니다."
+            : "이미 사용 중인 닉네임입니다."
+        );
+      } catch (error) {
+        console.error(error.message);
+        setIsNicknameAvailable(false);
+        setNicknameMessage(error.message);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -418,7 +453,7 @@ const SignupForm = () => {
       alert("모든 약관에 동의해주세요.");
       return;
     }
-  
+
     const userData = {
       email: formData.email,
       password: formData.password,
@@ -427,12 +462,15 @@ const SignupForm = () => {
       agreeTOS: formData.agreeTOS,
       agreePICU: formData.agreePICU,
     };
-  
+
     try {
-      const response = await axios.post('http://localhost:8080/users/signup', userData);
+      const response = await axios.post(
+        "http://localhost:8080/users/signup",
+        userData
+      );
       console.log(response.data);
       alert("회원가입 성공!");
-      navigate('/'); // 홈화면으로 이동
+      navigate("/"); // 홈화면으로 이동
     } catch (error) {
       if (error.response && error.response.status === 409) {
         alert("이미 사용중인 닉네임입니다.");
@@ -442,7 +480,6 @@ const SignupForm = () => {
       }
     }
   };
-  
 
   const openTermsModal = async () => {
     try {
@@ -537,11 +574,13 @@ const SignupForm = () => {
                 onChange={handleChange}
                 required
               />
-              <VerifyButton type="button" onClick={handleEmailVerification}>인증</VerifyButton>
+              <VerifyButton type="button" onClick={handleEmailVerification}>
+                인증
+              </VerifyButton>
             </EmailFormGroup>
           </FormGroup>
           {isVerificationCodeInputVisible && (
-            <FormGroup>          
+            <FormGroup>
               <FormLabel>인증번호</FormLabel>
               <EmailFormGroup>
                 <FormInput
@@ -552,7 +591,9 @@ const SignupForm = () => {
                   onChange={handleChange}
                   required
                 />
-                <VerifyButton type="button" onClick={handleVerifyCode}>확인</VerifyButton>
+                <VerifyButton type="button" onClick={handleVerifyCode}>
+                  확인
+                </VerifyButton>
               </EmailFormGroup>
             </FormGroup>
           )}
@@ -586,7 +627,9 @@ const SignupForm = () => {
             />
             <MessageWrapper>
               <PasswordMatchMessage $isMatch={isPasswordMatchState}>
-                {isPasswordMatchState ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다."}
+                {isPasswordMatchState
+                  ? "비밀번호가 일치합니다."
+                  : "비밀번호가 일치하지 않습니다."}
               </PasswordMatchMessage>
             </MessageWrapper>
           </FormGroup>
@@ -599,7 +642,14 @@ const SignupForm = () => {
               required
             />
             <CheckboxLabel>이용약관에 동의합니다</CheckboxLabel>
-            <TermsLink onClick={(e) => { e.stopPropagation(); openTermsModal(); }}>약관 보기</TermsLink>
+            <TermsLink
+              onClick={(e) => {
+                e.stopPropagation();
+                openTermsModal();
+              }}
+            >
+              약관 보기
+            </TermsLink>
           </CheckboxGroup>
           <CheckboxGroup onClick={handleAgreePICUClick}>
             <input
@@ -610,9 +660,27 @@ const SignupForm = () => {
               required
             />
             <CheckboxLabel>개인정보 처리방침에 동의합니다</CheckboxLabel>
-            <TermsLink onClick={(e) => { e.stopPropagation(); openPrivacyModal(); }}>약관 보기</TermsLink>
+            <TermsLink
+              onClick={(e) => {
+                e.stopPropagation();
+                openPrivacyModal();
+              }}
+            >
+              약관 보기
+            </TermsLink>
           </CheckboxGroup>
-          <SubmitButton type="submit" disabled={!isPasswordMatchState || !isNicknameAvailable || !isPasswordValidState || !formData.agreeTOS || !formData.agreePICU}>Next</SubmitButton>
+          <SubmitButton
+            type="submit"
+            disabled={
+              !isPasswordMatchState ||
+              !isNicknameAvailable ||
+              !isPasswordValidState ||
+              !formData.agreeTOS ||
+              !formData.agreePICU
+            }
+          >
+            Next
+          </SubmitButton>
           <Divider>간편 가입</Divider>
           <SocialGroup>
             <KakaoLogin />

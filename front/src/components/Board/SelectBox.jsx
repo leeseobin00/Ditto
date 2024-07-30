@@ -51,7 +51,7 @@ const CustomDownIcon = styled(BsChevronDown)`
 
 const SelectBox = ({ options, curOption, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(options[0].label);
+  const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option.label);
@@ -60,8 +60,9 @@ const SelectBox = ({ options, curOption, onChange }) => {
   };
 
   useEffect(() => {
-    setSelectedOption(curOption);
-  }, [curOption]);
+    const selected = options.find((option) => option.value === curOption);
+    setSelectedOption(selected ? selected.label : options[0].label);
+  }, [curOption, options]);
 
   return (
     <CustomSelect>

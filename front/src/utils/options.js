@@ -21,24 +21,24 @@ export const LIVING_OPTIONS = [
 ];
 
 export const FABRIC_OPTIONS = [
-  { value: 6, label: "뜨개질" },
-  { value: 7, label: "가죽" },
-  { value: 8, label: "모루" },
-  { value: 9, label: "바느질" },
-  { value: 10, label: "십자수" },
-  { value: 11, label: "마크라메" },
+  { value: 7, label: "뜨개질" },
+  { value: 8, label: "가죽" },
+  { value: 9, label: "모루" },
+  { value: 10, label: "바느질" },
+  { value: 11, label: "십자수" },
+  { value: 12, label: "마크라메" },
 ];
 
 export const FOOD_OPTIONS = [
-  { value: 12, label: "떡" },
-  { value: 13, label: "베이커리" },
+  { value: 13, label: "떡" },
+  { value: 14, label: "베이커리" },
 ];
 
 export const ART_OPTIONS = [
-  { value: 14, label: "미니어처" },
-  { value: 15, label: "키링" },
-  { value: 16, label: "모빌" },
-  { value: 17, label: "페인팅" },
+  { value: 15, label: "미니어처" },
+  { value: 16, label: "키링" },
+  { value: 17, label: "모빌" },
+  { value: 18, label: "페인팅" },
 ];
 
 export function getBoardTypeLabelByValue(value) {

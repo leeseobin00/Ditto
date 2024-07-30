@@ -18,7 +18,7 @@ import ClassAddPage from "../pages/Class/ClassAddPage";
 import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
-import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage"
+import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
 import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
@@ -28,7 +28,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/classes" element={<ClassListPage />} />
-      {/* <Route path="/classes/:classCategory" element={<ClassListPage />} /> */}
+      <Route path="/classes/:classCategory" element={<ClassListPage />} />
       <Route path="/classes/:classId" element={<ClassDetailPage />} />
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/meeting" element={<MeetingPage />} />

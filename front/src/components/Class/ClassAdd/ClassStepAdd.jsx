@@ -41,7 +41,7 @@ function ClassStepAdd({ onChange }) {
         <ClassStep
           key={index}
           isAdd={true}
-          stepNo={index}
+          stepNo={index + 1}
           step={step}
           onDelete={() => handleStepDelete(index)}
         />

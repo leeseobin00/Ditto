@@ -103,24 +103,24 @@ const formatNumber = (number) => {
   return number.toLocaleString();
 };
 
-const ClassListItem = ({ classInfo }) => {
+const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
   const {
-    fileUrl,
     className,
+    classPrice,
     classHour,
     classMinute,
-    nickname,
     likeCount,
-    tagName,
-    averageRating,
     reviewCount,
-    classPrice,
+    averageRating,
   } = classInfo;
 
   return (
     <ClassListItemContainer href="http://localhost:5173/">
       <ClassThumbnail>
-        <ClassThumbnailDetail src={fileUrl} alt="class-thumbnail" />
+        <ClassThumbnailDetail
+          src={`http://i11a106.p.ssafy.io:8080/files/download/${fileId}`}
+          alt="class-thumbnail"
+        />
         <LikeNum>
           <Icon src={Heart} alt="Heart" />
           <MediumFont>{formatNumber(likeCount)}</MediumFont>
@@ -136,11 +136,11 @@ const ClassListItem = ({ classInfo }) => {
               </SmallFont>
             </Bold>
             <SmallFont>&nbsp;|&nbsp;</SmallFont>
-            <SmallFont>{nickname}</SmallFont>
+            <SmallFont>{instructor}</SmallFont>
           </ClassDetailLine>
           <Tag>
             <Bold>
-              <SmallFont>{tagName}</SmallFont>
+              <SmallFont>{tag}</SmallFont>
             </Bold>
           </Tag>
         </ClassDetail>
