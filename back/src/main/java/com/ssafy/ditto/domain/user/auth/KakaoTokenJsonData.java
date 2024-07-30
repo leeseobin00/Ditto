@@ -25,9 +25,9 @@ public class KakaoTokenJsonData {
     @Value("${kakao.client-id}")
     private String clientId;
 
+    // 카카오에 인가코드를 전달해주고 엑세스토큰과 리프레시 토큰을 받아옴
     public KakaoTokenResponse getToken(String code) {
         String uri = tokenUri + "?grant_type=" + grantType + "&client_id=" + clientId + "&redirect_uri=" + redirectUri + "&code=" + code;
-        System.out.println(uri);
 
         Flux<KakaoTokenResponse> response = webClient.post()
                 .uri(uri)

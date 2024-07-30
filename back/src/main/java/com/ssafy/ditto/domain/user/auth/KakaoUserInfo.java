@@ -17,6 +17,7 @@ public class KakaoUserInfo {
     @Value("${kakao.user-info-uri}")
     private String userInfoUri;
 
+    // 카카오에서 사용자 정보(이메일, 닉네임)를 불러옴
     public KakaoUserLoginRequest getUserInfo(String token) {
 
         Flux<KakaoUserInfoResponse> response = webClient.get()
