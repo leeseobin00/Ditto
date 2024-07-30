@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LiveRoomRepository extends JpaRepository<LiveRoom,Integer> {
 
+    LiveRoom findByLecture_LectureId(Integer lectureId);
 }

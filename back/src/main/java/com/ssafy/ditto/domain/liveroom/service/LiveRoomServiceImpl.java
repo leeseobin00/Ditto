@@ -35,29 +35,33 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     // 라이브 참여
     @Override
     public Integer enterLiveRoom(int lectureId) throws Exception {
-//        LiveRoom liveRoom = LiveRoomRepository.getLiveRoomByLectureId(lectureId);
-        LiveRoom liveRoom = new LiveRoom();
+        LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
         int currentCount = liveRoom.getCurrentCount();
         int maxCount = liveRoom.getMaxCount();
         if(currentCount >= maxCount) {
             return null;
         }
 
+        // 참여 중인 인원 업데이트
         int updateCount = liveRoom.getCurrentCount()+1;
         liveRoom.setCurrentCount((byte)updateCount);
         liveRoomRepository.save(liveRoom);
         return updateCount;
     }
 
-    // 라이브 떠나기
+    // 라이브 모두 떠나기
     @Override
     public void leaveLiveRoom(int lectureId) throws Exception {
-
+        LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
+        liveRoom.setCurrentCount((byte)0);
+        liveRoomRepository.save(liveRoom);
     }
 
-    // 현재 인원 - 수강신청한 인원보다 적은지 확인용
+    // 현재 인원 확인용
     @Override
     public int getUserCount(int lectureId) throws Exception {
-        return 0;
+        LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
+        int userCount = liveRoom.getCurrentCount();
+        return userCount;
     }
 }
