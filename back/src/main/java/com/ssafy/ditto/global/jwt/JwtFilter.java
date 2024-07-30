@@ -1,10 +1,13 @@
 package com.ssafy.ditto.global.jwt;
 
+import com.ssafy.ditto.global.jwt.exception.ExpiredTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -21,9 +24,15 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request); // 요청에서 jwt 추출
         if (token != null) { // jwt가 존재하면
-            jwtProvider.validateToken(token, false); // jwt 검증
-            Authentication authentication = this.jwtProvider.getAuthentication(token); // JWT에서 인증 정보 추출
-            SecurityContextHolder.getContext().setAuthentication(authentication); // Spring Security 컨텍스트에 인증 정보 설정
+            try {
+                if (jwtProvider.validateToken(token, false)) { // JWT 검증
+                    Authentication authentication = jwtProvider.getAuthentication(token); // JWT에서 인증 정보 추출
+                    SecurityContextHolder.getContext().setAuthentication(authentication); // Spring Security 컨텍스트에 인증 정보 설정
+                }
+            } catch (ExpiredTokenException e) {
+                setErrorResponse(HttpStatus.FORBIDDEN, response, e);
+                return;
+            }
         }
         filterChain.doFilter(request, response); // 다음 필터로 요청 전달
     }
@@ -35,5 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private void setErrorResponse(HttpStatus status, HttpServletResponse response, ExpiredTokenException e) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        String json = String.format("{\"errorCode\": \"%s\", \"message\": \"%s\"}", e.getErrorCode().getCode(), e.getMessage());
+        response.getWriter().write(json);
     }
 }
