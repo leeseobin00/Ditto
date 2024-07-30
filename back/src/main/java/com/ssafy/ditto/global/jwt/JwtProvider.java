@@ -37,14 +37,15 @@ public class JwtProvider {
         }
     }
 
-    public void validateToken(String token, boolean isRefreshToken) {
+    public boolean validateToken(String token, boolean isRefreshToken) {
         try {
             parseClaims(token, isRefreshToken);
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
             throw new InvalidTokenException();
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException();
+            throw new ExpiredTokenException(e);
         }
+        return true;
     }
 
     public Authentication getAuthentication(String token) {
