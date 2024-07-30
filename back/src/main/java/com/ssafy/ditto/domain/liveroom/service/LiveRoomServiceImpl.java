@@ -59,9 +59,8 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 현재 인원 확인용
     @Override
-    public int getUserCount(int lectureId) throws Exception {
+    public int getUserCount(int lectureId) {
         LiveRoom liveRoom = liveRoomRepository.findByLecture_LectureId(lectureId);
-        int userCount = liveRoom.getCurrentCount();
-        return userCount;
+        return liveRoom.getCurrentCount();
     }
 }
