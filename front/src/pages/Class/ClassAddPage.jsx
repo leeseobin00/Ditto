@@ -98,22 +98,19 @@ function ClassAdePage() {
         stepNo: index + 1,
         stepName: step.stepName,
         stepDetail: step.stepDetail,
-        stepFile: step.stepFile ? step.stepFile.name : null,
       }));
-
-      const stepFiles = infoData.steps.map((step) => step.stepFile);
 
       const stepsData = new FormData();
       stepsData.append(
         "stepRequests",
-        new Blob([JSON.stringify({ stepRequests })], {
+        new Blob([JSON.stringify(stepRequests)], {
           type: "application/json",
         })
       );
 
-      stepFiles.forEach((file, index) => {
-        if (file) {
-          stepsData.append(`stepFiles`, file);
+      infoData.steps.forEach((step, index) => {
+        if (step.file) {
+          stepsData.append("stepFiles", step.file);
         }
       });
 
