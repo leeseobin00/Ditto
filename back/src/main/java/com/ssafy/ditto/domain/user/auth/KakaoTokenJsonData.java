@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux;
 @Component
 @RequiredArgsConstructor
 public class KakaoTokenJsonData {
-    private final WebClient webClient;
+    private final WebClient webClient = WebClient.builder().build();
     @Value("${kakao.token-uri}")
     private String tokenUri;
 

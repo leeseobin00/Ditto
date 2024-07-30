@@ -1,6 +1,10 @@
 package com.ssafy.ditto.domain.user.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
 public class KakaoTokenResponse {
     @JsonProperty("token_type")
     private String tokenType;

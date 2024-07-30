@@ -91,10 +91,15 @@ public class UserController {
     //login_002
     //카카오 로그인
     @PostMapping("/sociallogin")
-    public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request){
+    public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request) throws NoSuchAlgorithmException {
+        // 프론트에서 인가코드를 받음
         String code = request.get("code");
+        // 카카오 서버에서 토큰 받아옴
         KakaoTokenResponse kakaoTokenResponse = kakaoTokenJsonData.getToken(code);
-        KakaoUserInfoResponse userInfo = kakaoUserInfo.getUserInfo(kakaoTokenResponse.getAccess_token());
+        // 사용자정보 (이메일, 닉네임) 받아옴
+        KakaoUserLoginRequest kakaoUserLoginRequest = kakaoUserInfo.getUserInfo(kakaoTokenResponse.getAccessToken());
+        // 로그인처리
+        LoginResponse loginResponse = userService.kakaoLogin(kakaoUserLoginRequest);
         return ResponseDto.of(200, "카카오로그인 성공", loginResponse);
     }
 
