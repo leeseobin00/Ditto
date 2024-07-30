@@ -68,6 +68,7 @@ const SearchOptionWrapper = styled.div`
 function ClassListPage() {
   const userId = useSelector((state) => state.auth.userId);
   const userNickname = useSelector((state) => state.auth.nickname);
+  const roleId = useSelector((state) => state.auth.roleId);
 
   const { sendRequest } = useAxios();
   const location = useLocation();
@@ -204,8 +205,8 @@ function ClassListPage() {
             onChange={handleSortOption}
             curOption={sortBy}
           />
-          <Link to="/Classes/add">
-            <Button label="클래스 등록" size="md" />
+          <Link to="/classes/add">
+            {roleId == 2 && <Button label="클래스 등록" size="md" />}
           </Link>
         </SearchOptionWrapper>
         <ClassList classList={classList} />

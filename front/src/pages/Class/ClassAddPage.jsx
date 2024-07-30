@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 import useAxios from "../../hooks/useAxios";
 import ClassThumbnailAdd from "../../components/Class/ClassAdd/ClassThumbnailAdd";
@@ -27,18 +27,25 @@ const ButtonContainer = styled.div`
   width: 100px;
 `;
 
-function ClassAdePage() {
+function ClassAddPage() {
   // redux
   const userId = useSelector((state) => state.auth.userId);
   const userNickname = useSelector((state) => state.auth.nickname);
+  const roleId = useSelector((state) => state.auth.roleId);
   // axios
-  const { sendRequest, error, loading } = useAxios();
+  const { sendRequest, loading } = useAxios();
 
   const [thumbnailData, setThumbnailData] = useState({});
   const [infoData, setInfoData] = useState({});
   const [priceData, setPriceData] = useState("");
 
-  const { classId } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (roleId === 1 || roleId === null || roleId === undefined) {
+      navigate("/");
+    }
+  }, [roleId, navigate]);
 
   const handleThumbnailChange = useCallback((data) => {
     setThumbnailData((prev) => ({ ...prev, ...data }));
@@ -56,11 +63,12 @@ function ClassAdePage() {
     const classData = new FormData();
 
     // 파일과 데이터를 FormData에 추가
-    if (thumbnailData?.classFile) {
-      classData.append("classFile", thumbnailData?.classFile);
+    const classFile = thumbnailData?.classFile;
+    if (classFile) {
+      classData.append("classFile", classFile);
     }
 
-    const kitFile = infoData.kit?.kitFile;
+    const kitFile = infoData?.kit?.kitFile;
     if (kitFile) {
       classData.append("kitFile", kitFile);
     }
@@ -83,6 +91,23 @@ function ClassAdePage() {
       },
     };
 
+    if (
+      !classRequest.className ||
+      !classRequest.classPrice ||
+      classRequest.classMax == 0 ||
+      (classRequest.classHour == 0 && classRequest.classMinute == 0) ||
+      !classRequest.classExplanation ||
+      !classRequest.kit.kitName ||
+      !classRequest.kit.kitExplanation ||
+      classFile == null ||
+      kitFile == null
+    ) {
+      alert(
+        "클래스에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요."
+      );
+      return;
+    }
+
     classData.append(
       "classRequest",
       new Blob([JSON.stringify(classRequest)], {
@@ -92,7 +117,7 @@ function ClassAdePage() {
 
     try {
       const response = await sendRequest("/classes", classData, "post");
-      const createdClassId = response.data;
+      const classId = response.data;
 
       const stepRequests = infoData.steps.map((step, index) => ({
         stepNo: index + 1,
@@ -114,7 +139,10 @@ function ClassAdePage() {
         }
       });
 
-      await sendRequest(`/classes/${createdClassId}/steps`, stepsData, "post");
+      await sendRequest(`/classes/${classId}/steps`, stepsData, "post");
+
+      // 생성된 클래스 페이지로 이동
+      navigate(`/classes/detail/${classId}`);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -142,4 +170,4 @@ function ClassAdePage() {
   );
 }
 
-export default ClassAdePage;
+export default ClassAddPage;
