@@ -36,16 +36,15 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/callback" element={<KakaoCallback />} />
       <Route path="/mypage/*" element={<MyPage />}>
-        {" "}
-        {/* Nested Routes */}
-        <Route path="userinfo" element={<UserInfoDetail />} />
-        <Route path="payments" element={<PaymentPage />} />
-        <Route path="questions" element={<MyQuestionsPage />} />
-        <Route path="reviews" element={<ReviewListPage />} />
-        <Route path="liked" element={<LikedPage />} />
-        <Route path="prouserinfo" element={<ProAccountPage />} />
-        <Route path="mileage" element={<MileagePage />} />
-        <Route path="proquestion" element={<ProQuestionPage />} />
+          {/* Nested Routes */}
+          <Route path="userinfo" element={<UserInfoDetail />} />
+          <Route path="payments" element={<PaymentPage />} />
+          <Route path="questions" element={<MyQuestionsPage />} />
+          <Route path="reviews" element={<ReviewListPage />} />
+          <Route path="liked" element={<LikedPage />} />
+          <Route path="prouserinfo" element={<ProAccountPage />} />
+          <Route path="mileage" element={<MileagePage />} />
+          <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />
