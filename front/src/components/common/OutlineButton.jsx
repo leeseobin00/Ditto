@@ -99,6 +99,7 @@ const ButtonBase = styled.button`
   border-radius: 25px;
   cursor: pointer;
 
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import useFormDataAxios from "../../hooks/useFormDataAxios";
-import Button from "../../components/common/Button";
+import RoundButton from "../../components/common/RoundButton";
 import OutlineButton from "../../components/common/OutlineButton";
 import TabBar from "../../components/Board/TabBar";
 import Filter from "../../components/Board/Filter";
@@ -319,7 +319,7 @@ function BoardAddPage() {
         </EditorWrapper>
         <Buttons>
           <OutlineButton onClick={handleCancel} label="취소" color="default" />
-          <Button onClick={handleSave} label={isEdit ? "수정" : "등록"} />
+          <RoundButton onClick={handleSave} label={isEdit ? "수정" : "등록"} />
         </Buttons>
       </Wrapper>
     </div>

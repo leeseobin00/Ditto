@@ -66,6 +66,7 @@ const sizeStyle = css`
     return css`
       padding: 8px 32px;
       font-size: 16px;
+      font-weight: 600;
     `;
   }}
 `;
