@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.classes.domain;
 
 import com.ssafy.ditto.domain.file.domain.File;
+import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
 import com.ssafy.ditto.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,8 +36,8 @@ public class Learning {
     private User teacherId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id", nullable = true)
-    private File fileId;
+    @JoinColumn(name = "liveroom_id", nullable = true)
+    private LiveRoom liveRoom;
 
     @Column
     private Boolean isFinished;
