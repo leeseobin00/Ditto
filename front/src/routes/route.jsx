@@ -27,24 +27,24 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/classes/detail/:classId" element={<ClassDetailPage />} />
       <Route path="/classes" element={<ClassListPage />} />
       <Route path="/classes/:classCategory" element={<ClassListPage />} />
-      <Route path="/classes/:classId" element={<ClassDetailPage />} />
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/callback" element={<KakaoCallback />} />
       <Route path="/mypage/*" element={<MyPage />}>
-          {/* Nested Routes */}
-          <Route path="userinfo" element={<UserInfoDetail />} />
-          <Route path="payments" element={<PaymentPage />} />
-          <Route path="questions" element={<MyQuestionsPage />} />
-          <Route path="reviews" element={<ReviewListPage />} />
-          <Route path="liked" element={<LikedPage />} />
-          <Route path="prouserinfo" element={<ProAccountPage />} />
-          <Route path="mileage" element={<MileagePage />} />
-          <Route path="proquestion" element={<ProQuestionPage />} />
+        {/* Nested Routes */}
+        <Route path="userinfo" element={<UserInfoDetail />} />
+        <Route path="payments" element={<PaymentPage />} />
+        <Route path="questions" element={<MyQuestionsPage />} />
+        <Route path="reviews" element={<ReviewListPage />} />
+        <Route path="liked" element={<LikedPage />} />
+        <Route path="prouserinfo" element={<ProAccountPage />} />
+        <Route path="mileage" element={<MileagePage />} />
+        <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
       <Route path="/board/:boardCategory" element={<BoardListPage />} />

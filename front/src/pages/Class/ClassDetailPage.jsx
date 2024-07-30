@@ -29,6 +29,7 @@ function ClassDetailPage() {
   // redux
   const userId = useSelector((state) => state.auth.userId);
   const userName = useSelector((state) => state.auth.nickname);
+  const roleId = useSelector((state) => state.auth.roleId);
   // axios
   const { sendRequest: getClassInfo } = useAxios();
 

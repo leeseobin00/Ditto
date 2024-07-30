@@ -1,6 +1,6 @@
 // src/features/auth/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 const authSlice = createSlice({
   name: "auth",
@@ -25,13 +25,18 @@ const authSlice = createSlice({
       localStorage.setItem("nickname", action.payload.nickname);
       localStorage.setItem("email", action.payload.email);
       localStorage.setItem("roleId", action.payload.roleId);
-      Cookies.set("refreshToken", action.payload.refreshToken, { expires: 7, secure: true, sameSite: 'strict' });
+      Cookies.set("refreshToken", action.payload.refreshToken, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
     },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
       state.userId = null;
       state.nickname = null;
+      state.roleId = null;
       state.email = null;
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userId");

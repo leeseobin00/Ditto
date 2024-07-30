@@ -87,14 +87,14 @@ function ClassKitAdd({ onChange }) {
   const [showModal, setShowModal] = useState(false);
   const [kitName, setKitName] = useState("");
   const [kitExplanation, setKitExplanation] = useState("");
-  const [file, setFile] = useState(null);
+  const [kitFile, setKitFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
   const toggleModal = () => setShowModal(!showModal);
 
   const handleFileSubmit = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    setKitFile(selectedFile);
 
     const reader = new FileReader();
     reader.onloadend = () => setPreview(reader.result);
@@ -110,9 +110,9 @@ function ClassKitAdd({ onChange }) {
   };
 
   useEffect(() => {
-    const kitData = { kitName, kitExplanation, file };
+    const kitData = { kitName, kitExplanation, kitFile };
     onChange(kitData);
-  }, [kitName, kitExplanation, file]);
+  }, [kitName, kitExplanation, kitFile]);
 
   return (
     <KitAddContainer>
