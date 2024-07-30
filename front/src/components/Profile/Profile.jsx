@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
-import { useParams } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
 import DefaultProfileImage from "../../assets/img/profile-user.png";
-import { useSelector } from "react-redux";
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -57,6 +56,7 @@ const Tags = styled.div`
 
 function Profile({
   profileImageURL,
+  profileImageId,
   userName,
   likeCount,
   tags,
@@ -67,7 +67,7 @@ function Profile({
   const userId = useSelector((state)=>state.auth.userId);
   // axios
   const {sendRequest:getHeart} = useAxios();
-
+  const [profileImage, setProfileImage] = useState(profileImageURL);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curLikeCount, setCurLikeCount] = useState(likeCount);
 
@@ -88,6 +88,30 @@ function Profile({
     setIsHeartFilled(result?.data);
   }
 
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+  const getImageFromId = async(fileId) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+
+    const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+      responseType: 'blob'
+    });
+    const fileBlob = response.data;
+    const base64 = await toBase64(fileBlob);
+    setProfileImage(base64);
+  };
+
+  useEffect(()=>{
+    if(!profileImageURL && profileImageId){
+      getImageFromId(profileImageId);
+    }
+  },[profileImageURL,profileImageId]);
+
   useEffect(()=>{
     setCurLikeCount(likeCount);
     handleGetHeart();
@@ -95,7 +119,7 @@ function Profile({
 
   return (
     <ProfileWrapper>
-      <Image src={profileImageURL || DefaultProfileImage}  alt="Profile Image"/>
+      <Image src={profileImage || DefaultProfileImage}  alt="Profile Image"/>
       <Name>{userName}</Name>
       <LikeCount onClick={handleHeartClick}>
       {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {curLikeCount}

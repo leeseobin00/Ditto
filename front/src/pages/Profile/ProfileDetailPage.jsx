@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { BsPersonFill, BsStarFill } from "react-icons/bs";
 
+import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import Sidebar from "../../components/Profile/SideBar";
 import Profile from "../../components/Profile/Profile";
@@ -65,11 +66,6 @@ const CustomStarIcon = styled(BsStarFill)`
   color: var(--YELLOW);
 `;
 
-const CustomImage = styled.img`
-  width: 18px;
-  height: 18px;
-`;
-
 const Content = styled.div`
   width: calc(100% - 240px);
 `;
@@ -115,15 +111,26 @@ function ProfileDetailPage() {
   const { sendRequest: getReviews } = useAxios();
   const { sendRequest: getRating } = useAxios();
 
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
   const handleGetProfile = async() => {    
     const result = await getProfile(`/profiles/${profileId}`, null, "get");
     if(result){
-      const fullPath = result?.data?.fileUrl;
-      const srcIndex = fullPath?.indexOf("src");
-      if(srcIndex){
-        const srcPath = fullPath.substring(srcIndex);
-        setProfileImageURL("/"+srcPath);
-      }
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      const fileId = result?.data?.fileId;
+
+      const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+        responseType: 'blob'
+      });
+      const fileBlob = response.data;
+      const base64 = await toBase64(fileBlob);
+
+      setProfileImageURL(base64);
       setProfileName(result?.data?.nickname);
       setTags(result?.data?.tags);
       setLikeCount(result?.data?.likeCount);

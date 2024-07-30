@@ -242,7 +242,7 @@ function ProfileSearchPage() {
           {uniqueTeacherProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
               <Profile 
-                profileImageURL={"/"+profile?.fileUrl.substring(profile?.fileUrl.indexOf("src"))}
+                profileImageId={profile?.fileId}
                 userName={profile?.nickname} 
                 profileId={profile?.userId} 
               />
@@ -256,7 +256,7 @@ function ProfileSearchPage() {
           {uniqueProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
               <Profile 
-                profileImageURL={"/"+profile?.fileUrl.substring(profile?.fileUrl.indexOf("src"))}
+                profileImageId={profile?.fileId}
                 userName={profile?.nickname} 
                 profileId={profile?.userId} />
             </Link>
