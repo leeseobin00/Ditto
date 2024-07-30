@@ -54,7 +54,9 @@ function ClassKit({ kit }) {
     <ClassKitContainer>
       <Title>제공 키트</Title>
       <ClassKitInfo>
-        <Img src={kit.fileUrl} />
+        <Img
+          src={`http://i11a106.p.ssafy.io:8080/files/download/${kit.file.fileId}`}
+        />
         <ClassKitDetail>
           <KitName>{kit.kitName}</KitName>
           <KitExplation>{kit.kitExplanation}</KitExplation>

@@ -1,21 +1,24 @@
 import { styled } from "styled-components";
+import { Link } from "react-router-dom"; // 추가된 부분
 
 import Star from "../../../assets/icon/class/star.png";
 import Dollar from "../../../assets/icon/class/dollar.png";
 import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 
-const ClassListItemContainer = styled.a`
+const ClassListItemContainer = styled(Link)`
   display: flex;
   flex-direction: column;
-  width: 280px;
-  height: 320px;
-  padding: 20px;
+  width: 300px;
+  height: 370px;
+  padding: 20px 15px;
   justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
 `;
 
 const ClassThumbnail = styled.div`
   width: 100%;
-  height: 160px;
+  height: 180px;
   position: relative;
 `;
 
@@ -105,6 +108,7 @@ const formatNumber = (number) => {
 
 const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
   const {
+    classId,
     className,
     classPrice,
     classHour,
@@ -115,7 +119,7 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
   } = classInfo;
 
   return (
-    <ClassListItemContainer href="http://localhost:5173/">
+    <ClassListItemContainer to={`/classes/detail/${classId}`}>
       <ClassThumbnail>
         <ClassThumbnailDetail
           src={`http://i11a106.p.ssafy.io:8080/files/download/${fileId}`}
@@ -132,7 +136,7 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
           <ClassDetailLine>
             <Bold>
               <SmallFont>
-                {classHour}시간&nbsp;{classMinute}분
+                {classHour}시간&nbsp;{classMinute != 0 && `${classMinute}분`}
               </SmallFont>
             </Bold>
             <SmallFont>&nbsp;|&nbsp;</SmallFont>

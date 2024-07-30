@@ -85,12 +85,10 @@ function ClassListPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
-  const classesPerPage = 12;
 
   const getClasses = async () => {
     const params = {
       page: currentPage,
-      size: classesPerPage,
       searchBy: searchBy,
       keyword: keyword,
       sortBy: sortBy,
@@ -165,7 +163,7 @@ function ClassListPage() {
   };
 
   const pageNumbers = useMemo(() => {
-    const size = Math.ceil(totalPageCount / classesPerPage);
+    const size = Math.ceil(totalPageCount / 12);
     return Array.from({ length: size }, (_, i) => i + 1);
   }, [totalPageCount]);
 
@@ -212,7 +210,7 @@ function ClassListPage() {
         <ClassList classList={classList} />
         <PaginationBar
           pageNumbers={pageNumbers}
-          currentPage={currentPage}
+          currentPage={currentPage + 1}
           handleClick={handlePage}
         />
       </Wrapper>

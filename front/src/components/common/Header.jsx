@@ -34,11 +34,12 @@ const Icons = styled.div`
   min-width: 240px;
   display: flex;
   flex-direction: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 16px;
 `;
 
-const CustomMenuIcon = styled(BiMenu)`  
+const CustomMenuIcon = styled(BiMenu)`
   display: flex;
   font-size: 18px;
   font-weight: 600;
@@ -183,12 +184,12 @@ const Header = () => {
   const { response: getResponse, sendRequest: getPost } = useAxios();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);  // 추가된 부분
-  const nickname = useSelector(state => state.auth.nickname);  // 추가된 부분
-  const userId = useSelector(state => state.auth.userId);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // 추가된 부분
+  const nickname = useSelector((state) => state.auth.nickname); // 추가된 부분
+  const userId = useSelector((state) => state.auth.userId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const handleOverlayClick = () => {
     setMenuOpen(false);
   };
@@ -207,7 +208,9 @@ const Header = () => {
     <HeaderContainer>
       <Overlay open={menuOpen} onClick={handleOverlayClick} />
       <TopSection>
-        <MenuButton onClick={() => setMenuOpen(!menuOpen)}><CustomMenuIcon /></MenuButton>
+        <MenuButton onClick={() => setMenuOpen(!menuOpen)}>
+          <CustomMenuIcon />
+        </MenuButton>
         <MobileDropdownMenu open={menuOpen}>
           <DropdownItem to="/">홈</DropdownItem>
           <DropdownItem to="/classes">카테고리</DropdownItem>
@@ -216,7 +219,9 @@ const Header = () => {
           <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           <DropdownItem to="/profile/my">로그아웃</DropdownItem>
         </MobileDropdownMenu>
-        <Link to="/"><Logo>Ditto</Logo></Link>
+        <Link to="/">
+          <Logo>Ditto</Logo>
+        </Link>
         <Icons>
           <CustomVideoIcon />
           <CustomBellIcon />
