@@ -162,7 +162,7 @@ const LoginForm = () => {
       });
 
       console.log(response);
-      const { accessToken, refreshToken, nickname, roleId } = response?.data?.data;
+      const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
       const userId = decodedToken.sub;
       const emailFromToken = decodedToken.email;
@@ -175,6 +175,7 @@ const LoginForm = () => {
           nickname: nickname,
           email: emailFromToken,
           roleId: roleId,
+          domain: domain,
         })
       ); // Redux 상태 업데이트
       alert("로그인 성공!");
