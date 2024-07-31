@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { styled } from 'styled-components';
-import { useSelector } from 'react-redux';
-import defaultProfile from '../../../assets/img/profile-user.png';
-// import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
 import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
 import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
+import { useSelector, useDispatch } from 'react-redux';
+import { changeNickname } from "../../../features/auth/authSlice";
+import defaultProfile from '../../../assets/img/profile-user.png';
 import RoundButton from "../../../components/common/RoundButton";
 import OutlineButton from "../../../components/common/OutlineButton";
+import useAuthAxios from "../../../hooks/useAuthAxios";
 import useAxios from '../../../hooks/useAxios';
 import axiosIntercepter from '../../../features/axiosIntercepter';
 
@@ -75,13 +76,14 @@ const ErrorMessage = styled.p`
 `;
 
 const UserInfo = ({ userData }) => {
-  const { sendRequest } = useAxios();
+  const dispatch = useDispatch();
+  const { sendAuthRequest } = useAuthAxios();
   const { email, nickname, userId } = useSelector((state) => state.auth);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [isPasswordValidState, setIsPasswordValidState] = useState(true);
-  const [isPasswordMatchState, setIsPasswordMatchState] = useState(true);
+  const [isPasswordMatchState, setIsPasswordMatchState] = useState(false);
   const [isNicknameAvailableState, setIsNicknameAvailableState] = useState(true);
   const [nicknameMessage, setNicknameMessage] = useState('');
   const [error, setError] = useState('');
@@ -114,16 +116,7 @@ const UserInfo = ({ userData }) => {
     }
   }
 
-  const handleCancel = () => {
-    //setPassword('');
-    setConfirmPassword('');
-    setName(nickname);
-    setError('');
-    setNicknameMessage('');
-    setIsNicknameAvailableState(true);
-  };
-
-  const handleSave = async () => {
+  const checkError = () => {
     if (!isPasswordMatchState) {
       setError('비밀번호가 일치하지 않습니다.');
       return;
@@ -139,20 +132,36 @@ const UserInfo = ({ userData }) => {
       return;
     }
 
+    setError(false);
+  }
+
+  const handleCancel = () => {
+    //setPassword('');
+    setError('');
+    setConfirmPassword('');
+    setName(nickname);
+    setNicknameMessage('');
+    setIsNicknameAvailableState(true);
+    checkError();
+  };
+
+  const handleSave = async () => {
+    if(error) return;
+
     try {
       const patchData = {
         password: password,
-        nickname: nickname,
+        nickname: name,
       };
 
-      const response = await axiosIntercepter.patch(`/mypage/${userId}`, patchData);
-
-      if (response.status === 200) {
-        console.log('수정 성공:', formData);
+      const response = await sendAuthRequest(`/mypage/${userId}`, patchData, "patch");
+      if (response.code == 200) {
+        console.log('수정 성공:', patchData);
+        dispatch(changeNickname({ nickname: name }));
       } else {
         setError('수정 실패. 다시 시도해주세요.');
       }
-      alert('수정 성공:', formData);
+      alert('수정 성공:', patchData);
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setError('이미 사용중인 닉네임입니다.');
@@ -162,6 +171,10 @@ const UserInfo = ({ userData }) => {
       }
     }
   };
+
+  useEffect(()=>{
+    checkError();
+  },[isPasswordMatchState, isPasswordValidState, isNicknameAvailableState]);
 
   useEffect(()=>{
     if(nickname){
