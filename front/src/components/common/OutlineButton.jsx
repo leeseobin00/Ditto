@@ -62,7 +62,7 @@ const sizeStyle = css`
     if (size === "sm") {
       return css`
         padding: 6px 8px;
-        font-size: 14px;
+        font-size: 12px;
       `;
     }
 

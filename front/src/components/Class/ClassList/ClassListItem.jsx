@@ -1,5 +1,5 @@
 import { styled } from "styled-components";
-import { Link } from "react-router-dom"; // 추가된 부분
+import { Link } from "react-router-dom";
 
 import Star from "../../../assets/icon/class/star.png";
 import Dollar from "../../../assets/icon/class/dollar.png";
@@ -8,9 +8,9 @@ import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 const ClassListItemContainer = styled(Link)`
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 290px;
   height: 340px;
-  padding: 20px 15px;
+  padding: 20px 35px;
   justify-content: space-between;
   text-decoration: none;
   color: inherit;
@@ -26,6 +26,7 @@ const ClassThumbnailDetail = styled.img`
   border-radius: 15px;
   width: 100%;
   height: 100%;
+  object-fit: cover;
 `;
 
 const LikeNum = styled.div`

@@ -51,6 +51,7 @@ const Slogan = styled.div`
   top: 50%;
   left: 3%;
   transform: translate(0, -50%);
+  z-index: 1000;
 `;
 
 const Img = styled.div`

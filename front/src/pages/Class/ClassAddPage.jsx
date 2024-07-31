@@ -119,27 +119,29 @@ function ClassAddPage() {
       const response = await sendRequest("/classes", classData, "post");
       const classId = response.data;
 
-      const stepRequests = infoData.steps.map((step, index) => ({
-        stepNo: index + 1,
-        stepName: step.stepName,
-        stepDetail: step.stepDetail,
-      }));
+      if (infoData.steps && infoData.steps.length > 0) {
+        const stepRequests = infoData.steps?.map((step, index) => ({
+          stepNo: index + 1,
+          stepName: step.stepName,
+          stepDetail: step.stepDetail,
+        }));
 
-      const stepsData = new FormData();
-      stepsData.append(
-        "stepRequests",
-        new Blob([JSON.stringify(stepRequests)], {
-          type: "application/json",
-        })
-      );
+        const stepsData = new FormData();
+        stepsData.append(
+          "stepRequests",
+          new Blob([JSON.stringify(stepRequests)], {
+            type: "application/json",
+          })
+        );
 
-      infoData.steps.forEach((step, index) => {
-        if (step.file) {
-          stepsData.append("stepFiles", step.file);
-        }
-      });
+        infoData.steps?.forEach((step, index) => {
+          if (step.file) {
+            stepsData.append("stepFiles", step.file);
+          }
+        });
 
-      await sendRequest(`/classes/${classId}/steps`, stepsData, "post");
+        await sendRequest(`/classes/${classId}/steps`, stepsData, "post");
+      }
 
       // 생성된 클래스 페이지로 이동
       navigate(`/classes/detail/${classId}`);

@@ -15,8 +15,8 @@ const ClassListContainer = styled.div`
 const SlideContainer = styled.div`
   display: flex;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ slideIndex, itemWidth }) =>
-    `translateX(-${slideIndex * itemWidth}px)`};
+  transform: ${({ slideindex, itemwidth }) =>
+    `translateX(-${slideindex * itemwidth}px)`};
 `;
 
 const Button = styled.button`
@@ -46,16 +46,16 @@ const Img = styled.img`
 `;
 
 function ClassList({ classList }) {
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [slideindex, setSlideIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(1);
   const containerRef = useRef(null);
-  const itemWidth = 300; // 각 아이템의 너비를 설정
+  const itemwidth = 300; // 각 아이템의 너비를 설정
 
   useEffect(() => {
     const updateItemsPerView = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        setItemsPerView(Math.floor(containerWidth / itemWidth));
+        setItemsPerView(Math.floor(containerWidth / itemwidth));
       }
     };
 
@@ -65,28 +65,28 @@ function ClassList({ classList }) {
     return () => {
       window.removeEventListener("resize", updateItemsPerView);
     };
-  }, [itemWidth]);
+  }, [itemwidth]);
 
   const handleNext = () => {
-    if (slideIndex < classList.length - itemsPerView) {
-      setSlideIndex(slideIndex + 1);
+    if (slideindex < classList.length - itemsPerView) {
+      setSlideIndex(slideindex + 1);
     }
   };
 
   const handlePrev = () => {
-    if (slideIndex > 0) {
-      setSlideIndex(slideIndex - 1);
+    if (slideindex > 0) {
+      setSlideIndex(slideindex - 1);
     }
   };
 
   return (
     <div style={{ position: "relative", width: "100%" }} ref={containerRef}>
       <ClassListContainer>
-        <SlideContainer slideIndex={slideIndex} itemWidth={itemWidth}>
+        <SlideContainer slideindex={slideindex} itemwidth={itemwidth}>
           {classList.map((classInfo, index) => (
             <div
               key={index}
-              style={{ flex: "0 0 auto", width: `${itemWidth}px` }}
+              style={{ flex: "0 0 auto", width: `${itemwidth}px` }}
             >
               <ClassListItem
                 classInfo={classInfo}
@@ -98,12 +98,12 @@ function ClassList({ classList }) {
           ))}
         </SlideContainer>
       </ClassListContainer>
-      {slideIndex > 0 && (
+      {slideindex > 0 && (
         <Button left onClick={handlePrev}>
           <Img src={LeftIcon} alt="left-icon" />
         </Button>
       )}
-      {slideIndex < classList.length - itemsPerView && (
+      {slideindex < classList.length - itemsPerView && (
         <Button onClick={handleNext}>
           <Img src={RightIcon} alt="right-icon" />
         </Button>

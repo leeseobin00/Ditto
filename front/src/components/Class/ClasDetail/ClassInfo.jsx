@@ -39,7 +39,7 @@ const ClassExplanation = styled.div`
 
 const ButtonContainer = styled.div``;
 
-function ClassInfo({ classInfo, titleIds }) {
+function ClassInfo({ classInfo, titleIds, userId, roleId }) {
   return (
     <ClassIntroductionContainer>
       <ContentContainer id={titleIds[0]}>
@@ -51,14 +51,14 @@ function ClassInfo({ classInfo, titleIds }) {
       <ContentContainer id={titleIds[1]}>
         <TitleLine>
           <Title>리뷰</Title>
-          <Button label={"리뷰작성"} />
+          {/* <Button label={"리뷰작성"} /> */}
         </TitleLine>
         <ReviewList />
       </ContentContainer>
       <ContentContainer id={titleIds[2]}>
         <TitleLine>
           <Title>Q & A</Title>
-          <Button label={"문의하기"} />
+          {roleId == 1 && <Button label={"문의하기"} />}
         </TitleLine>
         <QnAList />
       </ContentContainer>
