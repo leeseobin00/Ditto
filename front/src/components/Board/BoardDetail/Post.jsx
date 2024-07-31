@@ -8,6 +8,7 @@ import useAxios from "../../../hooks/useAxios";
 import Button from "../../common/Button";
 import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
+import { useSelector } from "react-redux";
 
 const PostWrapper = styled.div`
 `;
@@ -170,6 +171,7 @@ function Post({
   likeCount,
   tagName,
 }) {
+  const { userId } = useSelector((state)=>state.auth.userId);
   const { response: getLikeResponse, sendRequest: getLike } = useAxios();
   const { sendRequest: postLike } = useAxios();
   const { sendRequest: deleteLike } = useAxios();
@@ -188,7 +190,7 @@ function Post({
   }, [likeCount]);
 
   useEffect(() => {
-    getLike(`/posts/${postId}/like?userId=${1}`, null, "get");
+    getLike(`/posts/${postId}/like?userId=${userId}`, null, "get");
   }, [postId]);
 
   useEffect(() => {
@@ -199,11 +201,11 @@ function Post({
     if (isHeartFilled) {
       setIsHeartFilled(false);
       setCurlikeCount((prev) => prev - 1);
-      postLike(`/posts/${postId}/like?userId=${1}`, null, "delete");
+      postLike(`/posts/${postId}/like?userId=${userId}`, null, "delete");
     } else {
       setIsHeartFilled(true);
       setCurlikeCount((prev) => prev + 1);
-      deleteLike(`/posts/${postId}/like?userId=${1}`, null, "post");
+      deleteLike(`/posts/${postId}/like?userId=${userId}`, null, "post");
     }
   };
 
