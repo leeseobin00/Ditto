@@ -28,6 +28,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
         LiveRoom liveRoom = new LiveRoom();
         Lecture lecture = lectureRepository.findByLectureId(lectureId);
         User user = lecture.getClassId().getUserId();
+
         liveRoom.setIsFinished(false);
         int learnCount = learningRepository.countByLectureId(lectureId);
         liveRoom.setMaxCount((byte)learnCount);

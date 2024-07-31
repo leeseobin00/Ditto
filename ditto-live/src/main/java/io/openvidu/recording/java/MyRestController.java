@@ -102,42 +102,45 @@ public class MyRestController {
 
 		System.out.println("Getting sessionId and token | {sessionName}=" + sessionNameParam);
 
-		// The video-call to connect ("TUTORIAL")
+		// 연결할 비디오 통화 ("TUTORIAL")
 		String sessionName = (String) sessionNameParam.get("sessionName");
 
-		// Role associated to this user
+		// 이 사용자와 연관된 역할
 		OpenViduRole role = OpenViduRole.PUBLISHER;
 
-		// Build connectionProperties object with the serverData and the role
-		ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC)
-				.role(role).data("user_data").build();
+		// serverData와 역할을 사용하여 connectionProperties 객체 생성
+		ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+				.type(ConnectionType.WEBRTC)
+				.role(role)
+				.data("user-data")
+				.build();
 
 		JsonObject responseJson = new JsonObject();
 
 		if (this.mapSessions.get(sessionName) != null) {
-			// Session already exists
+			// 세션이 이미 존재함
 			System.out.println("Existing session " + sessionName);
 			try {
 
-				// Generate a new token with the recently created connectionProperties
+				// 방금 생성한 connectionProperties로 새 토큰 생성
 				String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
 
-				// Update our collection storing the new token
+				// 새 토큰을 저장하는 컬렉션 업데이트
 				this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
-				// Prepare the response with the token
+				// 토큰으로 응답 준비
 				responseJson.addProperty("0", token);
 
-				// Return the response to the client
+				// 클라이언트에게 응답 반환
 				return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
 			} catch (OpenViduJavaClientException e1) {
-				// If internal error generate an error message and return it to client
+				// 내부 오류가 발생하면 오류 메시지를 생성하여 클라이언트에게 반환
 				return getErrorResponse(e1);
 			} catch (OpenViduHttpException e2) {
 				if (404 == e2.getStatus()) {
-					// Invalid sessionId (user left unexpectedly). Session object is not valid
-					// anymore. Clean collections and continue as new session
+					// 유효하지 않은 sessionId (사용자가 예기치 않게 떠남). 세션 객체가 더 이상 유효하지 않음.
+					// 컬렉션을 정리하고 새로운 세션으로 계속 진행
 					e2.printStackTrace();
 					this.mapSessions.remove(sessionName);
 					this.mapSessionNamesTokens.remove(sessionName);
@@ -145,60 +148,60 @@ public class MyRestController {
 			}
 		}
 
-		// New session
+		// 새로운 세션
 		System.out.println("New session " + sessionName);
 		try {
-
-			// Create a new OpenVidu Session
+			// 새로운 OpenVidu 세션 생성
 			Session session = this.openVidu.createSession();
-			// Generate a new token with the recently created connectionProperties
+			System.out.println("New session " + session.toString());
+			// 방금 생성한 connectionProperties로 새 토큰 생성
 			String token = session.createConnection(connectionProperties).getToken();
 
-			// Store the session and the token in our collections
+			// 세션과 토큰을 컬렉션에 저장
 			this.mapSessions.put(sessionName, session);
 			this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
 			this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
-			// Prepare the response with the sessionId and the token
+			// sessionId와 토큰으로 응답 준비
 			responseJson.addProperty("0", token);
 
-			// Return the response to the client
+			// 클라이언트에게 응답 반환
 			return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
 		} catch (Exception e) {
-			// If error generate an error message and return it to client
+			// 오류가 발생하면 오류 메시지를 생성하여 클라이언트에게 반환
 			return getErrorResponse(e);
 		}
 	}
 
 	@PostMapping("/api/remove-user")
-	public ResponseEntity<JsonObject> removeUser(@RequestBody Map<String, Object> sessionNameToken) throws Exception {
+	public ResponseEntity<JsonObject> removeUser(@RequestBody Map<String, String> sessionNameToken) throws Exception {
 
 		System.out.println("Removing user | {sessionName, token}=" + sessionNameToken);
 
-		// Retrieve the params from BODY
+		// BODY에서 매개변수 가져오기
 		String sessionName = (String) sessionNameToken.get("sessionName");
 		String token = (String) sessionNameToken.get("token");
 
-		// If the session exists
+		// 세션이 존재하는 경우
 		if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
 
-			// If the token exists
+			// 토큰이 존재하는 경우
 			if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
-				// User left the session
+				// 사용자가 세션을 떠남
 				if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
-					// Last user left: session must be removed
+					// 마지막 사용자가 떠남: 세션을 제거해야 함
 					this.mapSessions.remove(sessionName);
 				}
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
-				// The TOKEN wasn't valid
+				// 토큰이 유효하지 않음
 				System.out.println("Problems in the app server: the TOKEN wasn't valid");
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 		} else {
-			// The SESSION does not exist
+			// 세션이 존재하지 않음
 			System.out.println("Problems in the app server: the SESSION does not exist");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -206,12 +209,12 @@ public class MyRestController {
 
 	@DeleteMapping("/api/close-session")
 	public ResponseEntity<JsonObject> closeSession(@RequestBody Map<String, Object> sessionName) throws Exception {
-		// Retrieve the param from BODY
+		// BODY에서 매개변수 가져오기
 		String session = (String) sessionName.get("sessionName");
 
 		System.out.println("Closing session | {sessionName}=" + session);
 
-		// If the session exists
+		// 세션이 존재하는 경우
 		if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
 			Session s = this.mapSessions.get(session);
 			s.close();
@@ -220,7 +223,7 @@ public class MyRestController {
 			this.sessionRecordings.remove(s.getSessionId());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
-			// The SESSION does not exist
+			// 세션이 존재하지 않음
 			System.out.println("Problems in the app server: the SESSION does not exist");
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -231,17 +234,17 @@ public class MyRestController {
 		try {
 			System.out.println("Fetching session info | {sessionName}=" + sessionName);
 
-			// Retrieve the param from BODY
+			// BODY에서 매개변수 가져오기
 			String session = (String) sessionName.get("sessionName");
 
-			// If the session exists
+			// 세션이 존재하는 경우
 			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
 				Session s = this.mapSessions.get(session);
 				boolean changed = s.fetch();
 				System.out.println("Any change: " + changed);
 				return new ResponseEntity<>(this.sessionToJson(s), HttpStatus.OK);
 			} else {
-				// The SESSION does not exist
+				// 세션이 존재하지 않음
 				System.out.println("Problems in the app server: the SESSION does not exist");
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -271,17 +274,17 @@ public class MyRestController {
 	@DeleteMapping("/api/force-disconnect")
 	public ResponseEntity<JsonObject> forceDisconnect(@RequestBody Map<String, Object> params) {
 		try {
-			// Retrieve the param from BODY
+			// BODY에서 매개변수 가져오기
 			String session = (String) params.get("sessionName");
 			String connectionId = (String) params.get("connectionId");
 
-			// If the session exists
+			// 세션이 존재하는 경우
 			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
 				Session s = this.mapSessions.get(session);
 				s.forceDisconnect(connectionId);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
-				// The SESSION does not exist
+				// 세션이 존재하지 않음
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -293,17 +296,17 @@ public class MyRestController {
 	@DeleteMapping("/api/force-unpublish")
 	public ResponseEntity<JsonObject> forceUnpublish(@RequestBody Map<String, Object> params) {
 		try {
-			// Retrieve the param from BODY
+			// BODY에서 매개변수 가져오기
 			String session = (String) params.get("sessionName");
 			String streamId = (String) params.get("streamId");
 
-			// If the session exists
+			// 세션이 존재하는 경우
 			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
 				Session s = this.mapSessions.get(session);
 				s.forceUnpublish(streamId);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
-				// The SESSION does not exist
+				// 세션이 존재하지 않음
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -311,6 +314,7 @@ public class MyRestController {
 			return getErrorResponse(e);
 		}
 	}
+
 
 	/*******************/
 	/** Recording API **/
