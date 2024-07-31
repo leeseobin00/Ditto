@@ -165,7 +165,7 @@ const LoginForm = () => {
       const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
       const userId = decodedToken.sub;
-      const emailFromToken = decodedToken.email;
+      const email = decodedToken.email;
 
       dispatch(
         login({
@@ -173,7 +173,7 @@ const LoginForm = () => {
           refreshToken,
           userId,
           nickname: nickname,
-          email: emailFromToken,
+          email: email,
           roleId: roleId,
           domain: domain,
         })
