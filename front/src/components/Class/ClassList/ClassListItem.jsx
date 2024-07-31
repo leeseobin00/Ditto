@@ -93,7 +93,7 @@ const Cost = styled(ClassDetailLine)`
 `;
 
 const Tag = styled(ClassDetailLine)`
-  width: 40px;
+  width: 50px;
   height: 20px;
   border-style: solid;
   border-radius: 20px;

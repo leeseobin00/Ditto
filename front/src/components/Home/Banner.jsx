@@ -75,15 +75,16 @@ function Banner() {
   return (
     <Wrapper>
       <BannerContainer>
-        <BannerInner />
+        <BannerInner>
+          <Slogan>
+            혼자서도 완벽하게,
+            <br />내 방에서 즐기는 DIY 클래스
+          </Slogan>
+        </BannerInner>
         <BannerContent>
           <Img alt="banner-img" />
         </BannerContent>
       </BannerContainer>
-      <Slogan>
-        혼자서도 완벽하게,
-        <br />내 방에서 즐기는 DIY 클래스
-      </Slogan>
     </Wrapper>
   );
 }
