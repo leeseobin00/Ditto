@@ -13,4 +13,8 @@ public interface LectureService {
     void deleteLecture(Integer classId, Integer lectureId);
 
     List<LectureResponse> getLecturesByClassId(Integer classId);
+
+    List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
+
+    List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 }
