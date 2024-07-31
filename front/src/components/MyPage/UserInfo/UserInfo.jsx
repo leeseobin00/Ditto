@@ -1,146 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import { styled } from 'styled-components';
 import { useSelector } from 'react-redux';
-import defaultProfile from '../../../assets/default-profile.jpg';
+import defaultProfile from '../../../assets/img/profile-user.png';
 // import axiosIntercepter from '../../../features/axiosIntercepter'; // axiosIntercepter 가져오기
 import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
 import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
+import RoundButton from "../../../components/common/RoundButton";
+import OutlineButton from "../../../components/common/OutlineButton";
+import useAxios from '../../../hooks/useAxios';
 
 const UserInfoContainer = styled.div`
-  margin-bottom: 40px;
 `;
 
 const ProfileImageContainer = styled.div`
   display: flex;
   justify-content: left;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
   position: relative;
 `;
 
 const ProfileImage = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
   background-color: var(--BORDER_COLOR);
 `;
 
 const ProfileInfo = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 20px;
-  flex: 1;
 `;
 
 const ProfileField = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 10px;
   width: 400px;
+  margin-bottom: 16px;
 `;
 
 const InputLabel = styled.label`
-  font-weight: bold;
+  font-weight: 600;
   color: var(--TEXT_SECONDARY);
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 `;
 
 const ProfileInput = styled.input`
-  padding: 10px;
+  padding: 12px 16px;
   border: 1px solid var(--BORDER_COLOR);
-  border-radius: 15px;
+  border-radius: 16px;
   width: 100%;
+  font-size: 14px;
+  &[readonly] {
+    pointer-events: none;
+    background-color: var(--BACKGROUND_COLOR); /* Gray background color */
+    color: var(--TEXT_SECONDARY); /* Adjust text color if needed */
+  }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-`;
-
-const Button = styled.button`
-  padding: 8px 16px;
-  background-color: ${(props) => (props.$cancel ? 'var(--TEXT_SECONDARY)' : 'var(--SECONDARY)')};
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 15px;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.8);
-  }
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 32px;
+  gap: 12px;
 `;
 
 const ErrorMessage = styled.p`
   color: var(--RED);
-  margin: 5px 0 0 0;
+  margin: 4px 0 0 0;
+  font-size: 14px;
 `;
 
 const UserInfo = ({ userData }) => {
-  const { email, nickName, userId } = useSelector((state) => state.auth);
-  const [formData, setFormData] = useState({
-    password: '',
-    confirmPassword: '',
-    nickname: nickName || '',
-  });
-  const [error, setError] = useState('');
-  const [passwordMatch, setPasswordMatch] = useState(true);
+  const { sendRequest } = useAxios();
+  const { email, nickname, userId } = useSelector((state) => state.auth);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
   const [isPasswordValidState, setIsPasswordValidState] = useState(true);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
+  const [isPasswordMatchState, setIsPasswordMatchState] = useState(true);
+  const [isNicknameAvailableState, setIsNicknameAvailableState] = useState(true);
   const [nicknameMessage, setNicknameMessage] = useState('');
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    setFormData({
-      password: '',
-      confirmPassword: '',
-      nickname: nickName || '',
-    });
-  }, [nickName]);
+  const handlePasswordChange = (event) => {
+    const curPassword = event.target.value;
+    setIsPasswordValidState(isPasswordValid(curPassword));
+    setPassword(curPassword);
+  }
 
-  useEffect(() => {
-    setPasswordMatch(isPasswordMatch(formData.password, formData.confirmPassword));
-    setIsPasswordValidState(isPasswordValid(formData.password));
-  }, [formData.password, formData.confirmPassword]);
+  const handleConfirmPasswordChange = (event) => {
+    const curConfirmPassword = event.target.value;
+    setIsPasswordMatchState(isPasswordMatch(password, curConfirmPassword));
+    setConfirmPassword(curConfirmPassword);
+  }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    if (name === 'nickname') {
-      handleNicknameChange(value);
-    }
-  };
-
-  const handleNicknameChange = async (nickname) => {
-    if (nickname) {
+  const handleNicknameChange = async(event) => {
+    const curNickname = event.target.value;
+    setName(curNickname);
+    if(curNickname){
       try {
         const isAvailable = await checkNicknameAvailability(nickname);
-        setIsNicknameAvailable(isAvailable);
+        setIsNicknameAvailableState(isAvailable);
         setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
       } catch (error) {
         console.error(error.message);
-        setIsNicknameAvailable(false);
+        setIsNicknameAvailableState(false);
         setNicknameMessage(error.message);
       }
     }
-  };
+  }
 
   const handleCancel = () => {
-    setFormData({
-      password: '',
-      confirmPassword: '',
-      nickname: nickName || '',
-    });
+    //setPassword('');
+    setConfirmPassword('');
+    setName(nickname);
     setError('');
     setNicknameMessage('');
-    setIsNicknameAvailable(true);
+    setIsNicknameAvailableState(true);
   };
 
   const handleSave = async () => {
-    if (!passwordMatch) {
+    if (!isPasswordMatchState) {
       setError('비밀번호가 일치하지 않습니다.');
       return;
     }
@@ -150,16 +133,18 @@ const UserInfo = ({ userData }) => {
       return;
     }
 
-    if (!isNicknameAvailable) {
+    if (!isNicknameAvailableState) {
       setError('사용할 수 없는 닉네임입니다.');
       return;
     }
 
     try {
-      const response = await axiosIntercepter.patch(`/mypage/${userId}`, {
-        password: formData.password,
-        nickname: formData.nickname,
-      });
+      const patchData = useState({
+        password: password,
+        nickname: nickname,
+      })
+
+      const response = await sendRequest(`/mypage/${userId}`, postData, "patch");
 
       if (response.status === 200) {
         console.log('수정 성공:', formData);
@@ -177,6 +162,12 @@ const UserInfo = ({ userData }) => {
     }
   };
 
+  useEffect(()=>{
+    if(nickname){
+      setName(nickname);
+    }
+  },[nickname]);
+
   return (
     <UserInfoContainer>
       <ProfileImageContainer>
@@ -193,8 +184,8 @@ const UserInfo = ({ userData }) => {
             type="password"
             placeholder="비밀번호"
             name="password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={handlePasswordChange}
           />
           {!isPasswordValidState && <ErrorMessage>영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.</ErrorMessage>}
         </ProfileField>
@@ -204,26 +195,26 @@ const UserInfo = ({ userData }) => {
             type="password"
             placeholder="비밀번호 확인"
             name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
           />
-          {!passwordMatch && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
+          {!isPasswordMatchState && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
         </ProfileField>
         <ProfileField>
           <InputLabel>닉네임</InputLabel>
           <ProfileInput
             type="text"
-            placeholder={formData.nickname || "닉네임"}
+            placeholder={name || "닉네임"}
             name="nickname"
-            value={formData.nickname || ''}
-            onChange={handleChange}
+            value={name || ''}
+            onChange={handleNicknameChange}
           />
-          {nicknameMessage && <ErrorMessage>{nicknameMessage}</ErrorMessage>}
+          {!isNicknameAvailableState && <ErrorMessage>{nicknameMessage}</ErrorMessage>}
         </ProfileField>
       </ProfileInfo>
       <ButtonGroup>
-        <Button $cancel onClick={handleCancel}>취소</Button>
-        <Button onClick={handleSave}>수정</Button>
+        <OutlineButton label="취소" $cancel onClick={handleCancel} />
+        <RoundButton label="수정" onClick={handleSave} />
       </ButtonGroup>
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </UserInfoContainer>
