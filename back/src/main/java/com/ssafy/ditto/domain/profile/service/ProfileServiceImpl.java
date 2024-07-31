@@ -237,7 +237,7 @@ public class ProfileServiceImpl implements ProfileService {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
             return ClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -283,7 +283,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {
             User reviewer = review.getUser();
-            User teacher = review.getClassId().getUserId();
+            User teacher = review.getDclass().getUserId();
 
             return ReviewDetailResponse.of(review, reviewer, teacher);
         }).collect(Collectors.toList());

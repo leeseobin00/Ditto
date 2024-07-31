@@ -48,8 +48,6 @@ dependencies {
 
     // Google Speech To Text
     implementation 'com.google.cloud:google-cloud-speech:4.41.0'
-
-    implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 tasks.named('test') {

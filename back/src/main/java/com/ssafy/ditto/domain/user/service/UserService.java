@@ -1,10 +1,9 @@
 package com.ssafy.ditto.domain.user.service;
 
-import com.ssafy.ditto.domain.user.dto.LoginResponse;
-import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
-import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
-import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
+import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.global.jwt.dto.JwtResponse;
+
+import java.security.NoSuchAlgorithmException;
 
 public interface UserService {
     void signup(UserSignUpRequest userSignUpRequest);
@@ -18,4 +17,10 @@ public interface UserService {
     boolean emailDuplicateCheck(String email);
 
     boolean nickNameDuplicateCheck(String nickname);
+
+    LoginResponse kakaoLogin(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException;
+
+    void kakaoSignup(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException;
+
+    String createRandomString() throws NoSuchAlgorithmException;
 }

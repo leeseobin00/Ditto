@@ -139,7 +139,7 @@ public class ClassServiceImpl implements ClassService {
         TagResponse tagResponse = TagResponse.builder()
                 .tagId(dClass.getTagId().getTagId())
                 .tagName(dClass.getTagId().getTagName())
-                .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                .categoryId(dClass.getTagId().getCategory().getCategoryId())
                 .build();
 
         return ClassDetailResponse.builder()
@@ -227,7 +227,7 @@ public class ClassServiceImpl implements ClassService {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
             return ClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -272,7 +272,7 @@ public class ClassServiceImpl implements ClassService {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
             return ClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -313,7 +313,7 @@ public class ClassServiceImpl implements ClassService {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategoryId().getCategoryId())
+                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
             return ClassResponse.builder()
                     .classId(dClass.getClassId())

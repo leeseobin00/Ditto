@@ -19,7 +19,7 @@ public class TagServiceImpl implements TagService {
                 .map(tag -> TagResponse.builder()
                         .tagId(tag.getTagId())
                         .tagName(tag.getTagName())
-                        .categoryId(tag.getCategoryId().getCategoryId())
+                        .categoryId(tag.getCategory().getCategoryId())
                         .build())
                 .collect(Collectors.toList());
     }
