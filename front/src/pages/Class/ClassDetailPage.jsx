@@ -31,17 +31,28 @@ function ClassDetailPage() {
   const userName = useSelector((state) => state.auth.nickname);
   const roleId = useSelector((state) => state.auth.roleId);
   // axios
-  const { sendRequest: getClassInfo } = useAxios();
+  const { sendRequest: getClassInfo, sendRequest: getLectureList } = useAxios();
 
   // router
   const { classId } = useParams();
 
   const [classInfo, setClassInfo] = useState(null);
+  const [lectureList, setLectureList] = useState(null);
 
   const handleGetClass = async () => {
     try {
-      const result = await getClassInfo(`/classes/${classId}`, null, "get");
-      setClassInfo(result?.data);
+      const classResponse = await getClassInfo(
+        `/classes/${classId}`,
+        null,
+        "get"
+      );
+      setClassInfo(classResponse?.data);
+      const lectureResponse = await getLectureList(
+        `/classes/${classId}/lectures`,
+        null,
+        "get"
+      );
+      setLectureList(lectureResponse?.data);
     } catch (error) {
       console.error("Error fetching class info:", error);
     }
@@ -64,7 +75,7 @@ function ClassDetailPage() {
           <TabBar titleIds={titleIds} />
           <ClassBody>
             <ClassInfo classInfo={classInfo} titleIds={titleIds} />
-            <ClassSideBar classInfo={classInfo} />
+            <ClassSideBar classInfo={classInfo} lectureList={lectureList} />
           </ClassBody>
         </>
       )}

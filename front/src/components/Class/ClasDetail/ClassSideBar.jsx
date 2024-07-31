@@ -1,4 +1,7 @@
-import { styled } from "styled-components";
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+
+import useAxios from "../../../hooks/useAxios";
 
 import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
@@ -52,8 +55,9 @@ const SelectBox = styled.select`
   border-radius: 25px;
   border-color: var(--BORDER_COLOR);
   height: 40px;
-  font-size: 20px;
+  font-size: 18px;
   padding-left: 10px;
+  color: var(--TEXT_SECONDARY);
   &:focus {
     border-width: 2px;
     border-color: var(--SECONDARY);
