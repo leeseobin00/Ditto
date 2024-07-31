@@ -75,6 +75,9 @@ public class SessionController {
 		this.SECRET = secret;
 		this.OPENVIDU_URL = openviduUrl;
 		this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
+
+		System.out.println("OpenVidu URL: " + OPENVIDU_URL);
+		System.out.println("OpenVidu Secret: " + SECRET);
 	}
 
 	@PostMapping("/create/{lectureId}")
@@ -94,9 +97,18 @@ public class SessionController {
 				this.lectureSessions.put(lectureId, session);
 				this.sessionIdUserIdToken.put(session.getSessionId(), new HashMap<>());
 
+				showMap();
+
 				return ResponseDto.of(HttpStatus.OK.value(), "라이브 방송 링크가 생성되었습니다.");
+			} catch (OpenViduJavaClientException e) {
+				e.printStackTrace();
+				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 클라이언트 오류 발생: " + e.getMessage());
+			} catch (OpenViduHttpException e) {
+				e.printStackTrace();
+				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu HTTP 오류 발생: " + e.getMessage());
 			} catch (Exception e) {
-				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "세션 생성 중 오류가 발생했습니다.");
+				e.printStackTrace();
+				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "세션 생성 중 알 수 없는 오류가 발생했습니다: " + e.getMessage());
 			}
 		}
 	}
@@ -504,5 +516,12 @@ public class SessionController {
 		connections.add("content", jsonArrayConnections);
 		json.add("connections", connections);
 		return json;
+	}
+
+	private void showMap() {
+		System.out.println("------------------------------");
+		System.out.println(this.lectureSessions.toString());
+		System.out.println(this.sessionIdUserIdToken.toString());
+		System.out.println("------------------------------");
 	}
 }

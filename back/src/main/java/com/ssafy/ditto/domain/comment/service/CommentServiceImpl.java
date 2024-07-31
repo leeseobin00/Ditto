@@ -61,6 +61,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public List<CommentResponse> getCommentList(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         List<Comment> commentList = commentRepository.findAllByPost_PostId(post.getPostId());
@@ -87,8 +88,8 @@ public class CommentServiceImpl implements CommentService {
         return responseList;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public String modifyComment(int commentId, CommentRequest commentReq) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
