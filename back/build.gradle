@@ -48,6 +48,8 @@ dependencies {
 
     // Google Speech To Text
     implementation 'com.google.cloud:google-cloud-speech:4.41.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
