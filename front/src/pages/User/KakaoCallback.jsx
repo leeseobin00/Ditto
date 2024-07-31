@@ -15,7 +15,7 @@ const KakaoCallback = () => {
     const code = new URLSearchParams(location.search).get('code');
     
     if (code) {
-      axios.post('http://localhost:8080/users/sociallogin', { code })
+      axios.post('http://localhost:8080/users/kakao-login', { code })
         .then(response => {
           console.log(response);
           const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
