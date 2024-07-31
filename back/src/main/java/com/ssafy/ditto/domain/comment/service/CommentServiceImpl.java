@@ -55,8 +55,9 @@ public class CommentServiceImpl implements CommentService {
         if(comment.getLevel() > MAX_COMMENT_LEVEL) { // 댓글 레벨 제한
             throw new CommentException(COMMENT_LEVEL_EXCEED);
         }
-
         commentRepository.save(comment);
+        int commentCnt = postRepository.countComments(post.getPostId());
+        postRepository.commentCountUpdate(post.getPostId(),commentCnt);
         return comment.getCommentId()+"번 댓글 작성완료";
     }
 
@@ -108,6 +109,7 @@ public class CommentServiceImpl implements CommentService {
     public String deleteComment(int commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
+        Post post = comment.getPost();
 
         if (comment.getLevel() == 0) { // 댓글
             if (hasActiveChildren(comment)) {
@@ -123,7 +125,8 @@ public class CommentServiceImpl implements CommentService {
             // 부모 댓글이 "삭제된 댓글"이고 더 이상 자식 댓글이 없으면 부모 댓글도 삭제
             checkAndDeleteParentComment(parent);
         }
-
+        int commentCnt = postRepository.countComments(post.getPostId());
+        postRepository.commentCountUpdate(post.getPostId(),commentCnt);
         return comment.getCommentId() + "번 댓글 삭제";
     }
 
