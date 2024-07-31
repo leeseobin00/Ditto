@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+
 import styled from "styled-components";
 
+import useAxios from "../../../hooks/useAxios";
 import UserIcon from "../../../assets/icon/class/user-count.png";
 import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
@@ -118,6 +120,9 @@ function ClassSideBar({
   roleId,
   updateLectureList,
 }) {
+  const [likeCount, setLikeCount] = useState(classInfo.likeCount);
+  const [isLike, setIsLike] = useState(false);
+  const [heartActivated, setHeartActivated] = useState(false);
   const [selectedLecture, setSelectedLecture] = useState(
     lectureList && lectureList.length > 0 ? lectureList[0] : null
   );
@@ -125,6 +130,81 @@ function ClassSideBar({
     selectedLecture ? selectedLecture.userCount : 0
   );
   const [showModal, setShowModal] = useState(false);
+  const {
+    sendRequest: getIsLike,
+    sendRequest: postLike,
+    sendRequest: deleteLike,
+  } = useAxios();
+
+  const handleGetIsLike = async () => {
+    if (userId == null) {
+      return;
+    }
+
+    if (roleId == 2) {
+      setHeartActivated(true);
+      return;
+    }
+
+    try {
+      const getIsLikeResponse = await getIsLike(
+        `/classes/${classInfo?.classId}/like?userId=${userId}`,
+        null,
+        "get"
+      );
+      setIsLike(getIsLikeResponse.data);
+      setHeartActivated(getIsLikeResponse.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handlePostLike = async () => {
+    if (userId == null) {
+      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      return;
+    }
+
+    try {
+      await postLike(
+        `/classes/${classInfo?.classId}/likes`,
+        { userId: userId },
+        "post"
+      );
+      setLikeCount(likeCount + 1);
+      setHeartActivated(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteLike = async () => {
+    if (userId == null) {
+      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      return;
+    }
+
+    if (roleId == 2) {
+      alert("강사는 클래스 좋아요 기능을 이용할 수 없습니다.");
+      return;
+    }
+
+    try {
+      await deleteLike(
+        `/classes/${classInfo?.classId}/likes`,
+        { userId: userId },
+        "delete"
+      );
+      setLikeCount(likeCount - 1);
+      setHeartActivated(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetIsLike();
+  }, [classInfo?.classId, userId]);
 
   const handleSelectChange = (event) => {
     const selectedLectureId = event.target.value;
@@ -190,8 +270,11 @@ function ClassSideBar({
         onClose={handleShowModal}
       />
       <LikeContainer>
-        <LikeButton src={EmptyHeart} />
-        <LikeCount>{formatNumber(classInfo.likeCount)}</LikeCount>
+        <LikeButton
+          src={heartActivated ? ActivatedHeart : EmptyHeart}
+          onClick={heartActivated ? handleDeleteLike : handlePostLike}
+        />
+        <LikeCount>{formatNumber(likeCount)}</LikeCount>
       </LikeContainer>
     </ClassSideBarConatiner>
   );
