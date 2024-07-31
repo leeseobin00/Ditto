@@ -1,25 +1,14 @@
-# openvidu-basic-java
+[![License badge](https://img.shields.io/badge/license-Apache2-orange.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![OpenVidu Tests](https://github.com/OpenVidu/openvidu/actions/workflows/openvidu-ce-test.yml/badge.svg)](https://github.com/OpenVidu/openvidu/actions/workflows/openvidu-ce-test.yml)
+[![Documentation Status](https://readthedocs.org/projects/openvidu/badge/?version=stable)](https://docs.openvidu.io/en/stable/?badge=stable)
+[![Docker badge](https://img.shields.io/docker/pulls/openvidu/openvidu-server-kms.svg)](https://hub.docker.com/r/openvidu/openvidu-server-kms)
+[![Support badge](https://img.shields.io/badge/support-sof-yellowgreen.svg)](https://openvidu.discourse.group/)
 
-This is a minimal OpenVidu server application sample built for Java with Spring Boot. Visit [Application server](https://docs.openvidu.io/en/stable/application-server/) documentation for further context.
+[![][OpenViduLogo]](http://openvidu.io)
 
-It internally uses [openvidu-java-client SDK](https://docs.openvidu.io/en/stable/reference-docs/openvidu-java-client/).
+openvidu-recording-java
+===
 
-## Prerequisites
+Visit [docs.openvidu.io/en/stable/tutorials/openvidu-recording-java/](http://docs.openvidu.io/en/stable/tutorials/openvidu-recording-java/)
 
-- [Java (>=11)](https://www.java.com/en/download/manual.jsp)
-- [Maven](https://maven.apache.org)
-
-## Run
-
-Download repository
-
-```
-git clone git@github.com:OpenVidu/openvidu-tutorials.git
-cd openvidu-tutorials/openvidu-basic-java
-```
-
-Run the application
-
-```
-mvn spring-boot:run
-```
+[OpenViduLogo]: https://secure.gravatar.com/avatar/5daba1d43042f2e4e85849733c8e5702?s=120
