@@ -171,7 +171,7 @@ function Post({
   likeCount,
   tagName,
 }) {
-  const { userId } = useSelector((state)=>state.auth.userId);
+  const userId = useSelector((state)=>state.auth.userId);
   const { response: getLikeResponse, sendRequest: getLike } = useAxios();
   const { sendRequest: postLike } = useAxios();
   const { sendRequest: deleteLike } = useAxios();
@@ -292,7 +292,7 @@ function Post({
                 color="ACCENT1"
                 onClick={handleConfirmDelete}
               />
-              <Button label="취소" color="default" onClick={handleCloseModal} />
+              <OutlineButton label="취소" color="default" onClick={handleCloseModal} />
             </ModalButtons>
           </ModalContent>
         </Modal>
