@@ -68,9 +68,14 @@ const authSlice = createSlice({
       localStorage.removeItem("roleId");
       localStorage.removeItem("domain");
     },
+    changeNickname: (state, action) => {
+      console.log(action.payload);
+      state.nickname = action.payload.nickname;
+      localStorage.setItem("nickname", action.payload.nickname);
+    }
   },
 });
 
-export const { login, logout, refresh, sessionExpired } = authSlice.actions;
+export const { login, logout, refresh, sessionExpired, changeNickname } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -40,7 +40,7 @@ const SidebarNav = () => {
   
   return (
     <Sidebar>
-      {roleId === "1" && (
+      {roleId == "1" && (
         <>
           <NavItem to="/mypage/userinfo">계정 정보</NavItem>
           <NavItem to="/mypage/payments">결제 내역</NavItem>
@@ -49,7 +49,7 @@ const SidebarNav = () => {
           <NavItem to="/mypage/liked">관심 목록</NavItem>
         </>
       )}
-      {roleId === "2" && (
+      {roleId == "2" && (
         <>
           <NavItem to="prouserinfo">계정 정보</NavItem>
           <NavItem to="mileage">마일리지 출금</NavItem>
