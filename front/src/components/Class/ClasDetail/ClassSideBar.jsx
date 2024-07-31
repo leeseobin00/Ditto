@@ -26,7 +26,7 @@ const ClassSideBarConatiner = styled.div`
   margin-top: 25px;
   margin-left: 15px;
   justify-content: space-between;
-  z-index: 10;
+  z-index: 8;
 `;
 
 const ClassPriceContainer = styled.div`

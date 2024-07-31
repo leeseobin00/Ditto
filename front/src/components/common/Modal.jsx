@@ -12,7 +12,7 @@ const Overlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 10;
 `;
 
 // 모달 컨테이너 스타일 정의
@@ -24,7 +24,7 @@ const ModalContainer = styled.div`
   max-width: 500px;
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 2;
+  z-index: 9999;
 
   // 모달 애니메이션 (옵션)
   transition: all 0.3s ease-in-out;
