@@ -61,6 +61,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public List<CommentResponse> getCommentList(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
         List<Comment> commentList = commentRepository.findAllByPost_PostId(post.getPostId());
@@ -74,6 +75,7 @@ public class CommentServiceImpl implements CommentService {
                 commentResp.setParentId(comment.getParent().getCommentId());
             commentResp.setUserId(comment.getUser().getUserId());
             commentResp.setNickname(comment.getUser().getNickname());
+            commentResp.setFileId(comment.getUser().getFileId().getFileId());
             commentResp.setFileUrl(comment.getUser().getFileId().getFileUrl());
             commentResp.setContent(checkRemoved(comment));
             commentResp.setLevel(comment.getLevel());
@@ -87,8 +89,8 @@ public class CommentServiceImpl implements CommentService {
         return responseList;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public String modifyComment(int commentId, CommentRequest commentReq) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
@@ -101,6 +103,7 @@ public class CommentServiceImpl implements CommentService {
         return comment.getCommentId() + "번 댓글 수정";
     }
 
+    @Override
     @Transactional
     public String deleteComment(int commentId) {
         Comment comment = commentRepository.findById(commentId)
