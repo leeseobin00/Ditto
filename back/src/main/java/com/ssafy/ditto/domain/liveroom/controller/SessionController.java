@@ -1,9 +1,16 @@
-package io.openvidu.recording.java;
+package com.ssafy.ditto.domain.liveroom.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.liveroom.dto.RecordResponse;
+import com.ssafy.ditto.domain.liveroom.service.LearningService;
+import com.ssafy.ditto.global.dto.ResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,16 +46,20 @@ import java.util.zip.ZipInputStream;
 
 
 @RestController
-@RequestMapping("")
-public class MyRestController {
+@RequestMapping("/sessions")
+public class SessionController {
 
 	// OpenVidu object as entrypoint of the SDK
 	private OpenVidu openVidu;
+	@Autowired
+	private LearningService learningService;
+	@Autowired
+	private LectureService lectureService;
 
 	// Collection to pair session names and OpenVidu Session objects
-	private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
+	private Map<Integer, Session> lectureSessions = new ConcurrentHashMap<>();
 	// Collection to pair session names and tokens (the inner Map pairs tokens and role associated)
-	private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
+	private Map<String, Map<Integer, OpenViduRole>> sessionIdUserIdToken = new ConcurrentHashMap<>();
 	// Collection to pair session names and recording objects
 	private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
 
@@ -60,38 +71,36 @@ public class MyRestController {
 	// room 생성 시 정보
 	String sName, nName;
 
-	public MyRestController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
+	public SessionController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl) {
 		this.SECRET = secret;
 		this.OPENVIDU_URL = openviduUrl;
 		this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
 	}
 
+	@PostMapping("/create/{lectureId}")
+	public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
+		boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
+		if (!isValidTeacher) {
+			return ResponseDto.of(HttpStatus.FORBIDDEN.value(), "사용자가 교사 역할이 아닙니다.");
+		}
 
-	/*******************/
-	/*** Create Room ***/
-	/*** @throws URISyntaxException *****************/
-	@GetMapping("/createRoom")
-	public ResponseEntity<?> getRoom(@RequestParam String sessionName, @RequestParam String nickname) throws URISyntaxException {
-		// 만들 방 정보 받아 오기
-		sName = sessionName;
-		nName = nickname;
-		System.out.println("sessionName: " + sName + ", nickname: " + nName);
+		if (lectureSessions.containsKey(lectureId)) {
+			// 이미 유효한 세션이 존재하는 경우
+			return ResponseDto.of(HttpStatus.OK.value(), "이미 라이브 방송 링크가 생성되어 있습니다.");
+		} else {
+			try {
+				Session session = this.openVidu.createSession();
+				System.out.println("???");
+				this.lectureSessions.put(lectureId, session);
+				this.sessionIdUserIdToken.put(session.getSessionId(), new HashMap<>());
 
-		// Json 형태로 저장
-		Gson gson = new Gson();
-		JsonObject json = new JsonObject();
-		json.addProperty("sessionName", sName);
-		json.addProperty("nickname", nName);
-		System.out.println(json);
-
-		// redirect 하면 데이터 전달 --- 주소및 https 확인 필요!!!!
-		URI uri = new URI("http://i11a106.p.ssafy.io:5000/");
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setLocation(uri);
-		httpHeaders.add("sessionInfo", sName + "," + nName);
-
-		return new ResponseEntity<>(httpHeaders, HttpStatus.OK);
+				return ResponseDto.of(HttpStatus.OK.value(), "라이브 방송 링크가 생성되었습니다.");
+			} catch (Exception e) {
+				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "세션 생성 중 오류가 발생했습니다.");
+			}
+		}
 	}
+
 
 	/*******************/
 	/*** Session API ***/
@@ -117,16 +126,16 @@ public class MyRestController {
 
 		JsonObject responseJson = new JsonObject();
 
-		if (this.mapSessions.get(sessionName) != null) {
+		if (this.lectureSessions.get(sessionName) != null) {
 			// 세션이 이미 존재함
 			System.out.println("Existing session " + sessionName);
 			try {
 
 				// 방금 생성한 connectionProperties로 새 토큰 생성
-				String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
+				String token = this.lectureSessions.get(sessionName).createConnection(connectionProperties).getToken();
 
 				// 새 토큰을 저장하는 컬렉션 업데이트
-				this.mapSessionNamesTokens.get(sessionName).put(token, role);
+//				this.sessionIdUserIdToken.get(sessionName).put(token, role);
 
 				// 토큰으로 응답 준비
 				responseJson.addProperty("0", token);
@@ -142,8 +151,8 @@ public class MyRestController {
 					// 유효하지 않은 sessionId (사용자가 예기치 않게 떠남). 세션 객체가 더 이상 유효하지 않음.
 					// 컬렉션을 정리하고 새로운 세션으로 계속 진행
 					e2.printStackTrace();
-					this.mapSessions.remove(sessionName);
-					this.mapSessionNamesTokens.remove(sessionName);
+					this.lectureSessions.remove(sessionName);
+					this.sessionIdUserIdToken.remove(sessionName);
 				}
 			}
 		}
@@ -158,9 +167,9 @@ public class MyRestController {
 			String token = session.createConnection(connectionProperties).getToken();
 
 			// 세션과 토큰을 컬렉션에 저장
-			this.mapSessions.put(sessionName, session);
-			this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
-			this.mapSessionNamesTokens.get(sessionName).put(token, role);
+//			this.lectureSessions.put(sessionId, session);
+			this.sessionIdUserIdToken.put(sessionName, new ConcurrentHashMap<>());
+//			this.sessionIdUserIdToken.get(sessionName).put(token, role);
 
 			// sessionId와 토큰으로 응답 준비
 			responseJson.addProperty("0", token);
@@ -184,14 +193,14 @@ public class MyRestController {
 		String token = (String) sessionNameToken.get("token");
 
 		// 세션이 존재하는 경우
-		if (this.mapSessions.get(sessionName) != null && this.mapSessionNamesTokens.get(sessionName) != null) {
+		if (this.lectureSessions.get(sessionName) != null && this.sessionIdUserIdToken.get(sessionName) != null) {
 
 			// 토큰이 존재하는 경우
-			if (this.mapSessionNamesTokens.get(sessionName).remove(token) != null) {
+			if (this.sessionIdUserIdToken.get(sessionName).remove(token) != null) {
 				// 사용자가 세션을 떠남
-				if (this.mapSessionNamesTokens.get(sessionName).isEmpty()) {
+				if (this.sessionIdUserIdToken.get(sessionName).isEmpty()) {
 					// 마지막 사용자가 떠남: 세션을 제거해야 함
-					this.mapSessions.remove(sessionName);
+					this.lectureSessions.remove(sessionName);
 				}
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
@@ -215,11 +224,11 @@ public class MyRestController {
 		System.out.println("Closing session | {sessionName}=" + session);
 
 		// 세션이 존재하는 경우
-		if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
-			Session s = this.mapSessions.get(session);
+		if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
+			Session s = this.lectureSessions.get(session);
 			s.close();
-			this.mapSessions.remove(session);
-			this.mapSessionNamesTokens.remove(session);
+			this.lectureSessions.remove(session);
+			this.sessionIdUserIdToken.remove(session);
 			this.sessionRecordings.remove(s.getSessionId());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
@@ -238,8 +247,8 @@ public class MyRestController {
 			String session = (String) sessionName.get("sessionName");
 
 			// 세션이 존재하는 경우
-			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
-				Session s = this.mapSessions.get(session);
+			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
+				Session s = this.lectureSessions.get(session);
 				boolean changed = s.fetch();
 				System.out.println("Any change: " + changed);
 				return new ResponseEntity<>(this.sessionToJson(s), HttpStatus.OK);
@@ -279,8 +288,8 @@ public class MyRestController {
 			String connectionId = (String) params.get("connectionId");
 
 			// 세션이 존재하는 경우
-			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
-				Session s = this.mapSessions.get(session);
+			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
+				Session s = this.lectureSessions.get(session);
 				s.forceDisconnect(connectionId);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
@@ -301,8 +310,8 @@ public class MyRestController {
 			String streamId = (String) params.get("streamId");
 
 			// 세션이 존재하는 경우
-			if (this.mapSessions.get(session) != null && this.mapSessionNamesTokens.get(session) != null) {
-				Session s = this.mapSessions.get(session);
+			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
+				Session s = this.lectureSessions.get(session);
 				s.forceUnpublish(streamId);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
@@ -414,10 +423,10 @@ public class MyRestController {
 					"openvidu" + File.separator + "recordings" + File.separator + sessionId + File.separator + recordName;
 			System.out.println("uRecordUrl: " + uRecordUrl);
 
-			Record urlDto = new Record(recording, uRecordUrl);
+			RecordResponse url = new RecordResponse(recording, uRecordUrl);
 			this.sessionRecordings.remove(recording.getSessionId());
 
-			return new ResponseEntity<>(urlDto, HttpStatus.OK);
+			return new ResponseEntity<>(url, HttpStatus.OK);
 		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}

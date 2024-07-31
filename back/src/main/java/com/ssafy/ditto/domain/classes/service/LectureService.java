@@ -13,4 +13,6 @@ public interface LectureService {
     void deleteLecture(Integer classId, Integer lectureId);
 
     List<LectureResponse> getLecturesByClassId(Integer classId);
+
+    boolean isValidTeacher(Integer userId, int lectureId);
 }

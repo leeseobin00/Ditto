@@ -50,6 +50,18 @@ dependencies {
     implementation 'com.google.cloud:google-cloud-speech:4.41.0'
 
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    // OpenVidU 관련
+    implementation 'io.openvidu:openvidu-java-client:2.30.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.3'
+    testImplementation 'io.github.bonigarcia:selenium-jupiter:3.1.0'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:2.2.0'
+    testImplementation 'org.junit.platform:junit-platform-runner'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'ws.schild:jave-all-deps:2.4.6'
+    testImplementation 'ws.schild:jave-core:2.4.6'
+    testImplementation 'io.openvidu:openvidu-test-browsers:1.0.0'
 }
 
 tasks.named('test') {
