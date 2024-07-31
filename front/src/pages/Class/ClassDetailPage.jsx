@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -28,8 +28,8 @@ function ClassDetailPage() {
 
   // redux
   const userId = useSelector((state) => state.auth.userId);
-  const userName = useSelector((state) => state.auth.nickname);
   const roleId = useSelector((state) => state.auth.roleId);
+
   // axios
   const { sendRequest: getClassInfo, sendRequest: getLectureList } = useAxios();
 
@@ -37,7 +37,7 @@ function ClassDetailPage() {
   const { classId } = useParams();
 
   const [classInfo, setClassInfo] = useState(null);
-  const [lectureList, setLectureList] = useState(null);
+  const [lectureList, setLectureList] = useState([]);
 
   const handleGetClass = async () => {
     try {
@@ -58,9 +58,22 @@ function ClassDetailPage() {
     }
   };
 
+  const updateLectureList = async () => {
+    try {
+      const lectureResponse = await getLectureList(
+        `/classes/${classId}/lectures`,
+        null,
+        "get"
+      );
+      setLectureList(lectureResponse?.data);
+    } catch (error) {
+      console.error("Error updating lecture list:", error);
+    }
+  };
+
   useEffect(() => {
     handleGetClass();
-  }, [handleGetClass]);
+  }, [classId]); // classId가 변경될 때마다 handleGetClass 호출
 
   return (
     <ClassDetailPageContainer>
@@ -70,12 +83,23 @@ function ClassDetailPage() {
             classInfo={classInfo}
             file={classInfo?.file}
             instructor={classInfo?.user}
-            tag={classInfo.tag}
+            tag={classInfo?.tag}
           />
           <TabBar titleIds={titleIds} />
           <ClassBody>
-            <ClassInfo classInfo={classInfo} titleIds={titleIds} />
-            <ClassSideBar classInfo={classInfo} lectureList={lectureList} />
+            <ClassInfo
+              classInfo={classInfo}
+              titleIds={titleIds}
+              userId={userId}
+              roleId={roleId}
+            />
+            <ClassSideBar
+              classInfo={classInfo}
+              lectureList={lectureList}
+              userId={userId}
+              roleId={roleId}
+              updateLectureList={updateLectureList}
+            />
           </ClassBody>
         </>
       )}

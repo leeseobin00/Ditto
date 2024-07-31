@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-import useAxios from "../../../hooks/useAxios";
-
+import UserIcon from "../../../assets/icon/class/user-count.png";
 import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
-import Heart from "../../../assets/icon/common/heart/heart-secondary.png";
-import HeartActivated from "../../../assets/icon/common/heart/heart-activated.png";
+import EmptyHeart from "../../../assets/icon/common/heart/heart-secondary.png";
+import ActivatedHeart from "../../../assets/icon/common/heart/heart-activated.png";
+import ClassLectureModal from "./ClassLectureModal";
 
 const ClassSideBarConatiner = styled.div`
   position: sticky;
@@ -14,7 +14,7 @@ const ClassSideBarConatiner = styled.div`
   display: flex;
   flex-direction: column;
   width: 230px;
-  height: 250px;
+  height: 270px;
   border-style: solid;
   border-width: 0.5px;
   border-radius: 10px;
@@ -24,6 +24,7 @@ const ClassSideBarConatiner = styled.div`
   margin-top: 25px;
   margin-left: 15px;
   justify-content: space-between;
+  z-index: 10;
 `;
 
 const ClassPriceContainer = styled.div`
@@ -47,7 +48,7 @@ const ClassPrice = styled.div`
 const SelectBoxContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100px;
+  height: 130px;
   justify-content: space-between;
 `;
 
@@ -55,7 +56,7 @@ const SelectBox = styled.select`
   border-radius: 25px;
   border-color: var(--BORDER_COLOR);
   height: 40px;
-  font-size: 18px;
+  font-size: 16px;
   padding-left: 10px;
   color: var(--TEXT_SECONDARY);
   &:focus {
@@ -63,6 +64,24 @@ const SelectBox = styled.select`
     border-color: var(--SECONDARY);
     outline: none;
   }
+`;
+
+const UserCountICon = styled.img`
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+`;
+
+const StudentsNum = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 20px;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin: 10px 0;
 `;
 
 const LikeContainer = styled.div`
@@ -73,14 +92,10 @@ const LikeContainer = styled.div`
   justify-content: center;
 `;
 
-const LikeButton = styled.button`
+const LikeButton = styled.img`
   width: 25px;
   height: 25px;
-  background-color: transparent;
-  background-image: url(${Heart});
-  background-size: cover;
   margin-right: 10px;
-  border-style: none;
   cursor: pointer;
   &:hover {
     filter: drop-shadow(0px 0px 2px rgb(237, 43, 43));
@@ -96,7 +111,37 @@ const formatNumber = (number) => {
   return number.toLocaleString();
 };
 
-function ClassSideBar({ classInfo, lectureList }) {
+function ClassSideBar({
+  classInfo,
+  lectureList,
+  userId,
+  roleId,
+  updateLectureList,
+}) {
+  const [selectedLecture, setSelectedLecture] = useState(
+    lectureList && lectureList.length > 0 ? lectureList[0] : null
+  );
+  const [lectureUserCount, setLectureUserCount] = useState(
+    selectedLecture ? selectedLecture.userCount : 0
+  );
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSelectChange = (event) => {
+    const selectedLectureId = event.target.value;
+    const lecture =
+      lectureList.find((lecture) => lecture.lectureId === selectedLectureId) ||
+      {};
+    setSelectedLecture(lecture);
+  };
+
+  useEffect(() => {
+    setLectureUserCount(selectedLecture ? selectedLecture.userCount : 0);
+  }, [selectedLecture]);
+
+  const handleShowModal = () => {
+    setShowModal(!showModal);
+  };
+
   return (
     <ClassSideBarConatiner>
       <ClassPriceContainer>
@@ -105,13 +150,47 @@ function ClassSideBar({ classInfo, lectureList }) {
       </ClassPriceContainer>
       <hr />
       <SelectBoxContainer>
-        <SelectBox>
-          <option>2022-08-10</option>
-        </SelectBox>
-        <RoundButton label={"구매하기"} size="lg" />
+        {lectureList && lectureList.length > 0 ? (
+          <>
+            <SelectBox onChange={handleSelectChange}>
+              {lectureList.map((lecture, index) => (
+                <option key={index} value={lecture.lectureId}>
+                  {String(lecture.year).padStart(4, "0")}-
+                  {String(lecture.month).padStart(2, "0")}-
+                  {String(lecture.day).padStart(2, "0")}&nbsp;
+                  {String(lecture.hour).padStart(2, "0")}:
+                  {String(lecture.minute).padStart(2, "0")}
+                </option>
+              ))}
+            </SelectBox>
+            <StudentsNum>
+              <UserCountICon src={UserIcon} />
+              {lectureUserCount == null ? "0" : `${lectureUserCount}`}
+              &nbsp;/&nbsp;{classInfo.classMax}
+            </StudentsNum>
+          </>
+        ) : (
+          <StudentsNum>강의가 없습니다.</StudentsNum>
+        )}
+        {classInfo.user.userId == userId ? (
+          <RoundButton
+            label={"클래스 일정 관리"}
+            size={"md"}
+            onClick={handleShowModal}
+          />
+        ) : (
+          <RoundButton label={"구매하기"} size="md" />
+        )}
       </SelectBoxContainer>
+      <ClassLectureModal
+        lectureList={lectureList || []}
+        classId={classInfo.classId}
+        updateLectureList={updateLectureList}
+        show={showModal}
+        onClose={handleShowModal}
+      />
       <LikeContainer>
-        <LikeButton />
+        <LikeButton src={EmptyHeart} />
         <LikeCount>{formatNumber(classInfo.likeCount)}</LikeCount>
       </LikeContainer>
     </ClassSideBarConatiner>
