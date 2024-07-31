@@ -359,7 +359,6 @@ function BoardDetailPage() {
                 </CommentReplyWrapper>
               ))}
 
-              </ChildCommentWrapper>
               {showReplyForms[index] && (
                 <CommentReplyWrapper>
                   <ReplyForm
@@ -370,6 +369,8 @@ function BoardDetailPage() {
                   />
                 </CommentReplyWrapper>
               )}
+
+              </ChildCommentWrapper>
             </Comment>
           ))}
         </Comments>
