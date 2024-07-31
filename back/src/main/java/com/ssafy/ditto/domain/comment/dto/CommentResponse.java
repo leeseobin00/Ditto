@@ -19,6 +19,7 @@ public class CommentResponse extends BaseTimeEntity {
     private Integer parentId;
     private Integer userId;
     private String nickname;
+    private Integer fileId;
     private String fileUrl;
     private String content;
     private Byte level;
@@ -26,12 +27,13 @@ public class CommentResponse extends BaseTimeEntity {
     private List<CommentResponse> children = new ArrayList<>();
 
     public CommentResponse(Integer commentId, Integer parentId, Integer userId,
-                           String nickname, String fileUrl, String content,
+                           String nickname, Integer fileId, String fileUrl, String content,
                            Byte level, Boolean isDeleted, List<CommentResponse> children) {
         this.commentId = commentId;
         this.parentId = parentId;
         this.userId = userId;
         this.nickname = nickname;
+        this.fileId = fileId;
         this.fileUrl = fileUrl;
         this.content = content;
         this.level = level;
@@ -45,6 +47,7 @@ public class CommentResponse extends BaseTimeEntity {
                 comment.getParent() != null ? comment.getParent().getCommentId() : -1,
                 comment.getUser().getUserId(),
                 comment.getUser().getNickname(),
+                comment.getUser().getFileId().getFileId(),
                 comment.getUser().getFileId().getFileUrl(),
                 comment.getContent(),
                 comment.getLevel(),

@@ -7,10 +7,8 @@ import com.ssafy.ditto.domain.user.domain.Agree;
 import com.ssafy.ditto.domain.user.domain.Form;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.domain.UserTag;
-import com.ssafy.ditto.domain.user.dto.LoginResponse;
-import com.ssafy.ditto.domain.user.dto.ProSignUpRequest;
-import com.ssafy.ditto.domain.user.dto.UserLoginRequest;
-import com.ssafy.ditto.domain.user.dto.UserSignUpRequest;
+import com.ssafy.ditto.domain.user.dto.*;
+import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.*;
 import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import com.ssafy.ditto.global.jwt.JwtProvider;
@@ -18,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
                 .fileId(file)
+                .domain("local")
                 .build();
 
         userRepository.save(user);
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
                 .fileId(null)
+                .domain("local")
                 .build();
 
         user = userRepository.save(user);
@@ -127,7 +130,6 @@ public class UserServiceImpl implements UserService {
         String refreshToken = jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail());
 
         user.changeRefreshToken(refreshToken);
-        userRepository.save(user);
 
         // 유저의 닉네임도 전송해야하기 때문에 JwtResponse 대신 닉네임도 들어있는 LoginResponse 사용
         return LoginResponse.builder()
@@ -135,6 +137,7 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
                 .roleId(user.getRoleId().getRoleId())
+                .domain(user.getDomain())
                 .build();
     }
 
@@ -154,5 +157,83 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
+    @Transactional
+    @Override
+    public LoginResponse kakaoLogin(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException {
+        // 여기까지 왔으면 카카오에서 계정 인증은 이미 받은 상태
+        // 이 이메일이 사용 가능한가?
+        // 1. 이메일이 이미 카카오 가입이 되어있는 경우 -> 엑세스토큰 발급, 로그인
+        // 2. 이메일이 이미 자체 가입이 되어있는 경우 -> "이미 가입되어있는 회원입니다." 오류메시지 반환
+        // 3. 이메일이 가입되지 않은 경우 -> 회원가입 처리, 엑세스토큰 발급, 로그인
+        User user;
+        
+        user = userRepository.findByEmail(kakaoUserLoginRequest.getEmail());
+
+        // 3. 이메일이 가입되지 않은 경우
+        if (user == null){
+            // 회원가입처리
+            kakaoSignup(kakaoUserLoginRequest);
+            user = userRepository.findByEmail(kakaoUserLoginRequest.getEmail());
+        }
+
+        // 2. 이미 자체 가입이 되어있는 경우
+        if (user.getDomain().equals("local")){
+            throw new UserDuplicateException();
+        }
+
+        // 1. 이메일이 이미 카카오 가입이 되어있는 경우
+        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getUserId()), user.getEmail());
+        String refreshToken = jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail());
+
+        user.changeRefreshToken(refreshToken);
+
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .nickname(user.getNickname())
+                .roleId(user.getRoleId().getRoleId())
+                .domain(user.getDomain())
+                .build();
+    }
+
+    @Override
+    public void kakaoSignup(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException {
+        File file = fileRepository.findByFileId(1);
+
+        // 닉네임 중복체크후 중복이면 랜덤닉네임 생성
+        String nickname = kakaoUserLoginRequest.getNickname();
+        if(nickNameDuplicateCheck(nickname)){
+            nickname = createRandomString();
+        }
+
+        User user = User.builder()
+                .email(kakaoUserLoginRequest.getEmail())
+                .password(null)
+                .nickname(nickname)
+                .agreeTOS(true)
+                .agreePICU(true)
+                .isDeleted(false)
+                .roleId(userRoleRepository.findByRoleId(1)) // 일반 유저
+                .fileId(file)
+                .domain("kakao")
+                .build();
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public String createRandomString() throws NoSuchAlgorithmException {
+        // 가능한 문자들
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = SecureRandom.getInstanceStrong();
+        StringBuilder sb = new StringBuilder(15);
+
+        for (int i = 0; i < 15; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        return sb.toString();
+    }
 
 }

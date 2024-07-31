@@ -77,4 +77,11 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
     int checkLike(@Param("postId") int postId, @Param("userId") int userId);
 
+    @Query(value = "SELECT COUNT(*) FROM Comment WHERE post_id = :postId", nativeQuery = true)
+    int countComments(@Param("postId") int postId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Post p SET p.commentCount = :commentCount WHERE p.id = :postId")
+    void commentCountUpdate(@Param("postId") int postId, @Param("commentCount") int commentCount);
 }

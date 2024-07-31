@@ -16,7 +16,7 @@ public interface ProfileRepository extends JpaRepository<User,Integer> {
     @Query("SELECT u FROM User u " +
             "LEFT JOIN UserTag ut ON u.userId = ut.userId.userId " +
             "LEFT JOIN Tag t ON ut.tagId.tagId = t.tagId " +
-            "WHERE (:categoryId IS NULL OR t.categoryId.categoryId = :categoryId) " +
+            "WHERE (:categoryId IS NULL OR t.category.categoryId = :categoryId) " +
             "AND (:tagId IS NULL OR t.tagId = :tagId) " +
             "AND (u.roleId.roleId = :role) " +
             "AND (:keyword IS NULL OR u.nickname LIKE %:keyword%) " +

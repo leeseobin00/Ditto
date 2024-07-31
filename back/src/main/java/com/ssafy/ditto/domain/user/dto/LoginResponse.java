@@ -10,4 +10,5 @@ public class LoginResponse {
     private final String refreshToken;
     private final String nickname;
     private final Integer roleId;
+    private final String domain;
 }
