@@ -366,34 +366,10 @@ function BoardDetailPage() {
                         </MenuIcon>
                       </MenuIconWrapper>
                     )}
-                    <Profile
-                      fileUrl="dd"
-                      name={c.nickname}
-                      date={new Date(c.createdDate)
-                        .toISOString()
-                        .split("T")[0]
-                        .replace(/-/g, ".")}
-                    />
-                    <CommentTextWrapper>
-                      {editCommentId === c.commentId ? (
-                        <ReplyForm
-                          commentId={c.commentId}
-                          parentId={c.parentId}
-                          isCancel
-                          onCancel={() => setEditCommentId(null)}
-                          initialContent={c.content}
-                          onUpdateComment={handleUpdateComment}
-                        />
-                      ) : (
-                        <>
-                          <CommentText>{c.content}</CommentText>
-                          {/* <AddComment onClick={() => handleReplyFormOpen(index)}>답글달기</AddComment> */}
-                        </>
-                      )}
-                    </CommentTextWrapper>
-                  </CommentReplyWrapper>
-                ))}
-              </ChildCommentWrapper>
+                  </CommentTextWrapper>
+                </CommentReplyWrapper>
+              ))}
+
               {showReplyForms[index] && (
                 <CommentReplyWrapper>
                   <ReplyForm
@@ -404,6 +380,8 @@ function BoardDetailPage() {
                   />
                 </CommentReplyWrapper>
               )}
+
+              </ChildCommentWrapper>
             </Comment>
           ))}
         </Comments>

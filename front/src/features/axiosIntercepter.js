@@ -40,16 +40,17 @@ axiosIntercepter.interceptors.response.use(
           store.dispatch(sessionExpired()); // 세션 만료 처리
           return Promise.reject(error);
         }
-
-        const response = await axios.post('http://localhost:8080/refresh-token', {
+        console.log("리프레시토큰으로 엑세스토큰 요청");
+        const response = await axios.post('http://localhost:8080/users/refresh-token', {
           refreshToken,
         });
 
-        const { accessToken } = response.data;
-        store.dispatch(refresh(accessToken)); // Redux 상태 업데이트
-        localStorage.setItem('accessToken', accessToken);
-        axiosIntercepter.defaults.headers.Authorization = `Bearer ${accessToken}`;
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        const newAccessToken = response.data.data;
+        console.log(newAccessToken);
+        store.dispatch(refresh(newAccessToken)); // Redux 상태 업데이트
+        localStorage.setItem('accessToken', newAccessToken);
+        axiosIntercepter.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosIntercepter(originalRequest);
       } catch (refreshError) {
         console.error('리프레시 토큰 사용 오류:', refreshError);
