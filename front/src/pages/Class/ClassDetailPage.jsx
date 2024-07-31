@@ -5,9 +5,14 @@ import { useSelector } from "react-redux";
 
 import useAxios from "../../hooks/useAxios";
 import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
-import ClassInfo from "../../components/Class/ClasDetail/ClassInfo";
+import ClassKit from "../../components/Class/ClasDetail/ClassKit";
+import ClassStepList from "../../components/Class/ClasDetail/ClassStepList";
+import ReviewList from "../../components/Review/ReviewList";
+import QnAList from "../../components/QnA/QnAList";
+import QuestionAddModal from "../../components/QnA/QuestionAddModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
+import Button from "../../components/common/Button";
 
 const ClassDetailPageContainer = styled.div`
   display: flex;
@@ -21,6 +26,37 @@ const ClassBody = styled.div`
   width: 100%;
   justify-content: space-between;
   padding: 1% 5%;
+`;
+
+const ClassIntroductionContainer = styled.div`
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ContentContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+`;
+
+const TitleLine = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Title = styled.div`
+  font-size: 25px;
+  font-weight: 700;
+  color: var(--PRIMARY);
+`;
+
+const ClassExplanation = styled.div`
+  font-size: 18px;
+  margin: 15px 0;
 `;
 
 function ClassDetailPage() {
@@ -38,6 +74,11 @@ function ClassDetailPage() {
 
   const [classInfo, setClassInfo] = useState(null);
   const [lectureList, setLectureList] = useState([]);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
+
+  const handleQuestionModal = () => {
+    setShowQuestionModal(!showQuestionModal);
+  };
 
   const handleGetClass = async () => {
     try {
@@ -87,12 +128,38 @@ function ClassDetailPage() {
           />
           <TabBar titleIds={titleIds} />
           <ClassBody>
-            <ClassInfo
-              classInfo={classInfo}
-              titleIds={titleIds}
-              userId={userId}
-              roleId={roleId}
-            />
+            <ClassIntroductionContainer>
+              <ContentContainer id={titleIds[0]}>
+                <Title>강의 소개</Title>
+                <ClassExplanation>
+                  {classInfo.classExplanation}
+                </ClassExplanation>
+                <ClassStepList steps={classInfo.steps} />
+                <ClassKit kit={classInfo.kit} />
+              </ContentContainer>
+              <ContentContainer id={titleIds[1]}>
+                <TitleLine>
+                  <Title>리뷰</Title>
+                  {/* <Button label={"리뷰작성"} /> */}
+                </TitleLine>
+                <ReviewList />
+              </ContentContainer>
+              <ContentContainer id={titleIds[2]}>
+                <TitleLine>
+                  <Title>Q & A</Title>
+                  {roleId == 1 && (
+                    <Button label={"문의하기"} onClick={handleQuestionModal} />
+                  )}
+                </TitleLine>
+                <QnAList />
+                <QuestionAddModal
+                  show={showQuestionModal}
+                  classId={classInfo.classId}
+                  userId={userId}
+                  onClose={handleQuestionModal}
+                />
+              </ContentContainer>
+            </ClassIntroductionContainer>
             <ClassSideBar
               classInfo={classInfo}
               lectureList={lectureList}
