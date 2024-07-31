@@ -155,6 +155,7 @@ const LoginForm = () => {
       return;
     }
 
+    console.log(email);
     try {
       const response = await axios.post("http://localhost:8080/users/login", {
         email,
@@ -164,16 +165,16 @@ const LoginForm = () => {
       console.log(response);
       const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
-      const userId = decodedToken.sub;
-      const email = decodedToken.email;
+      const _userId = decodedToken.sub;
+      const _email = decodedToken.email;
 
       dispatch(
         login({
           accessToken,
           refreshToken,
-          userId,
+          userId: _userId,
           nickname: nickname,
-          email: email,
+          email: _email,
           roleId: roleId,
           domain: domain,
         })
@@ -181,6 +182,7 @@ const LoginForm = () => {
       alert("로그인 성공!");
       navigate("/"); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
+      console.log(error);
       console.error("로그인 에러:", error);
       setError("로그인 실패. 다시 시도해주세요.");
     } finally {

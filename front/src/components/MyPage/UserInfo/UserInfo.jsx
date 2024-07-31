@@ -8,6 +8,7 @@ import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailabil
 import RoundButton from "../../../components/common/RoundButton";
 import OutlineButton from "../../../components/common/OutlineButton";
 import useAxios from '../../../hooks/useAxios';
+import axiosIntercepter from '../../../features/axiosIntercepter';
 
 const UserInfoContainer = styled.div`
 `;
@@ -139,12 +140,12 @@ const UserInfo = ({ userData }) => {
     }
 
     try {
-      const patchData = useState({
+      const patchData = {
         password: password,
         nickname: nickname,
-      })
+      };
 
-      const response = await sendRequest(`/mypage/${userId}`, postData, "patch");
+      const response = await axiosIntercepter.patch(`/mypage/${userId}`, patchData);
 
       if (response.status === 200) {
         console.log('수정 성공:', formData);
