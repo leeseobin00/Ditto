@@ -291,6 +291,7 @@ const Modal = ({ onClose, children }) => {
 };
 
 const SignupForm = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { sendRequest } = useAxios();
   const navigate = useNavigate();
 
@@ -380,7 +381,7 @@ const SignupForm = () => {
 
   const handleEmailVerification = async () => {
     try {
-      await axios.post("http://localhost:8080/users/signup/email", {
+      await axios.post(`${baseURL}/users/signup/email`, {
         email: formData.email,
       });
       alert("인증 코드가 이메일로 전송되었습니다.");
@@ -445,7 +446,7 @@ const SignupForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/users/signup",
+        `${baseURL}/users/signup`,
         userData
       );
       console.log(response.data);
@@ -463,7 +464,7 @@ const SignupForm = () => {
 
   const openTermsModal = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/users/signup/0");
+      const response = await axios.get(`${baseURL}/users/signup/0`);
       setTermsContent(response?.data?.data);
       setIsTermsModalOpen(true);
     } catch (error) {
@@ -478,7 +479,7 @@ const SignupForm = () => {
 
   const openPrivacyModal = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/users/signup/1");
+      const response = await axios.get(`${baseURL}/users/signup/1`);
       setPrivacyContent(response?.data?.data);
       setIsPrivacyModalOpen(true);
     } catch (error) {

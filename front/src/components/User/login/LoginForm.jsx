@@ -137,6 +137,7 @@ const SignUpGroup = styled.div`
 `;
 
 const LoginForm = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -157,7 +158,7 @@ const LoginForm = () => {
 
     console.log(email);
     try {
-      const response = await axios.post("http://localhost:8080/users/login", {
+      const response = await axios.post(`${baseURL}/users/login`, {
         email,
         password,
       });
