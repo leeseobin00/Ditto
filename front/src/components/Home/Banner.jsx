@@ -51,7 +51,7 @@ const Slogan = styled.div`
   top: 50%;
   left: 3%;
   transform: translate(0, -50%);
-  z-index: 1000;
+  z-index: 3;
 `;
 
 const Img = styled.div`
@@ -74,16 +74,16 @@ const Img = styled.div`
 function Banner() {
   return (
     <Wrapper>
+      <Slogan>
+        혼자서도 완벽하게,
+        <br />내 방에서 즐기는 DIY 클래스
+      </Slogan>
       <BannerContainer>
         <BannerInner>
-          <Slogan>
-            혼자서도 완벽하게,
-            <br />내 방에서 즐기는 DIY 클래스
-          </Slogan>
+          <BannerContent>
+            <Img alt="banner-img" />
+          </BannerContent>
         </BannerInner>
-        <BannerContent>
-          <Img alt="banner-img" />
-        </BannerContent>
       </BannerContainer>
     </Wrapper>
   );
