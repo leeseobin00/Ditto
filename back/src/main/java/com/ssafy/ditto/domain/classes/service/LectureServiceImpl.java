@@ -86,4 +86,44 @@ public class LectureServiceImpl implements LectureService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+
+        List<Lecture> lectures = lectureRepository.findLecturesWithoutReviews(classId, userId);
+        return lectures.stream()
+                .map(lecture -> LectureResponse.builder()
+                        .lectureId(lecture.getLectureId())
+                        .year(lecture.getYear())
+                        .month(lecture.getMonth())
+                        .day(lecture.getDay())
+                        .hour(lecture.getHour())
+                        .minute(lecture.getMinute())
+                        .userCount(lecture.getUserCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
+        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+
+        List<Lecture> lectures = lectureRepository.findCompletedLearningsByClassAndUser(classId, userId);
+        return lectures.stream()
+                .map(lecture -> LectureResponse.builder()
+                        .lectureId(lecture.getLectureId())
+                        .year(lecture.getYear())
+                        .month(lecture.getMonth())
+                        .day(lecture.getDay())
+                        .hour(lecture.getHour())
+                        .minute(lecture.getMinute())
+                        .userCount(lecture.getUserCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
