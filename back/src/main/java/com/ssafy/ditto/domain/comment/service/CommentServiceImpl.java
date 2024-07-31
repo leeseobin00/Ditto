@@ -75,6 +75,7 @@ public class CommentServiceImpl implements CommentService {
                 commentResp.setParentId(comment.getParent().getCommentId());
             commentResp.setUserId(comment.getUser().getUserId());
             commentResp.setNickname(comment.getUser().getNickname());
+            commentResp.setFileId(comment.getUser().getFileId().getFileId());
             commentResp.setFileUrl(comment.getUser().getFileId().getFileUrl());
             commentResp.setContent(checkRemoved(comment));
             commentResp.setLevel(comment.getLevel());

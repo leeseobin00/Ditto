@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(
-        origins = {"http://i11a106.p.ssafy.io:8080", "https://localhost:8080"}, // SSL 이후 설정 필요
+        origins = {"http://i11a106.p.ssafy.io:3000", "http://i11a106.p.ssafy.io:8080", "https://localhost:8080"}, // SSL 이후 설정 필요
         allowCredentials = "true",
         allowedHeaders = "*",
         methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.OPTIONS}
@@ -18,6 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class LiveRoomController {
     private final LiveRoomService liveRoomService;
     private final LearningService learningService;
+
+    // lecture 생성 후 별도의 api 호출 필요
+    @PostMapping("/{lectureId}")
+    public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId) {
+        liveRoomService.createLiveRoom(lectureId);
+        return ResponseDto.of(200, "라이브 방송 링크가 생성되었습니다.");
+    }
 
     @GetMapping("/{lectureId}")
     public ResponseDto<Integer> getUserCount(@PathVariable int lectureId) {

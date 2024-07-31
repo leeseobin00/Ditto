@@ -5,9 +5,11 @@ import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
 import com.ssafy.ditto.domain.liveroom.repository.LiveRoomRepository;
+import com.ssafy.ditto.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -21,13 +23,17 @@ public class LiveRoomServiceImpl implements LiveRoomService {
 
     // 라이브 생성
     @Override
-    public void createLiveRoom(String liveSessionName, int lectureId) {
+    @Transactional
+    public void createLiveRoom(int lectureId) {
         LiveRoom liveRoom = new LiveRoom();
         Lecture lecture = lectureRepository.findByLectureId(lectureId);
+        User user = lecture.getClassId().getUserId();
+
         liveRoom.setIsFinished(false);
         int learnCount = learningRepository.countByLectureId(lectureId);
         liveRoom.setMaxCount((byte)learnCount);
         liveRoom.setCurrentCount((byte)0);
+        String liveSessionName = user.getNickname()+"의 "+lecture.getClassName()+" 라이브 방";
         liveRoom.setName(liveSessionName);
         liveRoom.setOpenTime(LocalDateTime.now());
         liveRoomRepository.save(liveRoom);
