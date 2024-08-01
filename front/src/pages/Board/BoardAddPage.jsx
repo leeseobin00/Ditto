@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import useFormDataAxios from "../../hooks/useFormDataAxios";
@@ -45,10 +44,11 @@ const NameInput = styled.div`
   padding: 8px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
-  background-color: var(--LIGHT);
+  background-color: var(--BACKGROUND_COLOR);
   white-space: nowrap;
   color: var(--TEXT_SECONDARY);
   font-size: 14px;
+  cursor: not-allowed;
 `;
 
 const EditorWrapper = styled.div`
@@ -66,7 +66,7 @@ const Buttons = styled.div`
 function BoardAddPage() {
   // redux
   const userId = useSelector(state => state.auth.userId);
-  const userName = useSelector(state => state.auth.nickname);
+  const username = useSelector(state => state.auth.nickname);
   // axios
   const { sendRequest: getPost } = useAxios();
   const { sendRequest: postPost } = useFormDataAxios();
@@ -79,30 +79,24 @@ function BoardAddPage() {
     navigate(-1);
   };
 
-  const [postData, setPostData] = useState({
-    userId: userId,
-    username: "김싸피",
-    boardId: 1,
-    categoryId: 1,
-    tagId: 1,
-    title: "",
-    content: "",
-  });
+  const [boardId, setBoardId] = useState(1);
+  const [categoryId, setCategoryId] = useState(1);
+  const [tags, setTags] = useState([]);
+  const [tagId, setTagId] = useState(1);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
 
-    setPostData({
-      userId: userId,
-      boardId: result?.data?.boardId,
-      categoryId: result?.data?.categoryId,
-      tagId: result?.data?.tagId,
-      title: result?.data?.title,
-      content: result?.data?.content,
-    });
-  
+    console.log(result);
+    setBoardId(result?.data?.boardId);
+    setCategoryId(result?.data?.categoryId);
+    setTagId(result?.data?.tagId);
+    setTitle(result?.data?.title);
+    setContent(result?.data?.content);
+
     const files = result?.data?.files;
-  
     // DOMParser를 사용하여 HTML 문자열을 파싱
     const parser = new DOMParser();
     const doc = parser.parseFromString(result?.data?.content, 'text/html');
@@ -122,9 +116,9 @@ function BoardAddPage() {
     const updateImageSrc = async () => {
       for (let i = 0; i < images.length; i++) {
         if (i < files.length) {
-          const baseUrl = import.meta.env.VITE_BASE_URL;
+          const baseURL = import.meta.env.VITE_BASE_URL;
           const fileId = files[i]?.fileId;
-          const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+          const response = await axios.get(`${baseURL}/files/download/${fileId}`, {
             responseType: 'blob'
           });
           const fileBlob = response.data;
@@ -135,14 +129,8 @@ function BoardAddPage() {
   
       // 변경된 HTML 내용을 문자열로 변환
       const updatedContent = doc.body.innerHTML;
-  
-      setPostData((prev) => ({
-        ...prev,
-        content: updatedContent,
-      }));
-  
-      setCategory(result?.data?.categoryId);
-      setTag(getStartTagIdForCategory(result?.data?.tagId));
+
+      setContent(updatedContent);
     };
   
     updateImageSrc();
@@ -155,71 +143,59 @@ function BoardAddPage() {
   }, [isEdit, postId]);
 
   // form
-  const [category, setCategory] = useState(1);
-  const [tags, setTags] = useState(getTagsForCategory(1));
-  const [tag, setTag] = useState(1);
-
   useEffect(() => {
-    setTags(getTagsForCategory(category));
+    setTags(getTagsForCategory(categoryId));
+    setTagId(getStartTagIdForCategory(categoryId));
     let ret = 1;
-    switch (category) {
+    switch (categoryId) {
       case 1:
         ret = 1;
         break;
       case 2:
-        ret = 6;
+        ret = 7;
         break;
       case 3:
-        ret = 12;
+        ret = 13;
         break;
       case 4:
-        ret = 14;
+        ret = 15;
         break;
     }
-    setPostData((prevState) => ({
-      ...prevState,
-      tagId: ret,
-    }));
-  }, [category]);
-
-  const handleBoardType = (event) => {
-    setPostData((prevState) => ({
-      ...prevState,
-      boardId: event.target.value,
-    }));
+  }, [categoryId]);
+  
+  const handleBoardType = (value) => {
+    setBoardId(value);
   };
 
-  const handleCategory = (event) => {
-    setCategory(event.target.value);
-    setPostData((prevState) => ({
-      ...prevState,
-      categoryId: event.target.value,
-    }));
+  const handleCategory = (value) => {
+    setCategoryId(value);
   };
 
-  const handleTag = (tagId) => {
-    setTag(tagId);
-    setPostData((prevState) => ({
-      ...prevState,
-      tagId,
-    }));
+  const handleTagId = (tagId) => {
+    if(!isEdit){
+      setTagId(tagId);
+    }
   };
 
   const handleTitle = (event) => {
-    setPostData((prevState) => ({
-      ...prevState,
-      title: event.target.value,
-    }));
+    setTitle(event.target.value);
   };
 
   const handleEditor = (content) => {
-    setPostData((prevState) => ({
-      ...prevState,
-      content,
-    }));
+    setContent(content);
   };
 
   const handleSave = async () => {
+    const postData = {
+      userId: userId,
+      username: username,
+      boardId: boardId,
+      categoryId: categoryId,
+      tagId: tagId,
+      title: title,
+      content: content,
+    };
+
     const url = isEdit ? `/posts/${postId}` : "/posts";
     const method = isEdit ? "patch" : "post";
 
@@ -228,7 +204,6 @@ function BoardAddPage() {
     const doc = parser.parseFromString(postData?.content, 'text/html');
     const imgTags = doc.querySelectorAll('img');
     const srcArray = Array.from(imgTags).map(img => img.src);
-    console.log(srcArray);
 
     const base64ToBlob = (base64, mime) => {
       const byteString = atob(base64.split(',')[1]);
@@ -254,10 +229,7 @@ function BoardAddPage() {
     });
 
     // setPostData를 사용하여 상태 업데이트
-    setPostData((prevState) => ({
-      ...prevState,
-      content: updatedContent
-    }));
+    setContent(updatedContent);
 
     const formData = new FormData();
     formData.append("post", new Blob([JSON.stringify({...postData, content:updatedContent})], { type: "application/json" }));
@@ -286,11 +258,12 @@ function BoardAddPage() {
             <SelectBox
               options={BOARD_TYPE_OPTIONS}
               onChange={handleBoardType}
-              curOption={getBoardTypeLabelByValue(postData?.boardId)}
+              curOption={boardId}
+              isEdit={isEdit}
             />
           </Filter>
           <Filter title="작성자">
-            <NameInput>{userName}</NameInput>
+            <NameInput>{username}</NameInput>
           </Filter>
         </FilterWrapper>
         <FilterWrapper>
@@ -298,21 +271,23 @@ function BoardAddPage() {
             <SelectBox
               options={CATEGORY_OPTIONS}
               onChange={handleCategory}
-              curOption={getCategoryLabelByValue(category)}
+              curOption={categoryId}
+              isEdit={isEdit} // Pass isEdit prop
             />
           </Filter>
           <Filter title="태그">
             <SelectTag
               tags={tags}
-              curTag={tag}
-              handleTag={handleTag}
+              curTag={tagId}
+              handleTag={handleTagId}
+              isEdit={isEdit} // Pass isEdit prop
             />
           </Filter>
         </FilterWrapper>
         <EditorWrapper>
           <BoardEditor
-            title={postData?.title}
-            content={postData?.content}
+            title={title}
+            content={content}
             onTitleChange={handleTitle}
             onEditorChange={handleEditor}
           />

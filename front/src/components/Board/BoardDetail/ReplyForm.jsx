@@ -8,6 +8,7 @@ const Form = styled.div`
   justify-content: flex-start;
   align-items: flex-end;
   width: 100%;
+  margin-top: 16px;
 `;
 
 const TextArea = styled.textarea`
