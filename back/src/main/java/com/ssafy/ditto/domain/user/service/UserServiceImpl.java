@@ -50,7 +50,9 @@ public class UserServiceImpl implements UserService {
                 .domain("local")
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+
+        user.changeRefreshToken(jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail()));
     }
 
     @Override
@@ -83,6 +85,8 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         user = userRepository.save(user);
+
+        user.changeRefreshToken(jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail()));
 
         // 강사 지원서 등록
         Form form = Form.builder()
