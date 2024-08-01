@@ -264,53 +264,53 @@ public class SessionController {
 		}
 	}
 
-	// GSON 관련 에러 처리 필요
-	// 특정 세션의 상태 조회
-	@GetMapping("/fetch/{lectureId}")
-	public ResponseDto<?> fetchInfo(@PathVariable int lectureId,
-									@RequestBody(required = false) Map<String, Object> params) {
-		// 강의 ID로 세션을 조회
-		Session session = this.lectureSessions.get(lectureId);
-		if (session == null) {
-			// 세션이 존재하지 않음
-			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
-			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
-		}
-
-		try {
-			// 세션이 존재하는 경우
-			if (this.sessionUserToken.get(session.getSessionId()) != null) {
-				boolean changed = session.fetch();
-				System.out.println("Any change: " + changed);
-				return ResponseDto.of(HttpStatus.OK.value(), "세션 정보 조회 성공", this.sessionToJson(session));
-			} else {
-				// 세션이 존재하지 않음
-				System.out.println("Problems in the app server: the SESSION does not exist");
-				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Problems in the app server: the SESSION does not exist");
-			}
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			e.printStackTrace();
-			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
-		}
-	}
-
-	// 모든 세션의 상태 조회
-	@GetMapping("/fetch")
-	public ResponseDto<?> fetchAll() {
-		try {
-			System.out.println("Fetching all session info");
-			boolean changed = this.openVidu.fetch();
-			System.out.println("Any change: " + changed);
-			JsonArray jsonArray = new JsonArray();
-			for (Session session : this.openVidu.getActiveSessions()) {
-				jsonArray.add(this.sessionToJson(session));
-			}
-			return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 조회 성공", jsonArray);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			e.printStackTrace();
-			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
-		}
-	}
+//	// GSON 관련 에러 처리 필요
+//	// 특정 세션의 상태 조회
+//	@GetMapping("/fetch/{lectureId}")
+//	public ResponseDto<?> fetchInfo(@PathVariable int lectureId,
+//									@RequestBody(required = false) Map<String, Object> params) {
+//		// 강의 ID로 세션을 조회
+//		Session session = this.lectureSessions.get(lectureId);
+//		if (session == null) {
+//			// 세션이 존재하지 않음
+//			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+//			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+//		}
+//
+//		try {
+//			// 세션이 존재하는 경우
+//			if (this.sessionUserToken.get(session.getSessionId()) != null) {
+//				boolean changed = session.fetch();
+//				System.out.println("Any change: " + changed);
+//				return ResponseDto.of(HttpStatus.OK.value(), "세션 정보 조회 성공", this.sessionToJson(session));
+//			} else {
+//				// 세션이 존재하지 않음
+//				System.out.println("Problems in the app server: the SESSION does not exist");
+//				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Problems in the app server: the SESSION does not exist");
+//			}
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			e.printStackTrace();
+//			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
+//		}
+//	}
+//
+//	// 모든 세션의 상태 조회
+//	@GetMapping("/fetch")
+//	public ResponseDto<?> fetchAll() {
+//		try {
+//			System.out.println("Fetching all session info");
+//			boolean changed = this.openVidu.fetch();
+//			System.out.println("Any change: " + changed);
+//			JsonArray jsonArray = new JsonArray();
+//			for (Session session : this.openVidu.getActiveSessions()) {
+//				jsonArray.add(this.sessionToJson(session));
+//			}
+//			return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 조회 성공", jsonArray);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			e.printStackTrace();
+//			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
+//		}
+//	}
 
 //	@DeleteMapping("/api/force-disconnect")
 //	public ResponseEntity<JsonObject> forceDisconnect(@RequestBody Map<String, Object> params) {
