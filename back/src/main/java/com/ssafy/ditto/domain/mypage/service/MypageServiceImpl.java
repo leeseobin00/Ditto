@@ -62,6 +62,7 @@ public class MypageServiceImpl implements MypageService {
         return MypageResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
+                .fileId(user.getFileId().getFileId())
                 .fileUrl(user.getFileId().getFileUrl())
                 .addresses(addresses)
                 .build();
@@ -150,6 +151,7 @@ public class MypageServiceImpl implements MypageService {
         addressRepository.deleteById(addressId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<PaymentResponse> getPayment(int userId, LocalDateTime dateTime) {
 
@@ -218,6 +220,7 @@ public class MypageServiceImpl implements MypageService {
         return summaryResponseList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime) {
         List<QuestionResponse> questionResponseList = new ArrayList<>();
