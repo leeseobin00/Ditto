@@ -53,7 +53,7 @@ public class SessionController {
 	// Collection to pair session names and OpenVidu Session objects
 	private Map<Integer, Session> lectureSessions = new ConcurrentHashMap<>();
 	// Collection to pair session names and tokens (the inner Map pairs tokens and role associated)
-	private Map<String, Map<String, OpenViduRole>> sessionIdUserIdToken = new ConcurrentHashMap<>();
+	private Map<String, Map<Integer, ConnectionResponse>> sessionUserToken = new ConcurrentHashMap<>();
 	// Collection to pair session names and recording objects
 	private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
 
@@ -89,7 +89,7 @@ public class SessionController {
 				logger.info("*** createSession 메소드 호출");
 				Session session = this.openVidu.createSession();
 				this.lectureSessions.put(lectureId, session);
-				this.sessionIdUserIdToken.put(session.getSessionId(), new HashMap<>());
+				this.sessionUserToken.put(session.getSessionId(), new HashMap<>());
 
 				showMap();
 
@@ -156,14 +156,17 @@ public class SessionController {
 				String token = session.createConnection(properties).getToken();
 				logger.info("토큰 생성 완료: token={}", token);
 
+				ConnectionResponse resp = new ConnectionResponse();
+				resp.setToken(token);
+				resp.setRole(role);
+
 				// 새 토큰을 저장하는 컬렉션 업데이트
-				this.sessionIdUserIdToken.get(session.getSessionId()).put(token, role);
+				this.sessionUserToken.get(session.getSessionId()).put(userId, resp);
 
 				// 토큰으로 응답 준비
 				responseJson.put("token", token);
 
 				return new ResponseEntity<>(responseJson, HttpStatus.OK);
-
 			} catch (OpenViduJavaClientException e1) {
 				logger.error("OpenViduJavaClientException 발생: {}", e1.getMessage());
 				// 내부 오류가 발생하면 오류 메시지를 생성하여 클라이언트에게 반환
@@ -175,7 +178,7 @@ public class SessionController {
 					// 컬렉션을 정리하고 새로운 세션으로 계속 진행
 					e2.printStackTrace();
 					this.lectureSessions.remove(lectureId);
-					this.sessionIdUserIdToken.remove(session.getSessionId());
+					this.sessionUserToken.remove(session.getSessionId());
 				}
 			}
 		} else {
@@ -190,39 +193,44 @@ public class SessionController {
 	}
 
 
-	// 접속 중인 유저의 나가기 수정 필요
-	@PostMapping("/remove-user")
-	public ResponseEntity<JsonObject> removeUser(@PathVariable int lectureId, @RequestParam Integer userId,
-												 @RequestBody(required = false) Map<String, Object> params) throws Exception {
-//		// BODY에서 매개변수 가져오기
-////		String sessionName = (String) sessionNameToken.get("sessionName");
-////		String token = (String) sessionNameToken.get("token");
-//
-//		// 강의 ID로 세션을 조회
-//		Session session = this.lectureSessions.get(lectureId);
-////		String token = this.sessionIdUserIdToken.get(session.getSessionId());
-//
-//		// 세션이 존재하는 경우
-//		if (session != null) {
-//			// 토큰이 존재하는 경우
-//			if (this.sessionIdUserIdToken.get(sessionName).remove(token) != null) {
-//				// 사용자가 세션을 떠남
-//				if (this.sessionIdUserIdToken.get(sessionName).isEmpty()) {
-//					// 마지막 사용자가 떠남: 세션을 제거해야 함
-//					this.lectureSessions.remove(sessionName);
-//				}
-//				return new ResponseEntity<>(HttpStatus.OK);
-//			} else {
-//				// 토큰이 유효하지 않음
-//				System.out.println("Problems in the app server: the TOKEN wasn't valid");
-//				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//			}
-//
-//		} else {
+	@PostMapping("/{lectureId}/remove-user")
+	public ResponseDto<?> removeUser(@PathVariable int lectureId, @RequestParam Integer userId,
+									 @RequestBody(required = false) Map<String, Object> params) throws Exception {
+
+		// 강의 ID로 세션을 조회
+		Session session = this.lectureSessions.get(lectureId);
+		if (session == null) {
 			// 세션이 존재하지 않음
-			System.out.println("Problems in the app server: the SESSION does not exist");
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
+			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+		}
+
+		// 세션 ID로 사용자 토큰 조회
+		Map<Integer, ConnectionResponse> userTokens = this.sessionUserToken.get(session.getSessionId());
+		if (userTokens == null || !userTokens.containsKey(userId)) {
+			// 유효하지 않은 사용자 ID 또는 토큰이 존재하지 않음
+			logger.error("유효하지 않은 사용자 ID 또는 토큰이 존재하지 않음: userId={}, sessionId={}", userId, session.getSessionId());
+			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "유효하지 않은 사용자 또는 토큰이 존재하지 않습니다.");
+		}
+
+		String token = userTokens.get(userId).getToken();
+		// 토큰이 존재하는 경우
+		if (token != null) {
+			// 사용자가 세션을 떠남
+			userTokens.remove(userId);
+			if (userTokens.isEmpty()) {
+				// 마지막 사용자가 떠남: 세션을 제거해야 함
+				this.lectureSessions.remove(lectureId);
+				this.sessionUserToken.remove(session.getSessionId());
+				logger.info("마지막 사용자가 떠나서 세션이 제거됨: lectureId={}", lectureId);
+			}
+			logger.info("사용자가 세션을 떠남: userId={}, sessionId={}", userId, session.getSessionId());
+			return ResponseDto.of(HttpStatus.OK.value(), "사용자가 세션을 떠났습니다.");
+		} else {
+			// 토큰이 유효하지 않음
+			logger.error("유효하지 않은 토큰: userId={}, sessionId={}", userId, session.getSessionId());
+			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "유효하지 않은 토큰입니다.");
+		}
 	}
 
 	// 세션 종료
@@ -242,7 +250,7 @@ public class SessionController {
 
 				// 세션과 관련된 데이터 삭제
 				this.lectureSessions.remove(lectureId);
-				this.sessionIdUserIdToken.remove(session.getSessionId());
+				this.sessionUserToken.remove(session.getSessionId());
 				this.sessionRecordings.remove(session.getSessionId());
 
 				return ResponseDto.of(HttpStatus.OK.value(), "세션이 정상적으로 종료되었습니다.");
@@ -529,7 +537,7 @@ public class SessionController {
 	private void showMap() {
 		System.out.println("------------------------------");
 		System.out.println(this.lectureSessions.toString());
-		System.out.println(this.sessionIdUserIdToken.toString());
+		System.out.println(this.sessionUserToken.toString());
 		System.out.println("------------------------------");
 	}
 }
