@@ -22,6 +22,7 @@ import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,11 +51,13 @@ public class MypageServiceImpl implements MypageService {
     private final ClassRepository classRepository;
     private final LikeUserRepository likeUserRepository;
     private final UserTagRepository userTagRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     @Override
     public MypageResponse getUserMypage(int userId) {
         User user = userRepository.findByUserId(userId);
-        List<Address> addresses = addressRepository.findByUserId(user);
+        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
 
         return MypageResponse.builder()
                 .email(user.getEmail())
@@ -79,7 +82,7 @@ public class MypageServiceImpl implements MypageService {
         }
         // 2. 비밀번호 변경
         if (!mypageRequest.getPassword().isEmpty()) {
-            user.changePassword(mypageRequest.getPassword());
+            user.changePassword(passwordEncoder.encode(mypageRequest.getPassword()));
         }
 
         return user.getNickname();
