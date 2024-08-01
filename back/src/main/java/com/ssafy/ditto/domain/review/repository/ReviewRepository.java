@@ -15,8 +15,8 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Integer> , JpaSpecificationExecutor<Review> {
     @Query(value = "SELECT * " +
             "FROM Review r " +
-            "WHERE r.user_id = :userId AND r.createdDate < :dateTime AND r.is_deleted = false " +
-            "ORDER BY r.createdDate DESC " +
+            "WHERE r.user_id = :userId AND r.created_date < :dateTime AND r.is_deleted = false " +
+            "ORDER BY r.created_date DESC " +
             "LIMIT 3", nativeQuery = true)
     List<Review> getReviews(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 

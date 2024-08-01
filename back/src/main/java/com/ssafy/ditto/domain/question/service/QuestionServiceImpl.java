@@ -48,8 +48,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Transactional
     public void updateQuestion(Integer classId, Integer questionId, QuestionRequest questionRequest) {
         Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
-        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(questionRequest.getUserId()).orElseThrow(UserNotFoundException::new);
 
         question.setTitle(questionRequest.getTitle());
         question.setContent(questionRequest.getContent());
@@ -60,7 +58,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Transactional
     public void deleteQuestion(Integer classId, Integer questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
-        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
         question.setIsDeleted(true);
         questionRepository.save(question);

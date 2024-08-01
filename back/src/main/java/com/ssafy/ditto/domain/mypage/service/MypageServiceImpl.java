@@ -242,6 +242,7 @@ public class MypageServiceImpl implements MypageService {
                     .fileId(question.getDclass().getFileId().getFileId())
                     .fileUrl(question.getDclass().getFileId().getFileUrl())
                     .classId(question.getDclass().getClassId())
+                    .className(question.getDclass().getClassName())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -250,6 +251,7 @@ public class MypageServiceImpl implements MypageService {
         return questionResponseList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();
@@ -285,6 +287,7 @@ public class MypageServiceImpl implements MypageService {
         return reviewResponseList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime dateTime) {
         List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
