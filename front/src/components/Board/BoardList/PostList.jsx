@@ -12,7 +12,7 @@ function PostList({ posts }) {
   return (
     <List>
       {posts?.map((post, index) => (
-        <Link key={index} to={`${post?.postId || 1}`}>
+        <Link key={index} to={`/board/detail/${post?.postId || 1}`}>
           <PostItem
             postId={post?.postId}
             title={post?.title}
