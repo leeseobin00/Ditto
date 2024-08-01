@@ -93,11 +93,15 @@ function ProfileDetailPage() {
   const [avgRating, setAvgRating] = useState(0);
   const [intro, setIntro] = useState("");
   const [classes, setClasses] = useState([]);
+  const [classPage, setClassPage] = useState(1);
+  const classSize = 1;
   const [reviews, setReviews] = useState([
     { rating: 4 },
     { rating: 3 },
     { rating: 5 },
   ]);
+  const [reviewPage, setReviewPage] = useState(1);
+  const reviewSize = 1;
   const [posts, setPosts] = useState([]);
   
   // axios
@@ -135,18 +139,18 @@ function ProfileDetailPage() {
       setTags(result?.data?.tags);
       setLikeCount(result?.data?.likeCount);
       setAvgRating(result?.data?.avgRating);
-      setStudentSum(result?.datat?.studentSum);
+      setStudentSum(result?.data?.studentSum);
       setIntro(result?.data?.intro);
     }
   }
 
   const handleGetClasses = async() => {
-    const result = await getClasses(`/profiles/${userId}/class`, null, "get");
-    setClasses(result?.data);
+    const result = await getClasses(`/profiles/${userId}/class?page=${classPage}&size=${classSize}`, null, "get");
+    setClasses(result?.data?.classList);
   }
 
   const handleGetReviews = async() => {
-    const result = await getReviews(`/profiles/${userId}/review`, null, "get");
+    const result = await getReviews(`/profiles/${userId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
     setReviews(result?.data);
   }
 
@@ -208,7 +212,7 @@ function ProfileDetailPage() {
               <DetailTitle>수강생 수</DetailTitle>
             <DetailContent>
               <CustomPersonIcon />
-              {(studentSum).toLocaleString()}
+              {(studentSum)?.toLocaleString()}
             </DetailContent>
             </LectureDetail>
             <LectureDetail>
