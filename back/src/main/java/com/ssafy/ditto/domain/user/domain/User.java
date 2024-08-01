@@ -49,7 +49,7 @@ public class User extends BaseTimeEntity {
     private String domain;
 
     //FK
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private File fileId;
 

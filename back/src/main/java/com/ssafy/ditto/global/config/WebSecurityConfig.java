@@ -1,5 +1,6 @@
 package com.ssafy.ditto.global.config;
 
+import com.ssafy.ditto.global.jwt.JwtExceptionFilter;
 import com.ssafy.ditto.global.jwt.JwtFilter;
 import com.ssafy.ditto.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,11 @@ public class WebSecurityConfig {
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                                 .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling(AuthenticationManager -> AuthenticationManager
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                        .accessDeniedHandler(new JwtAccessDenied()))
+                .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         return http.build();
     }

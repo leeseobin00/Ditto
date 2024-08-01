@@ -11,7 +11,7 @@ public enum ErrorCode {
 
     // 인증 관련 오류
     INVALID_TOKEN(401, "INVALID_TOKEN", "유효하지 않은 토큰입니다."),
-    EXPIRED_TOKEN(403, "EXPIRED_TOKEN", "만료된 토큰입니다."),
+    EXPIRED_TOKEN(401, "EXPIRED_TOKEN", "만료된 토큰입니다."),
     UNAUTHORIZED(401, "UNAUTHORIZED", "인증이 필요합니다."),
     FORBIDDEN(403, "FORBIDDEN", "접근 권한이 없습니다."),
 

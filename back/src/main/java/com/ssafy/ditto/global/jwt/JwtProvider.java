@@ -33,7 +33,7 @@ public class JwtProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException(e);
+            throw e;
         }
     }
 
@@ -43,7 +43,7 @@ public class JwtProvider {
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
             throw new InvalidTokenException();
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException(e);
+            throw e;
         }
         return true;
     }
@@ -80,13 +80,12 @@ public class JwtProvider {
                 .compact();
     }
 
-    public JwtResponse refreshAccessToken(String refreshToken) {
+    public String  refreshAccessToken(String refreshToken) {
         validateToken(refreshToken, true);
         Claims claims = parseClaims(refreshToken, true);
         String userId = claims.getSubject();
         String email = claims.get("email", String.class);
 
-        String newAccessToken = createAccessToken(userId, email);
-        return new JwtResponse(newAccessToken, refreshToken);
+        return createAccessToken(userId, email);
     }
 }

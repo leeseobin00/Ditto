@@ -6,6 +6,7 @@ import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.service.EmailService;
 import com.ssafy.ditto.domain.user.service.UserService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import com.ssafy.ditto.global.jwt.JwtProvider;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ public class UserController {
     private final EmailService emailService;
     private final KakaoTokenJsonData kakaoTokenJsonData;
     private final KakaoUserInfo kakaoUserInfo;
+    private final JwtProvider jwtProvider;
 
     // signup_001
     @PostMapping("/signup")
@@ -91,7 +93,7 @@ public class UserController {
 
     //login_002
     //카카오 로그인
-    @PostMapping("/sociallogin")
+    @PostMapping("/kakao-login")
     public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request) throws NoSuchAlgorithmException {
         // 프론트에서 인가코드를 받음
         String code = request.get("code");
@@ -104,4 +106,13 @@ public class UserController {
         return ResponseDto.of(200, "카카오로그인 성공", loginResponse);
     }
 
+    //RefreshToken_001
+    //엑세스토큰 재발급
+    @PostMapping("/refresh-token")
+    public ResponseDto<String> refreshToken(@RequestBody Map<String, String> request){
+        String refreshToken = request.get("refreshToken");
+        String newAccessToken = jwtProvider.refreshAccessToken(refreshToken);
+        System.out.println(newAccessToken);
+        return ResponseDto.of(200, "accessToken 재발급 완료", newAccessToken);
+    }
 }
