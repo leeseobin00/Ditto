@@ -18,7 +18,7 @@ import lombok.*;
 public class DClass extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "class_id")
     private Integer classId;
 
     @Column(length = 50)

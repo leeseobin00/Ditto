@@ -25,22 +25,22 @@ public class LikeClassServiceImpl implements LikeClassService {
     @Transactional
     public boolean checkLikeStatus(Integer userId, Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
-        return likeClassRepository.findByUserIdAndClassId(user, dClass).isPresent();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return likeClassRepository.findByUserAndDClass(user, dClass).isPresent();
     }
 
     @Override
     @Transactional
     public void likeClass(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
-        if (!exitLikeClass.isPresent()) {
+        Optional<LikeClass> like = likeClassRepository.findByUserAndDClass(user, dClass);
+        if (like.isEmpty()) {
             LikeClass likeClass = new LikeClass();
-            likeClass.setClassId(dClass);
-            likeClass.setUserId(user);
-            likeClassRepository.save(likeClass);
+            likeClass.setDClass(dClass);
+            likeClass.setUser(user);
+            likeClassRepository.addLike(userId,classId);
 
             dClass.setLikeCount(dClass.getLikeCount() + 1);
         }
@@ -50,10 +50,10 @@ public class LikeClassServiceImpl implements LikeClassService {
     @Transactional
     public void unlikeClass(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
-        likeClassRepository.deleteByUserIdAndClassId(user, dClass);
+        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserAndDClass(user, dClass);
+        likeClassRepository.removeLike(userId, classId);
 
         dClass.setLikeCount(dClass.getLikeCount() - 1);
     }
