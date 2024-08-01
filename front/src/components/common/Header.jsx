@@ -1,7 +1,6 @@
-// src/components/common/Header.js
 import { useState } from "react";
 import { styled } from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -11,9 +10,10 @@ import useAxios from "../../hooks/useAxios";
 
 const HeaderContainer = styled.header`
   width: 100%;
-  //border-bottom: 1px solid var(--BORDER_COLOR);
   border: none;
   box-shadow: 0px 8px 12px -8px rgba(0, 0, 0, 0.3);
+  padding-bottom: 5px;
+  z-index: 10;
 `;
 
 const TopSection = styled.div`
@@ -51,6 +51,26 @@ const CustomMenuIcon = styled(BiMenu)`
   }
 `;
 
+const PageLink = styled(NavLink)`
+  position: relative;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--PRIMARY);
+  }
+
+  &:hover > div {
+    display: block;
+  }
+
+  &.active {
+    color: var(--PRIMARY);
+  }
+`;
+
 const CustomVideoIcon = styled(BiVideo)`
   font-size: 18px;
   font-weight: 600;
@@ -84,7 +104,7 @@ const CustomLogoutIcon = styled(BiLogOut)`
   }
 `;
 
-const Icon = styled.div`
+const Icon = styled(NavLink)`
   font-size: 16px;
   font-weight: 600;
   color: var(--TEXT_PRIMARY);
@@ -93,6 +113,16 @@ const Icon = styled.div`
   &:hover {
     color: var(--PRIMARY);
   }
+
+  &.active {
+    color: var(--PRIMARY);
+  }
+`;
+
+const NickName = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
 `;
 
 const BottomSection = styled.nav`
@@ -104,19 +134,32 @@ const BottomSection = styled.nav`
   }
 `;
 
-const MenuItem = styled.div`
+const ProfileWrapper = styled.div`
+  position: relative;
+  margin: auto 0;
+  padding: 10px 0;
+  &:hover > div {
+    display: block;
+  }
+`;
+
+const MenuItem = styled(NavLink)`
   position: relative;
   padding: 10px 20px;
   font-weight: 600;
   color: var(--TEXT_PRIMARY);
   cursor: pointer;
 
+  &:hover > div {
+    display: block;
+  }
+
   &:hover {
     color: var(--PRIMARY);
   }
 
-  &:hover > div {
-    display: block;
+  &.active {
+    color: var(--PRIMARY);
   }
 `;
 
@@ -127,11 +170,11 @@ const DropdownMenu = styled.div`
   left: 0;
   background-color: white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 2;
   white-space: nowrap;
 `;
 
-const DropdownItem = styled(Link)`
+const DropdownItem = styled(NavLink)`
   display: block;
   padding: 10px 20px;
   text-decoration: none;
@@ -184,8 +227,8 @@ const Header = () => {
   const { response: getResponse, sendRequest: getPost } = useAxios();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // 추가된 부분
-  const nickname = useSelector((state) => state.auth.nickname); // 추가된 부분
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const nickname = useSelector((state) => state.auth.nickname);
   const userId = useSelector((state) => state.auth.userId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -196,12 +239,16 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      //await axios.post('/auth/logout'); // 로그아웃 API 요청
       dispatch(logout());
       navigate("/");
     } catch (error) {
       console.error("Logout failed: ", error);
     }
+  };
+
+  // NavLink 클릭 이벤트 방지 메소드
+  const handlePreventClick = (event) => {
+    event.preventDefault();
   };
 
   return (
@@ -219,48 +266,38 @@ const Header = () => {
           <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           <DropdownItem to="/profile/my">로그아웃</DropdownItem>
         </MobileDropdownMenu>
-        <Link to="/">
+        <NavLink to="/">
           <Logo>Ditto</Logo>
-        </Link>
+        </NavLink>
         <Icons>
           <CustomVideoIcon />
           <CustomBellIcon />
           {isAuthenticated ? (
-            <Link to="/mypage/userinfo">
-              <Icon>MyPage</Icon>
-            </Link>
+            <Icon to="/mypage/userinfo">MyPage</Icon>
           ) : (
-            <Link to="/signup">
-              <Icon>회원가입</Icon>
-            </Link>
+            <Icon to="/signup">회원가입</Icon>
           )}
           {isAuthenticated ? (
-            <Icon>{nickname}</Icon>
+            <NickName>{nickname}</NickName>
           ) : (
-            <Link to="/login">
-              <Icon>로그인</Icon>
-            </Link>
+            <Icon to="/login">로그인</Icon>
           )}
           {isAuthenticated && <CustomLogoutIcon onClick={handleLogout} />}
         </Icons>
       </TopSection>
       <BottomSection>
-        <Link to="/">
-          <MenuItem>홈</MenuItem>
-        </Link>
-        <Link to="/classes">
-          <MenuItem>카테고리</MenuItem>
-        </Link>
-        <Link to="/board/all">
-          <MenuItem>커뮤니티</MenuItem>
-        </Link>
-        <MenuItem>
-          프로필
+        <PageLink to="/">홈</PageLink>
+        <PageLink to="/classes">카테고리</PageLink>
+        <PageLink to="/board/all">커뮤니티</PageLink>
+        <ProfileWrapper>
+          <MenuItem to="/profile/" onClick={handlePreventClick}>
+            프로필
+          </MenuItem>
           <DropdownMenu>
             <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
             <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
           </DropdownMenu>
-        </MenuItem>
+        </ProfileWrapper>
       </BottomSection>
     </HeaderContainer>
   );

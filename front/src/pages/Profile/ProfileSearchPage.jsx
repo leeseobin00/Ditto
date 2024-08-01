@@ -18,7 +18,6 @@ import {
 import useAxios from "../../hooks/useAxios";
 
 const Wrapper = styled.div`
-  max-width: 1024px;
   width: 100%;
   margin: 0 auto;
   padding: 32px;
@@ -43,6 +42,10 @@ const FilterWrapper = styled.div`
   align-items: flex-end;
 `;
 
+const CustomSelectBox = styled(SelectBox)`
+  width: 500px;
+`;
+
 const Input = styled.input`
   width: 160px;
   padding: 6px 8px;
@@ -62,8 +65,7 @@ const CustomSearchIcon = styled(BsSearch)`
 const Profiles = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 32px;
-  width: calc(780px + 64px);
+  gap: 50px;
 
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
@@ -106,7 +108,7 @@ function ProfileSearchPage() {
     setCurrentTeacherPage(1);
     setTeacherTotalPage(1);
     setIsReset(true);
-  }
+  };
 
   const handleCategory = (event) => {
     setCategoryId(event.target.value);
@@ -133,14 +135,13 @@ function ProfileSearchPage() {
     if (isReset) {
       handleGetProfile();
       handleGetTeacherProfile();
-      setIsReset(false); 
+      setIsReset(false);
     }
   }, [isReset]);
 
   const handleSearch = () => {
     resetResult();
   };
-
 
   const handleGetTeacherProfile = async () => {
     if (currentTeacherPage <= teacherTotalPage) {
@@ -157,10 +158,7 @@ function ProfileSearchPage() {
       const url = `/profiles?${searchParams}`;
 
       const result = await getProfile(url, null, "get");
-      setTeacherProfiles((prev) => [
-        ...prev,
-        ...result?.data?.profiles
-      ]);
+      setTeacherProfiles((prev) => [...prev, ...result?.data?.profiles]);
       setTeacherTotalPage(result?.data?.totalPageCount);
     }
   };
@@ -180,21 +178,18 @@ function ProfileSearchPage() {
       const url = `/profiles?${searchParams}`;
 
       const result = await getProfile(url, null, "get");
-      setProfiles((prev) => [
-        ...prev,
-        ...result?.data?.profiles
-      ]);
+      setProfiles((prev) => [...prev, ...result?.data?.profiles]);
       setTotalPage(result?.data?.totalPageCount);
     }
   };
 
   const handleTeacherPage = () => {
-    setCurrentTeacherPage((prev) => prev+1);
-  }
+    setCurrentTeacherPage((prev) => prev + 1);
+  };
 
   const handlePage = () => {
-    setCurrentPage((prev) => prev+1);
-  }
+    setCurrentPage((prev) => prev + 1);
+  };
 
   useEffect(() => {
     handleGetProfile();
@@ -206,12 +201,12 @@ function ProfileSearchPage() {
 
   const uniqueTeacherProfiles = teacherProfiles.filter(
     (profile, index, self) =>
-        index === self.findIndex((p) => p.userId === profile.userId)
+      index === self.findIndex((p) => p.userId === profile.userId)
   );
 
   const uniqueProfiles = profiles.filter(
     (profile, index, self) =>
-        index === self.findIndex((p) => p.userId === profile.userId)
+      index === self.findIndex((p) => p.userId === profile.userId)
   );
 
   return (
@@ -219,15 +214,15 @@ function ProfileSearchPage() {
       <PageTitle>프로필 찾기</PageTitle>
       <Filters>
         <FilterWrapper>
-          <Filter title="닉네임">
-            <Input value={keyword} onChange={handleKeyword} />
-          </Filter>
           <Filter title="카테고리">
-            <SelectBox
+            <CustomSelectBox
               options={SEARCH_CATEGORY_OPTIONS}
               onChange={handleCategory}
               curOption={getCategoryLabelByValue(categoryId)}
             />
+          </Filter>
+          <Filter title="닉네임">
+            <Input value={keyword} onChange={handleKeyword} />
           </Filter>
           <Button label={<CustomSearchIcon />} onClick={handleSearch} />
         </FilterWrapper>
@@ -242,12 +237,12 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueTeacherProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile 
+              <Profile
                 profileImageId={profile?.fileId}
-                userName={profile?.nickname} 
-                profileId={profile?.userId} 
+                userName={profile?.nickname}
+                profileId={profile?.userId}
               />
-          </Link>
+            </Link>
           ))}
         </Profiles>
       </Section>
@@ -256,10 +251,11 @@ function ProfileSearchPage() {
         <Profiles>
           {uniqueProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile 
+              <Profile
                 profileImageId={profile?.fileId}
-                userName={profile?.nickname} 
-                profileId={profile?.userId} />
+                userName={profile?.nickname}
+                profileId={profile?.userId}
+              />
             </Link>
           ))}
         </Profiles>

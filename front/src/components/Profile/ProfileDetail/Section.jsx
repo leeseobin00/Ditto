@@ -10,7 +10,7 @@ const SectionWrapper = styled.section`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 32px;
+  padding: 20px;
   margin-bottom: 60px;
 `;
 
@@ -83,13 +83,17 @@ function Section({
       {children}
       {onClick && (
         <ButtonWrapper>
-          <OutlineButton label="더보기" color="default" onClick={onClick}/>
+          <OutlineButton label="더보기" color="default" onClick={onClick} />
         </ButtonWrapper>
       )}
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalContentComponent curIntro={curIntro} handleIntro={handleIntro} onClose={handleCloseModal} />
+          <ModalContentComponent
+            curIntro={curIntro}
+            handleIntro={handleIntro}
+            onClose={handleCloseModal}
+          />
         </Modal>
       )}
     </SectionWrapper>

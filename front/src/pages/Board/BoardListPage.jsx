@@ -22,7 +22,7 @@ import {
 import { current } from "@reduxjs/toolkit";
 
 const Wrapper = styled.div`
-  max-width: 1024px;
+  width: 100%;
   margin: 0 auto;
   padding: 32px;
 `;
@@ -86,7 +86,7 @@ function BoardListPage() {
   const [tagId, setTagId] = useState(0);
   const [searchBy, setSearchBy] = useState("제목");
   const [keyword, setKeyword] = useState("");
-  const [sortBy, setSortBy] = useState("postId")
+  const [sortBy, setSortBy] = useState("postId");
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(1);
@@ -94,8 +94,9 @@ function BoardListPage() {
   const postsPerPage = 5;
 
   // posts state 시작 ///////////////////////////////////////
-  const getPosts = async() => {
-    const boardId = path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
+  const getPosts = async () => {
+    const boardId =
+      path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
 
     const params = {
       page: currentPage,
@@ -137,7 +138,7 @@ function BoardListPage() {
           ? "소통해요!"
           : path === "community"
             ? "자랑해요!"
-            : "도와줘요!",
+            : "도와줘요!"
     );
   }, [path]);
 
@@ -182,7 +183,7 @@ function BoardListPage() {
   // 페이지 번호 계산을 useMemo로 최적화
   const pageNumbers = useMemo(() => {
     const size = Math.ceil(
-      totalPageCount - (currentSection - 1) * postsPerPage,
+      totalPageCount - (currentSection - 1) * postsPerPage
     );
     const ret = [];
     for (let i = 1; i <= size; i++) {
