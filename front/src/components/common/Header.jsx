@@ -223,7 +223,9 @@ const Header = () => {
           <Logo>Ditto</Logo>
         </Link>
         <Icons>
-          <CustomVideoIcon />
+          <Link to="/video">
+            <CustomVideoIcon />
+          </Link>
           <CustomBellIcon />
           {isAuthenticated ? (
             <Link to="/mypage/userinfo">
