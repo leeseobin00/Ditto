@@ -89,7 +89,7 @@ function QnAItem({ question }) {
       </DetailLine>
       <DetailLine style={{ margin: "20px 0" }}>{question.content}</DetailLine>
       <DetailLine>
-        <SmallSecondary>{question.createdDate}</SmallSecondary>
+        <SmallSecondary>{question.createdDate.substring(0, 10)}</SmallSecondary>
         <SmallSecondary>{question.userNickname}</SmallSecondary>
       </DetailLine>
       {question.isAnswered && (

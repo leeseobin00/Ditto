@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
+import useAxios from "../../hooks/useAxios";
 import QnAItem from "./QnAItem";
 import MoreButton from "../common/MoreButton";
 
@@ -10,34 +12,32 @@ const QnAListContainer = styled.div`
   margin: 15px 0;
 `;
 
-function QnAList() {
-  const questions = [
-    {
-      title: "너무 유익하고 강사님이 친절하십니다!",
-      content: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      isAnswered: true,
-      userNickname: "김디토",
-    },
-    {
-      title: "너무 유익하고 강사님이 친절하십니다!",
-      content: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      isAnswered: false,
-      userNickname: "김디토",
-    },
-    {
-      title: "너무 유익하고 강사님이 친절하십니다!",
-      content: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      isAnswered: true,
-      userNickname: "김디토",
-    },
-  ];
+function QnAList({ classId }) {
+  const { sendRequest: getQuestionList } = useAxios();
+  const [questionList, setQuestionList] = useState([]);
+  const [curPage, setCurPage] = useState(0);
+
+  const handleGetQuestionList = async () => {
+    try {
+      const response = await getQuestionList(
+        `/classes/${classId}/questions?page=${curPage}&size=3`,
+        null,
+        "get"
+      );
+      setQuestionList(response.data.questions);
+      setCurPage(response.data.currentPage + 1);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetQuestionList();
+  }, []);
 
   return (
     <QnAListContainer>
-      {questions.map((question, index) => (
+      {questionList.map((question, index) => (
         <QnAItem key={index} question={question} />
       ))}
       <MoreButton />
