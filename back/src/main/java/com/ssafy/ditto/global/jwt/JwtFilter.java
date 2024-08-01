@@ -20,6 +20,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request); // 요청에서 jwt 추출
+        //System.out.println(token);
         if (token != null) { // jwt가 존재하면
             jwtProvider.validateToken(token, false); // jwt 검증
             Authentication authentication = this.jwtProvider.getAuthentication(token); // JWT에서 인증 정보 추출
