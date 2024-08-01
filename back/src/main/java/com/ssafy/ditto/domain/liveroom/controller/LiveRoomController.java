@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/live-rooms")
+@RequestMapping("/live-rooms")
 public class LiveRoomController {
     private final LiveRoomService liveRoomService;
     private final LearningService learningService;
