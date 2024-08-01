@@ -122,9 +122,9 @@ public class ProfileServiceImpl implements ProfileService {
 
         int likeCount = likeUserRepository.countLikesByUserId(userId);
 
-        Integer studentSum = profileRepository.getTotalStudentSumByUserId(userId);
-        Integer ratingSum = profileRepository.getTotalRatingSumByUserId(userId);
-        Integer reviewCount = profileRepository.getTotalReviewCountByUserId(userId);
+        Integer studentSum = profileRepository.getTotalStudentSumByUserId(user);
+        Integer ratingSum = profileRepository.getTotalRatingSumByUserId(user);
+        Integer reviewCount = profileRepository.getTotalReviewCountByUserId(user);
 
         float avgRating = 0f;
         if (reviewCount != null && reviewCount > 0) {
