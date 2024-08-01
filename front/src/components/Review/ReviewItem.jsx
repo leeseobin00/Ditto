@@ -20,7 +20,7 @@ const ReviewItemContainer = styled.div`
 const DetailLine = styled.div`
   display: flex;
   flex-direction: row;
-  font-size: 18px;
+  font-size: 16px;
   align-items: center;
 `;
 
