@@ -25,7 +25,7 @@ public class LikeClassServiceImpl implements LikeClassService {
     @Transactional
     public boolean checkLikeStatus(Integer userId, Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return likeClassRepository.findByUserIdAndClassId(user, dClass).isPresent();
     }
 
@@ -33,10 +33,10 @@ public class LikeClassServiceImpl implements LikeClassService {
     @Transactional
     public void likeClass(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
-        if (!exitLikeClass.isPresent()) {
+        if (exitLikeClass.isEmpty()) {
             LikeClass likeClass = new LikeClass();
             likeClass.setClassId(dClass);
             likeClass.setUserId(user);
@@ -50,7 +50,7 @@ public class LikeClassServiceImpl implements LikeClassService {
     @Transactional
     public void unlikeClass(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
         likeClassRepository.deleteByUserIdAndClassId(user, dClass);

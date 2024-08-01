@@ -11,5 +11,4 @@ public class QuestionRequest {
     private String title;
     private String content;
     private Integer userId;
-    private Integer lectureId;
 }

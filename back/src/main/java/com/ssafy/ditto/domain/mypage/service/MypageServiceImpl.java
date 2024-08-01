@@ -241,16 +241,7 @@ public class MypageServiceImpl implements MypageService {
                     .isAnswered(question.getIsAnswered())
                     .fileId(question.getDclass().getFileId().getFileId())
                     .fileUrl(question.getDclass().getFileId().getFileUrl())
-                    .lectureId(question.getLecture().getLectureId())
                     .classId(question.getDclass().getClassId())
-                    .className(question.getLecture().getClassName())
-                    .year(question.getLecture().getYear())
-                    .month(question.getLecture().getMonth())
-                    .day(question.getLecture().getDay())
-                    .hour(question.getLecture().getHour())
-                    .minute(question.getLecture().getMinute())
-                    .userId(question.getUser().getUserId())
-                    .nickname(question.getUser().getNickname())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -259,7 +250,6 @@ public class MypageServiceImpl implements MypageService {
         return questionResponseList;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();
@@ -478,14 +468,7 @@ public class MypageServiceImpl implements MypageService {
                     .nickname(question.getUser().getNickname())
                     .fileId(question.getDclass().getFileId().getFileId())
                     .fileUrl(question.getDclass().getFileId().getFileUrl())
-                    .lectureId(question.getLecture().getLectureId())
                     .classId(question.getDclass().getClassId())
-                    .className(question.getLecture().getClassName())
-                    .year(question.getLecture().getYear())
-                    .month(question.getLecture().getMonth())
-                    .day(question.getLecture().getDay())
-                    .hour(question.getLecture().getHour())
-                    .minute(question.getLecture().getMinute())
                     .build();
 
             questionResponseList.add(questionResponse);
