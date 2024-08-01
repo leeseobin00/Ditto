@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 import {
   CATEGORY_OPTIONS,
@@ -135,7 +135,7 @@ const PlusButton = styled(Button)`
   background-size: cover;
 `;
 
-function ClassThumbnailAdd({ onChange, userNickname }) {
+function ClassThumbnailAdd({ onChange, userNickname, initialData, isEdit }) {
   const [showModal, setShowModal] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -152,15 +152,38 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
   const [classTime, setClassTime] = useState({ hour: 0, minute: 0 });
   const [classMax, setClassMax] = useState(0);
 
+  useEffect(() => {
+    if (initialData) {
+      setClassName(initialData.className);
+      setSelectedCategory(initialData.categoryId);
+      setSelectedTag(initialData.tagId);
+      setTags(getTagsForCategory(initialData.categoryId));
+      setClassTime({
+        hour: initialData.classHour,
+        minute: initialData.classMinute,
+      });
+      setClassMax(initialData.classMax);
+      setFile(initialData.file);
+      setPreview(
+        `http://i11a106.p.ssafy.io:8080/files/download/${initialData.file?.fileId}`
+      );
+    }
+  }, [
+    initialData?.className,
+    initialData?.categoryId,
+    initialData?.tagId,
+    initialData?.categoryId,
+    initialData?.classHour,
+    initialData?.classMinute,
+    initialData?.classMax,
+    initialData?.file,
+  ]);
+
   const toggleModal = () => setShowModal(!showModal);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setClassName(value); // update state for className
-    onChange((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setClassName(value);
   };
 
   const handleFileSubmit = (e) => {
@@ -230,6 +253,7 @@ function ClassThumbnailAdd({ onChange, userNickname }) {
     onChange,
   ]);
 
+  // updateThumbnailData를 상태가 변경될 때만 호출하도록 useEffect를 설정합니다.
   useEffect(() => {
     updateThumbnailData();
   }, [

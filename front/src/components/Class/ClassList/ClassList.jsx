@@ -11,7 +11,31 @@ const ClassListLine = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  min-width: 100%;
+  overflow-x: auto;
   margin: 10px 0;
+
+  /* 웹킷 기반 브라우저 커스텀 스크롤바 */
+  &::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #afaeae;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #ffffff;
+  }
+
+  /* Firefox 커스텀 스크롤바 */
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #f1f1f1;
 `;
 
 function ClassList({ classList }) {

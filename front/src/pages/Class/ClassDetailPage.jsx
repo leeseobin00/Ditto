@@ -54,6 +54,10 @@ const Title = styled.div`
   color: var(--PRIMARY);
 `;
 
+function HTMLContent({ html }) {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 const ClassExplanation = styled.div`
   font-size: 18px;
   margin: 15px 0;
@@ -132,7 +136,7 @@ function ClassDetailPage() {
               <ContentContainer id={titleIds[0]}>
                 <Title>강의 소개</Title>
                 <ClassExplanation>
-                  {classInfo.classExplanation}
+                  <HTMLContent html={classInfo.classExplanation} />
                 </ClassExplanation>
                 <ClassStepList steps={classInfo.steps} />
                 <ClassKit kit={classInfo.kit} />
