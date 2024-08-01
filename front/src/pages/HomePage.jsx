@@ -21,6 +21,7 @@ const ClassListContainer = styled.div`
 const Title = styled.div`
   font-size: 25px;
   font-weight: 700;
+  margin-bottom: 10px;
 `;
 
 function HomePage() {

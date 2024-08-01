@@ -112,7 +112,7 @@ function ClassDetailPage() {
       );
       setLectureList(lectureResponse?.data);
     } catch (error) {
-      console.error("Error updating lecture list:", error);
+      console.error(error);
     }
   };
 
@@ -136,10 +136,10 @@ function ClassDetailPage() {
               <ContentContainer id={titleIds[0]}>
                 <Title>강의 소개</Title>
                 <ClassExplanation>
-                  <HTMLContent html={classInfo.classExplanation} />
+                  <HTMLContent html={classInfo?.classExplanation} />
                 </ClassExplanation>
-                <ClassStepList steps={classInfo.steps} />
-                <ClassKit kit={classInfo.kit} />
+                <ClassStepList steps={classInfo?.steps} />
+                <ClassKit kit={classInfo?.kit} />
               </ContentContainer>
               <ContentContainer id={titleIds[1]}>
                 <TitleLine>
@@ -155,10 +155,10 @@ function ClassDetailPage() {
                     <Button label={"문의하기"} onClick={handleQuestionModal} />
                   )}
                 </TitleLine>
-                <QnAList />
+                <QnAList classId={classInfo?.classId} />
                 <QuestionAddModal
                   show={showQuestionModal}
-                  classId={classInfo.classId}
+                  classId={classInfo?.classId}
                   userId={userId}
                   onClose={handleQuestionModal}
                 />
