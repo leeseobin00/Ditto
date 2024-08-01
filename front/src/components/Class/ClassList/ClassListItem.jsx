@@ -9,6 +9,7 @@ const ClassListItemContainer = styled(Link)`
   display: flex;
   flex-direction: column;
   width: 290px;
+  min-width: 290px;
   height: 340px;
   padding: 20px 35px;
   justify-content: space-between;

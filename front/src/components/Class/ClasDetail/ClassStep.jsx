@@ -49,7 +49,7 @@ const StepExplation = styled.div`
 
 const Img = styled.img`
   width: 120px;
-  height: 100%;
+  height: 100px;
   max-height: 110px;
   margin: auto 0;
   border-radius: 10px;

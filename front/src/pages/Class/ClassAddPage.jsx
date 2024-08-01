@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -35,17 +35,55 @@ function ClassAddPage() {
   // axios
   const { sendRequest, loading } = useAxios();
 
-  const [thumbnailData, setThumbnailData] = useState({});
-  const [infoData, setInfoData] = useState({});
-  const [priceData, setPriceData] = useState("");
-
   const navigate = useNavigate();
+  const { classId } = useParams();
+  const isEdit = Boolean(classId);
+
+  const [thumbnailData, setThumbnailData] = useState(null);
+  const [infoData, setInfoData] = useState(null);
+  const [priceData, setPriceData] = useState(null);
 
   useEffect(() => {
-    if (roleId === 1 || roleId === null || roleId === undefined) {
+    if (roleId == 1 || roleId == null || roleId == undefined) {
       navigate("/");
     }
   }, [roleId, navigate]);
+
+  const handleGetClass = async () => {
+    const response = await sendRequest(`/classes/${classId}`, null, "get");
+    const classData = response?.data;
+
+    setThumbnailData({
+      className: classData.className,
+      categoryId: classData.tag.categoryId,
+      tagId: classData.tag.tagId,
+      classHour: classData.classHour,
+      classMinute: classData.classMinute,
+      classMax: classData.classMax,
+      file: classData.file,
+    });
+
+    setInfoData({
+      classExplanation: classData.classExplanation.replace("<br />", "\n"),
+      kit: {
+        kitName: classData.kit.kitName,
+        kitExplanation: classData.kit.kitExplanation,
+      },
+      steps: classData.steps.map((step, index) => ({
+        stepNo: index + 1,
+        stepName: step.stepName,
+        stepDetail: step.stepDetail,
+      })),
+    });
+
+    setPriceData(classData.classPrice);
+  };
+
+  useEffect(() => {
+    if (isEdit) {
+      handleGetClass();
+    }
+  }, [isEdit]);
 
   const handleThumbnailChange = useCallback((data) => {
     setThumbnailData((prev) => ({ ...prev, ...data }));
@@ -59,10 +97,9 @@ function ClassAddPage() {
     setPriceData(price);
   }, []);
 
-  const handlePostClass = async () => {
+  const handleSubmitClass = async () => {
     const classData = new FormData();
 
-    // 파일과 데이터를 FormData에 추가
     const classFile = thumbnailData?.classFile;
     if (classFile) {
       classData.append("classFile", classFile);
@@ -73,7 +110,6 @@ function ClassAddPage() {
       classData.append("kitFile", kitFile);
     }
 
-    // JSON 데이터를 FormData에 추가
     const classRequest = {
       className: thumbnailData?.className,
       userId: userId,
@@ -84,10 +120,10 @@ function ClassAddPage() {
       classMinute: thumbnailData?.classMinute,
       classMin: 0,
       classMax: thumbnailData?.classMax,
-      classExplanation: infoData.classExplanation,
+      classExplanation: infoData?.classExplanation.replaceAll("\n", "<br />"),
       kit: {
-        kitName: infoData.kit?.kitName,
-        kitExplanation: infoData.kit?.kitExplanation,
+        kitName: infoData?.kit?.kitName,
+        kitExplanation: infoData?.kit?.kitExplanation,
       },
     };
 
@@ -116,35 +152,38 @@ function ClassAddPage() {
     );
 
     try {
-      const response = await sendRequest("/classes", classData, "post");
-      const classId = response.data;
+      if (isEdit) {
+        await sendRequest(`/classes/${classId}`, classData, "patch");
+      } else {
+        const response = await sendRequest("/classes", classData, "post");
+        const newClassId = response.data;
 
-      if (infoData.steps && infoData.steps.length > 0) {
-        const stepRequests = infoData.steps?.map((step, index) => ({
-          stepNo: index + 1,
-          stepName: step.stepName,
-          stepDetail: step.stepDetail,
-        }));
+        if (infoData.steps && infoData.steps.length > 0) {
+          const stepRequests = infoData.steps?.map((step, index) => ({
+            stepNo: index + 1,
+            stepName: step.stepName,
+            stepDetail: step.stepDetail,
+          }));
 
-        const stepsData = new FormData();
-        stepsData.append(
-          "stepRequests",
-          new Blob([JSON.stringify(stepRequests)], {
-            type: "application/json",
-          })
-        );
+          const stepsData = new FormData();
+          stepsData.append(
+            "stepRequests",
+            new Blob([JSON.stringify(stepRequests)], {
+              type: "application/json",
+            })
+          );
 
-        infoData.steps?.forEach((step, index) => {
-          if (step.file) {
-            stepsData.append("stepFiles", step.file);
-          }
-        });
+          infoData.steps?.forEach((step, index) => {
+            if (step.file) {
+              stepsData.append("stepFiles", step.file);
+            }
+          });
 
-        await sendRequest(`/classes/${classId}/steps`, stepsData, "post");
+          await sendRequest(`/classes/${newClassId}/steps`, stepsData, "post");
+        }
+
+        navigate(`/classes/detail/${newClassId}`);
       }
-
-      // 생성된 클래스 페이지로 이동
-      navigate(`/classes/detail/${classId}`);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -155,16 +194,18 @@ function ClassAddPage() {
       <ClassThumbnailAdd
         onChange={handleThumbnailChange}
         userNickname={userNickname}
+        initialData={thumbnailData}
+        isEdit={isEdit}
       />
       <ClassAddBody>
-        <ClassInfoAdd onChange={handleInfoChange} />
-        <ClassPriceAdd onChange={handlePriceChange} />
+        <ClassInfoAdd onChange={handleInfoChange} initialData={infoData} />
+        <ClassPriceAdd onChange={handlePriceChange} initialData={priceData} />
       </ClassAddBody>
       <ButtonContainer>
         <RoundButton
-          label={"등록"}
+          label={isEdit ? "수정" : "등록"}
           size={"md"}
-          onClick={handlePostClass}
+          onClick={handleSubmitClass}
           disabled={loading}
         />
       </ButtonContainer>
