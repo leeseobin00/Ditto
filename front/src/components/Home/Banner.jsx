@@ -79,11 +79,10 @@ function Banner() {
         <br />내 방에서 즐기는 DIY 클래스
       </Slogan>
       <BannerContainer>
-        <BannerInner>
-          <BannerContent>
-            <Img alt="banner-img" />
-          </BannerContent>
-        </BannerInner>
+        <BannerInner />
+        <BannerContent>
+          <Img alt="banner-img" />
+        </BannerContent>
       </BannerContainer>
     </Wrapper>
   );

@@ -4,14 +4,14 @@ import { styled } from "styled-components";
 import useAxios from "../hooks/useAxios";
 import Banner from "../components/Home/Banner";
 import ClassList from "../components/Home/ClassList";
-import BestBoard from "../components/Home/BoardList/BestBoard";
+import BestBoardList from "../components/Home/BestBoardList";
 
 const HomePageContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const ClassListContainer = styled.div`
+const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 3%;
@@ -42,8 +42,8 @@ function HomePage() {
   };
 
   const getBestPosts = async () => {
-    const response = await sendRequest("/board/weeklybest", null, "get");
-    setBestPosts(response?.data);
+    const response = await sendRequest("/posts/weeklybest", null, "get");
+    setBestPosts(response?.data.posts);
   };
 
   useEffect(() => {
@@ -55,16 +55,18 @@ function HomePage() {
   return (
     <HomePageContainer>
       <Banner />
-      <ClassListContainer>
+      <ListContainer>
         <Title>Best Class</Title>
         <ClassList classList={bestClasses} />
-      </ClassListContainer>
-      <ClassListContainer>
+      </ListContainer>
+      <ListContainer>
         <Title>New Class</Title>
         <ClassList classList={newClasses} />
-      </ClassListContainer>
-
-      <BestBoard bestPosts={bestPosts} />
+      </ListContainer>
+      <ListContainer>
+        <Title>Best 게시글</Title>
+        <BestBoardList bestPosts={bestPosts} />
+      </ListContainer>
     </HomePageContainer>
   );
 }
