@@ -125,10 +125,10 @@ function ProfileDetailPage() {
   const handleGetProfile = async() => {    
     const result = await getProfile(`/profiles/${profileId}`, null, "get");
     if(result){
-      const baseUrl = import.meta.env.VITE_BASE_URL;
+      const baseURL = import.meta.env.VITE_BASE_URL;
       const fileId = result?.data?.fileId;
 
-      const response = await axios.get(`${baseUrl}/files/download/${fileId}`, {
+      const response = await axios.get(`${baseURL}/files/download/${fileId}`, {
         responseType: 'blob'
       });
       const fileBlob = response.data;

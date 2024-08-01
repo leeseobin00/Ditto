@@ -181,10 +181,14 @@ function Post({
   const location = useLocation();
   const path = location.pathname.split("/");
   const { postId } = useParams(); // 게시글 ID를 URL 파라미터로 가져옴
-  const navigate = useNavigate();
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curlikeCount, setCurlikeCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   useEffect(() => {
     setCurlikeCount(likeCount);
@@ -253,15 +257,13 @@ function Post({
         <HTMLContent html={content} />
       </Content>
       <Buttons>
-        <Link to={`/${path[1]}/${path[2]}`}>
-          <ButtonWrapper>
-            <OutlineButton
-              label={<CustomBackIcon />}
-              color="default"
-              size="sm"
-            />
-          </ButtonWrapper>
-        </Link>
+        <ButtonWrapper onClick={handleGoBack}>
+          <OutlineButton
+            label={<CustomBackIcon />}
+            color="default"
+            size="sm"
+          />
+        </ButtonWrapper>
         <ButtonWrapper onClick={handleHeartClick}>
           <OutlineButton
             label={

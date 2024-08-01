@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 const Title = styled.h2`
   color: var(--PRIMARY);
   font-size: 20px;
-  margin: 20px 13px;
+  margin: 20px 0px;
 `;
 
 const PageContainer = styled.div`

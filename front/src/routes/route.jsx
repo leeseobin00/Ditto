@@ -47,9 +47,12 @@ const AppRoutes = () => {
         <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
-      <Route path="/board/:boardCategory" element={<BoardListPage />} />
+      <Route path="/board/all" element={<BoardListPage />} />
+      <Route path="/board/talk" element={<BoardListPage />} />
+      <Route path="/board/community" element={<BoardListPage />} />
+      <Route path="/board/help" element={<BoardListPage />} />
       <Route
-        path="/board/:boardCategory/:postId"
+        path="/board/detail/:postId"
         element={<BoardDetailPage />}
       />
       <Route path="/board/add" element={<BoardAddPage />} />

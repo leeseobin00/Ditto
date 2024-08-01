@@ -4,29 +4,62 @@ import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidat
 import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
 import { useSelector, useDispatch } from 'react-redux';
 import { changeNickname } from "../../../features/auth/authSlice";
+import axios from "axios";
+import useAxios from '../../../hooks/useAxios';
+import useAuthAxios from "../../../hooks/useAuthAxios";
+import useFormDataAxios from '../../../hooks/useFormDataAxios';
+import axiosIntercepter from '../../../features/axiosIntercepter';
 import defaultProfile from '../../../assets/img/profile-user.png';
 import RoundButton from "../../../components/common/RoundButton";
 import OutlineButton from "../../../components/common/OutlineButton";
-import useAuthAxios from "../../../hooks/useAuthAxios";
-import useAxios from '../../../hooks/useAxios';
-import axiosIntercepter from '../../../features/axiosIntercepter';
+import WriteIcon from "../../../assets/icon/profile/write-white.png";
+import ModifyProfileImage from './ModifyProfileImage';
+import Modal from '../../common/Modal';
 
 const UserInfoContainer = styled.div`
 `;
 
 const ProfileImageContainer = styled.div`
   display: flex;
-  justify-content: left;
+  justify-content: flex-start;
   margin-bottom: 32px;
   position: relative;
 `;
 
-const ProfileImage = styled.img`
-  width: 120px;
-  height: 120px;
-  border-radius: 100%;
-  background-color: var(--BORDER_COLOR);
+const ProfileImageWrapper = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
+
+const ProfileImage = styled.img`
+  width: 160px;
+  height: 160px;
+  border-radius: 100%;
+  border: 1px solid var(--BORDER_COLOR);
+`;
+
+const ProfileEditButton = styled.button`
+  position: absolute;
+  background-color: var(--SECONDARY);
+  border: none;
+  border-radius: 100%;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${(props) =>
+    props.position &&
+    `top: ${props.position.top}; left: ${props.position.left};`}
+`;
+
+const ProfileIconImage = styled.img`
+  width: 16px;
+  height: 16px;
+`;
+
 
 const ProfileInfo = styled.div`
   display: flex;
@@ -76,10 +109,15 @@ const ErrorMessage = styled.p`
 `;
 
 const UserInfo = ({ userData }) => {
+  // redux
   const dispatch = useDispatch();
   const domain = useSelector((state) => state.auth.domain);
+  // axios
+  const { sendRequest: patchImage } = useFormDataAxios();
+  const { sendRequest } = useAxios();
   const { sendAuthRequest } = useAuthAxios();
   const { email, nickname, userId } = useSelector((state) => state.auth);
+  const [curProfileImage, setCurProfileImage] = useState(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
@@ -88,7 +126,46 @@ const UserInfo = ({ userData }) => {
   const [isNicknameAvailableState, setIsNicknameAvailableState] = useState(true);
   const [nicknameMessage, setNicknameMessage] = useState('');
   const [error, setError] = useState('');
+  // modal
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const handleOpenProfileModal = () => {
+    setIsProfileModalOpen(true);
+  };
 
+  const handleCloseProfileModal = () => {
+    setIsProfileModalOpen(false);
+  };
+
+  // 초기 form 구성
+  useEffect(()=>{
+    if(userData){
+      const fileId = userData?.data?.fileId;
+      if(fileId){
+        handleGetProfileImage(fileId);
+      }
+    }
+  },[userData]);
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+  const handleGetProfileImage = async(fileId) => {    
+    const baseURL = import.meta.env.VITE_BASE_URL;
+
+    const response = await axios.get(`${baseURL}/files/download/${fileId}`, {
+      responseType: 'blob'
+    });
+    const fileBlob = response.data;
+    const base64 = await toBase64(fileBlob);
+
+    setCurProfileImage(base64);
+  }
+
+  // 마이페이지 수정
   const handlePasswordChange = (event) => {
     const curPassword = event.target.value;
     setIsPasswordValidState(isPasswordValid(curPassword));
@@ -147,7 +224,10 @@ const UserInfo = ({ userData }) => {
   };
 
   const handleSave = async () => {
-    if(error) return;
+    if(error) {
+      alert("회원 정보를 수정할 수 없습니다.");
+      return;
+    }
 
     try {
       const patchData = {
@@ -186,7 +266,15 @@ const UserInfo = ({ userData }) => {
   return (
     <UserInfoContainer>
       <ProfileImageContainer>
-        <ProfileImage src={userData.fileUrl || defaultProfile} alt="Profile" />
+        <ProfileImageWrapper>
+          <ProfileImage src={curProfileImage || defaultProfile} alt="Profile" />
+          <ProfileEditButton
+            position={{ top: "10px", left: "120px"}}
+            onClick={handleOpenProfileModal}
+          >
+            <ProfileIconImage src={WriteIcon} alt="Edit Icon" />
+          </ProfileEditButton>
+        </ProfileImageWrapper>
       </ProfileImageContainer>
       <ProfileInfo>
         <ProfileField>
@@ -234,6 +322,17 @@ const UserInfo = ({ userData }) => {
         <RoundButton label="수정" onClick={handleSave} />
       </ButtonGroup>
       {error && <ErrorMessage>{error}</ErrorMessage>}
+
+      {isProfileModalOpen && (
+        <Modal onClose={handleCloseProfileModal}>
+          <ModifyProfileImage
+            curProfileImage={curProfileImage}
+            handleProfileImage={setCurProfileImage}
+            onClose={handleCloseProfileModal} />
+        </Modal>
+      )}
+
+
     </UserInfoContainer>
   );
 };
