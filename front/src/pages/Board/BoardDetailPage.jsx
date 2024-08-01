@@ -262,6 +262,7 @@ function BoardDetailPage() {
       <TabBar />
       <Wrapper>
         <Post
+          postUserId={post?.userId}
           title={post?.title}
           username={post?.nickname}
           createdDate="2024.07.11"

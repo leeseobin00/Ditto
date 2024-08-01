@@ -4,9 +4,12 @@ import Cookies from 'js-cookie';
 import { store } from '../app/store'; // Redux store를 가져옵니다.
 import { refresh, logout, sessionExpired } from './auth/authSlice'; // Redux 액션을 가져옵니다.
 
-// 기본 axios 인스턴스 설정
+// // 기본 axios 인스턴스 설정
+// const axiosIntercepter = axios.create({
+//   baseURL: 'http://localhost:8080', // 서버의 기본 URL을 설정합니다.
+// });
 const axiosIntercepter = axios.create({
-  baseURL: 'http://localhost:8080', // 서버의 기본 URL을 설정합니다.
+  baseURL: import.meta.env.VITE_BASE_URL, // 서버의 기본 URL을 설정합니다.
 });
 
 // 요청 인터셉터 설정
