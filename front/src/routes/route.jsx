@@ -22,6 +22,7 @@ import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
 import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
+import VideoPage from "../pages/Video/VideoPage";
 
 const AppRoutes = () => {
   return (
@@ -60,6 +61,7 @@ const AppRoutes = () => {
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
       <Route path="/profile/:profileId" element={<ProfileDetailPage />} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
+      <Route path="/video" element={<VideoPage />} />
     </Routes>
   );
 };

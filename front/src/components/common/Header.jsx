@@ -270,7 +270,9 @@ const Header = () => {
           <Logo>Ditto</Logo>
         </NavLink>
         <Icons>
-          <CustomVideoIcon />
+          <Link to="/video">
+            <CustomVideoIcon />
+          </Link>
           <CustomBellIcon />
           {isAuthenticated ? (
             <Icon to="/mypage/userinfo">MyPage</Icon>
