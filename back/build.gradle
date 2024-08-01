@@ -64,6 +64,8 @@ dependencies {
     testImplementation 'ws.schild:jave-all-deps:2.4.6'
     testImplementation 'ws.schild:jave-core:2.4.6'
     testImplementation 'io.openvidu:openvidu-test-browsers:1.0.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

@@ -15,8 +15,8 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     // 입력 날짜 이전의 결제 내역 3개 반환
     @Query(value = "SELECT * " +
             "FROM Question q " +
-            "WHERE q.user_id = :userId AND q.createdDate < :dateTime AND q.is_deleted = false " +
-            "ORDER BY q.createdDate DESC " +
+            "WHERE q.user_id = :userId AND q.created_date < :dateTime AND q.is_deleted = false " +
+            "ORDER BY q.created_date DESC " +
             "LIMIT 3", nativeQuery = true)
     List<Question> getQuestionsUser(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 

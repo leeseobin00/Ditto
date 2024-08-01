@@ -11,6 +11,7 @@ import java.util.List;
 public class MypageResponse {
     private String email;
     private String nickname;
+    private Integer fileId;
     private String fileUrl;
     private List<Address> addresses;
 }

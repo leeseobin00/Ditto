@@ -156,4 +156,16 @@ public class ClassController {
         likeClassService.unlikeClass(classId, userId);
         return ResponseDto.of(204, "클래스 좋아요 취소가 성공적으로 완료되었습니다.");
     }
+
+    @GetMapping("/{classId}/lectures/reviews")
+    public ResponseDto<List<LectureResponse>> getLectureWithoutReviews(@PathVariable Integer classId, @RequestParam Integer userId) {
+        List<LectureResponse> lectureList = lectureService.getLecturesWithoutReviews(classId, userId);
+        return ResponseDto.of(200, "해당 클래스의 리뷰 작성하지 않은 차시 조회가 성공적으로 완료되었습니다.", lectureList);
+    }
+
+    @GetMapping("/{classId}/completed-lectures/reviews")
+    public ResponseDto<List<LectureResponse>> getCompletedLecturesWithoutReviews(@PathVariable Integer classId, @RequestParam Integer userId) {
+        List<LectureResponse> lectures = lectureService.getCompletedLecturesWithoutReviews(classId, userId);
+        return ResponseDto.of(200, "사용자가 완료한 리뷰 작성하지 않은 차시 조회가 성공적으로 완료되었습니다.", lectures);
+    }
 }

@@ -15,4 +15,8 @@ public interface LectureService {
     List<LectureResponse> getLecturesByClassId(Integer classId);
 
     boolean isValidTeacher(Integer userId, int lectureId);
+
+    List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
+
+    List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 }
