@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { BsHeartFill } from "react-icons/bs";
 
 const Item = styled.div`
   display: flex;
@@ -7,8 +8,11 @@ const Item = styled.div`
   border-bottom: 1px solid var(--BORDER_COLOR);
 `;
 
-const Content = styled.p`
-  font-size: 16px;
+const Content = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
   color: var(--TEXT_SECONDARY);
   white-space: nowrap;
 `;
@@ -25,7 +29,13 @@ const PostTitle = styled(Content)`
 
 const PostLike = styled(Content)`
   flex: 1;
-  margin-right: 16px;
+  margin-right: 14px;
+`;
+
+const CustomFilledHeartIcon = styled(BsHeartFill)`
+  color: var(--ACCENT1);
+  margin-right: 8px;
+  font-size: 14px;
 `;
 
 const PostUser = styled(Content)`
@@ -54,7 +64,7 @@ function PostItem({
     <Item>
       <PostId>{postId}</PostId>
       <PostTitle>{title}</PostTitle>
-      <PostLike>{likeCount}</PostLike>
+      <PostLike><CustomFilledHeartIcon /> {likeCount}</PostLike>
       <PostUser>{userName}</PostUser>
       <PostDate>{createdDate}</PostDate>
       <PostCount>{viewCount}</PostCount>

@@ -17,7 +17,7 @@ function PostList({ posts }) {
             postId={post?.postId}
             title={post?.title}
             likeCount={post?.likeCount}
-            userName={post?.userName}
+            userName={post?.nickname}
             createdDate={post?.createdDate}
             viewCount={post?.viewCount}
           />

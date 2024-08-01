@@ -94,6 +94,7 @@ function ProfileSearchPage() {
   const [totalPage, setTotalPage] = useState(1);
   const [currentTeacherPage, setCurrentTeacherPage] = useState(1);
   const [teacherTotalPage, setTeacherTotalPage] = useState(1);
+  const size = 5;
 
   const [isReset, setIsReset] = useState(false);
 
@@ -145,7 +146,7 @@ function ProfileSearchPage() {
     if (currentTeacherPage <= teacherTotalPage) {
       const params = {
         page: currentTeacherPage,
-        size: 1,
+        size: size,
         ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
         ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
         role: 2,
@@ -168,7 +169,7 @@ function ProfileSearchPage() {
     if (currentPage <= totalPage) {
       const params = {
         page: currentPage,
-        size: 1,
+        size: size,
         ...(categoryId == 0 ? { categoryId: "" } : { categoryId: categoryId }),
         ...(tagId == 0 ? { tagId: "" } : { tagId: tagId }),
         role: 1,

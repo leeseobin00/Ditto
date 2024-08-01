@@ -91,7 +91,7 @@ function BoardListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
-  const postsPerPage = 1;
+  const postsPerPage = 5;
 
   // posts state 시작 ///////////////////////////////////////
   const getPosts = async() => {
@@ -99,7 +99,7 @@ function BoardListPage() {
 
     const params = {
       page: currentPage,
-      size: 1,
+      size: postsPerPage,
       searchBy: searchBy,
       keyword: keyword,
       sortBy: sortBy,
@@ -153,8 +153,8 @@ function BoardListPage() {
     setTags(getTagsForCategory(categoryId));
   }, [categoryId]);
 
-  const handleCategory = (event) => {
-    setCategoryId(event.target.value);
+  const handleCategoryId = (value) => {
+    setCategoryId(value);
   };
 
   const handleTag = (tagValue) => {
@@ -165,16 +165,16 @@ function BoardListPage() {
     }
   };
 
-  const handleSearchBy = (event) => {
-    setSearchBy(event.target.value);
+  const handleSearchBy = (value) => {
+    setSearchBy(value);
   };
 
   const handleKeyword = (event) => {
     setKeyword(event.target.value);
   };
 
-  const handleSortOption = (event) => {
-    setSortBy(event.target.value);
+  const handleSortOption = (value) => {
+    setSortBy(value);
   };
   // 검색 옵션 끝 ///////////////////////////////////////////
 
@@ -207,8 +207,8 @@ function BoardListPage() {
           <Filter title="카테고리">
             <SelectBox
               options={SEARCH_CATEGORY_OPTIONS}
-              onChange={handleCategory}
-              curOption={getCategoryLabelByValue(categoryId)}
+              onChange={handleCategoryId}
+              curOption={categoryId}
             />
           </Filter>
 
@@ -240,7 +240,7 @@ function BoardListPage() {
           <SelectBox
             options={SORT_OPTIONS}
             onChange={handleSortOption}
-            curOption={getSortOptionLabelByValue(sortBy)}
+            curOption={sortBy}
           />
           <Link to="/board/add">
             <Button label="글쓰기" size="md" />
