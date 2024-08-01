@@ -1,5 +1,6 @@
 package com.ssafy.ditto.global.error;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
