@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const checkNicknameAvailability = async (nickname) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const trimmedNickname = nickname.trim();
 
   if (nickname.length > 10) {
@@ -10,7 +11,7 @@ export const checkNicknameAvailability = async (nickname) => {
   }
 
   try {
-    const response = await axios.get(`http://localhost:8080/users/signup/nickname/${trimmedNickname}`);
+    const response = await axios.get(`${baseURL}/users/signup/nickname/${trimmedNickname}`);
     return response.status === 200;
   } catch (error) {
     if (error.response && error.response.status === 409) {
