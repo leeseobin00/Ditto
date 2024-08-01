@@ -1,11 +1,8 @@
 package com.ssafy.ditto.domain.question.service;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
-import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
-import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
-import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.dto.QuestionPageResponse;
 import com.ssafy.ditto.domain.question.dto.QuestionRequest;
@@ -28,7 +25,6 @@ import java.util.stream.Collectors;
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final ClassRepository classRepository;
-    private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -36,14 +32,12 @@ public class QuestionServiceImpl implements QuestionService {
     public void createQuestion(int classId, QuestionRequest questionRequest) {
         User user = userRepository.findById(questionRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        Lecture lecture = lectureRepository.findByLectureId(questionRequest.getLectureId());
 
         Question question = Question.builder()
                 .title(questionRequest.getTitle())
                 .content(questionRequest.getContent())
                 .user(user)
                 .dclass(dClass)
-                .lecture(lecture)
                 .isAnswered(false)
                 .isDeleted(false)
                 .build();
@@ -56,7 +50,6 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         User user = userRepository.findById(questionRequest.getUserId()).orElseThrow(UserNotFoundException::new);
-        Lecture lecture = lectureRepository.findById(questionRequest.getLectureId()).orElseThrow(LectureNotFoundException::new);
 
         question.setTitle(questionRequest.getTitle());
         question.setContent(questionRequest.getContent());
