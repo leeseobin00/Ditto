@@ -26,7 +26,7 @@ public class LikeClassServiceImpl implements LikeClassService {
     public boolean checkLikeStatus(Integer userId, Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return likeClassRepository.findByUserIdAndClassId(user, dClass).isPresent();
+        return likeClassRepository.findByUserAndDClass(user, dClass).isPresent();
     }
 
     @Override
@@ -35,12 +35,12 @@ public class LikeClassServiceImpl implements LikeClassService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
-        if (exitLikeClass.isEmpty()) {
+        Optional<LikeClass> like = likeClassRepository.findByUserAndDClass(user, dClass);
+        if (like.isEmpty()) {
             LikeClass likeClass = new LikeClass();
-            likeClass.setClassId(dClass);
-            likeClass.setUserId(user);
-            likeClassRepository.save(likeClass);
+            likeClass.setDClass(dClass);
+            likeClass.setUser(user);
+            likeClassRepository.addLike(userId,classId);
 
             dClass.setLikeCount(dClass.getLikeCount() + 1);
         }
@@ -52,8 +52,8 @@ public class LikeClassServiceImpl implements LikeClassService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserIdAndClassId(user, dClass);
-        likeClassRepository.deleteByUserIdAndClassId(user, dClass);
+        Optional<LikeClass> exitLikeClass = likeClassRepository.findByUserAndDClass(user, dClass);
+        likeClassRepository.removeLike(userId, classId);
 
         dClass.setLikeCount(dClass.getLikeCount() - 1);
     }

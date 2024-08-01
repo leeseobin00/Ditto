@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface ClassRepository extends JpaRepository<DClass, Integer>, JpaSpecificationExecutor<DClass> {
-    @Query("SELECT c FROM DClass c JOIN LikeClass lc ON c.classId = lc.classId.classId WHERE lc.createdDate > :oneWeekAgo GROUP BY c ORDER BY COUNT(lc) DESC")
+    @Query("SELECT c FROM DClass c JOIN LikeClass lc ON c.classId = lc.dClass.classId WHERE lc.createdDate > :oneWeekAgo GROUP BY c ORDER BY COUNT(lc) DESC")
     List<DClass> findPopularClasses(LocalDateTime oneWeekAgo, Pageable pageable);
 
     @Query("SELECT c FROM DClass c WHERE c.createdDate > :oneWeekAgo ORDER BY c.createdDate DESC")

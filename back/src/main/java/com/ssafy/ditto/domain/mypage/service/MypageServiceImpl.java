@@ -296,7 +296,7 @@ public class MypageServiceImpl implements MypageService {
         List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
 
         for (DClass dClass : likeclasses) {
-            Optional<LikeClass> likeClass = likeClassRepository.findByUserIdAndClassId(userRepository.findByUserId(userId), dClass);
+            Optional<LikeClass> likeClass = likeClassRepository.findByUserAndDClass(userRepository.findByUserId(userId), dClass);
 
             LikeClassResponse likeClassResponse = LikeClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -327,7 +327,7 @@ public class MypageServiceImpl implements MypageService {
     @Transactional
     @Override
     public void deleteLikedClass(int userId, int classId) {
-        likeClassRepository.deleteByUserIdAndClassId(userRepository.findByUserId(userId), classRepository.findByClassId(classId));
+        likeClassRepository.removeLike(userId, classId);
     }
 
     @Override
