@@ -161,6 +161,7 @@ const ModalButtons = styled.div`
 `;
 
 function Post({
+  postUserId,
   title,
   username,
   createdDate,
@@ -239,13 +240,13 @@ function Post({
         <SubInfo>조회수 {viewCount}</SubInfo>
       </SubHeader>
       <Hr />
-      <MenuIconWrapper>
+      {(postUserId == userId) && <MenuIconWrapper>
         <CustomMenuIcon size={24} />
         <DropdownMenu className="dropdown-menu">
           <DropdownItem onClick={handleEdit}>수정</DropdownItem>
           <DropdownItem onClick={handleDelete}>삭제</DropdownItem>
         </DropdownMenu>
-      </MenuIconWrapper>
+      </MenuIconWrapper>}
       {fileName && <SubInfo>첨부파일 {fileName}</SubInfo>}
       {fileUrl && <Image src={fileUrl} alt={fileName} />}
       <Content>

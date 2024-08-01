@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 // Base URL
-const baseURL = "http://i11a106.p.ssafy.io:8080"; // Replace with your base URL
+const baseURL = import.meta.env.VITE_BASE_URL; // Replace with your base URL
 //const baseURL = "http://localhost:8080"; // Replace with your base URL
 
 const useFormDataAxios = () => {

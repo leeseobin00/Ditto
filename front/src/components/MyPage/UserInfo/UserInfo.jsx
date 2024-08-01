@@ -77,6 +77,7 @@ const ErrorMessage = styled.p`
 
 const UserInfo = ({ userData }) => {
   const dispatch = useDispatch();
+  const domain = useSelector((state) => state.auth.domain);
   const { sendAuthRequest } = useAuthAxios();
   const { email, nickname, userId } = useSelector((state) => state.auth);
   const [password, setPassword] = useState("");
@@ -192,7 +193,8 @@ const UserInfo = ({ userData }) => {
           <InputLabel>Email</InputLabel>
           <ProfileInput type="text" value={email || ''} readOnly />
         </ProfileField>
-        <ProfileField>
+        {(domain==="local") && <>
+          <ProfileField>
           <InputLabel>PW</InputLabel>
           <ProfileInput
             type="password"
@@ -214,6 +216,7 @@ const UserInfo = ({ userData }) => {
           />
           {!isPasswordMatchState && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
         </ProfileField>
+        </>}
         <ProfileField>
           <InputLabel>닉네임</InputLabel>
           <ProfileInput

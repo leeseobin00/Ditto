@@ -364,7 +364,7 @@ const SignupForm = () => {
       return;
     }
 
-    //이메일 중복 확인 검사
+    // 닉네임 중복 확인 검사
     const result = await sendRequest(
       `/users/signup/nickname/${name}`,
       null,
@@ -381,11 +381,15 @@ const SignupForm = () => {
 
   const handleEmailVerification = async () => {
     try {
-      await axios.post(`${baseURL}/users/signup/email`, {
+      const result = await axios.post(`${baseURL}/users/signup/email`, {
         email: formData.email,
       });
-      alert("인증 코드가 이메일로 전송되었습니다.");
-      setIsVerificationCodeInputVisible(true);
+      if(result?.data?.code!==409){
+        alert("인증 코드가 이메일로 전송되었습니다.");
+        setIsVerificationCodeInputVisible(true);
+      }else{
+        alert("이미 등록된 이메일 입니다.");
+      }
     } catch (error) {
       console.error("인증 코드 전송 에러:", error);
       alert("인증 코드 전송 실패. 다시 시도해주세요.");
@@ -407,7 +411,7 @@ const SignupForm = () => {
         alert(result?.message);
       }
     } catch (error) {
-      setIsNicknameAvailable(false);
+      setIsVerified(false);
       alert("인증 코드 확인 중 오류가 발생했습니다.");
     }
   };
