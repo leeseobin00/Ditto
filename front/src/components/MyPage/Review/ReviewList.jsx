@@ -123,17 +123,23 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
   const [editContent, setEditContent] = useState('');
   const [editRating, setEditRating] = useState(0);
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const [classId, setClassId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [lectureId, setLectureId] = useState(null);
 
   const handleEdit = (review) => {
     setCurrentReview(review);
     setEditContent(review.reviewContent);
     setEditRating(review.rating);
     setIsEditing(true);
+    setClassId(review.classId);
+    setUserId(review.userId);
+    setLectureId(review.lectureId);
   };
 
-  const handleDelete = async (reviewId) => {
+  const handleDelete = async () => {
     try {
-      await axios.delete(`/reviews/${reviewId}`);
+      await axios.delete(`http://localhost:8080/classes/${classId}/reviews/${currentReview.reviewId}`);
       alert('리뷰가 성공적으로 삭제되었습니다.');
       // 삭제 후 리뷰 목록 갱신
     } catch (error) {
@@ -144,9 +150,11 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
 
   const handleSaveEdit = async () => {
     try {
-      await axios.patch(`http://localhost:8080/reviews/${currentReview.reviewId}`, {
+      await axios.patch(`http://localhost:8080/classes/${classId}/reviews/${currentReview.reviewId}`, {
         reviewContent: editContent,
         rating: editRating,
+        userId: userId,
+        lectureId: lectureId,
       });
       alert('리뷰가 성공적으로 수정되었습니다.');
       // 수정 후 리뷰 목록 갱신

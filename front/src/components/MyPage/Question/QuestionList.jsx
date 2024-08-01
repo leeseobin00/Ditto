@@ -162,8 +162,8 @@ const QuestionList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
-  const [finalDate, setFinalDate] = useState(null);
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
+  const [classId, setClassId] = useState(null);
 
   useEffect(() => {
     fetchQuestions();
@@ -176,9 +176,8 @@ const QuestionList = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const questionData = response.data.questions;
+      const questionData = response?.data?.data;
       setQuestions(questionData);
-      setFinalDate(questionData[questionData.length - 1].createdDate);
     } catch (error) {
       alert('문의 목록 조회 실패. 다시 시도해주세요.');
       console.error('문의 목록 조회 에러:', error);
@@ -186,15 +185,16 @@ const QuestionList = () => {
   };
 
   const fetchMoreQuestions = async () => {
+    if (questions.length === 0) return;
+    
+    const finalDate = questions[questions.length - 1].createdDate;
     try {
       const response = await axios.get(`http://localhost:8080/mypage/${userId}/question-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const questionData = response.data.questions;
-      setQuestions((prevQuestions) => [...prevQuestions, ...questionData]);
-      setFinalDate(questionData[questionData.length - 1].createdDate);
+      setQuestions((prevQuestions) => [...prevQuestions, ...response?.data?.data]);
     } catch (error) {
       alert('문의 목록 조회 실패. 다시 시도해주세요.');
       console.error('문의 목록 조회 에러:', error);
@@ -208,7 +208,7 @@ const QuestionList = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const answerData = response.data;
+      const answerData = response?.data?.data;
       setQuestions((prevQuestions) =>
         prevQuestions.map((q) =>
           q.questionId === questionId ? { ...q, answer: answerData } : q
@@ -226,12 +226,15 @@ const QuestionList = () => {
       setEditTitle(question.title);
       setEditContent(question.content);
       setIsEditing(true);
+      setClassId(question.classId);
+      setWriterId(question.userId);
+      setLectureId(question.lectureId);
     }
   };
 
   const handleDelete = async (questionId) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/questions/${questionId}`, {
+      const response = await axios.delete(`http://localhost:8080/classes/${classId}/questions/${currentQuestionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -250,7 +253,7 @@ const QuestionList = () => {
   const handleSaveEdit = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:8080/questions/${currentQuestionId}`,
+        `http://localhost:8080/classes/${classId}/questions/${currentQuestionId}`,
         {
           title: editTitle,
           content: editContent,

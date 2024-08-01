@@ -49,7 +49,8 @@ const PaymentPage = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setPayments(response.data.payments);
+      
+      setPayments(response?.data?.data);
     } catch (error) {
       console.error('Error fetching payment data:', error);
     } finally {
@@ -68,7 +69,7 @@ const PaymentPage = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setPayments((prevPayments) => [...prevPayments, ...response.data.payments]);
+      setPayments((prevPayments) => [...prevPayments, ...response?.data?.data]);
     } catch (error) {
       console.error('Error loading more payments:', error);
     } finally {

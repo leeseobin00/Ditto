@@ -30,9 +30,7 @@ const ReviewListPage = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const reviewData = response.data.reviews;
-      setReviews(reviewData);
-      setFinalDate(reviewData[reviewData.length - 1].createdDate);
+      setReviews(response?.data?.data);
     } catch (error) {
       alert('리뷰 목록 조회 실패. 다시 시도해주세요.');
       console.error('리뷰 목록 조회 에러:', error);
@@ -40,15 +38,17 @@ const ReviewListPage = () => {
   };
 
   const fetchMoreReviews = async () => {
+    if (reviews.length === 0) return;
+    
+    const finalDate = reviews[reviews.length - 1].createdDate;
+
     try {
       const response = await axios.get(`http://localhost:8080/mypage/${userId}/review-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const reviewData = response.data.reviews;
-      setReviews((prevReviews) => [...prevReviews, ...reviewData]);
-      setFinalDate(reviewData[reviewData.length - 1].createdDate);
+      setReviews((prevReviews) => [...prevReviews, ...response?.data?.data]);
     } catch (error) {
       alert('리뷰 목록 조회 실패. 다시 시도해주세요.');
       console.error('리뷰 목록 조회 에러:', error);

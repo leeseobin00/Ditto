@@ -142,7 +142,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
       });
 
       if (response.status === 200) {
-        setRefundPolicy(response.data.refund);
+        setRefundPolicy(response.data.data.refund);
         setIsRefundPolicy(true);
         setIsModalOpen(true);
       } else {
@@ -163,7 +163,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
       });
 
       if (response.status === 200) {
-        setSummaries(response.data.summaries);
+        setSummaries(response.data.data.summaries);
         setIsRefundPolicy(false);
         setIsModalOpen(true);
       } else {
