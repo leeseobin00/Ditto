@@ -72,6 +72,7 @@ public class SessionController {
 		this.lectureService = lectureService;
 	}
 
+	// 생성
 	@PostMapping("/{lectureId}")
 	public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
 		logger.info("*** create 메소드 호출");
@@ -110,12 +111,10 @@ public class SessionController {
 	/*******************/
 	/*** Session API ***/
 	/*******************/
-
-	@PostMapping("{lectureId}/get-token")
+	// 수강 중인 수강생, 주최하는 강사에게 토큰 발급
+	@PostMapping("/{lectureId}/get-token")
 	public ResponseEntity<?> getToken(@PathVariable int lectureId, @RequestParam Integer userId,
 											   @RequestBody(required = false) Map<String, Object> params) {
-		ConnectionResponse resp = new ConnectionResponse();
-
 		// 사용자의 역할을 결정
 		String roleType;
 		if (learningService.isValidUser(userId, lectureId)) {
@@ -191,8 +190,7 @@ public class SessionController {
 	}
 
 
-	// 아래내용 수정 필요
-
+	// 접속 중인 유저의 나가기 수정 필요
 	@PostMapping("/api/remove-user")
 	public ResponseEntity<JsonObject> removeUser(@RequestBody Map<String, String> sessionNameToken) throws Exception {
 
@@ -226,20 +224,17 @@ public class SessionController {
 		}
 	}
 
-	@DeleteMapping("/close-session")
-	public ResponseEntity<JsonObject> closeSession(@RequestBody Map<String, Object> sessionName) throws Exception {
-		// BODY에서 매개변수 가져오기
-		String session = (String) sessionName.get("sessionName");
-
-		System.out.println("Closing session | {sessionName}=" + session);
-
-		// 세션이 존재하는 경우
-		if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
-			Session s = this.lectureSessions.get(session);
-			s.close();
-			this.lectureSessions.remove(session);
-			this.sessionIdUserIdToken.remove(session);
-			this.sessionRecordings.remove(s.getSessionId());
+	// 세션 종료
+	@DeleteMapping("/{lectureId}/close")
+	public ResponseEntity<?> closeSession(@PathVariable int lectureId,
+										  @RequestBody(required = false) Map<String, Object> params) throws Exception {
+		// 강의 ID로 세션을 조회
+		Session session = this.lectureSessions.get(lectureId);
+		if (session != null) {
+			session.close();
+			this.lectureSessions.remove(lectureId);
+			this.sessionIdUserIdToken.remove(session.getSessionId());
+			this.sessionRecordings.remove(session.getSessionId());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
 			// 세션이 존재하지 않음
