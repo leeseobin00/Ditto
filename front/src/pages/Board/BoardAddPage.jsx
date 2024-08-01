@@ -73,7 +73,7 @@ function BoardAddPage() {
   // router
   const navigate = useNavigate();
   const { postId } = useParams();
-  const isEdit = Boolean(postId);
+  const isedit = Boolean(postId);
 
   const handleCancel = () => {
     navigate(-1);
@@ -89,7 +89,6 @@ function BoardAddPage() {
   const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
 
-    console.log(result);
     setBoardId(result?.data?.boardId);
     setCategoryId(result?.data?.categoryId);
     setTagId(result?.data?.tagId);
@@ -137,10 +136,10 @@ function BoardAddPage() {
   };  
 
   useEffect(() => {
-    if (isEdit) {
+    if (isedit) {
       handleGetPost();
     }
-  }, [isEdit, postId]);
+  }, [isedit, postId]);
 
   // form
   useEffect(() => {
@@ -252,14 +251,14 @@ function BoardAddPage() {
     <div>
       <TabBar />
       <Wrapper>
-        <PageTitle>{isEdit ? "게시글 수정" : "게시글 작성"}</PageTitle>
+        <PageTitle>{isedit ? "게시글 수정" : "게시글 작성"}</PageTitle>
         <FilterWrapper>
           <Filter title="게시판">
             <SelectBox
               options={BOARD_TYPE_OPTIONS}
               onChange={handleBoardType}
               curOption={boardId}
-              isEdit={isEdit}
+              isEdit={isedit}
             />
           </Filter>
           <Filter title="작성자">
@@ -272,7 +271,7 @@ function BoardAddPage() {
               options={CATEGORY_OPTIONS}
               onChange={handleCategory}
               curOption={categoryId}
-              isEdit={isEdit} // Pass isEdit prop
+              isEdit={isedit} // Pass isEdit prop
             />
           </Filter>
           <Filter title="태그">
@@ -280,7 +279,7 @@ function BoardAddPage() {
               tags={tags}
               curTag={tagId}
               handleTag={handleTagId}
-              isEdit={isEdit} // Pass isEdit prop
+              isEdit={isedit} // Pass isEdit prop
             />
           </Filter>
         </FilterWrapper>
@@ -294,7 +293,7 @@ function BoardAddPage() {
         </EditorWrapper>
         <Buttons>
           <OutlineButton onClick={handleCancel} label="취소" color="default" />
-          <RoundButton onClick={handleSave} label={isEdit ? "수정" : "등록"} />
+          <RoundButton onClick={handleSave} label={isedit ? "수정" : "등록"} />
         </Buttons>
       </Wrapper>
     </div>

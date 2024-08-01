@@ -9,21 +9,21 @@ const Tag = styled.div`
   background-color: ${(props) =>
     props.$active === "true" ? "var(--TERTIARY)" : "var(--LIGHT)"};
   white-space: nowrap;
-  cursor: ${({ isEdit }) => (isEdit ? "not-allowed" : "pointer")};
+  cursor: ${({ isedit }) => (isedit ? "not-allowed" : "pointer")};
 
   &:hover {
     background-color: var(--TERTIARY);
   }
 `;
 
-function SelectTag({ tags, curTag, handleTag, isEdit }) {
+function SelectTag({ tags, curTag, handleTag, isedit }) {
   return (
     <>
       {tags.map((t, index) => (
         <Tag
           key={index}
           $active={t.value === curTag ? "true" : "false"}
-          isEdit={isEdit}
+          isedit={isedit}
           onClick={() => handleTag(t.value)}
         >
           {t.label}
