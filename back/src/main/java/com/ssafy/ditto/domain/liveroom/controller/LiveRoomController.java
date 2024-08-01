@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.liveroom.controller;
 
+import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/live-rooms")
+@RequestMapping("/live-rooms")
 public class LiveRoomController {
     private final LiveRoomService liveRoomService;
     private final LearningService learningService;
+    private final LectureService lectureService;
 
     // lecture 생성 후 별도의 api 호출 필요
     @PostMapping("/{lectureId}")
@@ -38,9 +40,9 @@ public class LiveRoomController {
     }
 
     @GetMapping("/enter/{lectureId}")
-    public ResponseDto<String> getSessionName(@PathVariable int lectureId, @RequestParam Integer userId) {
+    public ResponseDto<String> getSessionName(@PathVariable Integer lectureId, @RequestParam Integer userId) {
         // 클래스 주최하는 강사인지 확인
-        boolean isValidTeacher = learningService.isValidTeacher(userId,lectureId);
+        boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
         if(isValidTeacher) {
             try {
                 String sessionName = liveRoomService.getSessionName(lectureId);
@@ -72,7 +74,7 @@ public class LiveRoomController {
     @PutMapping("/leave/{lectureId}")
     public ResponseDto<Void> leaveLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
         // 클래스 주최하는 강사인지 확인
-        boolean isValidTeacher = learningService.isValidTeacher(userId,lectureId);
+        boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
         if(isValidTeacher) {
             // 확인 후 클래스 종료
             try {

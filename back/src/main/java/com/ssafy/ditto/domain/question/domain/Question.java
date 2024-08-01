@@ -40,10 +40,6 @@ public class Question extends BaseTimeEntity {
     @JoinColumn(name = "class_id")
     private DClass dclass;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lecture_id")
-    private Lecture lecture;
-
     public void changeIsDeleted(Boolean newBoolean) {
         this.isDeleted = newBoolean;
     }

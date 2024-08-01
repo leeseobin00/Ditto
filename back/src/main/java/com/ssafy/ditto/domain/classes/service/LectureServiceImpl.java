@@ -11,12 +11,16 @@ import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
+import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ssafy.ditto.global.error.ErrorCode.LECTURE_NOT_FOUND;
+import static com.ssafy.ditto.global.error.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -125,5 +129,12 @@ public class LectureServiceImpl implements LectureService {
                         .userCount(lecture.getUserCount())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isValidTeacher(Integer userId, int lectureId) {
+        User teacher = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        boolean isTeacher = lectureRepository.existsByClassId_UserIdAndLectureId(teacher, lectureId);
+        return isTeacher;
     }
 }
