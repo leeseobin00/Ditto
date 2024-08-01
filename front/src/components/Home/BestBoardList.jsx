@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 
@@ -26,6 +27,7 @@ const Primary = styled.div`
 const Title = styled(Primary)`
   font-weight: 600;
   width: 45%;
+  height: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -45,6 +47,7 @@ const Icon = styled.img`
 
 const User = styled(Primary)`
   width: 10%;
+  height: 1.2rem;
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -58,19 +61,19 @@ const Hr = styled.hr`
 function BestBoardList({ bestPosts }) {
   return (
     <BoardListContainer>
-      {bestPosts.map((post, index) => (
-        <>
-          <BoardItem to={`/boar/detail/${post.postId}`}>
+      {bestPosts.map((post) => (
+        <React.Fragment key={post.postId}>
+          <BoardItem to={`/board/detail/${post.postId}`}>
             <Title>{post.title}</Title>
             <LikeDetail>
               <Icon src={Heart} />
               <Primary>{post.likeCount}</Primary>
             </LikeDetail>
             <User>{post.nickname}</User>
-            <Primary>2024-08-01</Primary>
+            <Primary>{post.createdDate.substring(0, 10)}</Primary>
           </BoardItem>
           <Hr />
-        </>
+        </React.Fragment>
       ))}
     </BoardListContainer>
   );

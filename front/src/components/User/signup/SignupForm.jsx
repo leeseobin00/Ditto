@@ -25,7 +25,7 @@ const FormContainer = styled.div`
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 420px;
   padding: 20px;
   text-align: center;
 `;
@@ -384,10 +384,10 @@ const SignupForm = () => {
       const result = await axios.post(`${baseURL}/users/signup/email`, {
         email: formData.email,
       });
-      if(result?.data?.code!==409){
+      if (result?.data?.code !== 409) {
         alert("인증 코드가 이메일로 전송되었습니다.");
         setIsVerificationCodeInputVisible(true);
-      }else{
+      } else {
         alert("이미 등록된 이메일 입니다.");
       }
     } catch (error) {
@@ -449,10 +449,7 @@ const SignupForm = () => {
     };
 
     try {
-      const response = await axios.post(
-        `${baseURL}/users/signup`,
-        userData
-      );
+      const response = await axios.post(`${baseURL}/users/signup`, userData);
       console.log(response.data);
       alert("회원가입 성공!");
       navigate("/"); // 홈화면으로 이동

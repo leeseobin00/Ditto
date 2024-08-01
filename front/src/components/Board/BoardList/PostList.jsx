@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import PostItem from "./PostItem";
 
 const List = styled.div`
-  background-color: pink;
   margin-top: 16px;
+  padding: 0 20px;
 `;
 
 function PostList({ posts }) {

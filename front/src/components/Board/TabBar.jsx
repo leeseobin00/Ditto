@@ -6,8 +6,9 @@ const Tabs = styled.ul`
 `;
 
 const Tab = styled.li`
-  background-color: var(--BACKGROUND_COLOR);
   padding: 12px 24px;
+  background-color: ${(props) =>
+    props.$active ? "var(--LIGHT)" : "var(--BACKGROUND_COLOR)"};
   border-bottom: ${(props) =>
     props.$active ? "2px solid var(--SECONDARY)" : "none"};
   white-space: nowrap;
