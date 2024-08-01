@@ -249,6 +249,8 @@ public class MypageServiceImpl implements MypageService {
                     .day(question.getLecture().getDay())
                     .hour(question.getLecture().getHour())
                     .minute(question.getLecture().getMinute())
+                    .userId(question.getUser().getUserId())
+                    .nickname(question.getUser().getNickname())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -257,6 +259,7 @@ public class MypageServiceImpl implements MypageService {
         return questionResponseList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();

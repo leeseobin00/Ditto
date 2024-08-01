@@ -98,7 +98,7 @@ public class MypageController {
     @GetMapping("{userId}/question-more")
     public ResponseDto<List<QuestionResponse>> getMyQuestion(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
         List<QuestionResponse> questionResponses = mypageService.getMyQuestion(userId, finalDate);
-        return ResponseDto.of(200, "내 문의 조회 성공", questionResponses);
+        return ResponseDto.of(200, "내 문의 조회 더보기 성공", questionResponses);
     }
 
     //Mypage_009
