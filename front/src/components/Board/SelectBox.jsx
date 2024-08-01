@@ -5,7 +5,7 @@ import { BsChevronDown } from "react-icons/bs";
 const CustomSelect = styled.div`
   position: relative;
   width: 160px;
-  cursor: pointer;
+  cursor: ${({ isEdit }) => (isEdit ? "not-allowed" : "pointer")};
 `;
 
 const CustomSelectTrigger = styled.div`
@@ -15,10 +15,11 @@ const CustomSelectTrigger = styled.div`
   padding: 8px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
-  background-color: var(--LIGHT);
+  background-color: ${({ isEdit }) => (isEdit ? "var(--BACKGROUND_COLOR)" : "var(--LIGHT)")};
   white-space: nowrap;
   color: var(--TEXT_SECONDARY);
   font-size: 14px;
+  pointer-events: ${({ isEdit }) => (isEdit ? "none" : "auto")};
 `;
 
 const CustomSelectOptions = styled.div`
@@ -49,14 +50,14 @@ const CustomDownIcon = styled(BsChevronDown)`
   font-size: 16px;
 `;
 
-const SelectBox = ({ options, curOption, onChange }) => {
+const SelectBox = ({ options, curOption, onChange, isEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option.label);
     setIsOpen(false);
-    onChange({ target: { value: option.value } });
+    onChange(option.value);
   };
 
   useEffect(() => {
@@ -65,12 +66,12 @@ const SelectBox = ({ options, curOption, onChange }) => {
   }, [curOption, options]);
 
   return (
-    <CustomSelect>
-      <CustomSelectTrigger onClick={() => setIsOpen(!isOpen)}>
+    <CustomSelect isEdit={isEdit}>
+      <CustomSelectTrigger onClick={() => !isEdit && setIsOpen(!isOpen)} isEdit={isEdit}>
         {selectedOption}
         <CustomDownIcon />
       </CustomSelectTrigger>
-      {isOpen && (
+      {isOpen && !isEdit && (
         <CustomSelectOptions>
           {options.map((option, index) => (
             <CustomOption key={index} onClick={() => handleOptionClick(option)}>

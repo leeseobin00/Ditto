@@ -26,7 +26,7 @@ const CommentTitle = styled.p`
 const MyComment = styled.div`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
-  padding: 8px 16px;
+  padding: 16px;
   margin-top: 16px;
 `;
 
@@ -60,6 +60,7 @@ const CommentTextWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding-top: 8px;
+  padding-left: 52px;
 `;
 
 const CommentText = styled.span`
@@ -74,10 +75,9 @@ const AddComment = styled.span`
 
 const CommentReplyWrapper = styled.div`
   position: relative;
-
-  margin-top: 8px;
+  margin-top: 0px;
   margin-bottom: 8px;
-  margin-left: 16px;
+  margin-left: 52px;
 `;
 
 const MenuIconWrapper = styled.div`
@@ -127,6 +127,7 @@ const DropdownItem = styled.div`
 `;
 
 function BoardDetailPage() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   // redux
   const userId = useSelector((state) => state.auth.userId);
   const userName = useSelector((state) => state.auth.nickname);
@@ -136,10 +137,13 @@ function BoardDetailPage() {
   const { sendRequest: postComment } = useAxios();
   const { sendRequest: deleteComment } = useAxios();
   const { sendRequest: updateComment } = useAxios();
+  const { sendRequest: getUserInfo } = useAxios();
   // router
   const { postId } = useParams();
   // state: post, comments
   const [post, setPost] = useState({});
+  const [userFileId, setUserFileId] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [comments, setComments] = useState([]);
   const [showReplyForms, setShowReplyForms] = useState([]);
   const [editCommentId, setEditCommentId] = useState(null);
@@ -169,10 +173,9 @@ function BoardDetailPage() {
     const updateImageSrc = async () => {
       for (let i = 0; i < images.length; i++) {
         if (i < files.length) {
-          const baseUrl = import.meta.env.VITE_BASE_URL;
           const fileId = files[i]?.fileId;
           const response = await axios.get(
-            `${baseUrl}/files/download/${fileId}`,
+            `${baseURL}/files/download/${fileId}`,
             {
               responseType: "blob",
             }
@@ -193,6 +196,19 @@ function BoardDetailPage() {
 
     updateImageSrc();
   };
+
+  const getImage = async() => {
+    const result = await getUserInfo(`/mypage/${userId}/normal`, null, "get");
+    const fileId = result?.data?.fileId;
+    setUserFileId(fileId);
+  }
+
+  useEffect(()=>{
+    if(userId){
+      getImage();
+    }
+  },[userId]);
+
 
   const handleGetComment = async () => {
     const result = await getComment(`/comments/${postId}`, null, "get");
@@ -276,7 +292,7 @@ function BoardDetailPage() {
 
         <MyComment>
           <Profile
-            fileUrl="이미지기능삭제"
+            fileId={userFileId}
             name={userName}
             date={formattedDate}
           />
@@ -313,7 +329,7 @@ function BoardDetailPage() {
                   </MenuIconWrapper>
                 )}
                 <Profile
-                  fileUrl="이미지기능삭제"
+                  fileId={comment.fileId}
                   name={comment.nickname}
                   date={new Date(comment.createdDate)
                     .toISOString()
@@ -368,7 +384,7 @@ function BoardDetailPage() {
                       </MenuIconWrapper>
                     )}
                     <Profile
-                      fileUrl="dd"
+                      fileId={c.fileId}
                       name={c.nickname}
                       date={new Date(c.createdDate)
                         .toISOString()

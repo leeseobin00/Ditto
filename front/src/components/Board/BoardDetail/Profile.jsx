@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
+import DefaultProfileImage from "../../../assets/img/profile-user.png";
+import axios from "axios";
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -10,10 +13,9 @@ const ProfileWrapper = styled.div`
 
 const ProfileImage = styled.img`
   border-radius: 100%;
-  border: 1px solid black;
+  border: 1px solid var(--BACKGROUND_COLOR);
   width: 40px;
   height: 40px;
-  display: none;
 `;
 
 const ProfileInfo = styled.div`
@@ -30,10 +32,36 @@ const ProfileDate = styled.span`
   color: var(--TEXT_TERTIARY);
 `;
 
-function Profile({ fileUrl, name, date }) {
+function Profile({ fileId, name, date }) {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const [image, setImage] = useState(null);
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+  
+  const getImage = async() => {
+    const response = await axios.get(
+      `${baseUrl}/files/download/${fileId}`,
+      {
+        responseType: "blob",
+      }
+    );
+    const fileBlob = response.data;
+    const base64 = await toBase64(fileBlob);
+    setImage(base64);
+  }
+
+  useEffect(()=>{
+    getImage();
+  },[fileId]);
+
   return (
     <ProfileWrapper>
-      <ProfileImage src={fileUrl} alt="이미지" />
+      <ProfileImage src={image || DefaultProfileImage} alt="이미지" />
       <ProfileInfo>
         <ProfileName>{name}</ProfileName>
         <ProfileDate>{date}</ProfileDate>
