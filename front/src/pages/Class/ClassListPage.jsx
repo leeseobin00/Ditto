@@ -158,8 +158,8 @@ function ClassListPage() {
     setKeyword(event.target.value);
   };
 
-  const handleSortOption = (event) => {
-    setSortBy(event.target.value);
+  const handleSortOption = (value) => {
+    setSortBy(value);
   };
 
   const pageNumbers = useMemo(() => {

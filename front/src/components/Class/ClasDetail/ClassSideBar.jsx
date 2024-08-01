@@ -167,7 +167,7 @@ function ClassSideBar({
 
     try {
       await postLike(
-        `/classes/${classInfo?.classId}/likes`,
+        `/classes/${classInfo?.classId}/like`,
         { userId: userId },
         "post"
       );
@@ -191,7 +191,7 @@ function ClassSideBar({
 
     try {
       await deleteLike(
-        `/classes/${classInfo?.classId}/likes`,
+        `/classes/${classInfo?.classId}/like`,
         { userId: userId },
         "delete"
       );

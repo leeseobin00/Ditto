@@ -22,7 +22,7 @@ const ButtonContainer = styled.button`
 `;
 
 function MoreButton({ onClick }) {
-  return <ButtonContainer>더보기</ButtonContainer>;
+  return <ButtonContainer onClick={onClick}>더보기</ButtonContainer>;
 }
 
 export default MoreButton;

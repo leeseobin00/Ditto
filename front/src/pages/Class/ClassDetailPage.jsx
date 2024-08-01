@@ -118,7 +118,7 @@ function ClassDetailPage() {
 
   useEffect(() => {
     handleGetClass();
-  }, [classId]); // classId가 변경될 때마다 handleGetClass 호출
+  }, [classId]);
 
   return (
     <ClassDetailPageContainer>
