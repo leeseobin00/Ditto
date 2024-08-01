@@ -56,7 +56,9 @@ function Profile({ fileId, name, date }) {
   }
 
   useEffect(()=>{
-    getImage();
+    if(fileId){
+      getImage();
+    }
   },[fileId]);
 
   return (
