@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,6 +26,8 @@ public class PostResponse {
     private String categoryName;
     private String title;
     private String content;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
     private Integer viewCount;
     private Boolean isDeleted;
     private Integer likeCount;
@@ -33,7 +36,8 @@ public class PostResponse {
 
     public PostResponse(Integer postId, Integer userId, String nickname, Integer boardId, String boardName,
                         Integer tagId, String tagName, Integer categoryId, String categoryName,
-                        String title, String content, Integer viewCount, Boolean isDeleted,
+                        String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate,
+                        Integer viewCount, Boolean isDeleted,
                         Integer likeCount, Integer commentCount) {
         this.postId=postId;
         this.userId=userId;
@@ -46,6 +50,8 @@ public class PostResponse {
         this.categoryName=categoryName;
         this.title=title;
         this.content=content;
+        this.createdDate=createdDate;
+        this.modifiedDate=modifiedDate;
         this.viewCount=viewCount;
         this.isDeleted=isDeleted;
         this.likeCount=likeCount;
@@ -65,6 +71,8 @@ public class PostResponse {
                 post.getCategory().getCategoryName(),
                 post.getTitle(),
                 post.getContent(),
+                post.getCreatedDate(),
+                post.getModifiedDate(),
                 post.getViewCount(),
                 post.getIsDeleted(),
                 post.getLikeCount(),
