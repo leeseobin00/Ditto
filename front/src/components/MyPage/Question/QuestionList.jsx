@@ -303,12 +303,6 @@ const QuestionList = () => {
             <ClassImage src={question.fileUrl} alt={question.className} />
             <ClassDetails>
               <ClassName>{question.className}</ClassName>
-              <ClassDate>{`${question.year}.${String(question.month).padStart(
-                2,
-                '0'
-              )}.${String(question.day).padStart(2, '0')} ${String(
-                question.hour
-              ).padStart(2, '0')}:${String(question.minute).padStart(2, '0')}`}</ClassDate>
             </ClassDetails>
           </ClassInfo>
           <QuestionHeader>
