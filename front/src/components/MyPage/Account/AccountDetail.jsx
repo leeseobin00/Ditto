@@ -67,6 +67,7 @@ const Button = styled.button`
 `;
 
 const AccountDetail = ({ accountData }) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [account, setAccount] = useState({
     accountNumber: '',
@@ -94,7 +95,7 @@ const AccountDetail = ({ accountData }) => {
   const handleAccountSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:8080/mypage/account/${userId}`, {
+      await axios.patch(`${baseURL}/mypage/account/${userId}`, {
         accountNumber: account.accountNumber,
         bank: account.bank,
         receiver: account.receiver,
