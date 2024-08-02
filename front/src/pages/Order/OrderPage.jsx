@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import useAxios from "../../hooks/useAxios";
 import RoundButton from "../../components/common/RoundButton";
+import OutlineButton from "../../components/common/OutlineButton";
 
 const OrderPageContainer = styled.div`
   display: flex;
@@ -85,6 +86,13 @@ const PriceContainer = styled.div`
   justify-content: space-between;
   padding-bottom: 20px;
 `;
+const TitleLine = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+`;
 
 const ContainerTitle = styled(Bold)`
   font-size: 20px;
@@ -110,6 +118,39 @@ const Img = styled.img`
 const Hr = styled.hr`
   margin: 8px 0;
   border: 1px solid var(--BACKGROUND_SECONDARY);
+`;
+
+const AddressContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+`;
+
+const Label = styled.div`
+  width: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 5px;
+`;
+
+const Input = styled.input`
+  font-family: inherit;
+  font-size: inherit;
+  border-radius: 20px;
+  width: 370px;
+  margin-left: 10px;
+  height: 25px;
+  margin-right: 40px;
+  border-style: solid;
+  border-color: var(--BORDER_COLOR);
+  padding: 0 10px;
+  &:focus {
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
 `;
 
 function OrderPage() {
@@ -236,7 +277,7 @@ function OrderPage() {
           <PriceContainer>
             <LineContainer>
               <PriceDiv>총 상품금액</PriceDiv>
-              <Bold>{classInfo?.classPrice.toLocaleString()} 원</Bold>
+              <Bold>{classInfo?.classPrice?.toLocaleString()} 원</Bold>
             </LineContainer>
             <LineContainer>
               <PriceDiv>배송비</PriceDiv>
@@ -248,11 +289,28 @@ function OrderPage() {
               <Bold>{(classInfo?.classPrice + 3000).toLocaleString()} 원</Bold>
             </LineContainer>
           </PriceContainer>
-          <RoundButton label={"구매하기"} size="lg" />
+          <RoundButton label={"결제하기"} size="lg" />
         </OrderPrice>
       </LineContainer>
       <OrderInfo>
-        <ContainerTitle>배송지 정보</ContainerTitle>
+        <TitleLine>
+          <ContainerTitle>배송지 정보</ContainerTitle>
+          <OutlineButton label={"배송지 목록"} size="sm" />
+        </TitleLine>
+        <AddressContainer>
+          <LineContainer>
+            <Label>배송지명</Label>
+            <Input type="text" />
+          </LineContainer>
+          <LineContainer>
+            <Label>연락처</Label>
+            <Input type="text" />
+          </LineContainer>
+          <LineContainer>
+            <Label>수령인</Label>
+            <Input type="text" />
+          </LineContainer>
+        </AddressContainer>
       </OrderInfo>
     </OrderPageContainer>
   );
