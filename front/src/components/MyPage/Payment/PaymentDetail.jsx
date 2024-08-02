@@ -119,6 +119,7 @@ const PaymentUserName = styled.div`
 `;
 
 const PaymentDetail = ({ payments = [], setPayments }) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
   const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -135,7 +136,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/payment/cancel`, {
+      const response = await axios.get(`${baseURL}/mypage/payment/cancel`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -156,7 +157,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
 
   const handleSummaryClick = async (lectureId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/lecture/${lectureId}/summary`, {
+      const response = await axios.get(`${baseURL}/mypage/lecture/${lectureId}/summary`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -190,7 +191,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const handleConfirmCancel = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:8080/mypage/${userId}/payment/cancel`,
+        `${baseURL}/mypage/${userId}/payment/cancel`,
         { lectureId: currentLectureId },
         {
           headers: {
