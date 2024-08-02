@@ -293,7 +293,7 @@ const QuestionList = () => {
   };
 
   const handleClassClick = (classId) => {
-    navigate(`/class/${classId}`);
+    navigate(`/classes/detail/${classId}`);
   };
 
   return (

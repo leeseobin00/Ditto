@@ -130,7 +130,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const [currentLectureId, setCurrentLectureId] = useState(null);
 
   const handleClassClick = (classId) => {
-    navigate(`/class/${classId}`);
+    navigate(`/classes/detail/${classId}`);
   };
 
   const handleCancelClick = async (lectureId) => {
