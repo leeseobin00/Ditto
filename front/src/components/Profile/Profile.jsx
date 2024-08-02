@@ -45,6 +45,14 @@ const CustomFilledHeartIcon = styled(BsHeartFill)`
   cursor: pointer;
 `;
 
+const NoTagText = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: var(--TEXT_SECONDARY);  
+  width: 100%;
+`;
 const Tags = styled.div`
   display: flex;
   justify-content: center;
@@ -125,6 +133,7 @@ function Profile({
       {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />} {curLikeCount}
       </LikeCount>
       <Tags>
+        {tags?.length===0 && <NoTagText>현재 등록된 태그가 없습니다.</NoTagText>}
         {tags?.map((tag, index)=><Tag key={index} tagName={tag} />)}
       </Tags>
     </ProfileWrapper>

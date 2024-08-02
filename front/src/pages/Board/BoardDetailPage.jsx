@@ -274,13 +274,6 @@ function BoardDetailPage() {
     });
   };
 
-  const toggleDropdown = (index) => {
-    setShowDropdown((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   const handleEditClick = (commentId) => {
     setEditCommentId(commentId);
   };
@@ -326,7 +319,7 @@ function BoardDetailPage() {
                 {(comment?.isDeleted == false && comment?.userId == userId) && (
                   <MenuIconWrapper>
                     <MenuIcon>
-                      <CustomMenuIcon onClick={() => toggleDropdown(index)} />
+                      <CustomMenuIcon />
                       <DropdownMenu className="dropdown-menu">
                         <DropdownItem
                           onClick={() => handleEditClick(comment.commentId)}
@@ -377,11 +370,7 @@ function BoardDetailPage() {
                     {userId == c?.userId && (
                       <MenuIconWrapper>
                         <MenuIcon>
-                          <CustomMenuIcon
-                            onClick={() =>
-                              toggleDropdown(`${index}-${childIndex}`)
-                            }
-                          />
+                          <CustomMenuIcon />
                           <DropdownMenu className="dropdown-menu">
                             <DropdownItem
                               onClick={() => handleEditClick(c.commentId)}
