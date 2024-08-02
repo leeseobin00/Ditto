@@ -12,7 +12,7 @@ export const checkNicknameAvailability = async (nickname) => {
 
   try {
     const response = await axios.get(`${baseURL}/users/signup/nickname/${trimmedNickname}`);
-    return response.status === 200;
+    return response.data.code === 201;
   } catch (error) {
     if (error.response && error.response.status === 409) {
       return false; // 닉네임이 이미 사용 중인 경우
