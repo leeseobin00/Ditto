@@ -10,12 +10,13 @@ const KakaoCallback = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const baseURL = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
     const code = new URLSearchParams(location.search).get('code');
     
     if (code) {
-      axios.post('http://localhost:8080/users/kakao-login', { code })
+      axios.post(`${baseURL}/users/kakao-login`, { code })
         .then(response => {
           console.log(response);
           const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;

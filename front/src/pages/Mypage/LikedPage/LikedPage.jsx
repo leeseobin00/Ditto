@@ -34,6 +34,7 @@ const LoadMoreButton = styled.button`
 `;
 
 const LikedPage = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [likedClasses, setLikedClasses] = useState([]);
   const [likedUsers, setLikedUsers] = useState([]);
@@ -46,14 +47,14 @@ const LikedPage = () => {
   const fetchLikedItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/class`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/like/class`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
       setLikedClasses(response.data.classes);
 
-      const userResponse = await axios.get(`http://localhost:8080/mypage/${userId}/like/user`, {
+      const userResponse = await axios.get(`${baseURL}/mypage/${userId}/like/user`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -70,7 +71,7 @@ const LikedPage = () => {
     const finalDate = likedClasses[likedClasses.length - 1].createdDate;
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/class-more?final-date=${finalDate}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/like/class-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -87,7 +88,7 @@ const LikedPage = () => {
     const finalDate = likedUsers[likedUsers.length - 1].createdDate;
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/like/user-more?final-date=${finalDate}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/like/user-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -102,7 +103,7 @@ const LikedPage = () => {
 
   const handleClassLikeCancel = async (classId) => {
     try {
-      await axios.delete(`http://localhost:8080/mypage/${userId}/like/class/${classId}`, {
+      await axios.delete(`${baseURL}/mypage/${userId}/like/class/${classId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -115,7 +116,7 @@ const LikedPage = () => {
 
   const handleUserLikeCancel = async (cancelUserId) => {
     try {
-      await axios.delete(`http://localhost:8080/mypage/${userId}/like/user/${cancelUserId}`, {
+      await axios.delete(`${baseURL}/mypage/${userId}/like/user/${cancelUserId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }

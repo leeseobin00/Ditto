@@ -20,10 +20,11 @@ const ProUserinfoDetailPage = () => {
   const userId = useSelector((state) => state.auth.userId);
   const [userData, setUserData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
+  const baseURL = import.meta.env.VITE_BASE_URL;
+  
   useEffect(() => {
     if (userId) {
-      axios.get(`http://localhost:8080/mypage/pro/${userId}`, {
+      axios.get(`${baseURL}/mypage/pro/${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
