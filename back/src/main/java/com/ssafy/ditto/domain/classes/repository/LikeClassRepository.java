@@ -3,6 +3,7 @@ package com.ssafy.ditto.domain.classes.repository;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.user.domain.User;
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,7 +34,7 @@ public interface LikeClassRepository extends JpaRepository<LikeClass, Integer> {
 
 
     @Query(value =
-            "SELECT c.* " +
+            "SELECT new DClass(c.classId, c.className, c.classPrice, c.classHour, c.classMinute, c.classExplanation, c.classMin, c.classMax, c.studentSum, c.likeCount, c.reviewCount, c.ratingSum, c.isDeleted, c.userId, c.tagId, c.categoryId, c.kitId, c.fileId) " +
                     "FROM DClass c " +
                     "JOIN Like_Class lc ON c.class_id = lc.class_id " +
                     "WHERE lc.user_id = :userId " +
@@ -41,5 +42,5 @@ public interface LikeClassRepository extends JpaRepository<LikeClass, Integer> {
                     "ORDER BY lc.created_date DESC " +
                     "LIMIT 3",
             nativeQuery = true)
-    List<DClass> getLikeClass(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
+    List<DClass> getLikeClass(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime, Pageable pageable);
 }

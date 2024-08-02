@@ -22,6 +22,8 @@ import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -294,7 +296,10 @@ public class MypageServiceImpl implements MypageService {
         List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
 
         // 일단 좋아요 한 클래스 Id를 3개 가져옴
-        List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
+        //List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
+
+        PageRequest pageable = PageRequest.of(0, 3);
+        List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime, pageable);
 
         for (DClass dClass : likeclasses) {
             Optional<LikeClass> likeClass = likeClassRepository.findByUserAndDClass(userRepository.findByUserId(userId), dClass);
