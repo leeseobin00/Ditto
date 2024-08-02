@@ -170,6 +170,7 @@ public class MypageServiceImpl implements MypageService {
                     .fileId(user.getFileId().getFileId())
                     .fileUrl(user.getFileId().getFileUrl())
                     .lectureId(payment.getLectureId().getLectureId())
+                    .classId(payment.getLectureId().getClassId().getClassId())
                     .className(payment.getLectureId().getClassName())
                     .classPrice(payment.getLectureId().getClassPrice())
                     .year(payment.getLectureId().getYear())
