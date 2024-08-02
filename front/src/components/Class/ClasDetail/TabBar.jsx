@@ -12,7 +12,7 @@ const TabBarContainer = styled.div`
   background-color: var(--LIGHT);
   position: sticky;
   top: -1px;
-  z-index: 5;
+  z-index: 4;
   background-color: white;
 `;
 

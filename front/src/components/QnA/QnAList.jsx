@@ -10,24 +10,32 @@ const QnAListContainer = styled.div`
   flex-direction: column;
   width: 100%;
   margin: 15px 0;
+  align-items: center;
+`;
+
+const QnANull = styled.div`
+  font-size: 20px;
+  color: var(--TEXT_SECONDARY);
+  padding: 20px;
 `;
 
 function QnAList({ classId }) {
   const { sendRequest: getQuestionList } = useAxios();
   const [questionList, setQuestionList] = useState([]);
-  const [curPage, setCurPage] = useState(0);
+  const [curPage, setCurPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(0);
 
   const loadInitialQuestions = async () => {
     try {
       const response = await getQuestionList(
-        `/classes/${classId}/questions?page=0&size=3`,
+        `/classes/${classId}/questions?page=${curPage}&size=3`,
         null,
         "get"
       );
       setQuestionList(response.data.questions);
-      setCurPage(1); // 첫 페이지 이후의 데이터를 가져오도록 설정
+      setCurPage(2); // 첫 페이지 이후의 데이터를 가져오도록 설정
       setTotalPageCount(response.data.totalPageCount);
+      console.log(totalPageCount);
     } catch (error) {
       console.error(error);
     }
@@ -60,10 +68,13 @@ function QnAList({ classId }) {
 
   return (
     <QnAListContainer>
+      {questionList.length == 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
       {questionList.map((question, index) => (
         <QnAItem key={index} question={question} />
       ))}
-      <MoreButton onClick={handleMoreButtonClick} />
+      {curPage <= totalPageCount && (
+        <MoreButton onClick={handleMoreButtonClick} />
+      )}
     </QnAListContainer>
   );
 }

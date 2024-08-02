@@ -13,7 +13,7 @@ const HeaderContainer = styled.header`
   border: none;
   box-shadow: 0px 8px 12px -8px rgba(0, 0, 0, 0.3);
   padding-bottom: 5px;
-  z-index: 10;
+  z-index: 5;
 `;
 
 const TopSection = styled.div`

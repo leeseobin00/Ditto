@@ -82,7 +82,7 @@ function ClassListPage() {
   const [searchBy, setSearchBy] = useState("className");
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState("classId");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
 
