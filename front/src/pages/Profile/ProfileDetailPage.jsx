@@ -19,6 +19,10 @@ const Container = styled.div`
   display: flex;
 `;
 
+const IntroText = styled.div`
+  font-size: 16px;
+  color: var(--TEXT_SECONDARY);  
+`;
 
 const LectureDetails = styled.div`
   border-top: 1px solid var(--BORDER_COLOR);
@@ -234,7 +238,7 @@ function ProfileDetailPage() {
           modalContent={ModifyIntro}
         >
           <IntroContent>
-            {intro}
+            <IntroText>{intro ? intro : "현재 등록된 소개글이 없습니다."}</IntroText>
           </IntroContent>
         </Section>
 
