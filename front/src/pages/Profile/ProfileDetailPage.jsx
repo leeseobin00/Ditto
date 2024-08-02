@@ -145,17 +145,17 @@ function ProfileDetailPage() {
   }
 
   const handleGetClasses = async() => {
-    const result = await getClasses(`/profiles/${userId}/class?page=${classPage}&size=${classSize}`, null, "get");
+    const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
     setClasses(result?.data?.classList);
   }
 
   const handleGetReviews = async() => {
-    const result = await getReviews(`/profiles/${userId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
+    const result = await getReviews(`/profiles/${profileId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
     setReviews(result?.data);
   }
 
   const handleGetPosts = async() => {
-    const result = await getPosts(`/profiles/${userId}/post`, null, "get");
+    const result = await getPosts(`/profiles/${profileId}/post`, null, "get");
     setPosts(result?.data?.posts);
   }
 

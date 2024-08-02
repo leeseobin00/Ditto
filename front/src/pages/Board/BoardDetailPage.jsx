@@ -183,6 +183,11 @@ function BoardDetailPage() {
           const fileBlob = response.data;
           const base64 = await toBase64(fileBlob);
           images[i].src = base64;
+          // Set the size for each image
+          // images[i].width = 300; // or any desired width
+          // images[i].height = 300; // or any desired height
+          images[i].style.maxWidth = "600px"; // or any desired max width
+          images[i].style.maxHeight = "600px"; // or any desired max width
         }
       }
 

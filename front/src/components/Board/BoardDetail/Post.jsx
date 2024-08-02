@@ -242,6 +242,7 @@ function Post({
       <SubHeader>
         {/* <SubInfo>{createdDate}</SubInfo> */}
         <SubInfo>조회수 {viewCount}</SubInfo>
+        <SubInfo>{createdDate}</SubInfo>
       </SubHeader>
       <Hr />
       {(postUserId == userId) && <MenuIconWrapper>
