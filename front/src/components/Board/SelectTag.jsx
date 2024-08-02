@@ -9,7 +9,7 @@ const Tag = styled.div`
   background-color: ${(props) =>
     props.$active === "true" ? "var(--TERTIARY)" : "var(--LIGHT)"};
   white-space: nowrap;
-  cursor: ${({ isedit }) => (isedit ? "not-allowed" : "pointer")};
+  cursor: ${({ isedit }) => (isedit==="true" ? "not-allowed" : "pointer")};
 
   &:hover {
     background-color: var(--TERTIARY);

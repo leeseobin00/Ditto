@@ -263,7 +263,7 @@ function BoardAddPage() {
               options={BOARD_TYPE_OPTIONS}
               onChange={handleBoardType}
               curOption={boardId}
-              isEdit={isedit}
+              isedit={isedit.toString()}
             />
           </Filter>
           <Filter title="작성자">
@@ -276,7 +276,7 @@ function BoardAddPage() {
               options={CATEGORY_OPTIONS}
               onChange={handleCategory}
               curOption={categoryId}
-              isEdit={isedit} // Pass isEdit prop
+              isedit={isedit.toString()}
             />
           </Filter>
           <Filter title="태그">
@@ -284,7 +284,7 @@ function BoardAddPage() {
               tags={tags}
               curTag={tagId}
               handleTag={handleTagId}
-              isEdit={isedit} // Pass isEdit prop
+              isedit={isedit.toString()}
             />
           </Filter>
         </FilterWrapper>
