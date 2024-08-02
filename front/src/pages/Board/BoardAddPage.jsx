@@ -185,6 +185,11 @@ function BoardAddPage() {
   };
 
   const handleSave = async () => {
+    if(title==="" || content===""){
+      alert("게시글에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요.");
+      return;
+    }
+    
     const postData = {
       userId: userId,
       username: username,
