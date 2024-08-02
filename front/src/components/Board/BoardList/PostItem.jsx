@@ -48,6 +48,10 @@ const PostDate = styled(Content)`
   margin-right: 16px;
 `;
 
+const PostCommentCount = styled(Content)`
+  flex: 1;
+`;
+
 const PostCount = styled(Content)`
   flex: 1;
 `;
@@ -58,6 +62,7 @@ function PostItem({
   likeCount,
   userName,
   createdDate,
+  commentCount,
   viewCount,
 }) {
   return (
@@ -67,6 +72,7 @@ function PostItem({
       <PostLike><CustomFilledHeartIcon /> {likeCount}</PostLike>
       <PostUser>{userName}</PostUser>
       <PostDate>{createdDate}</PostDate>
+      <PostCommentCount>{commentCount}</PostCommentCount>
       <PostCount>{viewCount}</PostCount>
     </Item>
   );

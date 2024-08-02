@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { BsHeartFill } from "react-icons/bs";
 
 const Item = styled.div`
   display: flex;
@@ -20,6 +21,9 @@ const PostTitle = styled(Content)`
 `;
 
 const PostLike = styled(Content)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   flex: 1;
   margin-right: 16px;
 `;
@@ -34,13 +38,19 @@ const PostDate = styled(Content)`
   margin-right: 16px;
 `;
 
+const CustomFilledHeartIcon = styled(BsHeartFill)`
+  color: var(--ACCENT1);
+  margin-right: 8px;
+  font-size: 14px;
+`;
+
 function PostItem({ title, likeCount, userName, createdDate }) {
   return (
     <Item>
       <PostTitle>{title}</PostTitle>
-      <PostLike>{likeCount}</PostLike>
+      <PostLike><CustomFilledHeartIcon /> {likeCount}</PostLike>
       <PostUser>{userName}</PostUser>
-      {/* <PostDate>{createdDate}</PostDate> */}
+      <PostDate>{createdDate.split('T')[0]}</PostDate>
     </Item>
   );
 }

@@ -171,7 +171,7 @@ function BoardAddPage() {
   };
 
   const handleTagId = (tagId) => {
-    if(!isEdit){
+    if(!isedit){
       setTagId(tagId);
     }
   };
@@ -185,6 +185,11 @@ function BoardAddPage() {
   };
 
   const handleSave = async () => {
+    if(title==="" || content===""){
+      alert("게시글에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요.");
+      return;
+    }
+    
     const postData = {
       userId: userId,
       username: username,
@@ -195,8 +200,8 @@ function BoardAddPage() {
       content: content,
     };
 
-    const url = isEdit ? `/posts/${postId}` : "/posts";
-    const method = isEdit ? "patch" : "post";
+    const url = isedit ? `/posts/${postId}` : "/posts";
+    const method = isedit ? "patch" : "post";
 
     //1. HTML에서 img 태그의 src 값 추출
     const parser = new DOMParser();

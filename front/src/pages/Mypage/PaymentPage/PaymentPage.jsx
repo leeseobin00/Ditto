@@ -33,6 +33,7 @@ const LoadMoreButton = styled.button`
 `;
 
 const PaymentPage = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
   const { userId } = useSelector((state) => state.auth);
@@ -44,7 +45,7 @@ const PaymentPage = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/payment`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/payment`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -64,7 +65,7 @@ const PaymentPage = () => {
     const finalDate = payments[payments.length - 1].payTime;
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/payment-more?final-date=${finalDate}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/payment-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },

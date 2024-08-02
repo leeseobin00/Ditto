@@ -13,7 +13,7 @@ function PostList({ posts }) {
   return (
     <PostListWrapper>
       {posts.map((post) => (
-        <Link to={`/board/all/${post?.postId}`} key={post?.postId}>
+        <Link to={`/board/detail/${post?.postId}`} key={post?.postId}>
           <PostItem
             title={post?.title}
             likeCount={post?.likeCount}
