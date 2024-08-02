@@ -167,7 +167,7 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
   };
 
   const handleClassClick = (classId) => {
-    navigate(`/class/detail/${classId}`); // Navigate 훅으로 페이지 이동 처리
+    navigate(`/classes/detail/${classId}`); // Navigate 훅으로 페이지 이동 처리
   };
 
   return (
