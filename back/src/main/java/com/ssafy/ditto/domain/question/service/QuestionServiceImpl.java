@@ -71,7 +71,7 @@ public class QuestionServiceImpl implements QuestionService {
         Page<Question> questionsPage = questionRepository.findByDclassAndIsDeletedFalse(dClass, pageable);
         return QuestionPageResponse.builder()
                 .questions(questionsPage.stream().map(QuestionResponse::of).collect(Collectors.toList()))
-                .currentPage(questionsPage.getNumber())
+                .currentPage(questionsPage.getNumber()+1)
                 .totalPageCount(questionsPage.getTotalPages())
                 .build();
     }
