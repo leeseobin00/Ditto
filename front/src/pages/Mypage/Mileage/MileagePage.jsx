@@ -133,6 +133,7 @@ const MoreButton = styled(Button)`
 `;
 
 const MileagePage = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [balance, setBalance] = useState(0);
@@ -149,7 +150,7 @@ const MileagePage = () => {
   useEffect(() => {
     const fetchMileage = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage`, {
+        const response = await axios.get(`${baseURL}/mypage/${userId}/mileage`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -164,7 +165,7 @@ const MileagePage = () => {
 
     const fetchHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/mypage/${userId}/mileage/history`, {
+        const response = await axios.get(`${baseURL}/mypage/${userId}/mileage/history`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -183,7 +184,7 @@ const MileagePage = () => {
     const lastDate = histories[histories.length - 1]?.time;
     if (lastDate) {
       try {
-        const response = await axios.get(`http://localhost:8080/mypage/mileage/history-more?final-date=${lastDate}`, {
+        const response = await axios.get(`${baseURL}/mypage/mileage/history-more?final-date=${lastDate}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -222,7 +223,7 @@ const MileagePage = () => {
 
   const handleConfirmWithdraw = async () => {
     try {
-      await axios.post(`http://localhost:8080/mypage/${userId}/withdraw`, {
+      await axios.post(`${baseURL}/mypage/${userId}/withdraw`, {
         requestMoney: withdrawAmount,
       }, {
         headers: {
