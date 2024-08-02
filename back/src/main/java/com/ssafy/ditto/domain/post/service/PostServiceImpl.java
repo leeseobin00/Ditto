@@ -88,8 +88,15 @@ public class PostServiceImpl implements PostService {
         Integer tagId = map.get("tagId") != null && !map.get("tagId").isEmpty() ? Integer.parseInt(map.get("tagId")) : null;
         String sortBy = map.getOrDefault("sortBy", "postId");
 
-        List<Post> list = postRepository.getPostLists(boardId, categoryId, tagId);
-        int postCount = postRepository.getPostCount(boardId, categoryId, tagId);
+        // searchBy 는 null이 아니라면 "제목", "작성자" 중 하나로 들어옴
+        String sb = map.get("searchBy") != null && !map.get("searchBy").isEmpty() ? map.get("searchBy"):null;
+        String searchBy = null;
+        if("제목".equals(sb)) searchBy = "title";
+        if("작성자".equals(sb)) searchBy = "nickname";
+        String keyword = map.get("keyword") != null && !map.get("keyword").isEmpty() ? map.get("keyword"):null;
+
+        List<Post> list = postRepository.getPostLists(boardId, categoryId, tagId, searchBy, keyword);
+        int postCount = postRepository.getPostCount(boardId, categoryId, tagId, searchBy, keyword);
         int pageCount = (postCount - 1) / sizePage + 1;
 
         // Sort
