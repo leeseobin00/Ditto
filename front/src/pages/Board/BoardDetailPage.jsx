@@ -309,7 +309,7 @@ function BoardDetailPage() {
           {comments?.map((comment, index) => (
             <Comment key={index}>
               <ParentCommentWrapper>
-                {comment?.userId == userId && (
+                {(comment?.isDeleted == false && comment?.userId == userId) && (
                   <MenuIconWrapper>
                     <MenuIcon>
                       <CustomMenuIcon onClick={() => toggleDropdown(index)} />
@@ -349,9 +349,9 @@ function BoardDetailPage() {
                   ) : (
                     <>
                       <CommentText>{comment.content}</CommentText>
-                      <AddComment onClick={() => handleReplyFormOpen(index)}>
+                      { (comment?.isDeleted === false) && <AddComment onClick={() => handleReplyFormOpen(index)}>
                         답글달기
-                      </AddComment>
+                      </AddComment>}
                     </>
                   )}
                 </CommentTextWrapper>
