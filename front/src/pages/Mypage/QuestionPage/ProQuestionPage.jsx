@@ -37,6 +37,7 @@ const MoreButton = styled.button`
 `;
 
 const ProQuestionPage = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [questions, setQuestions] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -46,7 +47,7 @@ const ProQuestionPage = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro`, {
+        const response = await axios.get(`${baseURL}/mypage/${userId}/question/pro`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -63,7 +64,7 @@ const ProQuestionPage = () => {
 
   const fetchQuestionAnswer = async (questionId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/answer/${questionId}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/answer/${questionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -83,7 +84,7 @@ const ProQuestionPage = () => {
     const lastDate = questions[questions.length - 1]?.createdDate;
     if (lastDate) {
       try {
-        const response = await axios.get(`http://localhost:8080/mypage/${userId}/question/pro-more?final-date=${lastDate}`, {
+        const response = await axios.get(`${baseURL}/mypage/${userId}/question/pro-more?final-date=${lastDate}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -107,7 +108,7 @@ const ProQuestionPage = () => {
 
   const handleDelete = async (answerId) => {
     try {
-      await axios.delete(`http://localhost:8080/mypage/answer/${answerId}`, {
+      await axios.delete(`${baseURL}/mypage/answer/${answerId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -120,7 +121,7 @@ const ProQuestionPage = () => {
 
   const handleCreateModalSubmit = async (answer) => {
     try {
-      const response = await axios.post(`http://localhost:8080/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
+      const response = await axios.post(`${baseURL}/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
         answer,
       }, {
         headers: {
@@ -136,7 +137,7 @@ const ProQuestionPage = () => {
 
   const handleEditModalSubmit = async (answer) => {
     try {
-      const response = await axios.patch(`http://localhost:8080/mypage/answer/${selectedQuestion.answer.answerId}`, {
+      const response = await axios.patch(`${baseURL}/mypage/answer/${selectedQuestion.answer.answerId}`, {
         answer,
       }, {
         headers: {

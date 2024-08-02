@@ -15,6 +15,7 @@ const PageContainer = styled.div`
 `;
 
 const ReviewListPage = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
   const [finalDate, setFinalDate] = useState(null);
@@ -25,7 +26,7 @@ const ReviewListPage = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/review`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/review`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -43,7 +44,7 @@ const ReviewListPage = () => {
     const finalDate = reviews[reviews.length - 1].createdDate;
 
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/review-more?final-date=${finalDate}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/review-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
