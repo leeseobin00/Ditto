@@ -115,7 +115,7 @@ public class ClassController {
                                                        @RequestParam(required = false) String sortBy,
                                                        @RequestParam(required = false) String userNickname) {
         ClassListRequest request = ClassListRequest.builder()
-                .page(page)
+                .page(page-1)
                 .categoryId(categoryId)
                 .tagId(tagId)
                 .searchBy(searchBy)
