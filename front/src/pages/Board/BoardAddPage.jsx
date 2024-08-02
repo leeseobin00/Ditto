@@ -171,7 +171,7 @@ function BoardAddPage() {
   };
 
   const handleTagId = (tagId) => {
-    if(!isEdit){
+    if(!isedit){
       setTagId(tagId);
     }
   };
