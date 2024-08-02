@@ -23,6 +23,13 @@ const CommentTitle = styled.p`
   margin-top: 48px;
 `;
 
+const CommentCount = styled.p`
+  color: var(--TEXT_SECONDARY);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 48px;
+`;
+
 const MyComment = styled.div`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
@@ -293,7 +300,9 @@ function BoardDetailPage() {
           tagName={post?.tagName}
         />
 
-        <CommentTitle>댓글</CommentTitle>
+        <CommentTitle>
+          댓글
+        </CommentTitle>
 
         <MyComment>
           <Profile
