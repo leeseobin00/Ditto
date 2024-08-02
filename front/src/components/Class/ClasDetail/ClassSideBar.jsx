@@ -121,6 +121,7 @@ function ClassSideBar({
   roleId,
   updateLectureList,
 }) {
+  const navigate = useNavigate();
   const [likeCount, setLikeCount] = useState(classInfo.likeCount);
   const [isLike, setIsLike] = useState(false);
   const [heartActivated, setHeartActivated] = useState(false);
@@ -223,7 +224,16 @@ function ClassSideBar({
     setShowModal(!showModal);
   };
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (lectureList && lectureList.length > 0) {
+      setSelectedLecture(lectureList[0]);
+    }
+  }, [lectureList]);
+
+  const navigateToOrder = (classId, lectureId) => {
+    const queryString = new URLSearchParams({ classId, lectureId }).toString();
+    navigate(`/order?${queryString}`);
+  };
 
   const handleOrderButton = () => {
     if (userId == null) {
@@ -241,19 +251,8 @@ function ClassSideBar({
       return;
     }
 
-    navigate("/order", {
-      state: {
-        classInfo: { classInfo },
-        lectureInfo: { selectedLecture },
-      },
-    });
+    navigateToOrder(classInfo.classId, selectedLecture.lectureId);
   };
-
-  useEffect(() => {
-    if (lectureList && lectureList.length > 0) {
-      setSelectedLecture(lectureList[0]);
-    }
-  }, [lectureList]);
 
   return (
     <ClassSideBarConatiner>
