@@ -99,7 +99,7 @@ function ClassDetailPage() {
       );
       setLectureList(lectureResponse?.data);
     } catch (error) {
-      console.error("Error fetching class info:", error);
+      console.error(error);
     }
   };
 

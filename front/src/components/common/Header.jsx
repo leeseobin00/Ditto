@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { styled } from "styled-components";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -71,24 +71,19 @@ const PageLink = styled(NavLink)`
   }
 `;
 
-const CustomVideoIcon = styled(BiVideo)`
-  font-size: 18px;
-  font-weight: 600;
+const IconLink = styled(NavLink)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   color: var(--TEXT_PRIMARY);
   cursor: pointer;
 
   &:hover {
     color: var(--PRIMARY);
   }
-`;
 
-const CustomBellIcon = styled(BiBell)`
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--TEXT_PRIMARY);
-  cursor: pointer;
-
-  &:hover {
+  &.active {
     color: var(--PRIMARY);
   }
 `;
@@ -270,10 +265,13 @@ const Header = () => {
           <Logo>Ditto</Logo>
         </NavLink>
         <Icons>
-          <Link to="/video">
-            <CustomVideoIcon />
-          </Link>
-          <CustomBellIcon />
+          <IconLink to="/video">
+            <BiVideo style={{ fontSize: "20px" }} />
+          </IconLink>
+          {/* 알림페이지 구현 후 수정 예정 */}
+          <IconLink to="/notification" onClick={handlePreventClick}>
+            <BiBell style={{ fontSize: "20px" }} />
+          </IconLink>
           {isAuthenticated ? (
             <Icon to="/mypage/userinfo">MyPage</Icon>
           ) : (
