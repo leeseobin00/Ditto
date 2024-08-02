@@ -34,7 +34,7 @@ public interface LikeClassRepository extends JpaRepository<LikeClass, Integer> {
 
     @Query(value =
             "SELECT c.* " +
-                    "FROM Dclass c " +
+                    "FROM DClass c " +
                     "JOIN Like_Class lc ON c.class_id = lc.class_id " +
                     "WHERE lc.user_id = :userId " +
                     "AND lc.created_date < :dateTime " +
