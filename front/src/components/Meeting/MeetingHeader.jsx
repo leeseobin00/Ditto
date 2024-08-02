@@ -1,5 +1,5 @@
 import { styled } from "styled-components";
-
+import { useNavigate } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 
 const Header = styled.div`
@@ -32,7 +32,8 @@ const LiveIndicator = styled.p`
   font-size: 12px;
 `;
 
-const IconWrapper = styled.div``;
+const IconWrapper = styled.div`
+`;
 
 const CustomOutIcon = styled(BiLogOut)`
   font-size: 24px;
@@ -42,13 +43,19 @@ const CustomOutIcon = styled(BiLogOut)`
 `;
 
 function MeetingHeader({ title }) {
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate(-1);
+  }
+
   return (
     <Header>
       <TitleWrapper>
         {title}
         <LiveIndicator>● LIVE</LiveIndicator>
       </TitleWrapper>
-      <IconWrapper>
+      <IconWrapper onClick={goBack}>
         <CustomOutIcon />
       </IconWrapper>
     </Header>

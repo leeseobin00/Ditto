@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import MeetingButton from "./MeetingButton";
 
@@ -33,25 +33,53 @@ const ProgressDescription = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  height: 32px;
 `;
 
 const ProgressName = styled.div`
   color: var(--LIGHT);
-  font-size: 18px;
+  font-size: 16px;
 `;
 
-const ProgressBar = ({ stages, currentStage, handleNextStage }) => {
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+const Spinner = styled.div`
+  border: 4px solid var(--LIGHT);
+  border-top: 4px solid var(--GREEN);
+  border-radius: 100%;
+  width: 18px;
+  height: 18px;
+  animation: ${spin} 1s linear infinite;
+`;
+
+function ProgressBar({ steps
+  , currentStep
+  , loading
+  , handleStartStep
+  , handleNextStep
+  , handleEndStep }){
   return (
     <ProgressBarWrapper>
       <Bar>
-        {stages.map((_, index) => (
-          <Box key={index} $filled={(index <= currentStage).toString()} />
+        {steps.map((step, index) => (
+          <Box key={index} $filled={(index <= currentStep).toString()} />
         ))}
       </Bar>
       <ProgressDescription>
-        <ProgressName>{stages[currentStage]}</ProgressName>
-        <MeetingButton label={"Next"} onClick={handleNextStage} />
+        <ProgressName>{steps[currentStep]}</ProgressName>
+        {!loading ? <>
+          {currentStep==-1 && <MeetingButton label="Start" onClick={handleStartStep} />}
+          {(currentStep>=0 && currentStep<steps.length-1) && <MeetingButton label="Next" onClick={handleNextStep} />}
+          {currentStep>=steps.length-1 && <MeetingButton label="End" onClick={handleEndStep} />}
+        </>  
+        :<Spinner/>}
       </ProgressDescription>
     </ProgressBarWrapper>
   );
