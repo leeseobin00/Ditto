@@ -8,8 +8,9 @@ import {
   Room,
   RoomEvent
 } from "livekit-client";
+import 'regenerator-runtime/runtime';
 import { styled } from "styled-components";
-
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import usewebRTCAxios from "../../hooks/usewebRTCAxios";
 import MeetingHeader from "../../components/Meeting/MeetingHeader";
 import ProgressBar from "../../components/Meeting/ProgressBar";
@@ -52,6 +53,43 @@ const ParticipantGrid = styled.div`
 function MeetingPage() {
   // State for user name
   const [userName, setUserName] = useState(undefined);
+  // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 1. step을 불러온다.
+  const steps = [
+    "1단계. 향 조합 비율 결정하기",
+    "2단계. 향기 선택하기",
+    "3단계. 향 배합 비율 확인하기",
+  ];
+  const [currentStep, setCurrentStep] = useState(-1);
+  const [stepLoading, setStepLoading] = useState(false);
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  const [text, setText] = useState();
+  const handleStartStep = () => {
+    setStepLoading(true);
+    SpeechRecognition.startListening({ language: 'ko-KR', continuous: true });
+    setCurrentStep((prev) => prev+1);
+    setStepLoading(false);
+  }
+  const handleNextStep = async() => {
+    setStepLoading(true);
+    setText(transcript);
+    resetTranscript();
+    setCurrentStep((prev) => prev+1);
+    setStepLoading(false);
+  }
+  const handleEndStep = () => {
+    if(!listening) return;
+    setStepLoading(true);
+    setText(transcript);
+    SpeechRecognition.abortListening();
+    setStepLoading(false);
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const [isOpen, setIsOpen] = useState(false);
+  const handleIsOpen = (status) => {
+    setIsOpen(status);
+  };
+  
   // axios
   const { sendRequest: getToken } = usewebRTCAxios();
   // webRTC
@@ -134,45 +172,28 @@ function MeetingPage() {
     setLocalAudioTrack(undefined);
     setRemoteTracks([]);
   };
-
-  useEffect(()=>{
-    if(!userName){
-      const inputName = prompt("이름 입력: ");
-      setUserName(inputName);
-    }
-  },[]);
   
   useEffect(()=>{
+    setUserName("쪼쪼");
     if(userName){
       joinRoom();
     }
   },[userName]);
 
-  ///////////////////////////////////////////////////////////////
-  const stages = [
-    "1단계. 향 조합 비율 결정하기",
-    "2단계. 향기 선택하기",
-    "3단계. 향 배합 비율 확인하기",
-  ];
-  const [currentStage, setCurrentStage] = useState(-1); // Set initial stage
-  const handleNextStage = () => {
-    setCurrentStage((prevStage) => prevStage + 1);
-  };
-
-  const [isOpen, setIsOpen] = useState(false);
-  const handleIsOpen = (status) => {
-    setIsOpen(status);
-  };
-
+  
   return (
     <PageContainer>
       <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
       <ProgressBar
-        stages={stages}
-        currentStage={currentStage}
-        handleNextStage={handleNextStage}
+        steps={steps}
+        currentStep={currentStep}
+        loading={stepLoading}
+        handleStartStep={handleStartStep}
+        handleNextStep={handleNextStep}
+        handleEndStep={handleEndStep}
       />
       <MainContent>
+        <div>{text}</div>
         {room && <ParticipantGrid>
           {localVideoTrack && (
             <VideoComponent 
