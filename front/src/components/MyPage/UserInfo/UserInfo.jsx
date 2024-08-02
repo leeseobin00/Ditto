@@ -183,7 +183,7 @@ const UserInfo = ({ userData }) => {
     setName(curNickname);
     if(curNickname){
       try {
-        const isAvailable = await checkNicknameAvailability(nickname);
+        const isAvailable = await checkNicknameAvailability(curNickname);
         setIsNicknameAvailableState(isAvailable);
         setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
       } catch (error) {
@@ -216,17 +216,26 @@ const UserInfo = ({ userData }) => {
   const handleCancel = () => {
     //setPassword('');
     setError('');
+    setPassword('');
     setConfirmPassword('');
     setName(nickname);
     setNicknameMessage('');
     setIsNicknameAvailableState(true);
+    setIsPasswordMatchState(true);
     checkError();
   };
 
   const handleSave = async () => {
-    if(error) {
-      alert("회원 정보를 수정할 수 없습니다.");
-      return;
+    if(domain === "local") {
+      if(error){
+        alert("회원 정보를 수정할 수 없습니다.");
+        return;        
+      }
+    }else{ // 카카오 회원인 경우
+      if(!isNicknameAvailableState){
+        alert("해당 닉네임으로는 변경할 수 없습니다.");
+        return;
+      }
     }
 
     try {
