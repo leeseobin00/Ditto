@@ -118,6 +118,7 @@ const LoadMoreButton = styled.button`
 `;
 
 const ReviewList = ({ reviews, fetchMoreReviews }) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const [isEditing, setIsEditing] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
   const [editContent, setEditContent] = useState('');
@@ -139,7 +140,7 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8080/classes/${classId}/reviews/${currentReview.reviewId}`);
+      await axios.delete(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`);
       alert('리뷰가 성공적으로 삭제되었습니다.');
       // 삭제 후 리뷰 목록 갱신
     } catch (error) {
@@ -150,7 +151,7 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
 
   const handleSaveEdit = async () => {
     try {
-      await axios.patch(`http://localhost:8080/classes/${classId}/reviews/${currentReview.reviewId}`, {
+      await axios.patch(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`, {
         reviewContent: editContent,
         rating: editRating,
         userId: userId,

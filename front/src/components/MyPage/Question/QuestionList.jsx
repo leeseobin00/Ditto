@@ -155,6 +155,7 @@ const LoadMoreButton = styled.button`
 `;
 
 const QuestionList = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
   const { userId } = useSelector((state) => state.auth);
   const [questions, setQuestions] = useState([]);
@@ -171,7 +172,7 @@ const QuestionList = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/question`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/question`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -189,7 +190,7 @@ const QuestionList = () => {
     
     const finalDate = questions[questions.length - 1].createdDate;
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/question-more?final-date=${finalDate}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/question-more?final-date=${finalDate}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -203,7 +204,7 @@ const QuestionList = () => {
 
   const fetchQuestionAnswer = async (questionId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/mypage/${userId}/answer/${questionId}`, {
+      const response = await axios.get(`${baseURL}/mypage/${userId}/answer/${questionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -234,7 +235,7 @@ const QuestionList = () => {
 
   const handleDelete = async (questionId) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/classes/${classId}/questions/${currentQuestionId}`, {
+      const response = await axios.delete(`${baseURL}/classes/${classId}/questions/${currentQuestionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
@@ -253,7 +254,7 @@ const QuestionList = () => {
   const handleSaveEdit = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:8080/classes/${classId}/questions/${currentQuestionId}`,
+        `${baseURL}/classes/${classId}/questions/${currentQuestionId}`,
         {
           title: editTitle,
           content: editContent,
