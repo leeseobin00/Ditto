@@ -34,20 +34,20 @@ const FormTitle = styled.h2`
 const FormGroup = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   margin-bottom: 15px;
-  width: 300px;
+  width: 260px;
 `;
 
 const FormLabel = styled.label`
-  margin-right: 10px;
+  margin-right: 20px;
   font-weight: bold;
   color: var(--TEXT_SECONDARY);
-  min-width: 80px; /* 라벨의 최소 너비 설정 */
   text-align: right;
 `;
 
 const FormInput = styled.input`
+  max-width: 200px;
   flex: 1;
   padding: 10px;
   border: 1px solid var(--BORDER_COLOR);
@@ -164,7 +164,8 @@ const LoginForm = () => {
       });
 
       console.log(response);
-      const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
+      const { accessToken, refreshToken, nickname, roleId, domain } =
+        response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
       const _userId = decodedToken.sub;
       const _email = decodedToken.email;

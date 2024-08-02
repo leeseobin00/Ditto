@@ -12,7 +12,7 @@ const ReviewItemContainer = styled.div`
   border-width: 0.5px;
   border-radius: 10px;
   border-color: var(--BORDER_COLOR);
-  padding: 3%;
+  padding: 20px;
   margin: 10px 0;
   justify-content: space-between;
 `;

@@ -22,6 +22,7 @@ import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
 import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
+import OrderPage from "../pages/Order/OrderPage";
 
 const AppRoutes = () => {
   return (
@@ -32,6 +33,7 @@ const AppRoutes = () => {
       <Route path="/classes/:classCategory" element={<ClassListPage />} />
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/classes/edit/:classId" element={<ClassAddPage />} />
+      <Route path="/order" element={<OrderPage />} />
       <Route path="/meeting" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
@@ -52,10 +54,7 @@ const AppRoutes = () => {
       <Route path="/board/talk" element={<BoardListPage />} />
       <Route path="/board/community" element={<BoardListPage />} />
       <Route path="/board/help" element={<BoardListPage />} />
-      <Route
-        path="/board/detail/:postId"
-        element={<BoardDetailPage />}
-      />
+      <Route path="/board/detail/:postId" element={<BoardDetailPage />} />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
       <Route path="/profile/:profileId" element={<ProfileDetailPage />} />

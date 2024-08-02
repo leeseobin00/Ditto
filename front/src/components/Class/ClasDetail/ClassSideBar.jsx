@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import styled from "styled-components";
 
@@ -26,7 +27,7 @@ const ClassSideBarConatiner = styled.div`
   margin-top: 25px;
   margin-left: 15px;
   justify-content: space-between;
-  z-index: 8;
+  z-index: 4;
 `;
 
 const ClassPriceContainer = styled.div`
@@ -207,10 +208,10 @@ function ClassSideBar({
   }, [classInfo?.classId, userId]);
 
   const handleSelectChange = (event) => {
-    const selectedLectureId = event.target.value;
+    const selectedLectureId = parseInt(event.target.value, 10);
     const lecture =
       lectureList.find((lecture) => lecture.lectureId === selectedLectureId) ||
-      {};
+      null;
     setSelectedLecture(lecture);
   };
 
@@ -222,6 +223,38 @@ function ClassSideBar({
     setShowModal(!showModal);
   };
 
+  const navigate = useNavigate();
+
+  const handleOrderButton = () => {
+    if (userId == null) {
+      alert("회원만 구매할 수 있습니다.");
+      return;
+    }
+
+    if (roleId != 1) {
+      alert("일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.");
+      return;
+    }
+
+    if (selectedLecture === null) {
+      alert("선택된 강의가 없습니다.");
+      return;
+    }
+
+    navigate("/order", {
+      state: {
+        classInfo: { classInfo },
+        lectureInfo: { selectedLecture },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (lectureList && lectureList.length > 0) {
+      setSelectedLecture(lectureList[0]);
+    }
+  }, [lectureList]);
+
   return (
     <ClassSideBarConatiner>
       <ClassPriceContainer>
@@ -232,7 +265,10 @@ function ClassSideBar({
       <SelectBoxContainer>
         {lectureList && lectureList.length > 0 ? (
           <>
-            <SelectBox onChange={handleSelectChange}>
+            <SelectBox
+              onChange={handleSelectChange}
+              value={selectedLecture ? selectedLecture.lectureId : ""}
+            >
               {lectureList.map((lecture, index) => (
                 <option key={index} value={lecture.lectureId}>
                   {String(lecture.year).padStart(4, "0")}-
@@ -259,7 +295,11 @@ function ClassSideBar({
             onClick={handleShowModal}
           />
         ) : (
-          <RoundButton label={"구매하기"} size="md" />
+          <RoundButton
+            label={"구매하기"}
+            size="md"
+            onClick={handleOrderButton}
+          />
         )}
       </SelectBoxContainer>
       <ClassLectureModal
