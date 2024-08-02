@@ -91,7 +91,7 @@ function BoardListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
-  const postsPerPage = 5;
+  const postsPerPage = 10;
 
   // posts state 시작 ///////////////////////////////////////
   const getPosts = async () => {

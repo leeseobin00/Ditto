@@ -52,6 +52,10 @@ const PostDate = styled(Content)`
   margin-right: 16px;
 `;
 
+const PostCommentCount = styled(Content)`
+  flex: 1;
+`;
+
 const PostCount = styled(Content)`
   flex: 1;
 `;
@@ -65,6 +69,7 @@ function PostList({ posts }) {
         <PostLike>좋아요수</PostLike>
         <PostUser>작성자</PostUser>
         <PostDate>작성일</PostDate>
+        <PostCommentCount>댓글수</PostCommentCount>
         <PostCount>조회수</PostCount>
       </Item>
       {posts?.map((post, index) => (
@@ -75,6 +80,7 @@ function PostList({ posts }) {
             likeCount={post?.likeCount}
             userName={post?.nickname}
             createdDate={post?.createdDate.split('T')[0]}
+            commentCount={post?.commentCount}
             viewCount={post?.viewCount}
           />
         </Link>
