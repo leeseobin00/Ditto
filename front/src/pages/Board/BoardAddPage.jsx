@@ -195,8 +195,8 @@ function BoardAddPage() {
       content: content,
     };
 
-    const url = isEdit ? `/posts/${postId}` : "/posts";
-    const method = isEdit ? "patch" : "post";
+    const url = isedit ? `/posts/${postId}` : "/posts";
+    const method = isedit ? "patch" : "post";
 
     //1. HTML에서 img 태그의 src 값 추출
     const parser = new DOMParser();
