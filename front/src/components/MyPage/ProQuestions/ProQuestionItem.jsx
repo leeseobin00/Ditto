@@ -153,7 +153,7 @@ const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
   const navigate = useNavigate();
 
   const handleClassClick = (classId) => {
-    navigate(`/class/${classId}`);
+    navigate(`/class/detail/${classId}`);
   };
 
   return (
