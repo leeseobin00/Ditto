@@ -54,15 +54,10 @@ const BoardEditor = ({
             ["blockquote", "code-block"],
             [{ list: "ordered" }, { list: "bullet" }],
             [{ align: [] }],
-            ["link", "image", "video"],
-            ["clean"],
+            ["image", "video"],
           ],
         },
       });
-
-      // editorRef.current.getModule('toolbar').addHandler('image', () => {
-      //   selectLocalImage();
-      // });
 
       editorRef.current.on("text-change", () => {
         onEditorChange(editorRef.current.root.innerHTML);
@@ -78,34 +73,6 @@ const BoardEditor = ({
       }
     }
   }, [content]);
-
-  // const selectLocalImage = () => {
-  //   const input = document.createElement('input');
-  //   input.setAttribute('type', 'file');
-  //   input.setAttribute('accept', 'image/*');
-  //   input.click();
-
-  //   input.onchange = async () => {
-  //     const file = input.files[0];
-  //     if (file) {
-  //       const formData = new FormData();
-  //       formData.append('file', file);
-
-  //       try {
-  //         const response = await axios.post('http://localhost:8080/files', formData, {
-  //           headers: {
-  //             'Content-Type': 'multipart/form-data',
-  //           },
-  //         });
-
-  //         const imageUrl = response.data.url;
-  //         insertToEditor(imageUrl);
-  //       } catch (error) {
-  //         console.error('Failed to upload image', error);
-  //       }
-  //     }
-  //   };
-  // };
 
   const insertToEditor = (url) => {
     const range = editorRef.current.getSelection();

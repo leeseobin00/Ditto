@@ -5,7 +5,7 @@ import { BsChevronDown } from "react-icons/bs";
 const CustomSelect = styled.div`
   position: relative;
   width: 160px;
-  cursor: ${({ isedit }) => (isedit ? "not-allowed" : "pointer")};
+  cursor: ${({ isedit }) => (isedit==="true" ? "not-allowed" : "pointer")};
 `;
 
 const CustomSelectTrigger = styled.div`
@@ -15,11 +15,15 @@ const CustomSelectTrigger = styled.div`
   padding: 8px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
-  background-color: ${({ isedit }) => (isedit ? "var(--BACKGROUND_COLOR)" : "var(--LIGHT)")};
+  background-color: ${({ isedit }) => (isedit==="true" ? "var(--BACKGROUND_COLOR)" : "var(--LIGHT)")};
   white-space: nowrap;
   color: var(--TEXT_SECONDARY);
   font-size: 14px;
-  pointer-events: ${({ isedit }) => (isedit ? "none" : "auto")};
+  pointer-events: ${({ isedit }) => (isedit==="true" ? "none" : "auto")};
+
+  &:hover > div {
+    display: block;
+  }
 `;
 
 const CustomSelectOptions = styled.div`
@@ -33,6 +37,8 @@ const CustomSelectOptions = styled.div`
   border-radius: 10px;
   overflow: hidden;
   z-index: 1;
+
+  display: none;
 `;
 
 const CustomOption = styled.div`
@@ -51,12 +57,10 @@ const CustomDownIcon = styled(BsChevronDown)`
 `;
 
 const SelectBox = ({ options, curOption, onChange, isedit }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option.label);
-    setIsOpen(false);
     onChange(option.value);
   };
 
@@ -67,19 +71,19 @@ const SelectBox = ({ options, curOption, onChange, isedit }) => {
 
   return (
     <CustomSelect isedit={isedit}>
-      <CustomSelectTrigger onClick={() => !isedit && setIsOpen(!isOpen)} isedit={isedit}>
+      <CustomSelectTrigger isedit={isedit}>
         {selectedOption}
         <CustomDownIcon />
+        {isedit!=="true" && (
+          <CustomSelectOptions>
+            {options.map((option, index) => (
+              <CustomOption key={index} onClick={() => handleOptionClick(option)}>
+                {option.label}
+              </CustomOption>
+            ))}
+          </CustomSelectOptions>
+        )}
       </CustomSelectTrigger>
-      {isOpen && !isedit && (
-        <CustomSelectOptions>
-          {options.map((option, index) => (
-            <CustomOption key={index} onClick={() => handleOptionClick(option)}>
-              {option.label}
-            </CustomOption>
-          ))}
-        </CustomSelectOptions>
-      )}
     </CustomSelect>
   );
 };

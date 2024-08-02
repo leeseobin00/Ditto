@@ -71,17 +71,6 @@ function BoardListPage() {
   const [pageTitle, setPageTitle] = useState("전체");
   // posts
   const [posts, setPosts] = useState([]);
-  // getData
-  // const [getData, setGetData] = useState({
-  //   page: 1,
-  //   size: postsPerPage,
-  //   boardId: 0,
-  //   categoryId: 0,
-  //   tagId: 0,
-  //   searchBy: "제목",
-  //   keyword: "",
-  //   sortBy: "postId",
-  // });
   const [categoryId, setCategoryId] = useState(0);
   const [tagId, setTagId] = useState(0);
   const [searchBy, setSearchBy] = useState("제목");

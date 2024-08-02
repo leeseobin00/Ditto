@@ -82,7 +82,7 @@ const Profiles = styled.div`
 function ProfileSearchPage() {
   // redux
   const userId = useSelector((state) => state.auth.userId);
-  const userName = useSelector((state) => state.auth.nickname);
+  const username = useSelector((state) => state.auth.nickname);
   const { sendRequest: getProfile } = useAxios();
   // state
   const [categoryId, setCategoryId] = useState(0);
@@ -110,8 +110,8 @@ function ProfileSearchPage() {
     setIsReset(true);
   };
 
-  const handleCategory = (event) => {
-    setCategoryId(event.target.value);
+  const handleCategory = (value) => {
+    setCategoryId(value);
     setTagId(0);
   };
 
