@@ -108,6 +108,18 @@ const ErrorMessage = styled.p`
   font-size: 14px;
 `;
 
+const MessageWrapper = styled.div`
+  display: flex;
+  justify-content: flex-front;
+  width: 100%;
+`;
+
+const NicknameCheckMessage = styled.div`
+  color: ${({ $isMatch }) => ($isMatch ? "green" : "red")};
+  font-size: 14px;
+  margin-top: 5px;
+`;
+
 const UserInfo = ({ userData }) => {
   // redux
   const dispatch = useDispatch();
@@ -323,14 +335,17 @@ const UserInfo = ({ userData }) => {
             value={name || ''}
             onChange={handleNicknameChange}
           />
-          {!isNicknameAvailableState && <ErrorMessage>{nicknameMessage}</ErrorMessage>}
+          <MessageWrapper>
+            <NicknameCheckMessage $isMatch={isNicknameAvailableState}>
+              {nicknameMessage}
+            </NicknameCheckMessage>
+          </MessageWrapper>
         </ProfileField>
       </ProfileInfo>
       <ButtonGroup>
         <OutlineButton label="취소" $cancel onClick={handleCancel} />
         <RoundButton label="수정" onClick={handleSave} />
       </ButtonGroup>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
 
       {isProfileModalOpen && (
         <Modal onClose={handleCloseProfileModal}>
