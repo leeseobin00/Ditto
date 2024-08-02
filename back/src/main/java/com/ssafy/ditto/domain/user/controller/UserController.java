@@ -91,7 +91,7 @@ public class UserController {
 
     //login_002
     //카카오 로그인
-    @PostMapping("/sociallogin")
+    @PostMapping("/kakao-login")
     public ResponseDto<LoginResponse> kakaoLogin(@RequestBody Map<String, String> request) throws NoSuchAlgorithmException {
         // 프론트에서 인가코드를 받음
         String code = request.get("code");
