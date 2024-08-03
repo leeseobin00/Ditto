@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import DefaultProfileImage from "../../../assets/img/profile-user.png";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -16,6 +17,7 @@ const ProfileImage = styled.img`
   border: 1px solid var(--BACKGROUND_COLOR);
   width: 40px;
   height: 40px;
+  cursor: pointer;
 `;
 
 const ProfileInfo = styled.div`
@@ -26,13 +28,14 @@ const ProfileInfo = styled.div`
 
 const ProfileName = styled.span`
   color: var(--TEXT-PRIMARY);
+  cursor: pointer;
 `;
 
 const ProfileDate = styled.span`
   color: var(--TEXT_TERTIARY);
 `;
 
-function Profile({ fileId, name, date }) {
+function Profile({ fileId, name, date, userId = null }) {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [image, setImage] = useState(null);
 
@@ -61,11 +64,19 @@ function Profile({ fileId, name, date }) {
     }
   },[fileId]);
 
+  const navigate = useNavigate();
+
+  const handleUserClick = () => {
+    if (userId) {
+      navigate(`/profile/${userId}`);
+    }
+  };
+
   return (
     <ProfileWrapper>
-      <ProfileImage src={image || DefaultProfileImage} alt="이미지" />
+      <ProfileImage src={image || DefaultProfileImage} alt="이미지" onClick={handleUserClick}/>
       <ProfileInfo>
-        <ProfileName>{name}</ProfileName>
+        <ProfileName onClick={handleUserClick} >{name}</ProfileName>
         <ProfileDate>{date}</ProfileDate>
       </ProfileInfo>
     </ProfileWrapper>

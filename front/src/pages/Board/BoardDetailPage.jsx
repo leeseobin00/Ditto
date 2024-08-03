@@ -325,6 +325,7 @@ function BoardDetailPage() {
             fileId={userFileId}
             name={userName}
             date={formattedDate}
+            userId={userId}
           />
           <CommentReplyWrapper>
             <ReplyForm
@@ -365,6 +366,7 @@ function BoardDetailPage() {
                     .toISOString()
                     .split("T")[0]
                     .replace(/-/g, ".")}
+                  userId={comment.userId}
                 />
                 <CommentTextWrapper>
                   {editCommentId === comment.commentId ? (
@@ -416,6 +418,7 @@ function BoardDetailPage() {
                         .toISOString()
                         .split("T")[0]
                         .replace(/-/g, ".")}
+                      userId={c.userId}
                     />
                     <CommentTextWrapper>
                       {editCommentId === c.commentId ? (
