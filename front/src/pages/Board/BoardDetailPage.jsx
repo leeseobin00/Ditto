@@ -286,7 +286,7 @@ function BoardDetailPage() {
           postUserId={post?.userId}
           title={post?.title}
           username={post?.nickname}
-          createdDate={post?.createdDate.split('T')[0]}
+          createdDate={post?.createdDate?.split('T')[0]}
           viewCount={post?.viewCount}
           content={post?.content}
           likeCount={post?.likeCount}
