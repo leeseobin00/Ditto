@@ -193,8 +193,8 @@ function BoardDetailPage() {
           // Set the size for each image
           // images[i].width = 300; // or any desired width
           // images[i].height = 300; // or any desired height
-          images[i].style.maxWidth = "600px"; // or any desired max width
-          images[i].style.maxHeight = "600px"; // or any desired max width
+          //images[i].style.maxWidth = "600px"; // or any desired max width
+          //images[i].style.maxHeight = "600px"; // or any desired max width
         }
       }
 
@@ -286,7 +286,7 @@ function BoardDetailPage() {
           postUserId={post?.userId}
           title={post?.title}
           username={post?.nickname}
-          createdDate="2024.07.11"
+          createdDate={post?.createdDate.split('T')[0]}
           viewCount={post?.viewCount}
           content={post?.content}
           likeCount={post?.likeCount}
