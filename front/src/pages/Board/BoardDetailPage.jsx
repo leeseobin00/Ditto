@@ -154,7 +154,7 @@ function BoardDetailPage() {
   const [comments, setComments] = useState([]);
   const [showReplyForms, setShowReplyForms] = useState([]);
   const [editCommentId, setEditCommentId] = useState(null);
-
+  
   const date = new Date();
   const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1)
     .toString()
@@ -166,17 +166,33 @@ function BoardDetailPage() {
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
       reader.onerror = (error) => reject(error);
-    });
+  });
 
   const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
     const postData = result?.data;
-
+    setPost(postData);
+    
     const parser = new DOMParser();
     const doc = parser.parseFromString(postData?.content, "text/html");
-    const images = doc.querySelectorAll("img");
+    const images = Array.from(doc.querySelectorAll("img"));
     const files = postData?.files;
 
+    // 이미지 로딩 중 표시할 텍스트로 교체
+    const spinners = images.map(img => {
+      const spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      img.parentNode.replaceChild(spinner, img);
+      return { img, spinner }; // 매핑하여 이미지와 스피너 쌍을 저장
+    });
+
+    // 콘텐츠 업데이트
+    setPost((prev) => ({
+      ...prev,
+      content: doc.body.innerHTML,
+    }));
+
+    // 이미지 src 업데이트 함수
     const updateImageSrc = async () => {
       for (let i = 0; i < images.length; i++) {
         if (i < files.length) {
@@ -189,25 +205,32 @@ function BoardDetailPage() {
           );
           const fileBlob = response.data;
           const base64 = await toBase64(fileBlob);
-          images[i].src = base64;
-          // Set the size for each image
-          // images[i].width = 300; // or any desired width
-          // images[i].height = 300; // or any desired height
-          //images[i].style.maxWidth = "600px"; // or any desired max width
-          //images[i].style.maxHeight = "600px"; // or any desired max width
+  
+          // 로딩 스피너를 이미지로 교체
+          const { spinner } = spinners[i];
+          if (spinner) {
+            const img = document.createElement('img');
+            img.src = base64;
+            img.style.maxWidth = "600px"; // 원하는 최대 너비 설정
+            img.style.maxHeight = "600px"; // 원하는 최대 높이 설정
+  
+            spinner.parentNode.replaceChild(img, spinner);
+          }
         }
       }
-
-      const updatedContent = doc.body.innerHTML;
+  
+      // 콘텐츠 업데이트
       setPost((prev) => ({
         ...prev,
-        ...postData,
-        content: updatedContent,
+        content: doc.body.innerHTML,
       }));
     };
-
+    
     updateImageSrc();
-  };
+};
+
+
+    
 
   const getImage = async() => {
     const result = await getUserInfo(`/mypage/${userId}/normal`, null, "get");
