@@ -52,14 +52,14 @@ const LikedPage = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
-      setLikedClasses(response.data.classes);
+      setLikedClasses(response?.data?.data);
 
       const userResponse = await axios.get(`${baseURL}/mypage/${userId}/like/user`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
-      setLikedUsers(userResponse.data.users);
+      setLikedUsers(userResponse?.data?.data);
     } catch (error) {
       console.error('Error fetching liked items:', error);
     } finally {
@@ -76,7 +76,7 @@ const LikedPage = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
-      setLikedClasses((prevClasses) => [...prevClasses, ...response.data.classes]);
+      setLikedClasses((prevClasses) => [...prevClasses, ...response?.data?.data]);
     } catch (error) {
       console.error('Error loading more classes:', error);
     } finally {

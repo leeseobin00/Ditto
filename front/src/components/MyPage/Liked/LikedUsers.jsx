@@ -22,6 +22,7 @@ const UserCard = styled.div`
   border-radius: 10px;
   padding: 20px;
   text-align: center;
+  position: relative;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;

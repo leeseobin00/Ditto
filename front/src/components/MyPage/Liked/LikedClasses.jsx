@@ -1,6 +1,7 @@
 // src/components/MyPage/LikedClasses.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ const ClassImage = styled.img`
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
 `;
 
 const ClassInfo = styled.div`
@@ -91,12 +93,18 @@ const Tag = styled.div`
 `
 
 const LikedClasses = ({ classes, onLikeCancel }) => {
+  const navigate = useNavigate();
+
+  const handleClassClick = (classId) => {
+    navigate(`/classes/detail/${classId}`);
+  };
+  
   return (
     <Container>
       <ClassContainer>
         {classes.map((cls) => (
           <ClassCard key={cls.classId}>
-            <ClassImage src={cls.fileUrl} alt={cls.className} />
+            <ClassImage src={cls.fileUrl} alt={cls.className} onClick={() => handleClassClick(cls.classId)} />
             <ClassInfo>
               <ClassName>{cls.className}</ClassName>
               <Group>
