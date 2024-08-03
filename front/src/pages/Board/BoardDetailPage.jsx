@@ -216,14 +216,14 @@ function BoardDetailPage() {
   
             spinner.parentNode.replaceChild(img, spinner);
           }
+
+          // 콘텐츠 업데이트
+          setPost((prev) => ({
+            ...prev,
+            content: doc.body.innerHTML,
+          }));
         }
       }
-  
-      // 콘텐츠 업데이트
-      setPost((prev) => ({
-        ...prev,
-        content: doc.body.innerHTML,
-      }));
     };
     
     updateImageSrc();
