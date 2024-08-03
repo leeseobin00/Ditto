@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -83,6 +83,9 @@ const IntroContent = styled.div`
   text-align: center;
 `;
 
+// Context 정의
+export const ProfileContext = createContext(); // Context를 export하여 다른 파일에서 사용할 수 있도록 함
+
 function ProfileDetailPage() {
   const userId = useSelector(state => state.auth.userId);
   const roleId = useSelector(state => state.auth.roleId);
@@ -107,7 +110,7 @@ function ProfileDetailPage() {
   const [reviewPage, setReviewPage] = useState(1);
   const reviewSize = 1;
   const [posts, setPosts] = useState([]);
-  
+
   // axios
   const { sendRequest: getProfile} = useAxios();
   const { sendRequest: getClasses} = useAxios();
@@ -191,70 +194,78 @@ function ProfileDetailPage() {
   },[profileId]);
 
   return (
-    <Container>
-      <Sidebar>
-        {isMyProfile ? 
-          <MyProfile
-            profileImageURL={profileImageURL}
-            handleProfileImageURL={setProfileImageURL}
-            tags={tags}
-            handleTags={setTags}
-            userName={profileName}
-            likeCount={likeCount}       
-          /> : 
-          <Profile
-            profileImageURL={profileImageURL}
-            userName={profileName}
-            likeCount={likeCount}
-            tags={tags}
-            profileId={profileId}
-            postHeart={handlePostHeart} 
-            deleteHeart={handleDeleteHeart} />}
-        {roleId==2 && 
-          <LectureDetails>
-            <LectureDetail>
-              <DetailTitle>수강생 수</DetailTitle>
-            <DetailContent>
-              <CustomPersonIcon />
-              {(studentSum)?.toLocaleString()}
-            </DetailContent>
-            </LectureDetail>
-            <LectureDetail>
-              <DetailTitle>평점</DetailTitle>
+    <ProfileContext.Provider
+      value={{profileImageURL,
+        setProfileImageURL,
+        profileName,
+        setProfileName,
+        tags,
+        setTags,
+        intro,
+        setIntro,}}
+    >
+      <Container>
+        <Sidebar>
+          {isMyProfile ? 
+            <MyProfile
+              profileImageURL={profileImageURL}
+              handleProfileImageURL={setProfileImageURL}
+              tags={tags}
+              userName={profileName}
+              likeCount={likeCount}       
+            /> : 
+            <Profile
+              profileImageURL={profileImageURL}
+              userName={profileName}
+              likeCount={likeCount}
+              tags={tags}
+              profileId={profileId}
+              postHeart={handlePostHeart} 
+              deleteHeart={handleDeleteHeart} />}
+          {roleId==2 && 
+            <LectureDetails>
+              <LectureDetail>
+                <DetailTitle>수강생 수</DetailTitle>
               <DetailContent>
-                <CustomStarIcon />
-                {avgRating}
-             </DetailContent>
-           </LectureDetail>
-          </LectureDetails>}
-      </Sidebar>
-      <Content>
-        <Section
-          id="intro"
-          title="소개글"
-          isMyProfile={isMyProfile}
-          curIntro={intro}
-          handleIntro={setIntro}
-          modalContent={ModifyIntro}
-        >
-          <IntroContent>
-            <IntroText>{intro ? intro : "현재 등록된 소개글이 없습니다."}</IntroText>
-          </IntroContent>
-        </Section>
+                <CustomPersonIcon />
+                {(studentSum)?.toLocaleString()}
+              </DetailContent>
+              </LectureDetail>
+              <LectureDetail>
+                <DetailTitle>평점</DetailTitle>
+                <DetailContent>
+                  <CustomStarIcon />
+                  {avgRating}
+              </DetailContent>
+            </LectureDetail>
+            </LectureDetails>}
+        </Sidebar>
+        <Content>
+          <Section
+            id="intro"
+            title="소개글"
+            isMyProfile={isMyProfile}
+            modalContent={ModifyIntro}
+          >
+            <IntroContent>
+              <IntroText>{intro ? intro : "현재 등록된 소개글이 없습니다."}</IntroText>
+            </IntroContent>
+          </Section>
 
-        <Section id="classes" title="참여 Class">
-          <CardList cards={classes} />
-        </Section>
+          <Section id="classes" title="참여 Class">
+            <CardList cards={classes} />
+          </Section>
 
-        {roleId==2 && <Section id="reviews" title="강의 리뷰">
-          <ReviewList reviews={reviews} />
-        </Section>}
+          {roleId==2 && <Section id="reviews" title="강의 리뷰">
+            <ReviewList reviews={reviews} />
+          </Section>}
 
-        <Section id="posts" title="작성한 글">
-          <PostList posts={posts} />
-        </Section>
-      </Content>
-    </Container>
+          <Section id="posts" title="작성한 글">
+            <PostList posts={posts} />
+          </Section>
+        </Content>
+      </Container>
+    </ProfileContext.Provider>
   );
 }
 

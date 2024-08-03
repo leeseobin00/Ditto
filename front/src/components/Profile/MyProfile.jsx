@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { styled } from "styled-components";
+import { ProfileContext } from "../../pages/Profile/ProfileDetailPage";
 import { BsHeartFill } from "react-icons/bs";
 
 import WriteIcon from "../../assets/icon/profile/write-white.png";
@@ -100,7 +101,6 @@ function MyProfile({
     profileImageURL, 
     handleProfileImageURL,
     tags,
-    handleTags,
     userName, 
     likeCount
   }) {
@@ -157,10 +157,7 @@ function MyProfile({
 
       {isTagsModalOpen && (
         <Modal onClose={handleCloseTagsModal}>
-          <ModifyTags
-            curTags={tags}
-            handleTags={handleTags} 
-            onClose={handleCloseTagsModal} />
+          <ModifyTags onClose={handleCloseTagsModal} />
         </Modal>
       )}
     </ProfileWrapper>
