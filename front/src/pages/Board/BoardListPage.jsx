@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { styled } from "styled-components";
 import { BsSearch } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
@@ -67,6 +67,9 @@ function BoardListPage() {
   // router
   const location = useLocation();
   const path = location.pathname.split("/")[2];
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const page = parseInt(searchParams.get('page'), 10) || 1; // 기본값 1
   // page title
   const [pageTitle, setPageTitle] = useState("전체");
   // posts
@@ -182,11 +185,17 @@ function BoardListPage() {
   }, [currentSection, totalPageCount]);
 
   const handlePage = (number) => {
-    setCurrentPage(number);
-    setCurrentSection(Math.ceil(number / 10));
+    navigate(location.pathname+`?page=${number}`);
   };
   // pagination 끝 ////////////////////////////////////////
 
+  // 쿼리 스트링에서 'page' 파라미터 읽기 ///////////////////
+  useEffect(()=>{
+    setCurrentPage(page);
+    setCurrentSection(Math.ceil(page / 10));
+  },[page]);
+  /////////////////////////////////////////////////////////
+  
   return (
     <div>
       <TabBar />
