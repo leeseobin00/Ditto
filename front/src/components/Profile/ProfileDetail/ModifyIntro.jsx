@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useSelector } from "react-redux";
+import { ProfileContext } from "../../../pages/Profile/ProfileDetailPage";
 
 import useAxios from "../../../hooks/useAxios";
 import RoundButton from "../../common/RoundButton";
@@ -27,7 +28,9 @@ const Textarea = styled.textarea`
   }
 `;
 
-function ModifyIntro({ curIntro, handleIntro, onClose }) {
+function ModifyIntro({ onClose }) {
+  const { intro: curIntro, setIntro: updateIntro } = useContext(ProfileContext);
+
   // redux
   const userId = useSelector(state => state.auth.userId);
   // axios
@@ -46,7 +49,7 @@ function ModifyIntro({ curIntro, handleIntro, onClose }) {
       patchIntro(`/profiles/intro?userId=${userId}`, patchData, "patch");
     }
 
-    handleIntro(intro);
+    updateIntro(intro);
     onClose();
   };
 

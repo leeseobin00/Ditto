@@ -56,8 +56,6 @@ function Section({
   children,
   onClick,
   isMyProfile,
-  curIntro,
-  handleIntro,
   modalContent: ModalContentComponent,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,10 +87,7 @@ function Section({
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalContentComponent
-            curIntro={curIntro}
-            handleIntro={handleIntro}
-            onClose={handleCloseModal}
+          <ModalContentComponent onClose={handleCloseModal}
           />
         </Modal>
       )}

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { styled } from "styled-components";
 import { useSelector } from "react-redux";
+import { ProfileContext } from "../../../pages/Profile/ProfileDetailPage";
 
 import RoundButton from "../../common/RoundButton";
 import {
@@ -47,14 +48,16 @@ const TagList = styled.div`
   margin-bottom: 48px;
 `;
 
-function ModifyTags({ curTags, handleTags, onClose }) {
+function ModifyTags({ onClose }) {
+  const { tags: curTags, setTags: updateTags } = useContext(ProfileContext);
+  
   // redux
   const userId = useSelector(state => state.auth.userId);
 
   // axios
   const { sendRequest: patchTags } = useAxios();
 
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(curTags);
   const [selectedTags, setSelectedTags] = useState(curTags);
 
   useEffect(() => {
@@ -103,7 +106,7 @@ function ModifyTags({ curTags, handleTags, onClose }) {
       patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
     }
 
-    handleTags(selectedTags);
+    updateTags(selectedTags);
     onClose();
   };
 
