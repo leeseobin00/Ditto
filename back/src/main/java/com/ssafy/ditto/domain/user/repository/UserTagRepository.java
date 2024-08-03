@@ -18,7 +18,7 @@ public interface UserTagRepository extends JpaRepository<UserTag, Integer> {
             "SELECT t.* " +
                     "FROM Tag t " +
                     "JOIN User_Tag ut ON t.tag_id = ut.tag_id " +
-                    "WHERE lu.user_id = :userId",
+                    "WHERE ut.user_id = :userId",
             nativeQuery = true)
-    List<Tag> getTagList(User userId);
+    List<Tag> getTagList(@Param("userId") Integer userId);
 }
