@@ -22,6 +22,9 @@ import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -294,32 +297,36 @@ public class MypageServiceImpl implements MypageService {
         List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
 
         // 일단 좋아요 한 클래스 Id를 3개 가져옴
-        List<DClass> likeclasses = likeClassRepository.getLikeClass(userId, dateTime);
+        Pageable pageable = PageRequest.of(0, 3);
+        List<DClass> likeClasses = likeClassRepository.getLikeClass(userId, dateTime, pageable).getContent();
 
-        for (DClass dClass : likeclasses) {
+        for (DClass dClass : likeClasses) {
             Optional<LikeClass> likeClass = likeClassRepository.findByUserAndDClass(userRepository.findByUserId(userId), dClass);
 
-            LikeClassResponse likeClassResponse = LikeClassResponse.builder()
-                    .classId(dClass.getClassId())
-                    .className(dClass.getClassName())
-                    .classPrice(dClass.getClassPrice())
-                    .classHour(dClass.getClassHour())
-                    .classMinute(dClass.getClassMinute())
-                    .likeCount(dClass.getLikeCount())
-                    .reviewCount(dClass.getReviewCount())
-                    .ratingSum(dClass.getRatingSum())
-                    .userId(dClass.getUserId().getUserId())
-                    .nickname(dClass.getUserId().getNickname())
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .fileId(dClass.getFileId().getFileId())
-                    .fileUrl(dClass.getFileId().getFileUrl())
-                    .likeClassId(likeClass.get().getLikeClassId())
-                    .createdDate(likeClass.get().getCreatedDate())
-                    .modifiedDate(likeClass.get().getModifiedDate())
-                    .build();
+            if (likeClass.isPresent()){
+                LikeClassResponse likeClassResponse = LikeClassResponse.builder()
+                        .classId(dClass.getClassId())
+                        .className(dClass.getClassName())
+                        .classPrice(dClass.getClassPrice())
+                        .classHour(dClass.getClassHour())
+                        .classMinute(dClass.getClassMinute())
+                        .likeCount(dClass.getLikeCount())
+                        .reviewCount(dClass.getReviewCount())
+                        .ratingSum(dClass.getRatingSum())
+                        .userId(dClass.getUserId().getUserId())
+                        .nickname(dClass.getUserId().getNickname())
+                        .tagId(dClass.getTagId().getTagId())
+                        .tagName(dClass.getTagId().getTagName())
+                        .fileId(dClass.getFileId().getFileId())
+                        .fileUrl(dClass.getFileId().getFileUrl())
+                        .likeClassId(likeClass.get().getLikeClassId())
+                        .createdDate(likeClass.get().getCreatedDate())
+                        .modifiedDate(likeClass.get().getModifiedDate())
+                        .build();
 
-            likeClassResponseList.add(likeClassResponse);
+                likeClassResponseList.add(likeClassResponse);
+            }
+
         }
 
         return likeClassResponseList;
@@ -331,20 +338,24 @@ public class MypageServiceImpl implements MypageService {
         likeClassRepository.removeLike(userId, classId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<LikeUserResponse> getLikedUsers(int userId, LocalDateTime dateTime) {
         List<LikeUserResponse> likeUserResponseList = new ArrayList<>();
         User giverUser = userRepository.findByUserId(userId);
 
         // 일단 내가 좋아요한 유저를 시간순서로 4명 가져옴
-        List<User> users = likeUserRepository.getLikeUser(userId, dateTime);
+//        List<User> users = likeUserRepository.getLikeUser(userId, dateTime);
 
-        for (User getterUser : users) {
+        Pageable pageable = PageRequest.of(0, 4);
+        List<User> likeUsers = likeUserRepository.getLikeUser(userId, dateTime, pageable).getContent();
+        System.out.println("------------------------------");
+        for (User getterUser : likeUsers) {
             LikeUser likeUser = likeUserRepository.findByLikeGiverAndLikeGetter(giverUser, getterUser);
-
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             //getter 유저를 토대로 UserTag랑 Tag를 조인해서 반환
-            List<Tag> tags = userTagRepository.getTagList(getterUser);
-
+            List<Tag> tags = userTagRepository.getTagList(getterUser.getUserId());
+            System.out.println("####################################");
             LikeUserResponse likeUserResponse = LikeUserResponse.builder()
                     .userId(getterUser.getUserId())
                     .nickname(getterUser.getNickname())
@@ -357,7 +368,7 @@ public class MypageServiceImpl implements MypageService {
 
             likeUserResponseList.add(likeUserResponse);
         }
-
+        System.out.println(likeUserResponseList.size());
         return likeUserResponseList;
     }
 

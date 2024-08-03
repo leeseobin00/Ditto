@@ -144,14 +144,14 @@ public class MypageController {
     @GetMapping("{userId}/like/user")
     public ResponseDto<List<LikeUserResponse>> getLikedUsers(@PathVariable("userId") int userId){
         List<LikeUserResponse> likeUserResponseList = mypageService.getLikedUsers(userId, LocalDateTime.now());
-        return ResponseDto.of(200, "좋아요한 유저 조회 완료");
+        return ResponseDto.of(200, "좋아요한 유저 조회 완료", likeUserResponseList);
     }
 
     //Mypage_015
     @GetMapping("{userId}/like/user-more")
     public ResponseDto<List<LikeUserResponse>> getLikedUsers(@PathVariable("userId") int userId, @RequestParam("final-date") LocalDateTime finalDate){
         List<LikeUserResponse> likeUserResponseList = mypageService.getLikedUsers(userId, finalDate);
-        return ResponseDto.of(200, "좋아요한 유저 조회 완료");
+        return ResponseDto.of(200, "좋아요한 유저 조회 완료", likeUserResponseList);
     }
 
     //Mypage_016
