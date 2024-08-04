@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/classes")
@@ -76,30 +75,6 @@ public class ClassController {
         return ResponseDto.of(204, "클래스가 성공적으로 삭제되었습니다.");
     }
 
-    @GetMapping("/{classId}/lectures")
-    public ResponseDto<List<LectureResponse>> getLecturesByClassId(@PathVariable Integer classId) {
-        List<LectureResponse> lectureList = lectureService.getLecturesByClassId(classId);
-        return ResponseDto.of(200, "클래스의 강의 목록 조회가 성공적으로 완료되었습니다.", lectureList);
-    }
-
-    @PostMapping("/{classId}/lectures")
-    public ResponseDto<Void> createLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
-        lectureService.createLecture(classId, lectureRequest);
-        return ResponseDto.of(201, "차시가 성공적으로 추가되었습니다.");
-    }
-
-    @PatchMapping("/{classId}/lectures/{lectureId}")
-    public ResponseDto<Void> updateLecture(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestBody LectureRequest lectureRequest) {
-        lectureService.updateLecture(classId, lectureId, lectureRequest);
-        return ResponseDto.of(200, "차시가 성공적으로 수정되었습니다.");
-    }
-
-    @DeleteMapping("/{classId}/lectures/{lectureId}")
-    public ResponseDto<Void> deleteLecture(@PathVariable Integer classId, @PathVariable Integer lectureId) {
-        lectureService.deleteLecture(classId, lectureId);
-        return ResponseDto.of(204, "차시가 성공적으로 삭제되었습니다.");
-    }
-
     @GetMapping("/{classId}")
     public ResponseDto<ClassDetailResponse> getClassDetail(@PathVariable Integer classId) {
         ClassDetailResponse classDetail = classService.getClassDetail(classId);
@@ -135,32 +110,6 @@ public class ClassController {
     @GetMapping("/weeklynew")
     public ResponseDto<List<ClassResponse>> getLatestClasses() {
         return ResponseDto.of(200, "최신 클래스 목록 조회가 성공적으로 완료되었습니다.", classService.getLatestClasses());
-    }
-
-    @GetMapping("/{classId}/like")
-    public ResponseDto<Boolean> checkLikeStatus(@PathVariable Integer classId, @RequestParam Integer userId) {
-        boolean liked = likeClassService.checkLikeStatus(userId, classId);
-        return ResponseDto.of(200, "클래스 좋아요 상태 조회가 성공적으로 완료되었습니다.", liked);
-    }
-
-    @PostMapping("/{classId}/like")
-    public ResponseDto<Void> likeClass(@PathVariable Integer classId, @RequestBody Map<String, Integer> requestBody) {
-        Integer userId = requestBody.get("userId");
-        likeClassService.likeClass(classId, userId);
-        return ResponseDto.of(201, "클래스 좋아요가 성공적으로 완료되었습니다.");
-    }
-
-    @DeleteMapping("/{classId}/like")
-    public ResponseDto<Void> unlikeClass(@PathVariable Integer classId, @RequestBody Map<String, Integer> requestBody) {
-        Integer userId = requestBody.get("userId");
-        likeClassService.unlikeClass(classId, userId);
-        return ResponseDto.of(204, "클래스 좋아요 취소가 성공적으로 완료되었습니다.");
-    }
-
-    @GetMapping("/{classId}/lectures/reviews")
-    public ResponseDto<List<LectureResponse>> getLectureWithoutReviews(@PathVariable Integer classId, @RequestParam Integer userId) {
-        List<LectureResponse> lectureList = lectureService.getLecturesWithoutReviews(classId, userId);
-        return ResponseDto.of(200, "해당 클래스의 리뷰 작성하지 않은 차시 조회가 성공적으로 완료되었습니다.", lectureList);
     }
 
     @GetMapping("/{classId}/completed-lectures/reviews")
