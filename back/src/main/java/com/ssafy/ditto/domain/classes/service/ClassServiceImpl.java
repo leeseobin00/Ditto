@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -201,9 +202,6 @@ public class ClassServiceImpl implements ClassService {
     @Override
     @Transactional
     public ClassListResponse getClassList(ClassListRequest request) {
-        Sort sort = Sort.by(Sort.Order.desc(request.getSortBy() != null ? request.getSortBy() : "createdDate"));
-        Pageable pageable = PageRequest.of(request.getPage(), 10, sort);
-
         List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (request.getCategoryId() != null) {
@@ -216,14 +214,42 @@ public class ClassServiceImpl implements ClassService {
                 if (request.getSearchBy().equals("nickname")) {
                     Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
                     predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
-                } else {
-                    predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
+                } else if (request.getSearchBy().equals("className")) {
+                    predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
+                } else if (request.getSearchBy().equals("userName")) {
+                    Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
+                    predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
                 }
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        }, pageable).getContent();
+        });
 
-        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
+        // Sort
+        switch (request.getSortBy() != null ? request.getSortBy() : "createdDate") {
+            case "likeCount":
+                classList.sort(Comparator.comparing(DClass::getLikeCount).reversed());
+                break;
+            case "averageRating":
+                classList.sort(Comparator.comparing(d -> (float) d.getRatingSum() / (d.getReviewCount() == 0 ? 1 : d.getReviewCount()), Comparator.reverseOrder()));
+                break;
+            case "reviewCount":
+                classList.sort(Comparator.comparing(DClass::getReviewCount).reversed());
+                break;
+            case "priceLow":
+                classList.sort(Comparator.comparing(DClass::getClassPrice));
+                break;
+            case "createdDate":
+            default:
+                classList.sort(Comparator.comparing(DClass::getCreatedDate).reversed());
+                break;
+        }
+
+        // Pagination
+        int start = request.getPage() * (request.getSize() != null ? request.getSize() : 12);
+        int end = Math.min(start + (request.getSize() != null ? request.getSize() : 12), classList.size());
+        List<DClass> paginatedList = classList.subList(start, end);
+
+        List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
