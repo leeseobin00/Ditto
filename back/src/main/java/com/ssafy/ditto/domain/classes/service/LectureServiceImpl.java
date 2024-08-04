@@ -13,15 +13,16 @@ import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ssafy.ditto.global.error.ErrorCode.LECTURE_NOT_FOUND;
 import static com.ssafy.ditto.global.error.ErrorCode.USER_NOT_FOUND;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class LectureServiceImpl implements LectureService {
