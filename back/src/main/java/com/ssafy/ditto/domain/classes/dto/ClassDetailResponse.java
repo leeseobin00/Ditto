@@ -36,7 +36,6 @@ public class ClassDetailResponse {
     private List<StepDetailResponse> steps;
     private List<LectureResponse> lectures;
     private UserResponse user;
-
     private TagResponse tag;
 
     public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses, UserResponse userResponse, TagResponse tagResponse) {

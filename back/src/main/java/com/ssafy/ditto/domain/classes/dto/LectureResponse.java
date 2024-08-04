@@ -1,8 +1,6 @@
 package com.ssafy.ditto.domain.classes.dto;
 
 import com.ssafy.ditto.domain.classes.domain.Lecture;
-import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.user.dto.UserResponse;
 import lombok.*;
 
 @Getter
