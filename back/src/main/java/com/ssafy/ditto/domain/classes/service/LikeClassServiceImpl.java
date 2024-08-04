@@ -10,10 +10,12 @@ import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class LikeClassServiceImpl implements LikeClassService {
@@ -40,7 +42,7 @@ public class LikeClassServiceImpl implements LikeClassService {
             LikeClass likeClass = new LikeClass();
             likeClass.setDClass(dClass);
             likeClass.setUser(user);
-            likeClassRepository.addLike(userId,classId);
+            likeClassRepository.addLike(userId, classId);
 
             dClass.setLikeCount(dClass.getLikeCount() + 1);
         }

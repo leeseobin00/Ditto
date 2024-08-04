@@ -14,4 +14,5 @@ public class ClassListRequest {
     private String searchBy;
     private String keyword;
     private String sortBy;
+    private Integer size;
 }

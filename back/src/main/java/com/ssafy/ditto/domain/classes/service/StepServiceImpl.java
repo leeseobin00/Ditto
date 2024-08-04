@@ -11,6 +11,7 @@ import com.ssafy.ditto.domain.file.exception.FileException;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.file.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class StepServiceImpl implements StepService {

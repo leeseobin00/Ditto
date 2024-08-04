@@ -69,10 +69,10 @@ public class QuestionServiceImpl implements QuestionService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
         Page<Question> questionsPage = questionRepository.findByDclassAndIsDeletedFalse(dClass, pageable);
-        return QuestionPageResponse.builder()
-                .questions(questionsPage.stream().map(QuestionResponse::of).collect(Collectors.toList()))
-                .currentPage(questionsPage.getNumber()+1)
-                .totalPageCount(questionsPage.getTotalPages())
-                .build();
+        return QuestionPageResponse.of(
+                questionsPage.stream().map(QuestionResponse::of).collect(Collectors.toList()),
+                questionsPage.getNumber() + 1,
+                questionsPage.getTotalPages()
+        );
     }
 }

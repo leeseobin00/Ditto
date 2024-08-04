@@ -11,4 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 public class ClassListResponse {
     private List<ClassResponse> classList;
+
+    public static ClassListResponse of(List<ClassResponse> classResponses) {
+        return ClassListResponse.builder()
+                .classList(classResponses)
+                .build();
+    }
 }
