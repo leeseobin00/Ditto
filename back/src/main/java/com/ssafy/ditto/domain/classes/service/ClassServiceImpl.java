@@ -74,8 +74,10 @@ public class ClassServiceImpl implements ClassService {
         DClass dClass = DClass.builder()
                 .className(classRequest.getClassName())
                 .userId(user)
-                .categoryId(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new))
-                .tagId(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new))
+                .categoryId(categoryRepository.findById(classRequest.getCategoryId())
+                        .orElseThrow(CategoryNotFoundException::new))
+                .tagId(tagRepository.findById(classRequest.getTagId())
+                        .orElseThrow(TagNotFoundException::new))
                 .classPrice(classRequest.getClassPrice())
                 .classHour(classRequest.getClassHour().byteValue())
                 .classMinute(classRequest.getClassMinute().byteValue())
@@ -141,44 +143,7 @@ public class ClassServiceImpl implements ClassService {
         UserResponse userResponse = UserResponse.of(dClass.getUserId());
         TagResponse tagResponse = TagResponse.of(dClass.getTagId());
 
-        return ClassDetailResponse.of(dClass,
-                dClass.getFileId() != null ? FileResponse.builder()
-                        .fileId(dClass.getFileId().getFileId())
-                        .uploadFileName(dClass.getFileId().getUploadFileName())
-                        .fileUrl(dClass.getFileId().getFileUrl())
-                        .build() : null,
-                KitDetailResponse.builder()
-                        .kitId(dClass.getKitId().getKitId())
-                        .kitName(dClass.getKitId().getKitName())
-                        .kitExplanation(dClass.getKitId().getKitExplanation())
-                        .file(dClass.getKitId().getFileId() != null ? FileResponse.builder()
-                                .fileId(dClass.getKitId().getFileId().getFileId())
-                                .uploadFileName(dClass.getKitId().getFileId().getUploadFileName())
-                                .fileUrl(dClass.getKitId().getFileId().getFileUrl())
-                                .build() : null)
-                        .build(),
-                steps.stream().map(step -> StepDetailResponse.builder()
-                        .stepId(step.getStepId())
-                        .stepNo(step.getStepNo())
-                        .stepName(step.getStepName())
-                        .stepDetail(step.getStepDetail())
-                        .file(step.getFileId() != null ? FileResponse.builder()
-                                .fileId(step.getFileId().getFileId())
-                                .uploadFileName(step.getFileId().getUploadFileName())
-                                .fileUrl(step.getFileId().getFileUrl())
-                                .build() : null)
-                        .build()).collect(Collectors.toList()),
-                lectures.stream().map(lecture -> LectureResponse.builder()
-                        .lectureId(lecture.getLectureId())
-                        .year(lecture.getYear())
-                        .month(lecture.getMonth())
-                        .day(lecture.getDay())
-                        .hour(lecture.getHour())
-                        .minute(lecture.getMinute())
-                        .userCount(lecture.getUserCount())
-                        .build()).collect(Collectors.toList()),
-                userResponse,
-                tagResponse);
+        return ClassDetailResponse.of(dClass, dClass.getFileId() != null ? FileResponse.of(dClass.getFileId()) : null, KitDetailResponse.of(dClass.getKitId(), dClass.getKitId().getFileId() != null ? FileResponse.of(dClass.getKitId().getFileId()) : null), steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList()), lectures.stream().map(LectureResponse::of).collect(Collectors.toList()), userResponse, tagResponse);
     }
 
     @Override
@@ -198,9 +163,6 @@ public class ClassServiceImpl implements ClassService {
                     predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
                 } else if (request.getSearchBy().equals("className")) {
                     predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
-                } else if (request.getSearchBy().equals("userName")) {
-                    Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
-                    predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
                 }
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -233,9 +195,7 @@ public class ClassServiceImpl implements ClassService {
 
         List<ClassResponse> classResponses = paginatedList.stream().map(ClassResponse::of).collect(Collectors.toList());
 
-        return ClassListResponse.builder()
-                .classList(classResponses)
-                .build();
+        return ClassListResponse.of(classResponses);
     }
 
     @Override
