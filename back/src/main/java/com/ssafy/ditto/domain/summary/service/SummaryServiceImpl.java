@@ -9,6 +9,8 @@ import com.ssafy.ditto.domain.classes.exception.StepNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.classes.repository.StepRepository;
+import com.ssafy.ditto.domain.summary.domain.Summary;
+import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,15 +24,19 @@ import java.util.Map;
 public class SummaryServiceImpl implements SummaryService {
     private final LectureRepository lectureRepository;
     private final StepRepository stepRepository;
+    private final SummaryRepository summaryRepository;
 
     @Override
     @Transactional
-    public void addText(Map<String, Object> map) {
-        int lectureId = (int) map.get("lectureId");
-        int stepId = (int) map.get("stepId");
+    public void addText(int lectureId, int stepId, String text) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Step step = stepRepository.findById(stepId).orElseThrow(StepNotFoundException::new);
+        Summary summary = Summary.builder()
+                .summaryContent(text)
+                .lecture(lecture)
+                .step(step)
+                .build();
 
-        String text = (String) map.get("text");
+        summaryRepository.save(summary);
     }
 }
