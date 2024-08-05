@@ -17,6 +17,12 @@ const ContentContainer = styled.div`
   width: 100%;
   margin-top: 25px;
   margin-bottom: 40px;
+  height: 155px;
+  overflow-y: auto;
+`;
+
+const AddContainer = styled(ContentContainer)`
+  height: 110px;
 `;
 
 const LectureLine = styled.div`
@@ -24,6 +30,7 @@ const LectureLine = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 0 10px;
 `;
 
 const Hr = styled.hr`
@@ -101,7 +108,7 @@ const SelectBox = styled.select`
   }
 `;
 
-function ClassLectureModal({
+function ClassLectureAddModal({
   show,
   onClose,
   lectureList,
@@ -193,7 +200,7 @@ function ClassLectureModal({
         ))}
       </ContentContainer>
       <Title>일정 추가</Title>
-      <ContentContainer>
+      <AddContainer>
         <DetailLine>
           <Label>날짜</Label>
           <Input
@@ -228,10 +235,10 @@ function ClassLectureModal({
             <SelectLabel>분</SelectLabel>
           </SelectLine>
         </DetailLine>
-      </ContentContainer>
+      </AddContainer>
       <OutlineButton label={"추가"} onClick={handleAddLecture} />
     </Modal>
   );
 }
 
-export default ClassLectureModal;
+export default ClassLectureAddModal;
