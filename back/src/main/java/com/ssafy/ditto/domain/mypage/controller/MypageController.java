@@ -24,6 +24,13 @@ public class MypageController {
         return ResponseDto.of(200, "일반유저 마이페이지 조회 성공", mypageResponse);
     }
 
+    // Mypage_001_1
+    @GetMapping("{userId}/address")
+    public ResponseDto<AddressResponse> getAddress(@PathVariable("userId") int userId){
+        AddressResponse addressResponse = mypageService.getAddress(userId);
+        return ResponseDto.of(200, "일반 유저 배송지 조회 성공", addressResponse);
+    }
+
     //Mypage_002
     @PatchMapping("{userId}")
     public ResponseDto<String> modifyMypage(@PathVariable("userId") int userId, @RequestBody MypageRequest mypageRequest){

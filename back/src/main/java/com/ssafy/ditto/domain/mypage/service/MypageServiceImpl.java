@@ -71,6 +71,17 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public AddressResponse getAddress(int userId) {
+        User user = userRepository.findByUserId(userId);
+        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+
+        return AddressResponse.builder()
+                .addresses(addresses)
+                .build();
+    }
+
     @Transactional
     @Override
     public String modifyUser(int userId, MypageRequest mypageRequest) {
