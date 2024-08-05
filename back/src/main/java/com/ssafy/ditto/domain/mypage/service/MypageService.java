@@ -8,6 +8,8 @@ import java.util.List;
 public interface MypageService {
     MypageResponse getUserMypage(int userId);
 
+    AddressResponse getAddress(int userId);
+
     String modifyUser(int userId, MypageRequest mypageRequest);
 
     void insertAddress(int userId, AddressRequest addressRequest);
