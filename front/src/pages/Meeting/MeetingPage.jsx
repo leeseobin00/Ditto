@@ -18,31 +18,54 @@ const PageContainer = styled.div`
   color: var(--LIGHT);
   width: 100%;
   min-width: 1024px;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
 `;
 
 // Main content area
 const MainContent = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
   margin-bottom: 16px;
 `;
 
 const ParticipantGrid = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Do not wrap, enable horizontal scrolling */
+  overflow-x: auto; /* Allow horizontal scroll */
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding-bottom: 80px;
+  max-height: calc(100vh - 200px);
+`;
+
+const ScrollButton = styled.button`
+  background-color: var(--LIGHT);
+  color: var(--DARK);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  &:hover {
+    background-color: var(--HOVER_LIGHT);
+  }
+`;
+
+const LeftScrollButton = styled(ScrollButton)`
+  left: 10px;
+`;
+
+const RightScrollButton = styled(ScrollButton)`
+  right: 10px;
 `;
 
 function MeetingPage() {
-  const username = useSelector((state)=>state.auth.nickname);
+  const username = useSelector((state) => state.auth.nickname);
   const APPLICATION_SERVER_URL = "http://localhost:5000/";
   const [OV, setOV] = useState(undefined);
   const [mySessionId, setMySessionId] = useState('SessionA');
@@ -54,8 +77,10 @@ function MeetingPage() {
   // State for mute and video control
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
+  // State for pagination
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const maxVisible = 2; // Maximum visible participants
 
-  // New functions for toggling audio and video
   const handleAudioEnabled = () => {
     if (publisher) {
       publisher.publishAudio(!audioEnabled);
@@ -70,20 +95,20 @@ function MeetingPage() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const name = prompt("이름: ");
     setMyUserName(name);
     setOV(new OpenVidu());
     return () => {
       leaveSession();
     };
-  },[]);
+  }, []);
 
-  useEffect(()=>{
-    if(OV && myUserName){
+  useEffect(() => {
+    if (OV && myUserName) {
       joinSession();
     }
-  },[OV, myUserName]);
+  }, [OV, myUserName]);
 
   const getToken = async () => {
     const sessionId = await createSession(mySessionId);
@@ -91,88 +116,82 @@ function MeetingPage() {
   };
 
   const createSession = async (sessionId) => {
-      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
-          headers: { 'Content-Type': 'application/json', },
-      });
-      return response.data; // The sessionId
+    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
+      headers: { 'Content-Type': 'application/json', },
+    });
+    return response.data; // The sessionId
   };
 
   const createToken = async (sessionId) => {
-      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-          headers: { 'Content-Type': 'application/json', },
-      });
-      return response.data; // The token
+    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+      headers: { 'Content-Type': 'application/json', },
+    });
+    return response.data; // The token
   };
 
   const handleMainVideoStream = (stream) => {
     if (mainStreamManager !== stream) {
-        setMainStreamManager(stream);
+      setMainStreamManager(stream);
     }
   };
 
   const deleteSubscriber = (streamManager) => {
     setSubscribers((prevSubscribers) =>
-        prevSubscribers.filter((subscriber) => subscriber !== streamManager)
+      prevSubscribers.filter((subscriber) => subscriber !== streamManager)
     );
   };
 
-  const joinSession = async() => {
+  const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
 
     newSession.on('streamCreated', (event) => {
-      // 발행자의 스트림인지 확인
       if (event.stream.connection.connectionId !== newSession.connection.connectionId) {
         const subscriber = newSession.subscribe(event.stream, undefined);
         const parsedData = JSON.parse(subscriber?.stream?.connection?.data);
-        if(parsedData?.clientData!==myUserName){
+        if (parsedData?.clientData !== myUserName) {
           console.log("구독");
           setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
         }
       }
-    }); 
+    });
 
     newSession.on('streamDestroyed', (event) => {
-        deleteSubscriber(event.stream.streamManager);
+      deleteSubscriber(event.stream.streamManager);
     });
 
     newSession.on('exception', (exception) => {
-        console.warn(exception);
+      console.warn(exception);
     });
 
     const token = await getToken();
 
     newSession.connect(token, { clientData: myUserName })
-    .then(async () => {
+      .then(async () => {
         const newPublisher = await OV.initPublisherAsync(undefined, {
-            audioSource: undefined,
-            videoSource: undefined,
-            publishAudio: true,
-            publishVideo: true,
-            resolution: '640x480',
-            frameRate: 30,
-            insertMode: 'APPEND',
-            mirror: false,
+          audioSource: undefined,
+          videoSource: undefined,
+          publishAudio: true,
+          publishVideo: true,
+          resolution: '640x480',
+          frameRate: 30,
+          insertMode: 'APPEND',
+          mirror: false,
         });
 
         newSession.publish(newPublisher);
 
-        const devices = await OV.getDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-        const currentVideoDeviceId = newPublisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
-        const currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
-
         setPublisher(newPublisher);
         setMainStreamManager(newPublisher);
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         console.log('There was an error connecting to the session:', error.code, error.message);
-    });
+      });
   };
 
   const leaveSession = () => {
     if (session) {
-        session.disconnect();
+      session.disconnect();
     }
 
     setOV(null);
@@ -184,8 +203,25 @@ function MeetingPage() {
     setMyUserName(undefined);
   };
 
+  // Calculate flex-basis based on the number of visible participants
+  const getFlexBasis = () => {
+    return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
+  };
+
+  // Functions to navigate between subscriber groups
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
+  };
+
+  // Include publisher in pagination logic
+  const visibleParticipants = [publisher, ...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
+
+  console.log(subscribers.length);
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
-  // 1. step을 불러온다.
   const steps = [
     "1단계. 향 조합 비율 결정하기",
     "2단계. 향기 선택하기",
@@ -198,18 +234,18 @@ function MeetingPage() {
   const handleStartStep = () => {
     setStepLoading(true);
     SpeechRecognition.startListening({ language: 'ko-KR', continuous: true });
-    setCurrentStep((prev) => prev+1);
+    setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
   }
-  const handleNextStep = async() => {
+  const handleNextStep = async () => {
     setStepLoading(true);
     setText(transcript);
     resetTranscript();
-    setCurrentStep((prev) => prev+1);
+    setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
   }
   const handleEndStep = () => {
-    if(!listening) return;
+    if (!listening) return;
     setStepLoading(true);
     setText(transcript);
     SpeechRecognition.abortListening();
@@ -236,25 +272,35 @@ function MeetingPage() {
       />
       <MainContent>
         <div>{text}</div>
-        {mainStreamManager !== undefined ? (
-          <div id="main-video" className="col-md-6">
-            <UserVideoComponent streamManager={mainStreamManager} />
-          </div>
-        ) : null}
-        {publisher !== undefined ? (
-            <div className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(publisher)}>
-                <UserVideoComponent
-                    streamManager={publisher} />
+        <ParticipantGrid>
+        {visibleParticipants.map((participant, i) => {
+          if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
+
+          return (
+            <div
+              key={i}
+              className="stream-container"
+              onClick={() => handleMainVideoStream(participant)}
+              style={{ flexBasis: getFlexBasis() }}
+            >
+              {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
+              <UserVideoComponent streamManager={participant} />
             </div>
-        ) : null}
-        {subscribers.map((sub, i) => (
-            <div key={i} className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(sub)}>
-                <span>{sub.id}</span>
-                <UserVideoComponent streamManager={sub} />
-            </div>
-        ))}
+          );
+        })}
+        </ParticipantGrid>
+        {(subscribers.length + 1) > maxVisible && (
+          <>
+            {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
+              &lt;
+            </LeftScrollButton>}
+            {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+              &gt;
+            </RightScrollButton>}
+          </>
+        )}
       </MainContent>
-      <MeetingFooter 
+      <MeetingFooter
         audioEnabled={audioEnabled}
         handleAudioEnabled={handleAudioEnabled}
         videoEnabled={videoEnabled}
