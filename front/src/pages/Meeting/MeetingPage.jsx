@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { styled } from "styled-components";
 import { OpenVidu } from 'openvidu-browser';
 import { useSelector } from 'react-redux';
@@ -65,6 +65,9 @@ const RightScrollButton = styled(ScrollButton)`
   right: 10px;
 `;
 
+// Context 정의
+export const MeetingContext = createContext(); // Context를 export하여 다른 파일에서 사용할 수 있도록 함
+
 function MeetingPage() {
   const userId = useSelector((state)=>state.auth.userId);
   const username = useSelector((state) => state.auth.nickname);
@@ -79,6 +82,8 @@ function MeetingPage() {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
+  // chat
+  const [chatMessages, setChatMessages] = useState([]);
   // State for mute and video control
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -195,6 +200,15 @@ function MeetingPage() {
       console.warn(exception);
     });
 
+    newSession.on('signal:chat', (event) => {
+      console.log('New chat message:', event.data);
+      const parsedData = JSON.parse(event.data);
+      setChatMessages((prev)=>[...prev, parsedData]);
+      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+    });
+
+    console.log(chatMessages);
+
     const token = await getToken();
 
     newSession.connect(token, JSON.stringify({ username: myUserName, roleId: roleId }))
@@ -282,59 +296,91 @@ function MeetingPage() {
     setStepLoading(false);
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  // chat ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  const sendChat = (senderName, senderMsg, time, target) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            message: senderMsg, 
+            sender: senderName,
+            time: time,
+        }),
+        to: target ? [] : [],
+        type: 'chat'
+    })
+    .then(() => {
+        console.log('Message successfully sent');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
 
   return (
-    <PageContainer>
-      <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
-      <ProgressBar
-        steps={steps}
-        currentStep={currentStep}
-        loading={stepLoading}
-        handleStartStep={handleStartStep}
-        handleNextStep={handleNextStep}
-        handleEndStep={handleEndStep}
-      />
-      <MainContent>
-        <div>{text}</div>
-        <ParticipantGrid>
-        {visibleParticipants.map((participant, i) => {
-          if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
+    <MeetingContext.Provider
+      value={{
+        sendChat,
+        chatMessages,
+        publisher,
+        subscribers,
+      }}
+    >
+      <PageContainer>
+        <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
+        <ProgressBar
+          steps={steps}
+          currentStep={currentStep}
+          loading={stepLoading}
+          handleStartStep={handleStartStep}
+          handleNextStep={handleNextStep}
+          handleEndStep={handleEndStep}
+        />
+        <MainContent>
+          <div>{text}</div>
+          <ParticipantGrid>
+          {visibleParticipants.map((participant, i) => {
+            if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
 
-          return (
-            <div
-              key={i}
-              className="stream-container"
-              onClick={() => handleMainVideoStream(participant)}
-              style={{ flexBasis: getFlexBasis() }}
-            >
-              {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
-              <UserVideoComponent streamManager={participant} />
-            </div>
-          );
-        })}
-        </ParticipantGrid>
-        {(subscribers.length + 1) > maxVisible && (
-          <>
-            {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
-              &lt;
-            </LeftScrollButton>}
-            {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
-              &gt;
-            </RightScrollButton>}
-          </>
-        )}
-      </MainContent>
-      <MeetingFooter
-        audioEnabled={audioEnabled}
-        handleAudioEnabled={handleAudioEnabled}
-        videoEnabled={videoEnabled}
-        handleVideoEnabled={handleVideoEnabled}
-        handleIsOpen={handleIsOpen} />
-    </PageContainer>
+            return (
+              <div
+                key={i}
+                className="stream-container"
+                onClick={() => handleMainVideoStream(participant)}
+                style={{ flexBasis: getFlexBasis() }}
+              >
+                {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
+                <UserVideoComponent streamManager={participant} />
+              </div>
+            );
+          })}
+          </ParticipantGrid>
+          {(subscribers.length + 1) > maxVisible && (
+            <>
+              {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
+                &lt;
+              </LeftScrollButton>}
+              {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+                &gt;
+              </RightScrollButton>}
+            </>
+          )}
+        </MainContent>
+        <MeetingFooter
+          audioEnabled={audioEnabled}
+          handleAudioEnabled={handleAudioEnabled}
+          videoEnabled={videoEnabled}
+          handleVideoEnabled={handleVideoEnabled}
+          handleIsOpen={handleIsOpen} 
+        />
+      </PageContainer>
+    </MeetingContext.Provider>
   );
 }
 
