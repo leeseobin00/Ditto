@@ -14,23 +14,38 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer>{
 
-    @Query(value = "SELECT * FROM Post p WHERE "
-            + "(COALESCE(:boardId, p.board_id) = p.board_id) AND "
+    @Query(value = "SELECT p.* FROM Post p "
+            + "JOIN User u ON p.user_id = u.user_id "
+            + "WHERE (COALESCE(:boardId, p.board_id) = p.board_id) AND "
             + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
-            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) ",
+            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) AND "
+            + "(CASE WHEN :searchBy = 'title' THEN p.title LIKE %:keyword% "
+            + "WHEN :searchBy = 'nickname' THEN u.nickname LIKE %:keyword% "
+            + "ELSE TRUE END)",
             nativeQuery = true)
     List<Post> getPostLists(@Param("boardId") Integer boardId,
                             @Param("categoryId") Integer categoryId,
-                            @Param("tagId") Integer tagId);
+                            @Param("tagId") Integer tagId,
+                            @Param("searchBy") String searchBy,
+                            @Param("keyword") String keyword);
 
-    @Query(value = "SELECT COUNT(*) FROM Post p WHERE "
-            + "(COALESCE(:boardId, p.board_id) = p.board_id) AND "
+
+    @Query(value = "SELECT COUNT(*) FROM Post p "
+            + "JOIN User u ON p.user_id = u.user_id "
+            + "WHERE (COALESCE(:boardId, p.board_id) = p.board_id) AND "
             + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
-            + "(COALESCE(:tagId, p.tag_id) = p.tag_id)",
+            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) AND "
+            + "(CASE WHEN :searchBy = 'title' THEN p.title LIKE %:keyword% "
+            + "WHEN :searchBy = 'nickname' THEN u.nickname LIKE %:keyword% "
+            + "ELSE TRUE END)",
             nativeQuery = true)
     int getPostCount(@Param("boardId") Integer boardId,
                      @Param("categoryId") Integer categoryId,
-                     @Param("tagId") Integer tagId);
+                     @Param("tagId") Integer tagId,
+                     @Param("searchBy") String searchBy,
+                     @Param("keyword") String keyword);
+
+
 
     // 최근 1주일간 받은 좋아요수
     @Query(value = "SELECT p.* FROM Post p " +
