@@ -199,8 +199,13 @@ public class MypageController {
     //Pro_005
     @PostMapping("{userId}/withdraw")
     public ResponseDto<Void> userWithdraw(@PathVariable("userId") int userId, @RequestBody Map<String, Integer> requestMoney){
-        mypageService.userWithdraw(userId, requestMoney.get("requestMoney"));
-        return ResponseDto.of(200, "출금 신청 완료");
+        boolean success = mypageService.userWithdraw(userId, requestMoney.get("requestMoney"));
+        if (success){
+            return ResponseDto.of(200, "출금 신청 완료");
+        }else{
+            return ResponseDto.of(400, "마일리지 부족");
+        }
+
     }
 
     //Pro_006

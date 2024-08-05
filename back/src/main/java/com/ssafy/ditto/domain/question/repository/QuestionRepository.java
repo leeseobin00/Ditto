@@ -25,7 +25,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
                     "FROM Question q " +
                     "WHERE q.class_id IN (" +
                     "SELECT c.class_id " +
-                    "FROM Class c " +
+                    "FROM dclass c " +
                     "WHERE c.user_id = :userId" +
                     ") " +
                     "AND q.created_date < :dateTime " +
