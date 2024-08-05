@@ -221,7 +221,7 @@ public class SessionController {
 	}
 
 	// 세션 종료
-	@DeleteMapping("/{lectureId}/close")
+	@DeleteMapping("/{lectureId}")
 	public ResponseDto<Void> closeSession(@PathVariable int lectureId,
 										  @RequestBody(required = false) Map<String, Object> params) {
 		// 강의 ID로 세션을 조회

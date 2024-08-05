@@ -7,12 +7,6 @@ import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(
-        origins = {"http://i11a106.p.ssafy.io:3000", "http://i11a106.p.ssafy.io:8080", "https://localhost:8080"}, // SSL 이후 설정 필요
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.OPTIONS}
-)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/live-rooms")
