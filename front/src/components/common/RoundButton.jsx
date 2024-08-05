@@ -44,14 +44,15 @@ const sizeStyle = css`
     if (size === "sm") {
       return css`
         padding: 6px 8px;
-        font-size: 14px;
+        font-size: 12px;
+        font-weight: 500;
       `;
     }
 
     if (size === "lg") {
       return css`
         padding: 12px 48px;
-        font-size: 18px;
+        font-size: 16px;
       `;
     }
 
@@ -64,9 +65,8 @@ const sizeStyle = css`
 
     // 기본적으로 'md'일 때의 스타일 (default)
     return css`
-      padding: 8px 32px;
-      font-size: 16px;
-      font-weight: 600;
+      padding: 6px 20px;
+      font-size: 14px;
     `;
   }}
 `;

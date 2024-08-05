@@ -9,7 +9,7 @@ import RoundButton from "../../common/RoundButton";
 import Dollar from "../../../assets/icon/class/dollar.png";
 import EmptyHeart from "../../../assets/icon/common/heart/heart-secondary.png";
 import ActivatedHeart from "../../../assets/icon/common/heart/heart-activated.png";
-import ClassLectureModal from "./ClassLectureModal";
+import ClassLectureAddModal from "../ClassAdd/ClassLectureAddModal";
 
 const ClassSideBarConatiner = styled.div`
   position: sticky;
@@ -301,7 +301,7 @@ function ClassSideBar({
           />
         )}
       </SelectBoxContainer>
-      <ClassLectureModal
+      <ClassLectureAddModal
         lectureList={lectureList || []}
         classId={classInfo.classId}
         updateLectureList={updateLectureList}
