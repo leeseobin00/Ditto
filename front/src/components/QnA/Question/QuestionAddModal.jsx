@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-import useAxios from "../../hooks/useAxios";
-import Modal from "../common/Modal";
-import OutlineButton from "../common/OutlineButton";
+import useAxios from "../../../hooks/useAxios";
+import Modal from "../../common/Modal";
+import OutlineButton from "../../common/OutlineButton";
 
 const Title = styled.div`
   color: var(--PRIMARY);

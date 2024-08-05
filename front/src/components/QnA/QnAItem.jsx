@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 
-import AnswerItem from "./AnswerItem";
+import useAxios from "../../hooks/useAxios";
+import OutlineButton from "../common/OutlineButton";
+import AnswerItem from "./Answer/AnswerItem";
 import Downward from "../../assets/icon/class/downward-arrow.png";
 import Upward from "../../assets/icon/class/upward-arrow.png";
 
@@ -31,6 +33,7 @@ const QnATitle = styled.div`
   font-size: 18px;
   font-weight: 600;
 `;
+
 const SmallFont = styled.div`
   font-size: 16px;
 `;
@@ -65,18 +68,40 @@ const Icon = styled.img`
   height: 20px;
   margin-right: 10px;
 `;
+
 const AnswerButtonText = styled.div`
   font-size: 18px;
   font-weight: 600;
   color: var(--SECONDARY);
 `;
 
-function QnAItem({ question }) {
+function QnAItem({ question, isInstructor }) {
   const [showAnswer, setShowAnswer] = useState(false);
+  const [answer, setAnswer] = useState(null);
+  const { sendRequest: getAnswer } = useAxios();
 
-  function handleShowAnswer() {
+  useEffect(() => {
+    console.log(isInstructor);
+    const fetchAnswer = async () => {
+      if (showAnswer && !answer) {
+        try {
+          const AnswerResponse = await getAnswer(
+            `/questions/${question.questionId}/answers`,
+            null,
+            "get"
+          );
+          setAnswer(AnswerResponse.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    fetchAnswer();
+  }, [showAnswer, answer, getAnswer, question.questionId]);
+
+  const handleShowAnswer = () => {
     setShowAnswer(!showAnswer);
-  }
+  };
 
   return (
     <QnAItemContainer>
@@ -84,6 +109,8 @@ function QnAItem({ question }) {
         <QnATitle>{question.title}</QnATitle>
         {question.isAnswered ? (
           <Answered>답변 완료</Answered>
+        ) : isInstructor ? (
+          <OutlineButton label={"답변 작성"} />
         ) : (
           <NotAnswered>미답변</NotAnswered>
         )}
@@ -101,7 +128,7 @@ function QnAItem({ question }) {
               {showAnswer ? "답변 숨기기" : "답변 보기"}
             </AnswerButtonText>
           </AnswerButton>
-          <AnswerItem show={showAnswer} />
+          <AnswerItem show={showAnswer} answer={answer} />
         </>
       )}
     </QnAItemContainer>
