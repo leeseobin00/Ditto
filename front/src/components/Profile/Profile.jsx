@@ -115,6 +115,9 @@ function Profile({
   };
 
   useEffect(()=>{
+    if(profileImageURL){
+      setProfileImage(profileImageURL);
+    }
     if(!profileImageURL && profileImageId){
       getImageFromId(profileImageId);
     }

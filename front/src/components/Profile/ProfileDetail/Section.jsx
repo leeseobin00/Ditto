@@ -54,6 +54,8 @@ function Section({
   id,
   title,
   children,
+  curPage,
+  totalPage,
   onClick,
   isMyProfile,
   modalContent: ModalContentComponent,
@@ -81,7 +83,7 @@ function Section({
       {children}
       {onClick && (
         <ButtonWrapper>
-          <OutlineButton label="더보기" color="default" onClick={onClick} />
+          {curPage<totalPage && <OutlineButton label="더보기" size="lg" color="default" onClick={onClick} />}
         </ButtonWrapper>
       )}
 
