@@ -16,11 +16,12 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     @Query(value = "SELECT p.* FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE (COALESCE(:boardId, p.board_id) = p.board_id) AND "
-            + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
-            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) AND "
-            + "(CASE WHEN :searchBy = 'title' THEN p.title LIKE %:keyword% "
-            + "WHEN :searchBy = 'nickname' THEN u.nickname LIKE %:keyword% "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
+            + "(:tagId IS NULL OR p.tag_id = :tagId) AND "
+            + "(p.is_deleted = FALSE) AND "
+            + "(CASE WHEN :searchBy = 'p.title' THEN p.title LIKE %:keyword% "
+            + "WHEN :searchBy = 'u.nickname' THEN u.nickname LIKE %:keyword% "
             + "ELSE TRUE END)",
             nativeQuery = true)
     List<Post> getPostLists(@Param("boardId") Integer boardId,
@@ -29,14 +30,26 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
                             @Param("searchBy") String searchBy,
                             @Param("keyword") String keyword);
 
+    @Query(value = "SELECT p.* FROM Post p "
+            + "JOIN User u ON p.user_id = u.user_id "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
+            + "(:tagId IS NULL OR p.tag_id = :tagId) AND"
+            + "(p.is_deleted = FALSE)",
+            nativeQuery = true)
+    List<Post> getPostLists(@Param("boardId") Integer boardId,
+                            @Param("categoryId") Integer categoryId,
+                            @Param("tagId") Integer tagId);
+
 
     @Query(value = "SELECT COUNT(*) FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE (COALESCE(:boardId, p.board_id) = p.board_id) AND "
-            + "(COALESCE(:categoryId, p.category_id) = p.category_id) AND "
-            + "(COALESCE(:tagId, p.tag_id) = p.tag_id) AND "
-            + "(CASE WHEN :searchBy = 'title' THEN p.title LIKE %:keyword% "
-            + "WHEN :searchBy = 'nickname' THEN u.nickname LIKE %:keyword% "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
+            + "(:tagId IS NULL OR p.tag_id = :tagId) AND "
+            + "(p.is_deleted = FALSE) AND "
+            + "(CASE WHEN :searchBy = 'p.title' THEN p.title LIKE %:keyword% "
+            + "WHEN :searchBy = 'u.nickname' THEN u.nickname LIKE %:keyword% "
             + "ELSE TRUE END)",
             nativeQuery = true)
     int getPostCount(@Param("boardId") Integer boardId,
@@ -45,9 +58,19 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
                      @Param("searchBy") String searchBy,
                      @Param("keyword") String keyword);
 
+    @Query(value = "SELECT COUNT(*) FROM Post p "
+            + "JOIN User u ON p.user_id = u.user_id "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
+            + "(:tagId IS NULL OR p.tag_id = :tagId) AND"
+            + "(p.is_deleted = FALSE)",
+            nativeQuery = true)
+    int getPostCount(@Param("boardId") Integer boardId,
+                     @Param("categoryId") Integer categoryId,
+                     @Param("tagId") Integer tagId);
 
 
-    // 최근 1주일간 받은 좋아요수
+    // 최근 1주일간 받은 좋아요 수
     @Query(value = "SELECT p.* FROM Post p " +
             "LEFT JOIN Like_Post l ON p.post_id = l.post_id " +
             "WHERE l.created_date > :oneWeekAgo " +
@@ -55,10 +78,6 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
             "ORDER BY COUNT(l.post_id) DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Post> getBestPosts(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
-
-    // 커뮤니티 게시글 상세 조회
-    @Query("SELECT p FROM Post p WHERE p.postId = :postId")
-    Post getPost(@Param("postId") int postId);
 
     @Query("SELECT p FROM Post p WHERE p.user.userId = :userId AND p.isDeleted = false")
     List<Post> getUserPosts(@Param("userId") int userId);
@@ -87,10 +106,6 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     @Transactional
     @Query("UPDATE Post p SET p.likeCount = :likeCount WHERE p.id = :postId")
     void likeCountUpdate(@Param("postId") int postId, @Param("likeCount") int likeCount);
-
-    // 좋아요 상태 확인
-    @Query(value = "SELECT COUNT(*) FROM Like_Post WHERE post_id = :postId AND user_id = :userId", nativeQuery = true)
-    int checkLike(@Param("postId") int postId, @Param("userId") int userId);
 
     @Query(value = "SELECT COUNT(*) FROM Comment WHERE post_id = :postId", nativeQuery = true)
     int countComments(@Param("postId") int postId);
