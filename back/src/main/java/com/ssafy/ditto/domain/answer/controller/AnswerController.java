@@ -7,11 +7,13 @@ import com.ssafy.ditto.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import static com.ssafy.ditto.global.dto.ResponseMessage.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/questions/{questionId}/answers")
@@ -23,25 +25,25 @@ public class AnswerController {
     @Operation(summary = "클래스 문의 답변 작성", description = "질문 ID에 따라 답변을 작성합니다.")
     @ApiResponse(responseCode = "200", description = "답변이 성공적으로 작성되었습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     @PostMapping
-    public ResponseDto<Void> createAnswer(@PathVariable Integer questionId, @RequestBody AnswerRequest answerRequest) {
+    public ResponseDto<String> createAnswer(@PathVariable Integer questionId, @RequestBody AnswerRequest answerRequest) {
         answerService.createAnswer(questionId, answerRequest);
-        return ResponseDto.of(200, "답변이 성공적으로 작성되었습니다.");
+        return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(), "답변이 성공적으로 작성되었습니다.");
     }
 
     @Operation(summary = "클래스 문의 답변 수정", description = "질문 ID와 답변 ID에 따라 답변을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "답변이 성공적으로 수정되었습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     @PatchMapping("/{answerId}")
-    public ResponseDto<Void> updateAnswer(@PathVariable Integer questionId, @PathVariable Integer answerId, @RequestBody AnswerRequest answerRequest) {
+    public ResponseDto<String> updateAnswer(@PathVariable Integer questionId, @PathVariable Integer answerId, @RequestBody AnswerRequest answerRequest) {
         answerService.updateAnswer(answerId, answerRequest);
-        return ResponseDto.of(200, "답변이 성공적으로 수정되었습니다.");
+        return ResponseDto.of(OK.value(), SUCCESS_UPDATE.getMessage(), "답변이 성공적으로 수정되었습니다.");
     }
 
     @Operation(summary = "클래스 문의 답변 삭제", description = "질문 ID와 답변 ID에 따라 답변을 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "답변이 성공적으로 삭제되었습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     @DeleteMapping("/{answerId}")
-    public ResponseDto<Void> deleteAnswer(@PathVariable Integer questionId, @PathVariable Integer answerId) {
+    public ResponseDto<String> deleteAnswer(@PathVariable Integer questionId, @PathVariable Integer answerId) {
         answerService.deleteAnswer(answerId);
-        return ResponseDto.of(200, "답변이 성공적으로 삭제되었습니다.");
+        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), "답변이 성공적으로 삭제되었습니다.");
     }
 
     @Operation(summary = "클래스 문의 답변 조회", description = "질문 ID에 따라 답변을 조회합니다.")
@@ -49,6 +51,6 @@ public class AnswerController {
     @GetMapping
     public ResponseDto<AnswerResponse> getAnswer(@PathVariable Integer questionId) {
         AnswerResponse answerResponse = answerService.getAnswer(questionId);
-        return ResponseDto.of(200, "답변이 성공적으로 조회되었습니다.", answerResponse);
+        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), answerResponse);
     }
 }

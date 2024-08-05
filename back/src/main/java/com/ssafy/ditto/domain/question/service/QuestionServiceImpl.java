@@ -15,7 +15,9 @@ import com.ssafy.ditto.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -68,7 +70,9 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionPageResponse getClassQuestions(Integer classId, Pageable pageable) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
-        Page<Question> questionsPage = questionRepository.findByDclassAndIsDeletedFalse(dClass, pageable);
+        Pageable sortedByCreatedDateDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<Question> questionsPage = questionRepository.findByDclassAndIsDeletedFalse(dClass, sortedByCreatedDateDesc);
+
         return QuestionPageResponse.of(
                 questionsPage.stream().map(QuestionResponse::of).collect(Collectors.toList()),
                 questionsPage.getNumber() + 1,
