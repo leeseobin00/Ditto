@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MileageHistoryRepository extends JpaRepository<MileageHistory, Integer> {
     @Query(value = "SELECT * " +
-            "FROM MileageHistory m " +
+            "FROM Mileage_History m " +
             "WHERE m.user_id = :userId AND m.time < :dateTime " +
             "ORDER BY m.time DESC " +
             "LIMIT 10", nativeQuery = true)

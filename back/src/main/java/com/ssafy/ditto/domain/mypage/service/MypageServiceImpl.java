@@ -345,17 +345,15 @@ public class MypageServiceImpl implements MypageService {
         User giverUser = userRepository.findByUserId(userId);
 
         // 일단 내가 좋아요한 유저를 시간순서로 4명 가져옴
-//        List<User> users = likeUserRepository.getLikeUser(userId, dateTime);
-
         Pageable pageable = PageRequest.of(0, 4);
         List<User> likeUsers = likeUserRepository.getLikeUser(userId, dateTime, pageable).getContent();
-        System.out.println("------------------------------");
+
         for (User getterUser : likeUsers) {
             LikeUser likeUser = likeUserRepository.findByLikeGiverAndLikeGetter(giverUser, getterUser);
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
             //getter 유저를 토대로 UserTag랑 Tag를 조인해서 반환
             List<Tag> tags = userTagRepository.getTagList(getterUser.getUserId());
-            System.out.println("####################################");
+
             LikeUserResponse likeUserResponse = LikeUserResponse.builder()
                     .userId(getterUser.getUserId())
                     .nickname(getterUser.getNickname())
@@ -379,6 +377,7 @@ public class MypageServiceImpl implements MypageService {
     }
 
     // 프로 마이페이지 시작 부분
+    @Transactional(readOnly = true)
     @Override
     public ProMypageResponse getProMypage(int userId) {
         User user = userRepository.findByUserId(userId);
@@ -405,6 +404,7 @@ public class MypageServiceImpl implements MypageService {
         account.changeReceiver(accountRequest.getReceiver());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MileageResponse getMileage(int userId) {
         User user = userRepository.findByUserId(userId);
@@ -418,50 +418,71 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime) {
         List<MilageHistoryResponse> milageHistoryResponseList = new ArrayList<>();
 
         // 일단 정산 내역 10개를 최신순으로 가져옴.
         List<MileageHistory> mileageHistories = mileageHistoryRepository.getMileageHistoryList(userId, dateTime);
-
+        System.out.println(mileageHistories.size());
         // 가져온 정산내역 목록으로 DTO 생성 후 return
         for (MileageHistory mileageHistory : mileageHistories) {
-
-            MilageHistoryResponse milageHistoryResponse = MilageHistoryResponse.builder()
-                    .historyId(mileageHistory.getHistoryId())
-                    .className(mileageHistory.getLectureId().getClassName())
-                    .mileageAmount(mileageHistory.getMileageAmount())
-                    .time(mileageHistory.getTime())
-                    .state(mileageHistory.getState())
-                    .finalAmount(mileageHistory.getFinalAmount())
-                    .build();
+            MilageHistoryResponse milageHistoryResponse = null;
+            // 강사에게 입금되었을때
+            if (mileageHistory.getState() == 0){
+                milageHistoryResponse = MilageHistoryResponse.builder()
+                        .historyId(mileageHistory.getHistoryId())
+                        .className(mileageHistory.getLectureId().getClassName())
+                        .mileageAmount(mileageHistory.getMileageAmount())
+                        .time(mileageHistory.getTime())
+                        .state(mileageHistory.getState())
+                        .finalAmount(mileageHistory.getFinalAmount())
+                        .build();
+            } else { // 강사가 출금을 했을때
+                milageHistoryResponse = MilageHistoryResponse.builder()
+                        .historyId(mileageHistory.getHistoryId())
+                        .mileageAmount(mileageHistory.getMileageAmount())
+                        .time(mileageHistory.getTime())
+                        .state(mileageHistory.getState())
+                        .finalAmount(mileageHistory.getFinalAmount())
+                        .build();
+            }
 
             milageHistoryResponseList.add(milageHistoryResponse);
         }
-
+        System.out.println(milageHistoryResponseList.size());
         return milageHistoryResponseList;
     }
 
     @Transactional
     @Override
-    public void userWithdraw(int userId, Integer requestMoney) {
+    public boolean userWithdraw(int userId, Integer requestMoney) {
         User user = userRepository.findByUserId(userId);
         Mileage mileage = mileageRepository.findByUserId(user);
         int finalAmount = mileage.getMileage() - requestMoney;
+
+        if (finalAmount < 0){
+            return false;
+        }
 
         MileageHistory mileageHistory = MileageHistory.builder()
                 .mileageAmount(requestMoney)
                 .time(LocalDateTime.now())
                 .state(2)
                 .finalAmount(finalAmount)
+                .mileageId(mileage)
+                .userId(user)
                 .build();
 
         mileageHistoryRepository.save(mileageHistory);
 
         mileage.changeMileage(finalAmount);
+
+        return true;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<QuestionResponse> getProQuestion(int userId, LocalDateTime dateTime) {
         List<QuestionResponse> questionResponseList = new ArrayList<>();
@@ -484,6 +505,7 @@ public class MypageServiceImpl implements MypageService {
                     .fileId(question.getDclass().getFileId().getFileId())
                     .fileUrl(question.getDclass().getFileId().getFileUrl())
                     .classId(question.getDclass().getClassId())
+                    .className(question.getDclass().getClassName())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -493,18 +515,32 @@ public class MypageServiceImpl implements MypageService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public AnswerResponse getAnswer(int userId, int questionId) {
         Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId).getQuestionId());
 
-        return AnswerResponse.builder()
-                .answerId(answer.getAnswerId())
-                .answer(answer.getAnswer())
-                .createdDate(answer.getCreatedDate())
-                .modifiedDate(answer.getModifiedDate())
-                .isDeleted(answer.getIsDeleted())
-                .nickname(answer.getUser().getNickname())
-                .build();
+        if (answer.getIsDeleted()){
+            return AnswerResponse.builder()
+                    .answerId(answer.getAnswerId())
+                    .answer("삭제된 답변입니다.")
+                    .createdDate(answer.getCreatedDate())
+                    .modifiedDate(answer.getModifiedDate())
+                    .isDeleted(answer.getIsDeleted())
+                    .nickname(answer.getUser().getNickname())
+                    .build();
+        }else{
+            return AnswerResponse.builder()
+                    .answerId(answer.getAnswerId())
+                    .answer(answer.getAnswer())
+                    .createdDate(answer.getCreatedDate())
+                    .modifiedDate(answer.getModifiedDate())
+                    .isDeleted(answer.getIsDeleted())
+                    .nickname(answer.getUser().getNickname())
+                    .build();
+        }
+
+
     }
 
     @Transactional

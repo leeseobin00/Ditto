@@ -19,12 +19,6 @@ public class QuestionResponse {
     private String nickname;
     private Integer fileId;
     private String fileUrl;
-    private Integer lectureId;
     private Integer classId;
     private String className;
-    private Integer year;
-    private Byte month;
-    private Byte day;
-    private Byte hour;
-    private Byte minute;
 }

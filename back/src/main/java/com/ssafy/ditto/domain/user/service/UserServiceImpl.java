@@ -2,6 +2,10 @@ package com.ssafy.ditto.domain.user.service;
 
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
+import com.ssafy.ditto.domain.mypage.domain.Account;
+import com.ssafy.ditto.domain.mypage.domain.Mileage;
+import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
+import com.ssafy.ditto.domain.mypage.repository.MileageRepository;
 import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.Agree;
 import com.ssafy.ditto.domain.user.domain.Form;
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
     private final JwtProvider jwtProvider;
+    private final AccountRepository accountRepository;
+    private final MileageRepository mileageRepository;
 
     @Override
     public void signup(UserSignUpRequest userSignUpRequest) {
@@ -112,7 +118,21 @@ public class UserServiceImpl implements UserService {
             userTagRepository.save(userTag);
         }
 
+        Account account = Account.builder()
+                .accountNumber("")
+                .bank("")
+                .receiver("")
+                .userId(user)
+                .build();
 
+        accountRepository.save(account);
+
+        Mileage mileage = Mileage.builder()
+                .mileage(0)
+                .userId(user)
+                .build();
+
+        mileageRepository.save(mileage);
     }
 
     @Transactional
