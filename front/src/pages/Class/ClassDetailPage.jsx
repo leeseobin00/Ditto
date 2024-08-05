@@ -9,7 +9,7 @@ import ClassKit from "../../components/Class/ClasDetail/ClassKit";
 import ClassStepList from "../../components/Class/ClasDetail/ClassStepList";
 import ReviewList from "../../components/Review/ReviewList";
 import QnAList from "../../components/QnA/QnAList";
-import QuestionAddModal from "../../components/QnA/QuestionAddModal";
+import QuestionAddModal from "../../components/QnA/Question/QuestionAddModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
 import Button from "../../components/common/Button";
@@ -79,6 +79,7 @@ function ClassDetailPage() {
   const [classInfo, setClassInfo] = useState(null);
   const [lectureList, setLectureList] = useState([]);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
+  const [isInstructor, setIsInstructor] = useState(false);
 
   const handleQuestionModal = () => {
     setShowQuestionModal(!showQuestionModal);
@@ -92,6 +93,7 @@ function ClassDetailPage() {
         "get"
       );
       setClassInfo(classResponse?.data);
+
       const lectureResponse = await getLectureList(
         `/classes/${classId}/lectures`,
         null,
@@ -119,6 +121,13 @@ function ClassDetailPage() {
   useEffect(() => {
     handleGetClass();
   }, [classId]);
+
+  useEffect(() => {
+    if (classInfo?.user?.userId == userId) {
+      setIsInstructor(true);
+      console.log("진입");
+    }
+  }, [classInfo]);
 
   return (
     <ClassDetailPageContainer>
@@ -155,7 +164,10 @@ function ClassDetailPage() {
                     <Button label={"문의하기"} onClick={handleQuestionModal} />
                   )}
                 </TitleLine>
-                <QnAList classId={classInfo?.classId} />
+                <QnAList
+                  classId={classInfo?.classId}
+                  isInstructor={isInstructor}
+                />
                 <QuestionAddModal
                   show={showQuestionModal}
                   classId={classInfo?.classId}

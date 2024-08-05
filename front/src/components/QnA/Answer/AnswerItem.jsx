@@ -8,8 +8,8 @@ const AnswerItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  z-index: 1000;
-  padding: 2%;
+  z-index: 2;
+  padding: 20px;
   margin-top: 20px;
 `;
 
@@ -22,14 +22,16 @@ const DetailLineSecondary = styled(DetailLine)`
   color: var(--TEXT_SECONDARY);
 `;
 
-function AnswerItem({ show }) {
+function AnswerItem({ show, answer }) {
   if (!show) return null;
 
   return (
     <AnswerItemContainer>
-      <DetailLineSecondary>이강사</DetailLineSecondary>
-      <DetailLine>잘 하면 됩니다.</DetailLine>
-      <DetailLineSecondary>2024.07.11</DetailLineSecondary>
+      <DetailLineSecondary>{answer?.userNickname}</DetailLineSecondary>
+      <DetailLine>{answer?.answer}</DetailLine>
+      <DetailLineSecondary style={{ textAlign: "right" }}>
+        {answer?.createdDate?.substring(0, 10)}
+      </DetailLineSecondary>
     </AnswerItemContainer>
   );
 }

@@ -290,13 +290,13 @@ function ClassSideBar({
         {classInfo.user.userId == userId ? (
           <RoundButton
             label={"클래스 일정 관리"}
-            size={"md"}
+            size={"lg"}
             onClick={handleShowModal}
           />
         ) : (
           <RoundButton
             label={"구매하기"}
-            size="md"
+            size={"lg"}
             onClick={handleOrderButton}
           />
         )}
