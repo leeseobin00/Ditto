@@ -2,13 +2,14 @@ import 'regenerator-runtime/runtime';
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { OpenVidu } from 'openvidu-browser';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MeetingHeader from "../../components/Meeting/MeetingHeader";
 import ProgressBar from "../../components/Meeting/ProgressBar";
 import MeetingFooter from "../../components/Meeting/MeetingFooter";
 import axios from "axios";
 import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
-import { useSelector } from 'react-redux';
 
 // Container for the entire page
 const PageContainer = styled.div`
@@ -65,9 +66,13 @@ const RightScrollButton = styled(ScrollButton)`
 `;
 
 function MeetingPage() {
+  const userId = useSelector((state)=>state.auth.userId);
   const username = useSelector((state) => state.auth.nickname);
+  const roleId = useSelector((state)=>state.auth.roleId);
+  const navigate = useNavigate();
   const APPLICATION_SERVER_URL = "http://localhost:5000/";
   const [OV, setOV] = useState(undefined);
+  const [isSession, setIsSession] = useState(undefined);
   const [mySessionId, setMySessionId] = useState('SessionA');
   const [myUserName, setMyUserName] = useState(undefined);
   const [session, setSession] = useState(undefined);
@@ -96,37 +101,64 @@ function MeetingPage() {
   };
 
   useEffect(() => {
-    const name = prompt("이름: ");
-    setMyUserName(name);
     setOV(new OpenVidu());
     return () => {
       leaveSession();
     };
   }, []);
 
+  useEffect(()=>{
+    setMyUserName(username);
+  },[username]);
+
   useEffect(() => {
-    if (OV && myUserName) {
-      joinSession();
+    if (OV && myUserName && userId && roleId) {
+      createSession();
     }
-  }, [OV, myUserName]);
+  }, [OV, myUserName, userId, roleId]);
+
+  useEffect(()=>{
+    if(!isSession) return;
+    if(isSession===200){
+      joinSession();
+    }else{
+      alert("세션에 접근할 수 없습니다!");
+      navigate("/video");
+    }
+  },[isSession]);
 
   const getToken = async () => {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
+    // const sessionId = await createSession(mySessionId);
+    // return await createToken(sessionId);
+    return await createToken();
   };
 
   const createSession = async (sessionId) => {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The sessionId
+    // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
+    //   headers: { 'Content-Type': 'application/json', },
+    // });
+    // return response.data; // The sessionId
+    const response = await axios.post(`http://localhost:8080/sessions/36?userId=${userId}`, null);
+    setIsSession(response?.data?.code);
   };
 
-  const createToken = async (sessionId) => {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The token
+  const createToken = async () => {
+    // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+    //   headers: { 'Content-Type': 'application/json', },
+    // });
+    // return response.data; // The token
+    const response = await axios.post(
+      `http://localhost:8080/sessions/36/get-token?userId=${userId}`,
+      null,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    const token = response?.data?.data?.token;
+    return token;
   };
 
   const handleMainVideoStream = (stream) => {
@@ -148,9 +180,8 @@ function MeetingPage() {
     newSession.on('streamCreated', (event) => {
       if (event.stream.connection.connectionId !== newSession.connection.connectionId) {
         const subscriber = newSession.subscribe(event.stream, undefined);
-        const parsedData = JSON.parse(subscriber?.stream?.connection?.data);
-        if (parsedData?.clientData !== myUserName) {
-          console.log("구독");
+        const parsedData = JSON.parse(subscriber?.stream?.connection?.data.split('%/%user-data')[0]);
+        if (parsedData?.username !== myUserName) {
           setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
         }
       }
@@ -166,7 +197,7 @@ function MeetingPage() {
 
     const token = await getToken();
 
-    newSession.connect(token, { clientData: myUserName })
+    newSession.connect(token, JSON.stringify({ username: myUserName, roleId: roleId }))
       .then(async () => {
         const newPublisher = await OV.initPublisherAsync(undefined, {
           audioSource: undefined,
@@ -220,7 +251,6 @@ function MeetingPage() {
   // Include publisher in pagination logic
   const visibleParticipants = [publisher, ...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
 
-  console.log(subscribers.length);
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const steps = [
     "1단계. 향 조합 비율 결정하기",
@@ -257,8 +287,6 @@ function MeetingPage() {
     setIsOpen(status);
   };
 
-  console.log(publisher);
-  console.log(subscribers);
   return (
     <PageContainer>
       <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
