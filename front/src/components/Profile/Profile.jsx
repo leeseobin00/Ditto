@@ -80,6 +80,7 @@ function Profile({
   const [curLikeCount, setCurLikeCount] = useState(likeCount);
 
   const handleHeartClick = () => {
+    if(!userId) return;
     if (isHeartFilled===true) {
       setIsHeartFilled(false);
       setCurLikeCount((prev) => prev - 1);

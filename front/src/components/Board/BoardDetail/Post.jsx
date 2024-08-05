@@ -203,6 +203,7 @@ function Post({
   }, [getLikeResponse]);
 
   const handleHeartClick = () => {
+    if(!userId) return;
     if (isHeartFilled) {
       setIsHeartFilled(false);
       setCurlikeCount((prev) => prev - 1);
