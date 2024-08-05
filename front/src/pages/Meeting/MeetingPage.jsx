@@ -1,23 +1,14 @@
-import { useEffect, useState } from "react";
-import {
-  LocalVideoTrack,
-  LocalAudioTrack,
-  RemoteParticipant,
-  RemoteTrack,
-  RemoteTrackPublication,
-  Room,
-  RoomEvent
-} from "livekit-client";
 import 'regenerator-runtime/runtime';
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
+import { OpenVidu } from 'openvidu-browser';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import usewebRTCAxios from "../../hooks/usewebRTCAxios";
 import MeetingHeader from "../../components/Meeting/MeetingHeader";
 import ProgressBar from "../../components/Meeting/ProgressBar";
 import MeetingFooter from "../../components/Meeting/MeetingFooter";
-import AudioComponent from "../../components/Meeting/AudioComponent";
-import VideoComponent from "../../components/Meeting/VideoComponent";
-import { MdJoinRight } from "react-icons/md";
+import axios from "axios";
+import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
+import { useSelector } from 'react-redux';
 
 // Container for the entire page
 const PageContainer = styled.div`
@@ -51,8 +42,148 @@ const ParticipantGrid = styled.div`
 `;
 
 function MeetingPage() {
-  // State for user name
-  const [userName, setUserName] = useState(undefined);
+  const username = useSelector((state)=>state.auth.nickname);
+  const APPLICATION_SERVER_URL = "http://localhost:5000/";
+  const [OV, setOV] = useState(undefined);
+  const [mySessionId, setMySessionId] = useState('SessionA');
+  const [myUserName, setMyUserName] = useState(undefined);
+  const [session, setSession] = useState(undefined);
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [publisher, setPublisher] = useState(undefined);
+  const [subscribers, setSubscribers] = useState([]);
+  // State for mute and video control
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+
+  // New functions for toggling audio and video
+  const handleAudioEnabled = () => {
+    if (publisher) {
+      publisher.publishAudio(!audioEnabled);
+      setAudioEnabled(!audioEnabled);
+    }
+  };
+
+  const handleVideoEnabled = () => {
+    if (publisher) {
+      publisher.publishVideo(!videoEnabled);
+      setVideoEnabled(!videoEnabled);
+    }
+  };
+
+  useEffect(()=>{
+    const name = prompt("이름: ");
+    setMyUserName(name);
+    setOV(new OpenVidu());
+    return () => {
+      leaveSession();
+    };
+  },[]);
+
+  useEffect(()=>{
+    if(OV && myUserName){
+      joinSession();
+    }
+  },[OV, myUserName]);
+
+  const getToken = async () => {
+    const sessionId = await createSession(mySessionId);
+    return await createToken(sessionId);
+  };
+
+  const createSession = async (sessionId) => {
+      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
+          headers: { 'Content-Type': 'application/json', },
+      });
+      return response.data; // The sessionId
+  };
+
+  const createToken = async (sessionId) => {
+      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+          headers: { 'Content-Type': 'application/json', },
+      });
+      return response.data; // The token
+  };
+
+  const handleMainVideoStream = (stream) => {
+    if (mainStreamManager !== stream) {
+        setMainStreamManager(stream);
+    }
+  };
+
+  const deleteSubscriber = (streamManager) => {
+    setSubscribers((prevSubscribers) =>
+        prevSubscribers.filter((subscriber) => subscriber !== streamManager)
+    );
+  };
+
+  const joinSession = async() => {
+    const newSession = OV.initSession();
+    setSession(newSession);
+
+    newSession.on('streamCreated', (event) => {
+      // 발행자의 스트림인지 확인
+      if (event.stream.connection.connectionId !== newSession.connection.connectionId) {
+        const subscriber = newSession.subscribe(event.stream, undefined);
+        const parsedData = JSON.parse(subscriber?.stream?.connection?.data);
+        if(parsedData?.clientData!==myUserName){
+          console.log("구독");
+          setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+        }
+      }
+    }); 
+
+    newSession.on('streamDestroyed', (event) => {
+        deleteSubscriber(event.stream.streamManager);
+    });
+
+    newSession.on('exception', (exception) => {
+        console.warn(exception);
+    });
+
+    const token = await getToken();
+
+    newSession.connect(token, { clientData: myUserName })
+    .then(async () => {
+        const newPublisher = await OV.initPublisherAsync(undefined, {
+            audioSource: undefined,
+            videoSource: undefined,
+            publishAudio: true,
+            publishVideo: true,
+            resolution: '640x480',
+            frameRate: 30,
+            insertMode: 'APPEND',
+            mirror: false,
+        });
+
+        newSession.publish(newPublisher);
+
+        const devices = await OV.getDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        const currentVideoDeviceId = newPublisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+        const currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
+
+        setPublisher(newPublisher);
+        setMainStreamManager(newPublisher);
+    })
+    .catch((error) => {
+        console.log('There was an error connecting to the session:', error.code, error.message);
+    });
+  };
+
+  const leaveSession = () => {
+    if (session) {
+        session.disconnect();
+    }
+
+    setOV(null);
+    setSession(undefined);
+    setPublisher(undefined);
+    setMainStreamManager(undefined);
+    setSubscribers([]);
+    setMySessionId('SessionA');
+    setMyUserName(undefined);
+  };
+
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   // 1. step을 불러온다.
   const steps = [
@@ -89,98 +220,9 @@ function MeetingPage() {
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
-  
-  // axios
-  const { sendRequest: getToken } = usewebRTCAxios();
-  // webRTC
-  const [room, setRoom] = useState(undefined);
-  const [localVideoTrack, setLocalVideoTrack] = useState(undefined);
-  const [localAudioTrack, setLocalAudioTrack] = useState(undefined);
-  const [remoteTracks, setRemoteTracks] = useState([]);
 
-  // State for mute and video control
-  const [audioEnabled, setAudioEnabled] = useState(true);
-  const [videoEnabled, setVideoEnabled] = useState(true);
-
-  const handleAudioEnabled = () => {
-    setAudioEnabled((prevEnabled) => {
-      if (localAudioTrack) {
-        if (prevEnabled) {
-          localAudioTrack.mute();
-        } else {
-          localAudioTrack.unmute();
-        }
-      }
-      return !prevEnabled;
-    });
-  };
-
-  const handleVideoEnabled = () => {
-    setVideoEnabled((prevEnabled) => {
-      if (localVideoTrack) {
-        if (prevEnabled) {
-          localVideoTrack.mute();
-        } else {
-          localVideoTrack.unmute();
-        }
-      }
-      return !prevEnabled;
-    });
-  };
-
-  const handleGetToken = async () => {
-    const postData = {
-      roomName: "A106",
-      participantName: userName,
-    };
-    const result = await getToken("/token", postData, "post");
-    return result?.token;
-  };
-
-  async function joinRoom() {
-    const room = new Room();
-    setRoom(room);
-    const token = await handleGetToken();
-    
-    room.on(RoomEvent.TrackSubscribed, (_track, publication, participant) => {
-      setRemoteTracks((prev) => [
-        ...prev,
-        { trackPublication: publication, participantIdentity: participant.identity }
-      ]);
-    });
-    room.on(RoomEvent.TrackUnsubscribed, (_track, publication) => {
-      setRemoteTracks((prev) => prev.filter((track) => track.trackPublication.trackSid !== publication.trackSid));
-    });
-
-    try {
-      await room.connect("ws://localhost:7880/", token);
-      await room.localParticipant.enableCameraAndMicrophone();
-      const videoTrack = room.localParticipant.videoTrackPublications.values().next().value.videoTrack;
-      const audioTrack = room.localParticipant.audioTrackPublications.values().next().value.audioTrack;
-      setLocalVideoTrack(videoTrack);
-      setLocalAudioTrack(audioTrack);
-    } catch (error) {
-      console.log("There was an error connecting to the room:", error.message);
-      await leaveRoom();
-    }
-  }
-
-  const leaveRoom = async () => {
-    await room?.disconnect();
-    setRoom(undefined);
-    setLocalVideoTrack(undefined);
-    setLocalAudioTrack(undefined);
-    setRemoteTracks([]);
-  };
-  
-  useEffect(()=>{
-    setUserName("쪼쪼");
-    if(userName){
-      joinRoom();
-    }
-  },[userName]);
-
-  
+  console.log(publisher);
+  console.log(subscribers);
   return (
     <PageContainer>
       <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
@@ -194,31 +236,23 @@ function MeetingPage() {
       />
       <MainContent>
         <div>{text}</div>
-        {room && <ParticipantGrid>
-          {localVideoTrack && (
-            <VideoComponent 
-              track={localVideoTrack} 
-              participantIdentity={userName} 
-              local={true}
-              videoEnabled={videoEnabled}  
-            />
-          )}
-          {remoteTracks.map((remoteTrack) =>
-            remoteTrack.trackPublication.kind === "video" ? (
-              <VideoComponent
-                key={remoteTrack.trackPublication.trackSid}
-                track={remoteTrack.trackPublication.videoTrack}
-                participantIdentity={remoteTrack.participantIdentity}
-                videoEnabled={true}
-              />
-            ) : (
-              <AudioComponent
-                key={remoteTrack.trackPublication.trackSid}
-                track={remoteTrack.trackPublication.audioTrack}
-              />
-            )
-          )}
-        </ParticipantGrid>}
+        {mainStreamManager !== undefined ? (
+          <div id="main-video" className="col-md-6">
+            <UserVideoComponent streamManager={mainStreamManager} />
+          </div>
+        ) : null}
+        {publisher !== undefined ? (
+            <div className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(publisher)}>
+                <UserVideoComponent
+                    streamManager={publisher} />
+            </div>
+        ) : null}
+        {subscribers.map((sub, i) => (
+            <div key={i} className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(sub)}>
+                <span>{sub.id}</span>
+                <UserVideoComponent streamManager={sub} />
+            </div>
+        ))}
       </MainContent>
       <MeetingFooter 
         audioEnabled={audioEnabled}
