@@ -35,8 +35,9 @@ public class QuestionController {
     }
 
     @GetMapping
-    public ResponseDto<QuestionPageResponse> getClassQuestions(@PathVariable Integer classId, @RequestParam int page, @RequestParam int size) {
-        Pageable pageable = PageRequest.of(page-1, size);
+    public ResponseDto<QuestionPageResponse> getClassQuestions(@PathVariable Integer classId,
+                                                               @RequestParam int page) {
+        Pageable pageable = PageRequest.of(page - 1, 3);
         QuestionPageResponse response = questionService.getClassQuestions(classId, pageable);
         return ResponseDto.of(200, "클래스 문의 목록 조회가 성공적으로 완료되었습니다.", response);
     }
