@@ -150,8 +150,8 @@ function ClassListPage() {
     setTagId((prevTagId) => (prevTagId === tagValue ? 0 : tagValue));
   };
 
-  const handleSearchBy = (event) => {
-    setSearchBy(event.target.value);
+  const handleSearchBy = (value) => {
+    setSearchBy(value);
   };
 
   const handleKeyword = (event) => {
