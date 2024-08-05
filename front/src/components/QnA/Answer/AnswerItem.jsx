@@ -1,7 +1,13 @@
-import styled from "styled-components";
+import { useState } from "react";
+import { styled } from "styled-components";
+
+import useAxios from "../../../hooks/useAxios";
+import OutlineButton from "../../common/OutlineButton";
+import AnswerModal from "./AnswerModal";
 
 const AnswerItemContainer = styled.div`
   width: 100%;
+  min-height: 150px;
   height: 120px;
   border-radius: 10px;
   background-color: var(--BACKGROUND_COLOR);
@@ -14,7 +20,10 @@ const AnswerItemContainer = styled.div`
 `;
 
 const DetailLine = styled.div`
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   font-size: 16px;
 `;
 
@@ -22,17 +31,48 @@ const DetailLineSecondary = styled(DetailLine)`
   color: var(--TEXT_SECONDARY);
 `;
 
-function AnswerItem({ show, answer }) {
+function AnswerItem({ show, answer, isInstructor, question }) {
   if (!show) return null;
 
+  // 답변 수정
+  const [showAnswerModal, setShowAnswerModal] = useState(false);
+  const [currentAnswer, setCurrentAnswer] = useState(answer);
+
+  const handleShowAnswerModal = () => {
+    setShowAnswerModal(!showAnswerModal);
+  };
+
+  const handleAnswerSubmit = (newAnswer) => {
+    setCurrentAnswer(newAnswer);
+  };
+
   return (
-    <AnswerItemContainer>
-      <DetailLineSecondary>{answer?.userNickname}</DetailLineSecondary>
-      <DetailLine>{answer?.answer}</DetailLine>
-      <DetailLineSecondary style={{ textAlign: "right" }}>
-        {answer?.createdDate?.substring(0, 10)}
-      </DetailLineSecondary>
-    </AnswerItemContainer>
+    <>
+      <AnswerItemContainer>
+        <DetailLine>
+          <DetailLineSecondary>{answer?.userNickname}</DetailLineSecondary>
+          {isInstructor && (
+            <OutlineButton
+              label={"수정"}
+              size={"sm"}
+              onClick={handleShowAnswerModal}
+            />
+          )}
+        </DetailLine>
+        <DetailLine>{currentAnswer?.answer}</DetailLine>
+        <DetailLineSecondary style={{ textAlign: "right" }}>
+          {answer?.createdDate?.substring(0, 10)}
+        </DetailLineSecondary>
+      </AnswerItemContainer>
+      <AnswerModal
+        show={showAnswerModal}
+        onClose={handleShowAnswerModal}
+        question={question}
+        initialAnswer={currentAnswer}
+        isEdit={true}
+        onSubmit={handleAnswerSubmit}
+      />
+    </>
   );
 }
 
