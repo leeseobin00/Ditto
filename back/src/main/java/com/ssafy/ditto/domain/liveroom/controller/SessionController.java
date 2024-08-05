@@ -345,8 +345,7 @@ public class SessionController {
 //			return getErrorResponse(e);
 //		}
 //	}
-//
-//
+
 	/*******************/
 	/** Recording API **/
 	/*******************/
