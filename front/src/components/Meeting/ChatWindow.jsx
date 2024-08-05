@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import { useState, useEffect, useRef, useContext } from "react";
+import { styled } from "styled-components";
 import { IoClose } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { MeetingContext } from "../../pages/Meeting/MeetingPage";
 
 const WindowWrapper = styled.div`
   position: fixed; /* Footer를 기준으로 고정된 위치를 설정 */
@@ -105,8 +107,7 @@ const MessageInfo = styled.div`
 
 const UserName = styled.p`
   font-size: 16px;
-  color: ${(props) =>
-    props.isOwnMessage ? "var(--SECONDARY)" : "var(--TEXT_TERITART)"};
+  color: var(--SECONDARY);
 `;
 
 const Message = styled.div`
@@ -120,12 +121,19 @@ const MessageTime = styled.p`
 `;
 
 function ChatWindow({ handleWindow }) {
-  const [messages, setMessages] = useState([]);
+  // redux
+  const username = useSelector((state)=>state.auth.nickname);
+  // context API
+  const { sendChat, chatMessages, publisher, subscribers } = useContext(MeetingContext);
+
+  console.log("pub: ", publisher);
+  console.log("sub: ", subscribers);
+  //const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedUser, setSelectedUser] = useState("모두에게");
   const messagesEndRef = useRef(null);
 
-  const users = ["모두에게", "나", "김태희"]; // 실제 사용자 목록으로 대체하세요.
+  const users = ["모두에게"]; // 실제 사용자 목록으로 대체하세요.
 
   const handleSend = () => {
     if (inputValue.trim()) {
@@ -138,7 +146,14 @@ function ChatWindow({ handleWindow }) {
         }),
         isOwnMessage: true,
       };
-      setMessages([...messages, newMessage]);
+      sendChat(username, 
+        inputValue, 
+        new Date().toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }), 
+        "ddd");
+      //setMessages([...messages, newMessage]);
       setInputValue("");
     }
   };
@@ -161,7 +176,7 @@ function ChatWindow({ handleWindow }) {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [chatMessages]);
 
   return (
     <WindowWrapper>
@@ -170,29 +185,29 @@ function ChatWindow({ handleWindow }) {
         <IoClose onClick={handleWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <ChatMessages>
-        {messages.map((message, index) => (
+        {chatMessages.map((message, index) => (
           <MessageContainer key={index}>
             <MessageInfo>
-              <UserName isOwnMessage={message.isOwnMessage}>
-                {message.user}
+              <UserName>
+                {message.sender}
               </UserName>
               <MessageTime>{message.time}</MessageTime>
             </MessageInfo>
-            <Message isOwnMessage={message.isOwnMessage}>
-              {message.text}
+            <Message>
+              {message.message}
             </Message>
           </MessageContainer>
         ))}
         <div ref={messagesEndRef} />
       </ChatMessages>
       <ChatInputWrapper>
-        <Select value={selectedUser} onChange={handleUserChange}>
+        {/* <Select value={selectedUser} onChange={handleUserChange}>
           {users.map((user, index) => (
             <option key={index} value={user}>
               {user}
             </option>
           ))}
-        </Select>
+        </Select> */}
         <ChatInput>
           <Input
             type="text"
