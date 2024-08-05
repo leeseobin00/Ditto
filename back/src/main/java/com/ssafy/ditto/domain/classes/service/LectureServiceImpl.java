@@ -13,15 +13,16 @@ import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ssafy.ditto.global.error.ErrorCode.LECTURE_NOT_FOUND;
 import static com.ssafy.ditto.global.error.ErrorCode.USER_NOT_FOUND;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class LectureServiceImpl implements LectureService {
@@ -79,15 +80,7 @@ public class LectureServiceImpl implements LectureService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
         return lectures.stream()
-                .map(lecture -> LectureResponse.builder()
-                        .lectureId(lecture.getLectureId())
-                        .year(lecture.getYear())
-                        .month(lecture.getMonth())
-                        .day(lecture.getDay())
-                        .hour(lecture.getHour())
-                        .minute(lecture.getMinute())
-                        .userCount(lecture.getUserCount())
-                        .build())
+                .map(LectureResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -99,15 +92,7 @@ public class LectureServiceImpl implements LectureService {
 
         List<Lecture> lectures = lectureRepository.findLecturesWithoutReviews(classId, userId);
         return lectures.stream()
-                .map(lecture -> LectureResponse.builder()
-                        .lectureId(lecture.getLectureId())
-                        .year(lecture.getYear())
-                        .month(lecture.getMonth())
-                        .day(lecture.getDay())
-                        .hour(lecture.getHour())
-                        .minute(lecture.getMinute())
-                        .userCount(lecture.getUserCount())
-                        .build())
+                .map(LectureResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -119,15 +104,7 @@ public class LectureServiceImpl implements LectureService {
 
         List<Lecture> lectures = lectureRepository.findCompletedLearningsByClassAndUser(classId, userId);
         return lectures.stream()
-                .map(lecture -> LectureResponse.builder()
-                        .lectureId(lecture.getLectureId())
-                        .year(lecture.getYear())
-                        .month(lecture.getMonth())
-                        .day(lecture.getDay())
-                        .hour(lecture.getHour())
-                        .minute(lecture.getMinute())
-                        .userCount(lecture.getUserCount())
-                        .build())
+                .map(LectureResponse::of)
                 .collect(Collectors.toList());
     }
 

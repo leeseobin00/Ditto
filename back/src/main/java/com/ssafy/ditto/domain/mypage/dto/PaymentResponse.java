@@ -14,6 +14,7 @@ public class PaymentResponse {
     private Integer fileId;
     private String fileUrl;
     private Integer lectureId;
+    private Integer classId;
     private String className;
     private Integer classPrice;
     private Integer year;

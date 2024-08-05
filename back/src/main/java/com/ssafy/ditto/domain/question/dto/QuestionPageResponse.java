@@ -13,4 +13,12 @@ public class QuestionPageResponse {
     private List<QuestionResponse> questions;
     private int currentPage;
     private int totalPageCount;
+
+    public static QuestionPageResponse of(List<QuestionResponse> questions, int currentPage, int totalPageCount) {
+        return QuestionPageResponse.builder()
+                .questions(questions)
+                .currentPage(currentPage)
+                .totalPageCount(totalPageCount)
+                .build();
+    }
 }

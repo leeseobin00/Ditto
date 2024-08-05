@@ -31,15 +31,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
 
+@Component
 @Service
 @RequiredArgsConstructor
 public class ClassServiceImpl implements ClassService {
@@ -71,8 +74,10 @@ public class ClassServiceImpl implements ClassService {
         DClass dClass = DClass.builder()
                 .className(classRequest.getClassName())
                 .userId(user)
-                .categoryId(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new))
-                .tagId(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new))
+                .categoryId(categoryRepository.findById(classRequest.getCategoryId())
+                        .orElseThrow(CategoryNotFoundException::new))
+                .tagId(tagRepository.findById(classRequest.getTagId())
+                        .orElseThrow(TagNotFoundException::new))
                 .classPrice(classRequest.getClassPrice())
                 .classHour(classRequest.getClassHour().byteValue())
                 .classMinute(classRequest.getClassMinute().byteValue())
@@ -136,74 +141,14 @@ public class ClassServiceImpl implements ClassService {
         List<Step> steps = stepRepository.findAllByClassId(dClass);
         List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
         UserResponse userResponse = UserResponse.of(dClass.getUserId());
-        TagResponse tagResponse = TagResponse.builder()
-                .tagId(dClass.getTagId().getTagId())
-                .tagName(dClass.getTagId().getTagName())
-                .categoryId(dClass.getTagId().getCategory().getCategoryId())
-                .build();
+        TagResponse tagResponse = TagResponse.of(dClass.getTagId());
 
-        return ClassDetailResponse.builder()
-                .classId(dClass.getClassId())
-                .className(dClass.getClassName())
-                .classPrice(dClass.getClassPrice())
-                .classHour(dClass.getClassHour())
-                .classMinute(dClass.getClassMinute())
-                .classExplanation(dClass.getClassExplanation())
-                .classMin(dClass.getClassMin())
-                .classMax(dClass.getClassMax())
-                .studentSum(dClass.getStudentSum())
-                .createdDate(dClass.getCreatedDate())
-                .modifiedDate(dClass.getModifiedDate())
-                .isDeleted(dClass.getIsDeleted())
-                .likeCount(dClass.getLikeCount())
-                .reviewCount(dClass.getReviewCount())
-                .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                .file(dClass.getFileId() != null ? FileResponse.builder()
-                        .fileId(dClass.getFileId().getFileId())
-                        .uploadFileName(dClass.getFileId().getUploadFileName())
-                        .fileUrl(dClass.getFileId().getFileUrl())
-                        .build() : null)
-                .kit(KitDetailResponse.builder()
-                        .kitId(dClass.getKitId().getKitId())
-                        .kitName(dClass.getKitId().getKitName())
-                        .kitExplanation(dClass.getKitId().getKitExplanation())
-                        .file(dClass.getKitId().getFileId() != null ? FileResponse.builder()
-                                .fileId(dClass.getKitId().getFileId().getFileId())
-                                .uploadFileName(dClass.getKitId().getFileId().getUploadFileName())
-                                .fileUrl(dClass.getKitId().getFileId().getFileUrl())
-                                .build() : null)
-                        .build())
-                .steps(steps.stream().map(step -> StepDetailResponse.builder()
-                        .stepId(step.getStepId())
-                        .stepNo(step.getStepNo())
-                        .stepName(step.getStepName())
-                        .stepDetail(step.getStepDetail())
-                        .file(step.getFileId() != null ? FileResponse.builder()
-                                .fileId(step.getFileId().getFileId())
-                                .uploadFileName(step.getFileId().getUploadFileName())
-                                .fileUrl(step.getFileId().getFileUrl())
-                                .build() : null)
-                        .build()).collect(Collectors.toList()))
-                .lectures(lectures.stream().map(lecture -> LectureResponse.builder()
-                        .lectureId(lecture.getLectureId())
-                        .year(lecture.getYear())
-                        .month(lecture.getMonth())
-                        .day(lecture.getDay())
-                        .hour(lecture.getHour())
-                        .minute(lecture.getMinute())
-                        .userCount(lecture.getUserCount())
-                        .build()).collect(Collectors.toList()))
-                .user(userResponse)
-                .tag(tagResponse)
-                .build();
+        return ClassDetailResponse.of(dClass, dClass.getFileId() != null ? FileResponse.of(dClass.getFileId()) : null, KitDetailResponse.of(dClass.getKitId(), dClass.getKitId().getFileId() != null ? FileResponse.of(dClass.getKitId().getFileId()) : null), steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList()), lectures.stream().map(LectureResponse::of).collect(Collectors.toList()), userResponse, tagResponse);
     }
 
     @Override
     @Transactional
     public ClassListResponse getClassList(ClassListRequest request) {
-        Sort sort = Sort.by(Sort.Order.desc(request.getSortBy() != null ? request.getSortBy() : "createdDate"));
-        Pageable pageable = PageRequest.of(request.getPage(), 10, sort);
-
         List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (request.getCategoryId() != null) {
@@ -216,49 +161,41 @@ public class ClassServiceImpl implements ClassService {
                 if (request.getSearchBy().equals("nickname")) {
                     Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
                     predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
-                } else {
-                    predicates.add(criteriaBuilder.like(root.get(request.getSearchBy()), "%" + request.getKeyword() + "%"));
+                } else if (request.getSearchBy().equals("className")) {
+                    predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
                 }
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        }, pageable).getContent();
+        });
 
-        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
-            TagResponse tagResponse = TagResponse.builder()
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
-                    .build();
-            return ClassResponse.builder()
-                    .classId(dClass.getClassId())
-                    .className(dClass.getClassName())
-                    .classPrice(dClass.getClassPrice())
-                    .classHour(dClass.getClassHour())
-                    .classMinute(dClass.getClassMinute())
-                    .classExplanation(dClass.getClassExplanation())
-                    .classMin(dClass.getClassMin())
-                    .classMax(dClass.getClassMax())
-                    .studentSum(dClass.getStudentSum())
-                    .createdDate(dClass.getCreatedDate())
-                    .modifiedDate(dClass.getModifiedDate())
-                    .isDeleted(dClass.getIsDeleted())
-                    .likeCount(dClass.getLikeCount())
-                    .reviewCount(dClass.getReviewCount())
-                    .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                    .userNickname(dClass.getUserId().getNickname())
-                    .file(dClass.getFileId() != null ? FileResponse.builder()
-                            .fileId(dClass.getFileId().getFileId())
-                            .uploadFileName(dClass.getFileId().getUploadFileName())
-                            .fileUrl(dClass.getFileId().getFileUrl())
-                            .build() : null)
-                    .user(UserResponse.of(dClass.getUserId()))
-                    .tag(tagResponse)
-                    .build();
-        }).collect(Collectors.toList());
+        // Sort
+        switch (request.getSortBy() != null ? request.getSortBy() : "createdDate") {
+            case "likeCount":
+                classList.sort(Comparator.comparing(DClass::getLikeCount).reversed());
+                break;
+            case "averageRating":
+                classList.sort(Comparator.comparing(d -> (float) d.getRatingSum() / (d.getReviewCount() == 0 ? 1 : d.getReviewCount()), Comparator.reverseOrder()));
+                break;
+            case "reviewCount":
+                classList.sort(Comparator.comparing(DClass::getReviewCount).reversed());
+                break;
+            case "priceLow":
+                classList.sort(Comparator.comparing(DClass::getClassPrice));
+                break;
+            case "createdDate":
+            default:
+                classList.sort(Comparator.comparing(DClass::getCreatedDate).reversed());
+                break;
+        }
 
-        return ClassListResponse.builder()
-                .classList(classResponses)
-                .build();
+        // Pagination
+        int start = request.getPage() * (request.getSize() != null ? request.getSize() : 12);
+        int end = Math.min(start + (request.getSize() != null ? request.getSize() : 12), classList.size());
+        List<DClass> paginatedList = classList.subList(start, end);
+
+        List<ClassResponse> classResponses = paginatedList.stream().map(ClassResponse::of).collect(Collectors.toList());
+
+        return ClassListResponse.of(classResponses);
     }
 
     @Override
@@ -268,38 +205,7 @@ public class ClassServiceImpl implements ClassService {
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("likeCount")));
         List<DClass> popularClasses = classRepository.findPopularClasses(oneWeekAgo, pageable);
 
-        return popularClasses.stream().map(dClass -> {
-            TagResponse tagResponse = TagResponse.builder()
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
-                    .build();
-            return ClassResponse.builder()
-                    .classId(dClass.getClassId())
-                    .className(dClass.getClassName())
-                    .classPrice(dClass.getClassPrice())
-                    .classHour(dClass.getClassHour())
-                    .classMinute(dClass.getClassMinute())
-                    .classExplanation(dClass.getClassExplanation())
-                    .classMin(dClass.getClassMin())
-                    .classMax(dClass.getClassMax())
-                    .studentSum(dClass.getStudentSum())
-                    .createdDate(dClass.getCreatedDate())
-                    .modifiedDate(dClass.getModifiedDate())
-                    .isDeleted(dClass.getIsDeleted())
-                    .likeCount(dClass.getLikeCount())
-                    .reviewCount(dClass.getReviewCount())
-                    .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                    .userNickname(dClass.getUserId().getNickname())
-                    .file(dClass.getFileId() != null ? FileResponse.builder()
-                            .fileId(dClass.getFileId().getFileId())
-                            .uploadFileName(dClass.getFileId().getUploadFileName())
-                            .fileUrl(dClass.getFileId().getFileUrl())
-                            .build() : null)
-                    .user(UserResponse.of(dClass.getUserId()))
-                    .tag(tagResponse)
-                    .build();
-        }).collect(Collectors.toList());
+        return popularClasses.stream().map(ClassResponse::of).collect(Collectors.toList());
     }
 
     @Override
@@ -309,37 +215,6 @@ public class ClassServiceImpl implements ClassService {
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("createdDate")));
         List<DClass> recentClasses = classRepository.findRecentClasses(oneWeekAgo, pageable);
 
-        return recentClasses.stream().map(dClass -> {
-            TagResponse tagResponse = TagResponse.builder()
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
-                    .build();
-            return ClassResponse.builder()
-                    .classId(dClass.getClassId())
-                    .className(dClass.getClassName())
-                    .classPrice(dClass.getClassPrice())
-                    .classHour(dClass.getClassHour())
-                    .classMinute(dClass.getClassMinute())
-                    .classExplanation(dClass.getClassExplanation())
-                    .classMin(dClass.getClassMin())
-                    .classMax(dClass.getClassMax())
-                    .studentSum(dClass.getStudentSum())
-                    .createdDate(dClass.getCreatedDate())
-                    .modifiedDate(dClass.getModifiedDate())
-                    .isDeleted(dClass.getIsDeleted())
-                    .likeCount(dClass.getLikeCount())
-                    .reviewCount(dClass.getReviewCount())
-                    .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                    .userNickname(dClass.getUserId().getNickname())
-                    .file(dClass.getFileId() != null ? FileResponse.builder()
-                            .fileId(dClass.getFileId().getFileId())
-                            .uploadFileName(dClass.getFileId().getUploadFileName())
-                            .fileUrl(dClass.getFileId().getFileUrl())
-                            .build() : null)
-                    .user(UserResponse.of(dClass.getUserId()))
-                    .tag(tagResponse)
-                    .build();
-        }).collect(Collectors.toList());
+        return recentClasses.stream().map(ClassResponse::of).collect(Collectors.toList());
     }
 }
