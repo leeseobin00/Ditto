@@ -88,12 +88,12 @@ export const ProfileContext = createContext(); // Context를 export하여 다른
 
 function ProfileDetailPage() {
   const userId = useSelector(state => state.auth.userId);
-  const roleId = useSelector(state => state.auth.roleId);
   const { profileId } = useParams();
   const isMyProfile = userId === profileId;
 
   const [profileImageURL, setProfileImageURL] = useState(undefined);
   const [profileName, setProfileName] = useState("");
+  const [profileRoleId, setProfileRoleId] = useState(1);
   const [tags, setTags] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
   const [studentSum, setStudentSum] = useState(0);
@@ -101,7 +101,8 @@ function ProfileDetailPage() {
   const [intro, setIntro] = useState("");
   const [classes, setClasses] = useState([]);
   const [classPage, setClassPage] = useState(1);
-  const classSize = 1;
+  const [totalClassPage, setTotalClassPage] = useState(1);
+  const classSize = 3;
   const [reviews, setReviews] = useState([
     { rating: 4 },
     { rating: 3 },
@@ -110,6 +111,9 @@ function ProfileDetailPage() {
   const [reviewPage, setReviewPage] = useState(1);
   const reviewSize = 1;
   const [posts, setPosts] = useState([]);
+  const [postPage, setPostPage] = useState(1);
+  const [totalPostPage, setTotalPostPage] = useState(1);
+  const postSize = 3;
 
   // axios
   const { sendRequest: getProfile} = useAxios();
@@ -143,6 +147,7 @@ function ProfileDetailPage() {
 
       setProfileImageURL(base64);
       setProfileName(result?.data?.nickname);
+      setProfileRoleId(result?.data?.roleId);
       setTags(result?.data?.tags);
       setLikeCount(result?.data?.likeCount);
       setAvgRating(result?.data?.avgRating);
@@ -162,8 +167,18 @@ function ProfileDetailPage() {
   }
 
   const handleGetPosts = async() => {
-    const result = await getPosts(`/profiles/${profileId}/post`, null, "get");
+    const result = await getPosts(`/profiles/${profileId}/post?page=${postPage}&size=${postSize}`, null, "get");
     setPosts(result?.data?.posts);
+    setTotalPostPage(result?.data?.totalPageCount);
+  }
+
+  const onNextPosts = async() => {
+    if(postPage<totalPostPage){
+      const curPage = postPage;
+      setPostPage((prev)=>prev+1);
+      const result = await getPosts(`/profiles/${profileId}/post?page=${curPage+1}&size=${postSize}`, null, "get");
+      setPosts((prev)=>[...prev, ...result?.data?.posts]);
+    }
   }
 
   const handlePostHeart = async() => {
@@ -186,7 +201,7 @@ function ProfileDetailPage() {
       handleGetClasses();
       handleGetPosts();
       //강사일때만
-      if(roleId==2){
+      if(profileRoleId==2){
         handleGetReviews();
         handleRating();
       }
@@ -222,7 +237,7 @@ function ProfileDetailPage() {
               profileId={profileId}
               postHeart={handlePostHeart} 
               deleteHeart={handleDeleteHeart} />}
-          {roleId==2 && 
+          {profileRoleId==2 && 
             <LectureDetails>
               <LectureDetail>
                 <DetailTitle>수강생 수</DetailTitle>
@@ -256,12 +271,12 @@ function ProfileDetailPage() {
             <CardList cards={classes} />
           </Section>
 
-          {roleId==2 && <Section id="reviews" title="강의 리뷰">
+          {profileRoleId==2 && <Section id="reviews" title="강의 리뷰">
             <ReviewList reviews={reviews} />
           </Section>}
 
-          <Section id="posts" title="작성한 글">
-            <PostList posts={posts} />
+          <Section id="posts" title="작성한 글" onClick={onNextPosts} curPage={postPage} totalPage={totalPostPage}>
+            <PostList posts={posts}/>
           </Section>
         </Content>
       </Container>
