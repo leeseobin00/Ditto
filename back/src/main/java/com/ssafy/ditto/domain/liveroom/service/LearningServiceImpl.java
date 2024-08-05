@@ -31,15 +31,14 @@ public class LearningServiceImpl implements LearningService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
         // 사용자와 강의로 등록 여부 확인
-        boolean isRegistered = learningRepository.existsByStudentIdAndLectureId(user, lecture);
-        return isRegistered;
+        return learningRepository.existsByStudentAndLecture(user, lecture);
     }
 
     @Override
     public void changeStatus(Integer lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
         // lecture 듣는 모든 수강생들의 상태 변경
-        List<Learning> learnings = learningRepository.findAllByLectureId(lecture);
+        List<Learning> learnings = learningRepository.findAllByLecture(lecture);
         for (Learning learning : learnings) {
             learning.setIsFinished(true);
             learningRepository.save(learning);

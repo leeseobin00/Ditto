@@ -19,7 +19,13 @@ public class LiveRoomController {
     @PostMapping("/{lectureId}")
     public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId) {
         liveRoomService.createLiveRoom(lectureId);
-        return ResponseDto.of(200, "라이브 방송 링크가 생성되었습니다.");
+        return ResponseDto.of(201, "라이브 방이 생성되었습니다.");
+    }
+
+    @DeleteMapping("/{lectureId}")
+    public ResponseDto<Void> deleteLiveRoom(@PathVariable int lectureId) {
+        liveRoomService.deleteLiveRoom(lectureId);
+        return ResponseDto.of(200, "라이브 방이 종료되었습니다.");
     }
 
     @GetMapping("/{lectureId}")
@@ -39,7 +45,7 @@ public class LiveRoomController {
         boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
         if(isValidTeacher) {
             try {
-                String sessionName = liveRoomService.getSessionName(lectureId);
+                String sessionName = liveRoomService.getSession(lectureId);
                 return ResponseDto.of(200, "라이브 참여 세션명 조회가 성공적으로 완료되었습니다.",sessionName);
             } catch (Exception e) {
                 return ResponseDto.of(500, "라이브 종료 오류");

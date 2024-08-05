@@ -21,19 +21,19 @@ public class Learning {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private DClass classId;
+    private DClass dClass;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
-    private User studentId;
+    private User student;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
-    private User teacherId;
+    private User teacher;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liveroom_id", nullable = true)
@@ -41,4 +41,7 @@ public class Learning {
 
     @Column
     private Boolean isFinished;
+
+    @Column
+    private String liveToken;
 }

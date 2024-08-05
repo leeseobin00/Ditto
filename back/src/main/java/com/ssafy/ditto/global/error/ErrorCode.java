@@ -33,6 +33,7 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(404, "REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다."),
     QUESTION_NOT_FOUND(404, "QUESITON_NOT_FOUND", "문의를 찾을 수 없습니다."),
     ANSWER_NOT_FOUND(404, "ANSWER_NOT_FOUND", "답변을 찾을 수 없습니다."),
+    LIVEROOM_NOT_FOUND(404,"LIVEROOM_NOT_FOUND", "라이브 방을 찾을 수 없습니다."),
 
     // 중복 관련 오류
     DUPLICATE_RESOURCE(409, "DUPLICATE_RESOURCE", "중복된 리소스가 있습니다."),

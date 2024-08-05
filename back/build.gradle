@@ -49,7 +49,8 @@ dependencies {
     // Google Speech To Text
     implementation 'com.google.cloud:google-cloud-speech:4.41.0'
 
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
