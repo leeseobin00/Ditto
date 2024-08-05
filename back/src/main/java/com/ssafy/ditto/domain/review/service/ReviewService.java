@@ -1,8 +1,7 @@
 package com.ssafy.ditto.domain.review.service;
 
-import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
+import com.ssafy.ditto.domain.review.dto.ReviewPageResponse;
 import com.ssafy.ditto.domain.review.dto.ReviewRequest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
@@ -12,5 +11,5 @@ public interface ReviewService {
 
     void deleteReview(int classId, int reviewId);
 
-    Page<ReviewDetailResponse> getClassReviews(int classId, Pageable pageable);
+    ReviewPageResponse getClassReviews(int classId, Pageable pageable);
 }
