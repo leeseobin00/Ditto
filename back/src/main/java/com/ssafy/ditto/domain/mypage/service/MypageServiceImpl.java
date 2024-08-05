@@ -5,7 +5,7 @@ import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.classes.domain.Payment;
-import com.ssafy.ditto.domain.classes.domain.Summary;
+import com.ssafy.ditto.domain.summary.domain.Summary;
 import com.ssafy.ditto.domain.classes.repository.*;
 import com.ssafy.ditto.domain.mypage.domain.*;
 import com.ssafy.ditto.domain.mypage.repository.*;
@@ -16,13 +16,13 @@ import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
+import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -210,11 +210,11 @@ public class MypageServiceImpl implements MypageService {
     @Override
     public List<SummaryResponse> getSummary(int lectureId) {
         List<SummaryResponse> summaryResponseList = new ArrayList<>();
-        List<Summary> summaries = summaryRepository.findAllByLectureId(lectureRepository.findByLectureId(lectureId));
+        List<Summary> summaries = summaryRepository.findAllByLecture(lectureRepository.findByLectureId(lectureId));
         for (Summary summary : summaries) {
             SummaryResponse newSummaryResponse = SummaryResponse.builder()
                     .summaryId(summary.getSummaryId())
-                    .stepId(summary.getStepId().getStepId())
+                    .stepId(summary.getStep().getStepId())
                     .summaryContent(summary.getSummaryContent())
                     .build();
 

@@ -1,10 +1,13 @@
-package com.ssafy.ditto.domain.classes.domain;
+package com.ssafy.ditto.domain.summary.domain;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.domain.Step;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "Summary")
 @Builder
 @AllArgsConstructor
@@ -21,10 +24,10 @@ public class Summary {
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     //FK
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "step_id")
-    private Step stepId;
+    private Step step;
 }

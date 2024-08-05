@@ -20,17 +20,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class SummaryServiceImpl implements SummaryService {
-    private final ClassRepository classRepository;
     private final LectureRepository lectureRepository;
     private final StepRepository stepRepository;
 
     @Override
     @Transactional
     public void addText(Map<String, Object> map) {
-        int classId = (int) map.get("classId");
         int lectureId = (int) map.get("lectureId");
         int stepId = (int) map.get("stepId");
-        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Step step = stepRepository.findById(stepId).orElseThrow(StepNotFoundException::new);
 
