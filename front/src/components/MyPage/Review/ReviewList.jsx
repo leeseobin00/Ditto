@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import EditReviewModal from './EditReviewModal';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -117,7 +118,7 @@ const LoadMoreButton = styled.button`
   }
 `;
 
-const ReviewList = ({ reviews, fetchMoreReviews }) => {
+const ReviewList = ({ reviews, setReviews, fetchMoreReviews }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [isEditing, setIsEditing] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
@@ -125,8 +126,8 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
   const [editRating, setEditRating] = useState(0);
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [classId, setClassId] = useState(null);
-  const [userId, setUserId] = useState(null);
   const [lectureId, setLectureId] = useState(null);
+  const userId = useSelector((state) => state.auth.userId);
 
   const handleEdit = (review) => {
     setCurrentReview(review);
@@ -134,7 +135,6 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
     setEditRating(review.rating);
     setIsEditing(true);
     setClassId(review.classId);
-    setUserId(review.userId);
     setLectureId(review.lectureId);
   };
 
@@ -142,7 +142,8 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
     try {
       await axios.delete(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`);
       alert('리뷰가 성공적으로 삭제되었습니다.');
-      // 삭제 후 리뷰 목록 갱신
+      //setQuestions(questions.map(q => q.answer?.answerId === answerId ? { ...q, answer: null, isAnswered: false } : q));
+      //삭제
     } catch (error) {
       alert('리뷰 삭제 실패. 다시 시도해주세요.');
       console.error('리뷰 삭제 에러:', error);
@@ -151,6 +152,7 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
 
   const handleSaveEdit = async () => {
     try {
+      console.log(userId);
       await axios.patch(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`, {
         reviewContent: editContent,
         rating: editRating,
@@ -158,7 +160,8 @@ const ReviewList = ({ reviews, fetchMoreReviews }) => {
         lectureId: lectureId,
       });
       alert('리뷰가 성공적으로 수정되었습니다.');
-      // 수정 후 리뷰 목록 갱신
+      // setReviews(reviews.map(r => r?.reviewId === ));
+      // 수정
       setIsEditing(false);
     } catch (error) {
       alert('리뷰 수정 실패. 다시 시도해주세요.');

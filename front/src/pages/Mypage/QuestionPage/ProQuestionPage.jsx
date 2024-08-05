@@ -52,7 +52,7 @@ const ProQuestionPage = () => {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
-        setQuestions(response.data.questions);
+        setQuestions(response?.data?.data);
       } catch (error) {
         console.error('Error fetching questions:', error);
         setQuestions([]); // 에러가 발생해도 빈 배열로 초기화
@@ -62,14 +62,14 @@ const ProQuestionPage = () => {
     fetchQuestions();
   }, [userId]);
 
-  const fetchQuestionAnswer = async (questionId) => {
+  const getQuestionAnswer = async (questionId) => {
     try {
       const response = await axios.get(`${baseURL}/mypage/${userId}/answer/${questionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      const answerData = response.data;
+      const answerData = response?.data?.data;
       setQuestions((prevQuestions) =>
         prevQuestions.map((q) =>
           q.questionId === questionId ? { ...q, answer: answerData } : q
@@ -89,7 +89,7 @@ const ProQuestionPage = () => {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
-        setQuestions([...questions, ...response.data.questions]);
+        setQuestions([...questions, ...response?.data?.data]);
       } catch (error) {
         console.error('Error fetching more questions:', error);
       }
@@ -121,14 +121,19 @@ const ProQuestionPage = () => {
 
   const handleCreateModalSubmit = async (answer) => {
     try {
-      const response = await axios.post(`${baseURL}/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
+      await axios.post(`${baseURL}/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
         answer,
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response.data, isAnswered: true } : q));
+      const response = await axios.get(`${baseURL}/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response?.data?.data, isAnswered: true } : q));
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error('Error posting answer:', error);
@@ -137,14 +142,19 @@ const ProQuestionPage = () => {
 
   const handleEditModalSubmit = async (answer) => {
     try {
-      const response = await axios.patch(`${baseURL}/mypage/answer/${selectedQuestion.answer.answerId}`, {
+      await axios.patch(`${baseURL}/mypage/answer/${selectedQuestion.answer.answerId}`, {
         answer,
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response.data } : q));
+      const response = await axios.get(`${baseURL}/mypage/${userId}/answer/${selectedQuestion.questionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      setQuestions(questions.map(q => q.questionId === selectedQuestion.questionId ? { ...q, answer: response?.data?.data } : q));
       setIsEditModalOpen(false);
     } catch (error) {
       console.error('Error editing answer:', error);
@@ -153,7 +163,7 @@ const ProQuestionPage = () => {
 
   return (
     <Container>
-      <Header>작성한 문의</Header>
+      <Header>내 Class에 작성된 문의</Header>
       {questions?.map((question) => (
         <ProQuestionItem
           key={question.questionId}
@@ -161,7 +171,7 @@ const ProQuestionPage = () => {
           onAnswer={handleAnswer}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onToggleAnswer={fetchQuestionAnswer}
+          onToggleAnswer={getQuestionAnswer}
           isAnswerVisible={question.isAnswered && question.answer}
         />
       ))}

@@ -148,12 +148,19 @@ const AnswerMetaData = styled.div`
   justify-content: space-between;
 `;
 
-const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
+const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete, onToggleAnswer }) => {
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleClassClick = (classId) => {
     navigate(`/classes/detail/${classId}`);
+  };
+
+  const handleToggleAnswer = () => {
+    setIsAnswerVisible(!isAnswerVisible);
+    if (!question.answer) {
+      onToggleAnswer(question.questionId);
+    }
   };
 
   return (
@@ -162,7 +169,6 @@ const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
         <ClassImage src={question.fileUrl} alt={question.className} />
         <ClassDetails>
           <ClassName>{question.className}</ClassName>
-          <ClassDate>{`${question.year}.${String(question.month).padStart(2, '0')}.${String(question.day).padStart(2, '0')} ${String(question.hour).padStart(2, '0')}:${String(question.minute).padStart(2, '0')}`}</ClassDate>
         </ClassDetails>
       </ClassInfo>
       <QuestionHeader>
@@ -176,20 +182,22 @@ const ProQuestionItem = ({ question, onAnswer, onEdit, onDelete }) => {
         <div>{question.nickname} · {new Date(question.createdDate).toLocaleDateString()}</div>
       </MetaData>
       {question.isAnswered && (
-        <AnswerToggle onClick={() => setIsAnswerVisible(!isAnswerVisible)}>
+        <AnswerToggle onClick={handleToggleAnswer}>
           {isAnswerVisible ? '답변 접기' : '답변 보기'}
         </AnswerToggle>
       )}
-      {isAnswerVisible && question.isAnswered && (
+      {isAnswerVisible && question.isAnswered && question.answer &&(
         <AnswerContainer>
           <Subtitle>{question.answer.nickname}</Subtitle>
           <AnswerText>{question.answer.answer}</AnswerText>
           <AnswerMetaData>
             <div>{new Date(question.answer.createdDate).toLocaleDateString()}</div>
-            <ButtonGroup>
-              <EditButton onClick={() => onEdit(question)}>수정</EditButton>
-              <DeleteButton onClick={() => onDelete(question.answer.answerId)}>삭제</DeleteButton>
-            </ButtonGroup>
+            {!question.answer.isDeleted &&(
+              <ButtonGroup>
+                <EditButton onClick={() => onEdit(question)}>수정</EditButton>
+                <DeleteButton onClick={() => onDelete(question.answer.answerId)}>삭제</DeleteButton>
+              </ButtonGroup>
+            )}
           </AnswerMetaData>
         </AnswerContainer>
       )}

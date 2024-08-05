@@ -283,12 +283,14 @@ const QuestionList = () => {
     }
   };
 
-  const toggleAnswer = (questionId) => {
-    if (openQuestionId === questionId) {
+  const toggleAnswer = (question) => {
+    if (openQuestionId === question.questionId) {
       setOpenQuestionId(null);
     } else {
-      fetchQuestionAnswer(questionId);
-      setOpenQuestionId(questionId);
+      if (!question.answer){
+        fetchQuestionAnswer(question.questionId);
+      }
+      setOpenQuestionId(question.questionId);
     }
   };
 
@@ -331,7 +333,7 @@ const QuestionList = () => {
             )}
           </ButtonGroup>
           {question.isAnswered && (
-            <AnswerToggle onClick={() => toggleAnswer(question.questionId)}>
+            <AnswerToggle onClick={() => toggleAnswer(question)}>
               {openQuestionId === question.questionId
                 ? '답변 숨기기'
                 : '답변 보기'}

@@ -30,7 +30,7 @@ const ProUserinfoDetailPage = () => {
         }
       })
         .then(response => {
-          setUserData(response.data); // 사용자 데이터 가져옴
+          setUserData(response?.data); // 사용자 데이터 가져옴
           setIsLoading(false);
         })
         .catch(error => {
@@ -49,7 +49,7 @@ const ProUserinfoDetailPage = () => {
       <Title>계정 정보</Title>
       <UserInfo userData={userData} />
       <Title>계좌 정보</Title>
-      <AccountDetail accountData={userData.account} />
+      <AccountDetail accountData={userData?.data} />
     </PageContainer>
   );
 };

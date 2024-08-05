@@ -130,6 +130,7 @@ const AccountDetail = ({ accountData }) => {
             name="accountNumber"
             value={account.accountNumber}
             onChange={handleAccountChange}
+            placeholder="계좌번호를 입력하세요"
           />
         </FormGroup>
         <FormGroup>
@@ -139,6 +140,7 @@ const AccountDetail = ({ accountData }) => {
             name="receiver"
             value={account.receiver}
             onChange={handleAccountChange}
+            placeholder="예금주를 입력하세요"
           />
         </FormGroup>
         <ButtonGroup>

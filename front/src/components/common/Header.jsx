@@ -225,6 +225,7 @@ const Header = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const nickname = useSelector((state) => state.auth.nickname);
   const userId = useSelector((state) => state.auth.userId);
+  const isPro = useSelector((state) => state.auth.roleId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -273,7 +274,11 @@ const Header = () => {
             <BiBell style={{ fontSize: "20px" }} />
           </IconLink>
           {isAuthenticated ? (
-            <Icon to="/mypage/userinfo">MyPage</Icon>
+            isPro === 1 ? (
+              <Icon to="/mypage/userinfo">MyPage</Icon>
+            ) : (
+              <Icon to="/mypage/prouserinfo">MyPage</Icon>
+            )
           ) : (
             <Icon to="/signup">회원가입</Icon>
           )}
