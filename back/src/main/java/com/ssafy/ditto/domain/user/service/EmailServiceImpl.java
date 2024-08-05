@@ -27,8 +27,8 @@ public class EmailServiceImpl implements EmailService{
         return String.format("%06d", num);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void sendEmail(String email) throws MessagingException, NoSuchAlgorithmException  {
         String code = createCode();
         emailRepository.saveCode(email, code);

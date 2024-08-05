@@ -74,8 +74,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void proSignup(ProSignUpRequest proSignUpRequest) {
         //강사 회원 등록
         User user = User.builder()
@@ -135,8 +135,8 @@ public class UserServiceImpl implements UserService {
         mileageRepository.save(mileage);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public LoginResponse login(UserLoginRequest userLoginRequest) {
         User user;
         try {
@@ -181,8 +181,8 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public LoginResponse kakaoLogin(KakaoUserLoginRequest kakaoUserLoginRequest) throws NoSuchAlgorithmException {
         // 여기까지 왔으면 카카오에서 계정 인증은 이미 받은 상태
         // 이 이메일이 사용 가능한가?

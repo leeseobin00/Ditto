@@ -51,13 +51,12 @@ public class MypageServiceImpl implements MypageService {
     private final MileageRepository mileageRepository;
     private final MileageHistoryRepository mileageHistoryRepository;
     private final LikeClassRepository likeClassRepository;
-    private final ClassRepository classRepository;
     private final LikeUserRepository likeUserRepository;
     private final UserTagRepository userTagRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public MypageResponse getUserMypage(int userId) {
         User user = userRepository.findByUserId(userId);
         List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
@@ -71,8 +70,8 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public AddressResponse getAddress(int userId) {
         User user = userRepository.findByUserId(userId);
         List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
@@ -82,8 +81,8 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public String modifyUser(int userId, MypageRequest mypageRequest) {
         User user = userRepository.findByUserId(userId);
 
@@ -103,8 +102,8 @@ public class MypageServiceImpl implements MypageService {
         return user.getNickname();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void insertAddress(int userId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어온 경우
@@ -130,8 +129,8 @@ public class MypageServiceImpl implements MypageService {
         addressRepository.save(newAddress);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void modifyAddress(int userId, int addressId, AddressRequest addressRequest) {
         User user = userRepository.findByUserId(userId);
         // 기본배송지로 들어오면
@@ -159,14 +158,14 @@ public class MypageServiceImpl implements MypageService {
         addressRepository.save(newAddress);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteAddress(int userId, int addressId) {
         addressRepository.deleteById(addressId);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<PaymentResponse> getPayment(int userId, LocalDateTime dateTime) {
 
         // 입력한 날짜로 결제내역을 보여줌. 없으면 빈 list
@@ -210,8 +209,8 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void patchRefund(int userId, int lectureId) {
         Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
@@ -235,8 +234,8 @@ public class MypageServiceImpl implements MypageService {
         return summaryResponseList;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime) {
         List<QuestionResponse> questionResponseList = new ArrayList<>();
 
@@ -266,8 +265,8 @@ public class MypageServiceImpl implements MypageService {
         return questionResponseList;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewResponse> getReviews(int userId, LocalDateTime dateTime) {
         List<ReviewResponse> reviewResponseList = new ArrayList<>();
 
@@ -302,8 +301,8 @@ public class MypageServiceImpl implements MypageService {
         return reviewResponseList;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<LikeClassResponse> getLikedClasses(int userId, LocalDateTime dateTime) {
         List<LikeClassResponse> likeClassResponseList = new ArrayList<>();
 
@@ -343,14 +342,14 @@ public class MypageServiceImpl implements MypageService {
         return likeClassResponseList;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteLikedClass(int userId, int classId) {
         likeClassRepository.removeLike(userId, classId);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<LikeUserResponse> getLikedUsers(int userId, LocalDateTime dateTime) {
         List<LikeUserResponse> likeUserResponseList = new ArrayList<>();
         User giverUser = userRepository.findByUserId(userId);
@@ -381,15 +380,15 @@ public class MypageServiceImpl implements MypageService {
         return likeUserResponseList;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteLikedUser(int likeGiverId, int likeGetterId) {
         likeUserRepository.deleteByLikeGiverAndLikeGetter(userRepository.findByUserId(likeGiverId), userRepository.findByUserId(likeGetterId));
     }
 
     // 프로 마이페이지 시작 부분
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public ProMypageResponse getProMypage(int userId) {
         User user = userRepository.findByUserId(userId);
         Account account = accountRepository.findByUserId(user);
@@ -405,8 +404,8 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void modifyAccount(int userId, AccountRequest accountRequest) {
         Account account = accountRepository.findByUserId(userRepository.findByUserId(userId));
 
@@ -415,8 +414,8 @@ public class MypageServiceImpl implements MypageService {
         account.changeReceiver(accountRequest.getReceiver());
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public MileageResponse getMileage(int userId) {
         User user = userRepository.findByUserId(userId);
         Account account = accountRepository.findByUserId(user);
@@ -429,8 +428,8 @@ public class MypageServiceImpl implements MypageService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<MilageHistoryResponse> getMileageHistory(int userId, LocalDateTime dateTime) {
         List<MilageHistoryResponse> milageHistoryResponseList = new ArrayList<>();
 
@@ -466,8 +465,8 @@ public class MypageServiceImpl implements MypageService {
         return milageHistoryResponseList;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public boolean userWithdraw(int userId, Integer requestMoney) {
         User user = userRepository.findByUserId(userId);
         Mileage mileage = mileageRepository.findByUserId(user);
@@ -493,8 +492,8 @@ public class MypageServiceImpl implements MypageService {
         return true;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<QuestionResponse> getProQuestion(int userId, LocalDateTime dateTime) {
         List<QuestionResponse> questionResponseList = new ArrayList<>();
 
@@ -526,8 +525,8 @@ public class MypageServiceImpl implements MypageService {
 
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public AnswerResponse getAnswer(int userId, int questionId) {
         Answer answer = answerRepository.findByQuestionId(questionRepository.findByQuestionId(questionId).getQuestionId());
 
@@ -554,8 +553,8 @@ public class MypageServiceImpl implements MypageService {
 
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void insertAnswer(int userId, int questionId, String ans) {
         Question question = questionRepository.findByQuestionId(questionId);
 
@@ -571,16 +570,16 @@ public class MypageServiceImpl implements MypageService {
         question.changeIsAnswered(true);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void modifyAnswer(int answerId, String ans) {
         Answer answer = answerRepository.findByAnswerId(answerId);
 
         answer.changeAnswer(ans);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void softDeleteAnswer(int answerId) {
         Answer answer = answerRepository.findByAnswerId(answerId);
 
