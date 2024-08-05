@@ -155,7 +155,7 @@ const MileagePage = () => {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
-        const { mileage, accountNumber, bank, receiver } = response.data;
+        const { mileage, accountNumber, bank, receiver } = response?.data?.data;
         setBalance(mileage);
         setAccountDetails({ accountNumber, bank, receiver });
       } catch (error) {
@@ -170,7 +170,7 @@ const MileagePage = () => {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         });
-        setHistories(response.data.histories);
+        setHistories(response?.data?.data);
       } catch (error) {
         console.error('Error fetching mileage history:', error);
       }
@@ -184,7 +184,7 @@ const MileagePage = () => {
     const lastDate = histories[histories.length - 1]?.time;
     if (lastDate) {
       try {
-        const response = await axios.get(`${baseURL}/mypage/mileage/history-more?final-date=${lastDate}`, {
+        const response = await axios.get(`${baseURL}/mypage/${userId}/mileage/history-more?final-date=${lastDate}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },

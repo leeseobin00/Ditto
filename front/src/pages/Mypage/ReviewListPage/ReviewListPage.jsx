@@ -61,6 +61,7 @@ const ReviewListPage = () => {
       <Title>작성한 리뷰</Title>
       <ReviewList
         reviews={reviews}
+        setReviews={setReviews}
         fetchMoreReviews={fetchMoreReviews}
       />
     </PageContainer>
