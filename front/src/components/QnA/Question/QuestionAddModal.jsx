@@ -24,7 +24,6 @@ const ContentContainer = styled.div`
 
 const TitleInput = styled.input`
   font-family: inherit;
-  font-size: inherit;
   width: 100%;
   height: 35px;
   padding: 0 10px;
@@ -42,7 +41,6 @@ const TitleInput = styled.input`
 
 const ContentInput = styled.textarea`
   font-family: inherit;
-  font-size: inherit;
   width: 100%;
   height: 100px;
   padding: 10px;
@@ -59,18 +57,18 @@ const ContentInput = styled.textarea`
   }
 `;
 
-function QuestionAddModal({ show, classId, userId, onClose }) {
+function QuestionAddModal({ show, classId, userId, onClose, onSubmit }) {
   if (!show) {
     return null;
   }
 
-  const [title, setTitle] = useState(null);
-  const [content, setContent] = useState(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const { sendRequest } = useAxios();
 
   const handleAddQuestion = async () => {
-    if (title == null || content == null) {
+    if (title.trim() === "" || content.trim() === "") {
       alert("제목과 내용을 모두 입력해주세요.");
       return;
     }
@@ -83,6 +81,7 @@ function QuestionAddModal({ show, classId, userId, onClose }) {
 
     try {
       await sendRequest(`/classes/${classId}/questions`, newQuestion, "post");
+      onSubmit();
       onClose();
     } catch (error) {
       console.error(error);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
 import ClassKit from "../../components/Class/ClasDetail/ClassKit";
 import ClassStepList from "../../components/Class/ClasDetail/ClassStepList";
 import ReviewList from "../../components/Review/ReviewList";
-import QnAList from "../../components/QnA/QnAList";
+import ClassQnAList from "../../components/QnA/QnAList/ClassQnAList";
 import QuestionAddModal from "../../components/QnA/Question/QuestionAddModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
@@ -80,6 +80,7 @@ function ClassDetailPage() {
   const [lectureList, setLectureList] = useState([]);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [isInstructor, setIsInstructor] = useState(false);
+  const qnaListRef = useRef(null);
 
   const handleQuestionModal = () => {
     setShowQuestionModal(!showQuestionModal);
@@ -125,9 +126,10 @@ function ClassDetailPage() {
   useEffect(() => {
     if (classInfo?.user?.userId == userId) {
       setIsInstructor(true);
-      console.log("진입");
     }
   }, [classInfo]);
+
+  const handleQuestionSubmit = () => {};
 
   return (
     <ClassDetailPageContainer>
@@ -164,15 +166,18 @@ function ClassDetailPage() {
                     <Button label={"문의하기"} onClick={handleQuestionModal} />
                   )}
                 </TitleLine>
-                <QnAList
+                <ClassQnAList
                   classId={classInfo?.classId}
+                  userId={userId}
                   isInstructor={isInstructor}
+                  onUpdate={handleQuestionSubmit}
                 />
                 <QuestionAddModal
                   show={showQuestionModal}
                   classId={classInfo?.classId}
                   userId={userId}
                   onClose={handleQuestionModal}
+                  onSubmit={handleQuestionSubmit} // onSubmit 콜백 수정
                 />
               </ContentContainer>
             </ClassIntroductionContainer>

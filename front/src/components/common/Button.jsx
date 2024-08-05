@@ -43,8 +43,9 @@ const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
       return css`
-        padding: 6px 8px;
+        padding: 5px 10px;
         font-size: 12px;
+        font-weight: 500;
       `;
     }
 
@@ -77,11 +78,11 @@ const ButtonBase = styled.button`
   align-items: center;
   vertical-align: middle;
   min-width: 64px;
+
   border: none;
   border-radius: 10px;
   cursor: pointer;
 
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

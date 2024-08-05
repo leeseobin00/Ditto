@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import styled from "styled-components";
 
-import useAxios from "../../hooks/useAxios";
+import useAxios from "../../../hooks/useAxios";
 import QnAItem from "./QnAItem";
-import MoreButton from "../common/MoreButton";
+import MoreButton from "../../common/MoreButton";
 
 const QnAListContainer = styled.div`
   display: flex;
@@ -19,7 +19,7 @@ const QnANull = styled.div`
   padding: 20px;
 `;
 
-function QnAList({ classId, isInstructor }) {
+function ClassQnAList({ classId, userId, isInstructor = false, onUpdate }) {
   const { sendRequest: getQuestionList } = useAxios();
   const [questionList, setQuestionList] = useState([]);
   const [curPage, setCurPage] = useState(1);
@@ -28,7 +28,7 @@ function QnAList({ classId, isInstructor }) {
   const loadInitialQuestions = async () => {
     try {
       const response = await getQuestionList(
-        `/classes/${classId}/questions?page=${curPage}&size=3`,
+        `/classes/${classId}/questions?page=1&size=3`,
         null,
         "get"
       );
@@ -58,8 +58,8 @@ function QnAList({ classId, isInstructor }) {
   };
 
   useEffect(() => {
-    loadInitialQuestions(); // 컴포넌트가 마운트될 때 초기 데이터를 로드
-  }, [classId]); // classId가 변경될 때마다 재호출
+    loadInitialQuestions();
+  }, [classId, onUpdate]);
 
   const handleMoreButtonClick = () => {
     loadMoreQuestions(curPage);
@@ -67,9 +67,14 @@ function QnAList({ classId, isInstructor }) {
 
   return (
     <QnAListContainer>
-      {questionList.length == 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
+      {questionList.length === 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
       {questionList.map((question, index) => (
-        <QnAItem key={index} question={question} isInstructor={isInstructor} />
+        <QnAItem
+          key={index}
+          question={question}
+          isInstructor={isInstructor}
+          userId={userId}
+        />
       ))}
       {curPage <= totalPageCount && (
         <MoreButton onClick={handleMoreButtonClick} />
@@ -78,4 +83,4 @@ function QnAList({ classId, isInstructor }) {
   );
 }
 
-export default QnAList;
+export default ClassQnAList;

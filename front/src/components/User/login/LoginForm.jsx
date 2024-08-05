@@ -55,6 +55,7 @@ const FormInput = styled.input`
   font-size: 16px;
   &:focus {
     border-color: var(--PRIMARY);
+    border-width: 2px;
     outline: none;
   }
 `;

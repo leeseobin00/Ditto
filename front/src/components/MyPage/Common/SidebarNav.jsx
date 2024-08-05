@@ -1,7 +1,5 @@
-import { NavLink } from 'react-router-dom';
-import { styled } from 'styled-components';
-import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { NavLink } from "react-router-dom";
+import { styled } from "styled-components";
 
 const Sidebar = styled.div`
   min-width: 240px;
@@ -28,25 +26,16 @@ const NavItem = styled(NavLink)`
   }
 `;
 
-const SidebarNav = () => {
-  const myRoleId = useSelector((state)=>state.auth.roleId);
-  const [roleId, setRoleId] = useState(myRoleId);
-
-  useEffect(()=>{
-    if(myRoleId){
-      setRoleId(myRoleId);
-    }
-  },[myRoleId]);
-  
+const SidebarNav = ({ roleId }) => {
   return (
     <Sidebar>
       {roleId == "1" && (
         <>
-          <NavItem to="/mypage/userinfo">계정 정보</NavItem>
-          <NavItem to="/mypage/payments">결제 내역</NavItem>
-          <NavItem to="/mypage/questions">작성한 문의</NavItem>
-          <NavItem to="/mypage/reviews">작성한 리뷰</NavItem>
-          <NavItem to="/mypage/liked">관심 목록</NavItem>
+          <NavItem to="userinfo">계정 정보</NavItem>
+          <NavItem to="payments">결제 내역</NavItem>
+          <NavItem to="questions">작성한 문의</NavItem>
+          <NavItem to="reviews">작성한 리뷰</NavItem>
+          <NavItem to="liked">관심 목록</NavItem>
         </>
       )}
       {roleId == "2" && (

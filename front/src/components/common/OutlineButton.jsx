@@ -8,7 +8,6 @@ const colorStyle = css`
   ${({ color = "SECONDARY" }) => {
     if (color === "default") {
       return css`
-        background-color: ${getColor("LIGHT")};
         color: ${getColor("TEXT_PRIMARY")};
         border: 1px solid ${getColor("BORDER_COLOR")};
 
@@ -24,7 +23,6 @@ const colorStyle = css`
 
     if (color === "ACCENT1") {
       return css`
-        background-color: ${getColor("LIGHT")};
         color: ${getColor(`${color}`)};
         border: 1px solid ${getColor(`${color}`)};
 
@@ -41,7 +39,6 @@ const colorStyle = css`
     // 기본적으로 'md'일 때의 스타일 (default)
     return css`
       ${({ color = "SECONDARY" }) => css`
-        background-color: ${getColor("light")};
         color: ${getColor(`${color}`)};
         border: 1px solid ${getColor(`${color}`)};
 
@@ -61,7 +58,7 @@ const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
       return css`
-        padding: 6px 8px;
+        padding: 6px 10px;
         font-size: 12px;
         font-weight: 500;
       `;
@@ -99,6 +96,7 @@ const ButtonBase = styled.button`
   border-radius: 25px;
   cursor: pointer;
   font-weight: 600;
+  background-color: var(--LIGHT);
 
   line-height: 1.2;
   white-space: nowrap;

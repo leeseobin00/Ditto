@@ -93,6 +93,7 @@ const PriceContainer = styled.div`
   justify-content: space-between;
   padding-bottom: 20px;
 `;
+
 const TitleLine = styled.div`
   display: flex;
   flex-direction: row;
@@ -148,7 +149,7 @@ const Input = styled.input`
   border-radius: 20px;
   width: 370px;
   margin: 3px 0;
-  height: 25px;
+  height: 30px;
   border-style: solid;
   border-width: 1px;
   border-color: var(--BORDER_COLOR);
@@ -182,8 +183,19 @@ const PostNumLine = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   width: 370px;
 `;
+
+const loadDaumPostcode = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src =
+      "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.onload = () => resolve();
+    document.head.appendChild(script);
+  });
+};
 
 function OrderPage() {
   const userId = useSelector((state) => state.auth.userId);
@@ -306,7 +318,8 @@ function OrderPage() {
     });
   };
 
-  const handleSearchAddress = () => {
+  const handleSearchAddress = async () => {
+    await loadDaumPostcode();
     new window.daum.Postcode({
       oncomplete: handleComplete,
     }).open();

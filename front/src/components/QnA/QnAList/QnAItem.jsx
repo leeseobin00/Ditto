@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { styled } from "styled-components";
+import { useState, useEffect, useCallback } from "react";
+import styled from "styled-components";
 
-import useAxios from "../../hooks/useAxios";
-import OutlineButton from "../common/OutlineButton";
-import AnswerItem from "./Answer/AnswerItem";
-import Downward from "../../assets/icon/class/downward-arrow.png";
-import Upward from "../../assets/icon/class/upward-arrow.png";
+import useAxios from "../../../hooks/useAxios";
+import OutlineButton from "../../common/OutlineButton";
+import AnswerItem from "../Answer/AnswerItem";
+import Downward from "../../../assets/icon/class/downward-arrow.png";
+import Upward from "../../../assets/icon/class/upward-arrow.png";
+import AnswerModal from "../Answer/AnswerModal";
 
 const QnAItemContainer = styled.div`
   display: flex;
@@ -75,32 +76,40 @@ const AnswerButtonText = styled.div`
   color: var(--SECONDARY);
 `;
 
-function QnAItem({ question, isInstructor }) {
+function QnAItem({ question, userId, isInstructor = false }) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [answer, setAnswer] = useState(null);
+  const [showAnswerModal, setShowAnswerModal] = useState(false);
   const { sendRequest: getAnswer } = useAxios();
 
-  useEffect(() => {
-    console.log(isInstructor);
-    const fetchAnswer = async () => {
-      if (showAnswer && !answer) {
-        try {
-          const AnswerResponse = await getAnswer(
-            `/questions/${question.questionId}/answers`,
-            null,
-            "get"
-          );
-          setAnswer(AnswerResponse.data);
-        } catch (error) {
-          console.log(error);
-        }
+  const fetchAnswer = useCallback(async () => {
+    if (!answer) {
+      try {
+        const AnswerResponse = await getAnswer(
+          `/questions/${question.questionId}/answers`,
+          null,
+          "get"
+        );
+        setAnswer(AnswerResponse.data);
+      } catch (error) {
+        console.log(error);
       }
-    };
-    fetchAnswer();
-  }, [showAnswer, answer, getAnswer, question.questionId]);
+    }
+  }, [answer, getAnswer, question.questionId]);
 
-  const handleShowAnswer = () => {
+  const handleShowAnswer = async () => {
+    if (!showAnswer) {
+      await fetchAnswer();
+    }
     setShowAnswer(!showAnswer);
+  };
+
+  const handleShowAnswerModal = () => {
+    setShowAnswerModal(!showAnswerModal);
+  };
+
+  const handleAnswerSubmit = () => {
+    question.isAnswered = true;
   };
 
   return (
@@ -110,10 +119,17 @@ function QnAItem({ question, isInstructor }) {
         {question.isAnswered ? (
           <Answered>답변 완료</Answered>
         ) : isInstructor ? (
-          <OutlineButton label={"답변 작성"} />
+          <OutlineButton label={"답변 작성"} onClick={handleShowAnswerModal} />
         ) : (
           <NotAnswered>미답변</NotAnswered>
         )}
+        <AnswerModal
+          show={showAnswerModal}
+          onClose={handleShowAnswerModal}
+          question={question}
+          userId={userId}
+          onSubmit={handleAnswerSubmit}
+        />
       </DetailLine>
       <DetailLine style={{ margin: "20px 0" }}>{question.content}</DetailLine>
       <DetailLine>
@@ -128,7 +144,12 @@ function QnAItem({ question, isInstructor }) {
               {showAnswer ? "답변 숨기기" : "답변 보기"}
             </AnswerButtonText>
           </AnswerButton>
-          <AnswerItem show={showAnswer} answer={answer} />
+          <AnswerItem
+            show={showAnswer}
+            answer={answer}
+            isInstructor={isInstructor}
+            question={question}
+          />
         </>
       )}
     </QnAItemContainer>
