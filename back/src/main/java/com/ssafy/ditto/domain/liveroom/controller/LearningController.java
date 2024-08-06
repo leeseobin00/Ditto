@@ -18,9 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/learning")
 public class LearningController {
-    private final LiveRoomService liveRoomService;
     private final LearningService learningService;
-    private final LectureService lectureService;
 
     @GetMapping("/student/{userId}")
     public ResponseDto<LearningPageResponse> getStudentLearning(@PathVariable int userId,
@@ -37,5 +35,4 @@ public class LearningController {
         LearningPageResponse response = learningService.getTeacherLearning(userId, pageable);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), response);
     }
-
 }
