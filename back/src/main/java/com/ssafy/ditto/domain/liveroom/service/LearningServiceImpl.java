@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ssafy.ditto.global.error.ErrorCode.*;
@@ -90,5 +91,37 @@ public class LearningServiceImpl implements LearningService {
                 learningPage.getNumber()+1,
                 learningPage.getTotalPages()
         );
+    }
+
+    @Override
+    @Transactional
+    public void addStudent(Integer userId, Integer lectureId) {
+        User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
+        DClass dClass = lecture.getClassId();
+        User teacher = dClass.getUserId();
+
+        Learning learning = Learning.builder()
+                .dClass(dClass)
+                .lecture(lecture)
+                .student(student)
+                .teacher(teacher)
+                .build();
+
+        learningRepository.save(learning);
+    }
+
+    @Override
+    public void deleteStudent(Integer userId, Integer lectureId) {
+        User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
+
+        Optional<Learning> learningOptional = learningRepository.findByStudentAndLecture(student,lecture);
+        if(learningOptional.isPresent()) {
+            Learning learning = learningOptional.get();
+            learningRepository.delete(learning);
+        }
     }
 }

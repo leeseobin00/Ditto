@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LearningRepository extends JpaRepository<Learning, Integer>, JpaSpecificationExecutor<Learning> {
     @Query("SELECT COUNT(l) FROM Learning l WHERE l.lecture.lectureId = :lectureId")
@@ -23,4 +24,6 @@ public interface LearningRepository extends JpaRepository<Learning, Integer>, Jp
     Page<Learning> findByStudent(User student, Pageable pageable);
 
     Page<Learning> findByTeacher(User teacher, Pageable pageable);
+
+    Optional<Learning> findByStudentAndLecture(User student, Lecture lecture);
 }

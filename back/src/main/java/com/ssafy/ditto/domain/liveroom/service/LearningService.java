@@ -9,4 +9,7 @@ public interface LearningService {
 
     LearningPageResponse getStudentLearning(Integer userId, Pageable pageable);
     LearningPageResponse getTeacherLearning(Integer userId, Pageable pageable);
+
+    void addStudent(Integer userId, Integer lectureId);
+    void deleteStudent(Integer userId, Integer lectureId);
 }
