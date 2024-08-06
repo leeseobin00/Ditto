@@ -34,6 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Value("${TOSS_SECRET_KEY}")
     private String TOSS_SECRET_KEY;
+
     private final PaymentRepository paymentRepository;
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
@@ -41,6 +42,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String approvePayment(PaymentApprovalRequest approvalRequest) {
+        User user = userRepository.findById(approvalRequest.getUserId())
+                .orElseThrow(UserNotFoundException::new);
+
+        Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
+
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -69,12 +75,6 @@ public class PaymentServiceImpl implements PaymentService {
                 OffsetDateTime approvedAtOffsetDateTime = OffsetDateTime.parse(approvedAtStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
                 approvedAt = approvedAtOffsetDateTime.toLocalDateTime();
             }
-
-            // 사용자 정보 설정
-            User user = userRepository.findById(approvalRequest.getUserId())
-                    .orElseThrow(UserNotFoundException::new);
-
-            Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
 
             Payment payment = Payment.builder()
                     .orderName(lecture.getClassName())
