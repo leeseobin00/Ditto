@@ -15,12 +15,11 @@ import ProfileSearchPage from "../pages/Profile/ProfileSearchPage";
 import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
 import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
-import MyQuestionsPage from "../pages/Mypage/QuestionPage/MyQuestionsPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
 import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";
-import ProQuestionPage from "../pages/Mypage/QuestionPage/ProQuestionPage";
+import QuestionPage from "../pages/Mypage/QuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 import OrderPage from "../pages/Order/OrderPage";
 import VideoPage from "../pages/Video/VideoPage";
@@ -42,13 +41,12 @@ const AppRoutes = () => {
       <Route path="/mypage/*" element={<MyPage />}>
         {/* Nested Routes */}
         <Route path="userinfo" element={<UserInfoDetail />} />
-        <Route path="payments" element={<PaymentPage />} />
-        <Route path="questions" element={<MyQuestionsPage />} />
+        <Route path="payment" element={<PaymentPage />} />
+        <Route path="question" element={<QuestionPage />} />
         <Route path="reviews" element={<ReviewListPage />} />
         <Route path="liked" element={<LikedPage />} />
         <Route path="prouserinfo" element={<ProAccountPage />} />
         <Route path="mileage" element={<MileagePage />} />
-        <Route path="proquestion" element={<ProQuestionPage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
       <Route path="/board/all" element={<BoardListPage />} />

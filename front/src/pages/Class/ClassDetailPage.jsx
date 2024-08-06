@@ -9,7 +9,7 @@ import ClassKit from "../../components/Class/ClasDetail/ClassKit";
 import ClassStepList from "../../components/Class/ClasDetail/ClassStepList";
 import ReviewList from "../../components/Review/ReviewList";
 import ClassQnAList from "../../components/QnA/QnAList/ClassQnAList";
-import QuestionAddModal from "../../components/QnA/Question/QuestionAddModal";
+import QuestionModal from "../../components/QnA/Question/QuestionModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
 import Button from "../../components/common/Button";
@@ -172,7 +172,7 @@ function ClassDetailPage() {
                   isInstructor={isInstructor}
                   onUpdate={handleQuestionSubmit}
                 />
-                <QuestionAddModal
+                <QuestionModal
                   show={showQuestionModal}
                   classId={classInfo?.classId}
                   userId={userId}

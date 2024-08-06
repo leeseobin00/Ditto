@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import UserInfo from '../../../components/MyPage/UserInfo/UserInfo';
-import axiosIntercepter from '../../../features/axiosIntercepter';
-import AddressList from '../../../components/MyPage/UserInfo/AddressList';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import UserInfo from "../../../components/MyPage/UserInfo/UserInfo";
+import axiosIntercepter from "../../../features/axiosIntercepter";
+import AddressList from "../../../components/MyPage/UserInfo/AddressList";
+import { useSelector } from "react-redux";
 
 const Title = styled.h2`
   color: var(--PRIMARY);
@@ -23,14 +23,15 @@ const UserInfoDetail = () => {
 
   useEffect(() => {
     if (userId) {
-      axiosIntercepter.get(`/mypage/${userId}/normal`)
-        .then(response => {
+      axiosIntercepter
+        .get(`/mypage/${userId}/normal`)
+        .then((response) => {
           setUserData(response.data); // fileURL 데이터 가져옴
           setAddresses(response.data.addresses); // addresses 리스트 가져옴
           setIsLoading(false);
         })
-        .catch(error => {
-          console.error('Error fetching data', error);
+        .catch((error) => {
+          console.error("Error fetching data", error);
           setIsLoading(false);
         });
     }

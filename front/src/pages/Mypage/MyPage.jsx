@@ -15,14 +15,13 @@ const Content = styled.div`
 `;
 
 const MyPage = () => {
-  const userId = useSelector((state) => state.auth.userId);
   const roleId = useSelector((state) => state.auth.roleId);
 
   return (
     <Container>
       <SidebarNav roleId={roleId} />
       <Content>
-        <Outlet userId={userId} />
+        <Outlet />
       </Content>
     </Container>
   );

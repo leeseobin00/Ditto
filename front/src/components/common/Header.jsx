@@ -274,7 +274,7 @@ const Header = () => {
             <BiBell style={{ fontSize: "20px" }} />
           </IconLink>
           {isAuthenticated ? (
-            isPro === 1 ? (
+            isPro == 1 ? (
               <Icon to="/mypage/userinfo">MyPage</Icon>
             ) : (
               <Icon to="/mypage/prouserinfo">MyPage</Icon>

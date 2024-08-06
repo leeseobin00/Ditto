@@ -7,6 +7,7 @@ import AnswerItem from "../Answer/AnswerItem";
 import Downward from "../../../assets/icon/class/downward-arrow.png";
 import Upward from "../../../assets/icon/class/upward-arrow.png";
 import AnswerModal from "../Answer/AnswerModal";
+import QuestionModal from "../Question/QuestionModal";
 
 const QnAItemContainer = styled.div`
   display: flex;
@@ -53,6 +54,13 @@ const SmallSecondary = styled(SmallFont)`
   color: var(--TEXT_SECONDARY);
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 140px;
+  justify-content: space-between;
+`;
+
 const AnswerButton = styled.div`
   display: flex;
   flex-direction: row;
@@ -76,11 +84,41 @@ const AnswerButtonText = styled.div`
   color: var(--SECONDARY);
 `;
 
-function QnAItem({ question, userId, isInstructor = false }) {
+function QnAItem({
+  question,
+  userId,
+  isInstructor = false,
+  isMyQuestion = false,
+  onUpdate,
+}) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [answer, setAnswer] = useState(null);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
-  const { sendRequest: getAnswer } = useAxios();
+  const { sendRequest: getAnswer, sendRequest: deleteQuestion } = useAxios();
+
+  const handleDelete = async (questionId) => {
+    try {
+      await deleteQuestion(
+        `/classes/${question?.classId}/questions/${questionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        },
+        "delete"
+      );
+      onUpdate();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 질문 수정 조작
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
+
+  const handleQuestionModal = () => {
+    setShowQuestionModal(!showQuestionModal);
+  };
 
   const fetchAnswer = useCallback(async () => {
     if (!answer) {
@@ -134,8 +172,37 @@ function QnAItem({ question, userId, isInstructor = false }) {
       <DetailLine style={{ margin: "20px 0" }}>{question.content}</DetailLine>
       <DetailLine>
         <SmallSecondary>{question.createdDate.substring(0, 10)}</SmallSecondary>
-        <SmallSecondary>{question.userNickname}</SmallSecondary>
+        {!isMyQuestion ? (
+          <SmallSecondary>{question.userNickname}</SmallSecondary>
+        ) : question.isAnswered ? (
+          <SmallSecondary>{question.userNickname}</SmallSecondary>
+        ) : (
+          <ButtonContainer>
+            <OutlineButton
+              label={"수정"}
+              size={"sm"}
+              onClick={handleQuestionModal}
+            />
+            <OutlineButton
+              label={"삭제"}
+              size={"sm"}
+              color={"ACCENT1"}
+              onClick={() => handleDelete(question.questionId)}
+            />
+          </ButtonContainer>
+        )}
       </DetailLine>
+      {showQuestionModal && (
+        <QuestionModal
+          show={showQuestionModal}
+          isEdit={true}
+          question={question}
+          classId={question?.classId}
+          userId={userId}
+          onClose={handleQuestionModal}
+          onSubmit={onUpdate}
+        />
+      )}
       {question.isAnswered && (
         <>
           <AnswerButton onClick={handleShowAnswer}>
