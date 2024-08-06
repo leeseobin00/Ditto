@@ -1,27 +1,34 @@
 package com.ssafy.ditto.domain.liveroom.service;
 
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.liveroom.domain.Learning;
+import com.ssafy.ditto.domain.liveroom.dto.LearningPageResponse;
+import com.ssafy.ditto.domain.liveroom.dto.LearningResponse;
 import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.ssafy.ditto.global.error.ErrorCode.LECTURE_NOT_FOUND;
-import static com.ssafy.ditto.global.error.ErrorCode.USER_NOT_FOUND;
+import static com.ssafy.ditto.global.error.ErrorCode.*;
 
 @Component
 @Service
 @RequiredArgsConstructor
 public class LearningServiceImpl implements LearningService {
     private final UserRepository userRepository;
+    private final ClassRepository classRepository;
     private final LectureRepository lectureRepository;
     private final LearningRepository learningRepository;
 
@@ -43,5 +50,45 @@ public class LearningServiceImpl implements LearningService {
             learning.setIsFinished(true);
             learningRepository.save(learning);
         }
+    }
+
+    @Override
+    @Transactional
+    public LearningPageResponse getStudentLearning(Integer userId, Pageable pageable) {
+        User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        Page<Learning> learningPage = learningRepository.findByStudent(student,pageable);
+
+        return LearningPageResponse.of(
+                learningPage.stream().map(learning -> {
+                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
+                            .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
+                    Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
+                            .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
+                    return LearningResponse.of(dClass,lecture,learning.getIsFinished());
+                }).collect(Collectors.toList()),
+                learningPage.getNumber()+1,
+                learningPage.getTotalPages()
+        );
+    }
+
+    @Override
+    @Transactional
+    public LearningPageResponse getTeacherLearning(Integer userId, Pageable pageable) {
+        User teacher = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+        Page<Learning> learningPage = learningRepository.findByTeacher(teacher,pageable);
+
+        return LearningPageResponse.of(
+                learningPage.stream().map(learning -> {
+                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
+                            .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
+                    Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
+                            .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
+                    return LearningResponse.of(dClass,lecture,learning.getIsFinished());
+                }).collect(Collectors.toList()),
+                learningPage.getNumber()+1,
+                learningPage.getTotalPages()
+        );
     }
 }
