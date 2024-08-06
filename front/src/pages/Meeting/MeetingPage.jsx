@@ -274,7 +274,7 @@ function MeetingPage() {
 
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
-    return `calc(${100 / Math.min(visibleParticipants.length + 1, maxVisible)}% - 16px)`;
+    return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
   };
 
   // Functions to navigate between subscriber groups
@@ -283,7 +283,7 @@ function MeetingPage() {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((visibleParticipants.length + 1) / maxVisible) - 1));
+    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
 
   // Include publisher in pagination logic
@@ -423,12 +423,12 @@ function MeetingPage() {
             );
           })}
           </ParticipantGrid>
-          {(visibleParticipants.length + 1) > maxVisible && (
+          {(subscribers.length + 1) > maxVisible && (
             <>
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
-              {(currentIndex!==visibleParticipants.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (visibleParticipants.length + 1)}>
+              {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
                 &gt;
               </RightScrollButton>}
             </>
