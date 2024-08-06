@@ -182,7 +182,7 @@ const LoginForm = () => {
           domain: domain,
         })
       ); // Redux 상태 업데이트
-      alert("로그인 성공!");
+      // alert("로그인 성공!");
       navigate("/"); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.log(error);
