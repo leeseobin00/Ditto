@@ -54,7 +54,7 @@ public class LiveRoomController {
         return ResponseDto.of(403, "접근할 수 없는 페이지입니다.");
     }
 
-    @PutMapping("/enter/{lectureId}")
+    @PutMapping("/{lectureId}/enter")
     public ResponseDto<Void> enterLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
         boolean isValidUser = learningService.isValidUser(userId,lectureId);
         if(isValidUser){
@@ -71,7 +71,7 @@ public class LiveRoomController {
         return ResponseDto.of(403, "접근할 수 없는 페이지입니다.");
     }
 
-    @PutMapping("/leave/{lectureId}")
+    @PutMapping("/{lectureId}/leave")
     public ResponseDto<Void> leaveLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
         // 클래스 주최하는 강사인지 확인
         boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
