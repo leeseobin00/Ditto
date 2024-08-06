@@ -189,6 +189,7 @@ function MeetingPage() {
     setSession(newSession);
 
     newSession.on('streamCreated', (event) => {
+      console.log(event.stream.connection);
       const connectionData = event.stream.connection;
       const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
       if(connectionData.connectionId == newSession.connection.connectionId) return;
