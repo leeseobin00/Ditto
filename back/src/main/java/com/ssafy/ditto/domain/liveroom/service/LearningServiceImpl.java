@@ -107,6 +107,7 @@ public class LearningServiceImpl implements LearningService {
                 .lecture(lecture)
                 .student(student)
                 .teacher(teacher)
+                .isFinished(false)
                 .build();
 
         learningRepository.save(learning);
