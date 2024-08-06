@@ -2,12 +2,14 @@ package com.ssafy.ditto.domain.liveroom.service;
 
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.liveroom.domain.Learning;
+import com.ssafy.ditto.domain.liveroom.dto.LearningPageResponse;
 import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +45,15 @@ public class LearningServiceImpl implements LearningService {
             learning.setIsFinished(true);
             learningRepository.save(learning);
         }
+    }
+
+    @Override
+    public LearningPageResponse getStudentLearning(Integer userId, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public LearningPageResponse getTeacherLearning(Integer userId, Pageable pageable) {
+        return null;
     }
 }
