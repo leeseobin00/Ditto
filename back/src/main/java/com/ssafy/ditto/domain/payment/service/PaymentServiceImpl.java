@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
+import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.payment.domain.Payment;
 import com.ssafy.ditto.domain.payment.dto.PayType;
 import com.ssafy.ditto.domain.payment.dto.PaymentApprovalRequest;
 import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
 import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final LectureRepository lectureRepository;
     private final UserRepository userRepository;
+    private final LearningService learningService;
 
     @Override
     public String approvePayment(PaymentApprovalRequest approvalRequest) {
@@ -60,7 +63,6 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             JsonNode responseBody = objectMapper.readTree(response.getBody());
 
-            // 데이터베이스에 저장
             LocalDateTime approvedAt = LocalDateTime.now();
             String approvedAtStr = responseBody.path("approvedAt").asText("");
             if (!approvedAtStr.isEmpty()) {
@@ -70,7 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             // 사용자 정보 설정
             User user = userRepository.findById(approvalRequest.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(UserNotFoundException::new);
 
             Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
 
@@ -82,12 +84,14 @@ public class PaymentServiceImpl implements PaymentService {
                     .orderName(responseBody.path("orderName").asText(""))
                     .payTime(approvedAt)
                     .paySuccessYN(true)
-                    .payType(PayType.CARD) // 기본 값으로 카드 사용 (필요 시 수정)
+                    .payType(PayType.CARD)
                     .userId(user)
                     .lectureId(lecture)
                     .build();
 
             paymentRepository.save(payment);
+
+            learningService.addStudent(user.getUserId(), lecture.getLectureId());
 
             return "Payment approved and saved successfully.";
         } catch (Exception e) {
