@@ -69,6 +69,7 @@ const RightScrollButton = styled(ScrollButton)`
 export const MeetingContext = createContext(); // Context를 export하여 다른 파일에서 사용할 수 있도록 함
 
 function MeetingPage() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const userId = useSelector((state)=>state.auth.userId);
   const username = useSelector((state) => state.auth.nickname);
   const roleId = useSelector((state)=>state.auth.roleId);
@@ -138,7 +139,7 @@ function MeetingPage() {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The sessionId
-    const response = await axios.post(`http://localhost:8080/sessions/${lectureId}?userId=${userId}`, null);
+    const response = await axios.post(`${baseURL}/sessions/${lectureId}?userId=${userId}`, null);
     if(response?.data?.code==200){
       joinSession();
     }else{
@@ -158,7 +159,7 @@ function MeetingPage() {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The token
-    const response = await axios.post(`http://localhost:8080/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
+    const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
     if(response?.data?.code==403){
       alert(response?.data?.message);
       navigate("/video");
@@ -252,11 +253,11 @@ function MeetingPage() {
     if (session) {
       session.disconnect();
       if(roleId==1){
-        // 수강새이면 그냥 토큰 제거
-        const res = await axios.post(`http://localhost:8080/session/${lectureId}/remove-token?userId=${userId}`, null);
+        // 수강생이면 그냥 토큰 제거
+        const res = await axios.post(`${baseURL}/session/${lectureId}/remove-token?userId=${userId}`, null);
       }else if(roleId==2){
         // 강사이면 토큰 제거 + 라이브 세션 제거
-        const res = await axios.delete(`http://localhost:8080/sessions/${lectureId}?userId=${userId}`);
+        const res = await axios.delete(`${baseURL}/sessions/${lectureId}?userId=${userId}`);
       }
     }
 
@@ -308,7 +309,7 @@ function MeetingPage() {
     const sendText = transcript;
     const originText = [sendText];
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, originText);
+    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
@@ -321,7 +322,7 @@ function MeetingPage() {
     const sendText = transcript;
     const originText = [sendText];
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, originText);
+    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
