@@ -35,7 +35,7 @@ const AppRoutes = () => {
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/classes/edit/:classId" element={<ClassAddPage />} />
       <Route path="/order" element={<OrderPage />} />
-      <Route path="/meeting" element={<MeetingPage />} />
+      <Route path="/meeting/:lectureId" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/callback" element={<KakaoCallback />} />
