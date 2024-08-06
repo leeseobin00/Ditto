@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import OutlineButton from "../../common/OutlineButton";
-import CallIcon from "../../../assets/icon/mypage/call.png";
+import OutlineButton from "../common/OutlineButton";
+import CallIcon from "../../assets/icon/mypage/call.png";
 
 const LineContainer = styled.div`
   display: flex;
@@ -54,21 +54,21 @@ function AddressItem({ address, isPayment = false }) {
     <FullContainer>
       <AddressInfo>
         <LineContainer>
-          <AddressName>집</AddressName>
-          <MediumFont>기본 배송지</MediumFont>
+          <AddressName>{address?.addressName}</AddressName>
+          {address?.isDefault && <MediumFont>기본 배송지</MediumFont>}
         </LineContainer>
         <LineContainer>
-          <SecondaryFont>06220</SecondaryFont>
+          <SecondaryFont>{address?.zipCode}</SecondaryFont>
           <LineContainer>
             <Icon src={CallIcon} alt="call-icon" />
-            <SecondaryFont>010-1234-5678</SecondaryFont>
+            <SecondaryFont>{address?.phoneNumber}</SecondaryFont>
           </LineContainer>
         </LineContainer>
         <LineContainer>
           <SecondaryFont>
-            서울특별시 강남구 테헤란로 212&nbsp;801호
+            {address?.address1}&nbsp;{address?.address2}
           </SecondaryFont>
-          <SecondaryFont>김디토</SecondaryFont>
+          <SecondaryFont>{address?.receiver}</SecondaryFont>
         </LineContainer>
       </AddressInfo>
 

@@ -5,13 +5,14 @@ import AccountDetail from "../../../components/MyPage/Account/AccountDetail";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-const Title = styled.h2`
-  color: var(--PRIMARY);
-  font-size: 20px;
-`;
-
 const PageContainer = styled.div`
   padding: 20px;
+`;
+
+const Title = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--PRIMARY);
 `;
 
 const ProUserinfoDetailPage = () => {

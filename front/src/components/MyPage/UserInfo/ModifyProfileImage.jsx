@@ -3,7 +3,6 @@ import { styled } from "styled-components";
 import { useSelector } from "react-redux";
 
 import useFormDataAxios from "../../../hooks/useFormDataAxios";
-import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
 import DefaultProfileImage from "../../../assets/img/profile-user.png";
 
@@ -18,7 +17,7 @@ const ProfileImage = styled.img`
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  border: 2px solid orange;
+  box-shadow: 4px 4px 8px rgba(152, 146, 138, 0.7);
 `;
 
 const FileInput = styled.input`
@@ -27,7 +26,17 @@ const FileInput = styled.input`
 
 const FileInputLabel = styled.label`
   color: var(--SECONDARY);
-  margin-bottom: 48px;
+  margin: 25px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  justify-content: center;
+  background-color: var(--BORDER_COLOR);
+  border-radius: 20px;
+  width: 85px;
+  height: 28px;
+  text-align: center;
   cursor: pointer;
 `;
 
@@ -40,7 +49,7 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
   // redux
   const userId = useSelector((state) => state.auth.userId);
   const { sendRequest: patchImage } = useFormDataAxios();
-  const { sendRequest: deleteImage } = useFormDataAxios(); 
+  const { sendRequest: deleteImage } = useFormDataAxios();
   const [image, setImage] = useState(curProfileImage);
   const [imagePreview, setImagePreview] = useState(image);
 
@@ -65,7 +74,7 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
     }
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("file", image);
@@ -75,12 +84,15 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
     setImagePreview(null);
     handleProfileImage(null);
     onClose();
-  }
+  };
 
   return (
     <>
       <ModalTitle>프로필 이미지</ModalTitle>
-      <ProfileImage src={imagePreview || DefaultProfileImage} alt="Profile Image" />
+      <ProfileImage
+        src={imagePreview || DefaultProfileImage}
+        alt="Profile Image"
+      />
       <FileInputLabel htmlFor="file-upload">파일 선택</FileInputLabel>
       <FileInput
         id="file-upload"
@@ -89,8 +101,8 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
         onChange={handleImageChange}
       />
       <ButtonsWrapper>
-        <RoundButton label="수정" onClick={handleSubmit}/>
-        <OutlineButton label="삭제" color="default" onClick={handleDelete}/>
+        <OutlineButton label="수정" onClick={handleSubmit} />
+        <OutlineButton label="삭제" color="ACCENT1" onClick={handleDelete} />
       </ButtonsWrapper>
     </>
   );

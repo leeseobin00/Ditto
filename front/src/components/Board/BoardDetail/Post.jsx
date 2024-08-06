@@ -10,8 +10,7 @@ import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
 import { useSelector } from "react-redux";
 
-const PostWrapper = styled.div`
-`;
+const PostWrapper = styled.div``;
 
 const Header = styled.div`
   display: flex;
@@ -172,7 +171,7 @@ function Post({
   likeCount,
   tagName,
 }) {
-  const userId = useSelector((state)=>state.auth.userId);
+  const userId = useSelector((state) => state.auth.userId);
   const { response: getLikeResponse, sendRequest: getLike } = useAxios();
   const { sendRequest: postLike } = useAxios();
   const { sendRequest: deleteLike } = useAxios();
@@ -203,7 +202,7 @@ function Post({
   }, [getLikeResponse]);
 
   const handleHeartClick = () => {
-    if(!userId) return;
+    if (!userId) return;
     if (isHeartFilled) {
       setIsHeartFilled(false);
       setCurlikeCount((prev) => prev - 1);
@@ -246,13 +245,15 @@ function Post({
         <SubInfo>{createdDate}</SubInfo>
       </SubHeader>
       <Hr />
-      {(postUserId == userId) && <MenuIconWrapper>
-        <CustomMenuIcon size={24} />
-        <DropdownMenu className="dropdown-menu">
-          <DropdownItem onClick={handleEdit}>수정</DropdownItem>
-          <DropdownItem onClick={handleDelete}>삭제</DropdownItem>
-        </DropdownMenu>
-      </MenuIconWrapper>}
+      {postUserId == userId && (
+        <MenuIconWrapper>
+          <CustomMenuIcon size={24} />
+          <DropdownMenu className="dropdown-menu">
+            <DropdownItem onClick={handleEdit}>수정</DropdownItem>
+            <DropdownItem onClick={handleDelete}>삭제</DropdownItem>
+          </DropdownMenu>
+        </MenuIconWrapper>
+      )}
       {fileName && <SubInfo>첨부파일 {fileName}</SubInfo>}
       {fileUrl && <Image src={fileUrl} alt={fileName} />}
       <Content>
@@ -260,11 +261,7 @@ function Post({
       </Content>
       <Buttons>
         <ButtonWrapper onClick={handleGoBack}>
-          <OutlineButton
-            label={<CustomBackIcon />}
-            color="default"
-            size="sm"
-          />
+          <OutlineButton label={<CustomBackIcon />} color="default" size="sm" />
         </ButtonWrapper>
         <ButtonWrapper onClick={handleHeartClick}>
           <OutlineButton
@@ -283,7 +280,7 @@ function Post({
           />
         </ButtonWrapper>
         <ButtonWrapper>
-          <Tag>{tagName}</Tag>
+          <Tag>#{tagName}</Tag>
         </ButtonWrapper>
       </Buttons>
 
@@ -297,7 +294,11 @@ function Post({
                 color="ACCENT1"
                 onClick={handleConfirmDelete}
               />
-              <OutlineButton label="취소" color="default" onClick={handleCloseModal} />
+              <OutlineButton
+                label="취소"
+                color="default"
+                onClick={handleCloseModal}
+              />
             </ModalButtons>
           </ModalContent>
         </Modal>

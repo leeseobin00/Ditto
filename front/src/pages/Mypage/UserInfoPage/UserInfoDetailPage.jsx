@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import UserInfo from "../../../components/MyPage/UserInfo/UserInfo";
-import axiosIntercepter from "../../../features/axiosIntercepter";
-import AddressList from "../../../components/MyPage/UserInfo/AddressList";
 import { useSelector } from "react-redux";
+import { styled } from "styled-components";
 
-const Title = styled.h2`
-  color: var(--PRIMARY);
+import axiosIntercepter from "../../../features/axiosIntercepter";
+import UserInfo from "../../../components/MyPage/UserInfo/UserInfo";
+import AddressList from "../../../components/Address/AddressList";
+import RoundButton from "../../../components/common/RoundButton";
+import AddressAddModal from "../../../components/Address/AddressAddModal";
+
+const Title = styled.div`
   font-size: 20px;
-  margin: 20px 0px;
+  font-weight: 700;
+  color: var(--PRIMARY);
+`;
+
+const TitleLine = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding-right: 20px;
 `;
 
 const PageContainer = styled.div`
@@ -20,36 +30,48 @@ const UserInfoDetail = () => {
   const [userData, setUserData] = useState({});
   const [addresses, setAddresses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   useEffect(() => {
     if (userId) {
       axiosIntercepter
         .get(`/mypage/${userId}/normal`)
         .then((response) => {
-          setUserData(response.data); // fileURL 데이터 가져옴
-          setAddresses(response.data.addresses); // addresses 리스트 가져옴
+          console.log(response?.data);
+          setUserData(response?.data); // fileURL 데이터 가져옴
+          setAddresses(response?.data?.addresses); // addresses 리스트 가져옴
           setIsLoading(false);
         })
         .catch((error) => {
-          console.error("Error fetching data", error);
+          console.error(error);
           setIsLoading(false);
         });
     }
   }, [userId]);
+
+  const handleAddressModal = () => {
+    setShowAddressModal(!showAddressModal);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
-      <PageContainer>
-        <Title>계정 정보</Title>
-        <UserInfo userData={userData} />
-        {/* <Title>배송지 목록</Title>
-        <AddressList addresses={addresses} /> */}
-      </PageContainer>
-    </>
+    <PageContainer>
+      <Title>계정 정보</Title>
+      <UserInfo userData={userData} />
+      <TitleLine>
+        <Title>배송지 목록</Title>
+        <RoundButton label={"추가"} onClick={handleAddressModal} />
+      </TitleLine>
+      <AddressList addresses={addresses} />
+      <AddressAddModal
+        show={showAddressModal}
+        onClose={handleAddressModal}
+        userId={userId}
+      />
+    </PageContainer>
   );
 };
 

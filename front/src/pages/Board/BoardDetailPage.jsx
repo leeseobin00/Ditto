@@ -41,13 +41,14 @@ const Comments = styled.div`
   background-color: var(--BACKGROUND_COLOR);
   padding: 0px 16px;
   margin-top: 32px;
+  border-radius: 10px;
 `;
 
 const Comment = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  width 100%;
+  width: 100%;
   position: relative;
   padding: 8px 0px;
   padding-left: 8px;
@@ -154,7 +155,7 @@ function BoardDetailPage() {
   const [comments, setComments] = useState([]);
   const [showReplyForms, setShowReplyForms] = useState([]);
   const [editCommentId, setEditCommentId] = useState(null);
-  
+
   const date = new Date();
   const formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1)
     .toString()
@@ -166,22 +167,22 @@ function BoardDetailPage() {
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
       reader.onerror = (error) => reject(error);
-  });
+    });
 
   const handleGetPost = async () => {
     const result = await getPost(`/posts/${postId}`, null, "get");
     const postData = result?.data;
     setPost(postData);
-    
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(postData?.content, "text/html");
     const images = Array.from(doc.querySelectorAll("img"));
     const files = postData?.files;
 
     // 이미지 로딩 중 표시할 텍스트로 교체
-    const spinners = images.map(img => {
-      const spinner = document.createElement('div');
-      spinner.className = 'spinner';
+    const spinners = images.map((img) => {
+      const spinner = document.createElement("div");
+      spinner.className = "spinner";
       img.parentNode.replaceChild(spinner, img);
       return { img, spinner }; // 매핑하여 이미지와 스피너 쌍을 저장
     });
@@ -205,15 +206,15 @@ function BoardDetailPage() {
           );
           const fileBlob = response.data;
           const base64 = await toBase64(fileBlob);
-  
+
           // 로딩 스피너를 이미지로 교체
           const { spinner } = spinners[i];
           if (spinner) {
-            const img = document.createElement('img');
+            const img = document.createElement("img");
             img.src = base64;
             img.style.maxWidth = "600px"; // 원하는 최대 너비 설정
             img.style.maxHeight = "600px"; // 원하는 최대 높이 설정
-  
+
             spinner.parentNode.replaceChild(img, spinner);
           }
 
@@ -225,25 +226,21 @@ function BoardDetailPage() {
         }
       }
     };
-    
+
     updateImageSrc();
-};
+  };
 
-
-    
-
-  const getImage = async() => {
+  const getImage = async () => {
     const result = await getUserInfo(`/mypage/${userId}/normal`, null, "get");
     const fileId = result?.data?.fileId;
     setUserFileId(fileId);
-  }
+  };
 
-  useEffect(()=>{
-    if(userId){
+  useEffect(() => {
+    if (userId) {
       getImage();
     }
-  },[userId]);
-
+  }, [userId]);
 
   const handleGetComment = async () => {
     const result = await getComment(`/comments/${postId}`, null, "get");
@@ -309,16 +306,14 @@ function BoardDetailPage() {
           postUserId={post?.userId}
           title={post?.title}
           username={post?.nickname}
-          createdDate={post?.createdDate?.split('T')[0]}
+          createdDate={post?.createdDate?.split("T")[0]}
           viewCount={post?.viewCount}
           content={post?.content}
           likeCount={post?.likeCount}
           tagName={post?.tagName}
         />
 
-        <CommentTitle>
-          댓글
-        </CommentTitle>
+        <CommentTitle>댓글</CommentTitle>
 
         <MyComment>
           <Profile
@@ -340,7 +335,7 @@ function BoardDetailPage() {
           {comments?.map((comment, index) => (
             <Comment key={index}>
               <ParentCommentWrapper>
-                {(comment?.isDeleted == false && comment?.userId == userId) && (
+                {comment?.isDeleted == false && comment?.userId == userId && (
                   <MenuIconWrapper>
                     <MenuIcon>
                       <CustomMenuIcon />
@@ -381,9 +376,11 @@ function BoardDetailPage() {
                   ) : (
                     <>
                       <CommentText>{comment.content}</CommentText>
-                      { (comment?.isDeleted === false) && <AddComment onClick={() => handleReplyFormOpen(index)}>
-                        답글달기
-                      </AddComment>}
+                      {comment?.isDeleted === false && (
+                        <AddComment onClick={() => handleReplyFormOpen(index)}>
+                          답글달기
+                        </AddComment>
+                      )}
                     </>
                   )}
                 </CommentTextWrapper>

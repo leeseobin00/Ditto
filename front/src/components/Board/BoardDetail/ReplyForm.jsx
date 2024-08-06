@@ -12,12 +12,14 @@ const Form = styled.div`
 `;
 
 const TextArea = styled.textarea`
+  font-family: inherit;
   margin-right: 16px;
   width: 100%;
   height: 80px;
   padding: 8px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
+  resize: none;
 
   &:focus {
     outline: none;
@@ -30,7 +32,15 @@ const ButtonWrapper = styled.div`
   gap: 8px;
 `;
 
-function ReplyForm({ isCancel, onCancel, commentId, parentId, onAddComment, initialContent, onUpdateComment }) {
+function ReplyForm({
+  isCancel,
+  onCancel,
+  commentId,
+  parentId,
+  onAddComment,
+  initialContent,
+  onUpdateComment,
+}) {
   const [content, setContent] = useState("");
 
   const handleContent = (event) => {
@@ -38,25 +48,29 @@ function ReplyForm({ isCancel, onCancel, commentId, parentId, onAddComment, init
   };
 
   const handleAdd = () => {
-    if(onAddComment){
+    if (onAddComment) {
       onAddComment(content, parentId);
       setContent("");
     }
-    if(onUpdateComment){
+    if (onUpdateComment) {
       onUpdateComment(content, commentId, parentId);
     }
     if (isCancel) onCancel();
   };
 
-  useEffect(()=>{
-    if(initialContent){
+  useEffect(() => {
+    if (initialContent) {
       setContent(initialContent);
     }
-  },[initialContent]);
+  }, [initialContent]);
 
   return (
     <Form>
-      <TextArea value={content} onChange={handleContent} placeholder="답글을 남겨주세요." />
+      <TextArea
+        value={content}
+        onChange={handleContent}
+        placeholder="답글을 남겨주세요."
+      />
       <ButtonWrapper>
         {isCancel && (
           <OutlineButton

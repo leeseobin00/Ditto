@@ -4,10 +4,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import useAxios from "../../hooks/useAxios";
-import Button from "../../components/common/Button";
+
 import RoundButton from "../../components/common/RoundButton";
 import OutlineButton from "../../components/common/OutlineButton";
-import AddressListModal from "../../components/Order/AddressListModal";
+import AddressListModal from "../../components/Address/AddressListModal";
+import AddressInput from "../../components/Address/AddressInput";
 
 const OrderPageContainer = styled.div`
   display: flex;
@@ -40,10 +41,6 @@ const LineContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   margin: 5px;
-`;
-
-const AddressLineContainer = styled(LineContainer)`
-  width: 580px;
 `;
 
 const OrderInfo = styled(Container)`
@@ -131,71 +128,10 @@ const Hr = styled.hr`
 const AddressContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 85%;
+  width: 80%;
+  padding-left: 50px;
   margin-bottom: 15px;
 `;
-
-const Label = styled.div`
-  width: 100px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 5px;
-`;
-
-const Input = styled.input`
-  font-family: inherit;
-  border-radius: 20px;
-  width: 370px;
-  margin: 3px 0;
-  height: 30px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: var(--BORDER_COLOR);
-  padding: 10px;
-
-  &:focus {
-    border-width: 2px;
-    border-color: var(--SECONDARY);
-    outline: none;
-  }
-  &::placeholder {
-    font-size: 14px;
-  }
-`;
-
-const AddressInputContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 580px;
-  margin: 5px;
-`;
-
-const AddressInput = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 370px;
-`;
-
-const PostNumLine = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 370px;
-`;
-
-const loadDaumPostcode = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src =
-      "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-    script.onload = () => resolve();
-    document.head.appendChild(script);
-  });
-};
 
 function OrderPage() {
   const userId = useSelector((state) => state.auth.userId);
@@ -289,44 +225,6 @@ function OrderPage() {
     setShowModal(!showModal);
   };
 
-  // 다음 주소 API 호출
-  const [address, setAddress] = useState({
-    zonecode: "",
-    fullAddress: "",
-    detailAddress: "",
-  });
-
-  const handleComplete = (data) => {
-    let fullAddress = data.address;
-    let extraAddress = "";
-
-    if (data.addressType === "R") {
-      if (data.bname !== "") {
-        extraAddress += data.bname;
-      }
-      if (data.buildingName !== "") {
-        extraAddress +=
-          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
-      }
-      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
-    }
-
-    setAddress({
-      ...address,
-      zonecode: data.zonecode,
-      fullAddress,
-    });
-  };
-
-  const handleSearchAddress = async () => {
-    await loadDaumPostcode();
-    new window.daum.Postcode({
-      oncomplete: handleComplete,
-    }).open();
-  };
-
-  const detailAddressRef = useRef();
-
   return (
     <OrderPageContainer>
       <Title>Order</Title>
@@ -391,52 +289,7 @@ function OrderPage() {
           />
         </TitleLine>
         <AddressContainer>
-          <AddressLineContainer>
-            <Label>배송지명</Label>
-            <Input type="text" />
-          </AddressLineContainer>
-          <AddressInputContainer>
-            <Label style={{ alignItems: "flex-start" }}>주소</Label>
-            <AddressInput>
-              <PostNumLine>
-                <Input
-                  type="text"
-                  style={{ width: "240px" }}
-                  placeholder="우편번호"
-                  value={address.zonecode}
-                  readOnly
-                />
-                <Button
-                  size={"sm"}
-                  label={"우편번호 검색"}
-                  onClick={handleSearchAddress}
-                />
-              </PostNumLine>
-              <Input
-                type="text"
-                placeholder="도로명(지번) 주소"
-                value={address.fullAddress}
-                readOnly
-              />
-              <Input
-                type="text"
-                placeholder="상세 주소"
-                value={address.detailAddress}
-                onChange={(e) =>
-                  setAddress({ ...address, detailAddress: e.target.value })
-                }
-                ref={detailAddressRef}
-              />
-            </AddressInput>
-          </AddressInputContainer>
-          <AddressLineContainer>
-            <Label>연락처</Label>
-            <Input type="text" />
-          </AddressLineContainer>
-          <AddressLineContainer>
-            <Label>수령인</Label>
-            <Input type="text" />
-          </AddressLineContainer>
+          <AddressInput />
         </AddressContainer>
       </OrderInfo>
       <AddressListModal show={showModal} onClose={handleShowModal} />

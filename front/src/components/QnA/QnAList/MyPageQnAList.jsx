@@ -85,6 +85,9 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
         );
         if (response?.data?.length > 0) {
           setQuestions((prevQuestions) => [...prevQuestions, ...response.data]);
+          if (response?.data?.length < 3) {
+            setShowMore(false);
+          }
         } else {
           alert("더 이상 불러올 질문이 없습니다.");
           setShowMore(false);

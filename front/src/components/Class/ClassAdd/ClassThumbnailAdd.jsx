@@ -153,7 +153,7 @@ function ClassThumbnailAdd({ onChange, userNickname, initialData, isEdit }) {
   const [classMax, setClassMax] = useState(0);
 
   useEffect(() => {
-    if (initialData) {
+    if (isEdit && initialData) {
       setClassName(initialData.className);
       setSelectedCategory(initialData.categoryId);
       setSelectedTag(initialData.tagId);
