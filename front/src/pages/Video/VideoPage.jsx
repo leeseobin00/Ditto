@@ -5,6 +5,7 @@ import { BiVideo } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import useAxios from "../../hooks/useAxios";
 import OutlineButton from "../../components/common/OutlineButton";
+import LectureImage from "../../components/Video/LectureImage";
 
 const Container = styled.div`
     max-width: 1024px;
@@ -35,6 +36,7 @@ const Lecture = styled.div`
     border: 2px solid var(--PRIMARY);
     border-radius: 8px;
     width: 100%;
+    min-width: 400px;
     height: 180px;
     max-width: 960px;
     padding: 16px 32px;
@@ -49,24 +51,25 @@ const Box = styled.div`
 
 const ImageBox = styled(Box)`
     flex: 1;
+    
+    @media (max-width: 768px) {
+        display: none;
+    }
 `
 const TitleBox = styled(Box)`
     flex: 4;
 `
 const DateBox = styled(Box)`
-    flex: 2;
-`
-const IconBox = styled(Box)`
     flex: 1;
 `
 
-const Image = styled.img`
-    width: 120px;
-    height: 120px;
-    border: 1px solid var(--BORDER_COLOR);
-    border-radius: 100%;
-    background-color: var(--BACKGROUND_COLOR);
-`;
+const TimeBox = styled(Box)`
+    flex: 1;
+`
+
+const IconBox = styled(Box)`
+    flex: 1;
+`
 
 const CustomVideoIcon = styled(BiVideo)`
   font-size: 32px;
@@ -149,11 +152,12 @@ function VideoPage() {
                 {lectures.length===0 && "예정된 강의가 없습니다."}
                 {lectures.map((lecture, index) => (
                     <Lecture key={index}>
-                        <ImageBox><Image /></ImageBox>
-                        <TitleBox>{lecture?.title}</TitleBox>
-                        <DateBox>{lecture?.time}</DateBox>
+                        <ImageBox><LectureImage fileId={lecture?.file?.fileId} /></ImageBox>
+                        <TitleBox>{lecture?.className}</TitleBox>
+                        <DateBox>{lecture?.year}-{(lecture?.month)?.toString().padStart(2, '0')}-{(lecture?.day)?.toString().padStart(2, '0')}</DateBox>
+                        <TimeBox>{(lecture?.hour)?.toString().padStart(2, '0')}:{(lecture?.minute)?.toString().padStart(2, '0')}</TimeBox>
                         <IconBox>
-                            <Link to="/meeting">
+                            <Link to={`/meeting/${lecture?.lectureId}`}>
                                 <CustomVideoIcon />
                             </Link>
                         </IconBox>

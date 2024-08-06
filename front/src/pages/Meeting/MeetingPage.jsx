@@ -3,7 +3,7 @@ import { useEffect, useState, createContext, useRef } from "react";
 import { styled } from "styled-components";
 import { OpenVidu } from 'openvidu-browser';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MeetingHeader from "../../components/Meeting/MeetingHeader";
 import ProgressBar from "../../components/Meeting/ProgressBar";
@@ -72,6 +72,7 @@ function MeetingPage() {
   const userId = useSelector((state)=>state.auth.userId);
   const username = useSelector((state) => state.auth.nickname);
   const roleId = useSelector((state)=>state.auth.roleId);
+  const { lectureId } = useParams();
   const navigate = useNavigate();
   const APPLICATION_SERVER_URL = "http://localhost:5000/";
   const [OV, setOV] = useState(undefined);
@@ -116,10 +117,10 @@ function MeetingPage() {
   },[username]);
 
   useEffect(() => {
-    if (OV && myUserName && userId && roleId) {
+    if (OV && myUserName && userId && roleId && lectureId) {
       createSession();
     }
-  }, [OV, myUserName, userId, roleId]);
+  }, [OV, myUserName, userId, roleId, lectureId]);
 
   useEffect(()=>{
     return () => {
@@ -142,7 +143,7 @@ function MeetingPage() {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The sessionId
-    const response = await axios.post(`http://localhost:8080/sessions/36?userId=${userId}`, null);
+    const response = await axios.post(`http://localhost:8080/sessions/${lectureId}?userId=${userId}`, null);
     setIsSession(response?.data?.code);
   };
 
@@ -157,7 +158,7 @@ function MeetingPage() {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The token
-    const response = await axios.post(`http://localhost:8080/sessions/36/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
+    const response = await axios.post(`http://localhost:8080/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
     const token = response?.data?.data?.token;
     return token;
   };
@@ -234,10 +235,10 @@ function MeetingPage() {
       session.disconnect();
       if(roleId==1){
         // 수강새이면 그냥 토큰 제거
-        const res = await axios.post(`http://localhost:8080/session/36/remove-token?userId=${userId}`, null);
+        const res = await axios.post(`http://localhost:8080/session/${lectureId}/remove-token?userId=${userId}`, null);
       }else if(roleId==2){
         // 강사이면 토큰 제거 + 라이브 세션 제거
-        const res = await axios.delete(`http://localhost:8080/sessions/36?userId=${userId}`);
+        const res = await axios.delete(`http://localhost:8080/sessions/${lectureId}?userId=${userId}`);
       }
     }
 
@@ -291,7 +292,7 @@ function MeetingPage() {
       ]
     };
     try{
-      const response = await axios.post(`http://localhost:8080/summary/36/${currentStep+1}`, postData);
+      const response = await axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, postData);
       console.log(response);
     }catch(error){
       console.log(error);
@@ -306,7 +307,7 @@ function MeetingPage() {
     setStepLoading(true);
     setText(transcript);
     try{
-      const response = await axios.post(`http://localhost:8080/summary/36/${currentStep+1}`, postData);
+      const response = await axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, postData);
       console.log(response);
     }catch(error){
       console.log(error);
