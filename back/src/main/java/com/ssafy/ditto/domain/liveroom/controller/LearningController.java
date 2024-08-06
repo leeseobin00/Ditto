@@ -1,10 +1,7 @@
 package com.ssafy.ditto.domain.liveroom.controller;
 
-import com.ssafy.ditto.domain.classes.service.LectureService;
-import com.ssafy.ditto.domain.liveroom.domain.Learning;
 import com.ssafy.ditto.domain.liveroom.dto.LearningPageResponse;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
-import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
