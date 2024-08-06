@@ -69,7 +69,7 @@ function ProgressBar({ steps
     <ProgressBarWrapper>
       <Bar>
         {steps.map((step, index) => (
-          <Box key={index} $filled={(index <= currentStep).toString()} />
+          <Box key={index} $filled={(index < currentStep).toString()} />
         ))}
       </Bar>
       <ProgressDescription>
