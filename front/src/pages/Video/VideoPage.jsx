@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import { BiVideo } from "react-icons/bi";
+import { useSelector } from "react-redux";
+import useAxios from "../../hooks/useAxios";
 import OutlineButton from "../../components/common/OutlineButton";
 
 const Container = styled.div`
@@ -86,6 +88,9 @@ const ButtonWrapper = styled.div`
 `;
 
 function VideoPage() {
+    const userId = useSelector((state)=>state.auth.userId);
+    const roleId = useSelector((state)=>state.auth.roleId);
+    const { sendRequest } = useAxios();
     const [lectures, setLectures] = useState([{
         id: 1,
         title: "누구나 손쉽게 따라하는 피아노 입문 클래스",
@@ -101,12 +106,47 @@ function VideoPage() {
         title: "누구나 손쉽게 따라하는 피아노 입문 클래스",
         time: "2024-07-11 8:00" 
     }]);
-    const size = 3;
+    const [curPage, setCurPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+
+    const getLecture = async() => {
+        if(roleId==1){ // 수강생이면
+            const result = await sendRequest(`/learning/student/${userId}?page=${curPage}`, null, "get");
+            setLectures(result?.data?.learnings);
+            setTotalPage(result?.data?.totalPageCount);
+        }else if(roleId==2){ // 강사이면
+            const result = await sendRequest(`/learning/teacher/${userId}?page=${curPage}`, null, "get");
+            setLectures(result?.data?.learnings);
+            setTotalPage(result?.data?.totalPageCount);
+        }
+    }
+
+    const getNextLecture = async() => {
+        if(curPage>=totalPage) return;
+
+        if(roleId==1){ // 수강생이면
+            const result = await sendRequest(`/learning/student/${userId}?page=${curPage+1}`, null, "get");
+            setLectures((prev)=>[...prev, ...result?.data?.learnings]);
+            setTotalPage(result?.data?.totalPageCount);
+        }else if(roleId==2){ // 강사이면
+            const result = await sendRequest(`/learning/teacher/${userId}?page=${curPage+1}`, null, "get");
+            setLectures((prev)=>[...prev, ...result?.data?.learnings]);
+            setTotalPage(result?.data?.totalPageCount);
+        }
+        setCurPage((prev)=>prev+1);
+    }
+
+    useEffect(()=>{
+        if(roleId && userId){
+            getLecture();
+        }
+    },[roleId, userId]);
 
     return (
         <Container>
             <PageTitle>내 강의실</PageTitle>
             <LectureList>
+                {lectures.length===0 && "예정된 강의가 없습니다."}
                 {lectures.map((lecture, index) => (
                     <Lecture key={index}>
                         <ImageBox><Image /></ImageBox>
@@ -121,7 +161,7 @@ function VideoPage() {
                 ))}
             </LectureList>
             <ButtonWrapper>
-                <OutlineButton label="더보기" size="lg" color="default"/>
+                {(curPage<totalPage) && <OutlineButton label="더보기" size="lg" color="default" onClick={getNextLecture} />}
             </ButtonWrapper>
         </Container>
     );
