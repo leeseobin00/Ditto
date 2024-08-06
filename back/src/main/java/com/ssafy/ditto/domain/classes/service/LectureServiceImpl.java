@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,9 +77,17 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<LectureResponse> getLecturesByClassId(Integer classId) {
+    public List<LectureResponse> getUpcomingLecturesByClassId(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
+        LocalDateTime now = LocalDateTime.now();
+        List<Lecture> lectures = lectureRepository.findUpcomingLecturesByClassId(
+                dClass,
+                now.getYear(),
+                (byte) now.getMonthValue(),
+                (byte) now.getDayOfMonth(),
+                (byte) now.getHour(),
+                (byte) now.getMinute()
+        );
         return lectures.stream()
                 .map(LectureResponse::of)
                 .collect(Collectors.toList());

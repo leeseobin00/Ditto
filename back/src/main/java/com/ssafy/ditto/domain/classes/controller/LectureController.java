@@ -31,7 +31,7 @@ public class LectureController {
     })
     @GetMapping
     public ResponseDto<List<LectureResponse>> getLecturesByClassId(@PathVariable Integer classId) {
-        List<LectureResponse> lectureList = lectureService.getLecturesByClassId(classId);
+        List<LectureResponse> lectureList = lectureService.getUpcomingLecturesByClassId(classId);
         return ResponseDto.of(OK.value(), ResponseMessage.SUCCESS_FETCH.getMessage(), lectureList);
     }
 
