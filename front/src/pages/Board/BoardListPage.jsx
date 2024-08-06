@@ -19,7 +19,6 @@ import {
   getCategoryLabelByValue,
   getSortOptionLabelByValue,
 } from "../../utils/searchOptions";
-import { current } from "@reduxjs/toolkit";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -109,6 +108,7 @@ function BoardListPage() {
     setPosts(result?.data?.posts || []);
     setTotalPageCount(result?.data?.totalPageCount);
   };
+
 
   const resetOptions = () => {
     setCategoryId(0);
@@ -247,7 +247,7 @@ function BoardListPage() {
         </SearchOptionWrapper>
         {/* 검색 옵션 끝 */}
 
-        <PostList posts={posts} />
+        <PostList posts={posts}/>
 
         <PaginationBar
           pageNumbers={pageNumbers}

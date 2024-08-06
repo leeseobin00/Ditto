@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useRef } from "react";
 import { styled } from "styled-components";
 import { OpenVidu } from 'openvidu-browser';
 import { useSelector } from 'react-redux';
@@ -75,6 +75,8 @@ function MeetingPage() {
   const navigate = useNavigate();
   const APPLICATION_SERVER_URL = "http://localhost:5000/";
   const [OV, setOV] = useState(undefined);
+  // 현재 createSession 응답을 저장해서 강사가 미리 세션을 만든 경우가 아니면
+  // 다시 내강의실로 navigate되도록 구현해놓았습니다.
   const [isSession, setIsSession] = useState(undefined);
   const [mySessionId, setMySessionId] = useState('SessionA');
   const [myUserName, setMyUserName] = useState(undefined);
@@ -107,9 +109,6 @@ function MeetingPage() {
 
   useEffect(() => {
     setOV(new OpenVidu());
-    return () => {
-      leaveSession();
-    };
   }, []);
 
   useEffect(()=>{
@@ -123,6 +122,12 @@ function MeetingPage() {
   }, [OV, myUserName, userId, roleId]);
 
   useEffect(()=>{
+    return () => {
+      leaveSession();
+    };
+  },[session]);
+  
+  useEffect(()=>{
     if(!isSession) return;
     if(isSession===200){
       joinSession();
@@ -131,12 +136,6 @@ function MeetingPage() {
       navigate("/video");
     }
   },[isSession]);
-
-  const getToken = async () => {
-    // const sessionId = await createSession(mySessionId);
-    // return await createToken(sessionId);
-    return await createToken();
-  };
 
   const createSession = async (sessionId) => {
     // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
@@ -147,21 +146,18 @@ function MeetingPage() {
     setIsSession(response?.data?.code);
   };
 
+  const getToken = async () => {
+    // const sessionId = await createSession(mySessionId);
+    // return await createToken(sessionId);
+    return await createToken();
+  };
+
   const createToken = async () => {
     // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The token
-    const response = await axios.post(
-      `http://localhost:8080/sessions/36/get-token?userId=${userId}`,
-      null,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
+    const response = await axios.post(`http://localhost:8080/sessions/36/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
     const token = response?.data?.data?.token;
     return token;
   };
@@ -194,6 +190,7 @@ function MeetingPage() {
 
     newSession.on('streamDestroyed', (event) => {
       deleteSubscriber(event.stream.streamManager);
+      leaveSession();
     });
 
     newSession.on('exception', (exception) => {
@@ -203,11 +200,9 @@ function MeetingPage() {
     newSession.on('signal:chat', (event) => {
       console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
-      setChatMessages((prev)=>[...prev, parsedData]);
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      setChatMessages((prev)=>[...prev, parsedData]);
     });
-
-    console.log(chatMessages);
 
     const token = await getToken();
 
@@ -234,13 +229,19 @@ function MeetingPage() {
       });
   };
 
-  const leaveSession = () => {
+  const leaveSession = async() => {
     if (session) {
       session.disconnect();
+      if(roleId==1){
+        // 수강새이면 그냥 토큰 제거
+        const res = await axios.post(`http://localhost:8080/session/36/remove-token?userId=${userId}`, null);
+      }else if(roleId==2){
+        // 강사이면 토큰 제거 + 라이브 세션 제거
+        const res = await axios.delete(`http://localhost:8080/sessions/36?userId=${userId}`);
+      }
     }
 
     setOV(null);
-    setSession(undefined);
     setPublisher(undefined);
     setMainStreamManager(undefined);
     setSubscribers([]);
@@ -284,14 +285,36 @@ function MeetingPage() {
   const handleNextStep = async () => {
     setStepLoading(true);
     setText(transcript);
-    resetTranscript();
-    setCurrentStep((prev) => prev + 1);
-    setStepLoading(false);
+    const postData = {
+      originText: [
+        transcript,
+      ]
+    };
+    try{
+      const response = await axios.post(`http://localhost:8080/summary/36/${currentStep+1}`, postData);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }finally{
+      resetTranscript();
+      setCurrentStep((prev) => prev + 1);
+      setStepLoading(false);
+    }
   }
-  const handleEndStep = () => {
+  const handleEndStep = async() => {
     if (!listening) return;
     setStepLoading(true);
     setText(transcript);
+    try{
+      const response = await axios.post(`http://localhost:8080/summary/36/${currentStep+1}`, postData);
+      console.log(response);
+    }catch(error){
+      console.log(error);
+    }finally{
+      resetTranscript();
+      setCurrentStep((prev) => prev + 1);
+      setStepLoading(false);
+    }
     SpeechRecognition.abortListening();
     setStepLoading(false);
   }

@@ -184,6 +184,7 @@ const UserInfo = ({ userData }) => {
   const handlePasswordChange = (event) => {
     const curPassword = event.target.value;
     setIsPasswordValidState(isPasswordValid(curPassword));
+    setIsPasswordMatchState(isPasswordMatch(curPassword, confirmPassword));
     setPassword(curPassword);
   };
 
@@ -264,11 +265,9 @@ const UserInfo = ({ userData }) => {
         nickname: name,
       };
 
-      const response = await sendAuthRequest(
-        `/mypage/${userId}`,
-        patchData,
-        "patch"
-      );
+      console.log(patchData);
+      const response = await sendAuthRequest(`/mypage/${userId}`, patchData, "patch");
+      console.log("전송완료");
       if (response.code == 200) {
         console.log("수정 성공:", patchData);
         dispatch(changeNickname({ nickname: name }));
