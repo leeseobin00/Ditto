@@ -158,6 +158,10 @@ function MeetingPage() {
     // });
     // return response.data; // The token
     const response = await axios.post(`http://localhost:8080/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
+    if(response?.data?.code==403){
+      alert(response?.data?.message);
+      navigate("/video");
+    }
     const token = response?.data?.data;
     return token;
   };
@@ -179,12 +183,15 @@ function MeetingPage() {
     setSession(newSession);
 
     newSession.on('streamCreated', (event) => {
-      if (event.stream.connection.connectionId !== newSession.connection.connectionId) {
-        const subscriber = newSession.subscribe(event.stream, undefined);
-        const parsedData = JSON.parse(subscriber?.stream?.connection?.data.split('%/%user-data')[0]);
-        if (parsedData?.username !== myUserName) {
-          setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
-        }
+      const connectionData = event.stream.connection;
+      const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
+      if(connectionData.connectionId == newSession.connection.connectionId) return;
+
+      // 수강생이면 강사만 subscribe할 수 있음
+      if(roleId==1 && parsedData.data?.roleId==1) return;
+      const subscriber = newSession.subscribe(event.stream, undefined);
+      if (parsedData?.username !== myUserName) {
+        setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
 
