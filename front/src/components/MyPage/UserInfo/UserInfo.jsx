@@ -19,7 +19,10 @@ import WriteIcon from "../../../assets/icon/profile/write-white.png";
 import ModifyProfileImage from "./ModifyProfileImage";
 import Modal from "../../common/Modal";
 
-const UserInfoContainer = styled.div``;
+const UserInfoContainer = styled.div`
+  padding: 20px;
+  margin-top: 10px;
+`;
 
 const ProfileImageContainer = styled.div`
   display: flex;
@@ -71,7 +74,7 @@ const ProfileField = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 400px;
+  width: 50%;
   margin-bottom: 16px;
 `;
 
@@ -91,6 +94,12 @@ const ProfileInput = styled.input`
     pointer-events: none;
     background-color: var(--BACKGROUND_COLOR); /* Gray background color */
     color: var(--TEXT_SECONDARY); /* Adjust text color if needed */
+  }
+  &:focus {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
   }
 `;
 
@@ -270,17 +279,17 @@ const UserInfo = ({ userData }) => {
         "patch"
       );
       if (response.code == 200) {
-        console.log("수정 성공:", patchData);
         dispatch(changeNickname({ nickname: name }));
       } else {
         setError("수정 실패. 다시 시도해주세요.");
       }
-      alert("수정 성공:", patchData);
+      alert("수정이 완료되었습니다.");
+      location.reload();
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setError("이미 사용중인 닉네임입니다.");
       } else {
-        console.error("저장 에러:", error);
+        console.error(error);
         setError("저장 실패. 다시 시도해주세요.");
       }
     }

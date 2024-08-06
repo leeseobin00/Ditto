@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { useSelector } from "react-redux";
+import axios from "axios";
+
+import OutlineButton from "../../common/OutlineButton";
+import RoundButton from "../../common/RoundButton";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-left: 20px;
+  padding: 20px;
+  margin-top: 10px;
 `;
 
 const AccountForm = styled.form`
@@ -21,14 +25,14 @@ const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   width: 50%;
 `;
 
 const Label = styled.label`
   font-weight: bold;
   color: var(--TEXT_SECONDARY);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const Input = styled.input`
@@ -36,6 +40,12 @@ const Input = styled.input`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   width: 100%;
+  &:focus {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
 `;
 
 const Select = styled.select`
@@ -43,6 +53,12 @@ const Select = styled.select`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   width: 100%;
+  &:focus {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -53,26 +69,13 @@ const ButtonGroup = styled.div`
   width: 100%;
 `;
 
-const Button = styled.button`
-  padding: 8px 16px;
-  background-color: ${(props) => (props.$cancel ? 'var(--TEXT_SECONDARY)' : 'var(--SECONDARY)')};
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 15px;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.8);
-  }
-`;
-
 const AccountDetail = ({ accountData }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [account, setAccount] = useState({
-    accountNumber: '',
-    bank: '',
-    receiver: '',
+    accountNumber: "",
+    bank: "",
+    receiver: "",
   });
 
   useEffect(() => {
@@ -86,7 +89,8 @@ const AccountDetail = ({ accountData }) => {
     setAccount((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.preventDefault();
     if (accountData) {
       setAccount(accountData); // Reset to the initial state from accountData
     }
@@ -95,19 +99,23 @@ const AccountDetail = ({ accountData }) => {
   const handleAccountSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`${baseURL}/mypage/account/${userId}`, {
-        accountNumber: account.accountNumber,
-        bank: account.bank,
-        receiver: account.receiver,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      await axios.patch(
+        `${baseURL}/mypage/account/${userId}`,
+        {
+          accountNumber: account.accountNumber,
+          bank: account.bank,
+          receiver: account.receiver,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
-      });
-      alert('계좌 정보가 성공적으로 수정되었습니다.');
+      );
+      alert("계좌 정보가 성공적으로 수정되었습니다.");
     } catch (error) {
-      console.error('Error updating account data:', error);
-      alert('계좌 정보 수정에 실패했습니다.');
+      console.error(error);
+      alert("계좌 정보 수정에 실패했습니다.");
     }
   };
 
@@ -116,11 +124,17 @@ const AccountDetail = ({ accountData }) => {
       <AccountForm onSubmit={handleAccountSubmit}>
         <FormGroup>
           <Label>은행명</Label>
-          <Select name="bank" value={account.bank} onChange={handleAccountChange}>
+          <Select
+            name="bank"
+            value={account.bank}
+            onChange={handleAccountChange}
+          >
             <option value="">선택하세요</option>
             <option value="국민은행">국민은행</option>
             <option value="신한은행">신한은행</option>
+            <option value="우리은행">우리은행</option>
             <option value="IBK기업은행">IBK기업은행</option>
+            <option value="카카오뱅크">카카오뱅크</option>
           </Select>
         </FormGroup>
         <FormGroup>
@@ -144,8 +158,13 @@ const AccountDetail = ({ accountData }) => {
           />
         </FormGroup>
         <ButtonGroup>
-          <Button type="button" $cancel onClick={handleCancel}>취소</Button>
-          <Button type="submit" $primary>수정</Button>
+          <OutlineButton
+            label={"취소"}
+            color={"default"}
+            $cancel
+            onClick={handleCancel}
+          />
+          <RoundButton label={"수정"} onClick={handleAccountSubmit} />
         </ButtonGroup>
       </AccountForm>
     </Container>
