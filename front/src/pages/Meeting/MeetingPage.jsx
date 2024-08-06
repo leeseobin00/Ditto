@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useRef } from "react";
 import { styled } from "styled-components";
 import { OpenVidu } from 'openvidu-browser';
 import { useSelector } from 'react-redux';
@@ -109,9 +109,6 @@ function MeetingPage() {
 
   useEffect(() => {
     setOV(new OpenVidu());
-    return () => {
-      leaveSession();
-    };
   }, []);
 
   useEffect(()=>{
@@ -124,6 +121,12 @@ function MeetingPage() {
     }
   }, [OV, myUserName, userId, roleId]);
 
+  useEffect(()=>{
+    return () => {
+      leaveSession();
+    };
+  },[session]);
+  
   useEffect(()=>{
     if(!isSession) return;
     if(isSession===200){
@@ -154,16 +157,7 @@ function MeetingPage() {
     //   headers: { 'Content-Type': 'application/json', },
     // });
     // return response.data; // The token
-    const response = await axios.post(
-      `http://localhost:8080/sessions/36/get-token?userId=${userId}`,
-      null,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
+    const response = await axios.post(`http://localhost:8080/sessions/36/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
     const token = response?.data?.data?.token;
     return token;
   };
@@ -196,6 +190,7 @@ function MeetingPage() {
 
     newSession.on('streamDestroyed', (event) => {
       deleteSubscriber(event.stream.streamManager);
+      leaveSession();
     });
 
     newSession.on('exception', (exception) => {
@@ -247,7 +242,6 @@ function MeetingPage() {
     }
 
     setOV(null);
-    setSession(undefined);
     setPublisher(undefined);
     setMainStreamManager(undefined);
     setSubscribers([]);
