@@ -382,7 +382,7 @@ function MeetingPage() {
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
-
+  console.log("currentIdx: ", currentIndex, "dd: ", subscribers.length, "dd2: ", subscribers.length/maxVisible);
   return (
     <MeetingContext.Provider
       value={{
@@ -428,7 +428,7 @@ function MeetingPage() {
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
-              {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+              {(currentIndex<subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
                 &gt;
               </RightScrollButton>}
             </>
