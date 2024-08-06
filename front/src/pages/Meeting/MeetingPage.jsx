@@ -24,6 +24,7 @@ const PageContainer = styled.div`
 
 // Main content area
 const MainContent = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -273,7 +274,7 @@ function MeetingPage() {
 
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
-    return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
+    return `calc(${100 / Math.min(visibleParticipants.length + 1, maxVisible)}% - 16px)`;
   };
 
   // Functions to navigate between subscriber groups
@@ -282,7 +283,7 @@ function MeetingPage() {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
+    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((visibleParticipants.length + 1) / maxVisible) - 1));
   };
 
   // Include publisher in pagination logic
@@ -410,24 +411,24 @@ function MeetingPage() {
             if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
 
             return (
-              <div
-                key={i}
-                className="stream-container"
-                onClick={() => handleMainVideoStream(participant)}
-                style={{ flexBasis: getFlexBasis() }}
-              >
+              <>
                 {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
-                <UserVideoComponent streamManager={participant} />
-              </div>
+                <UserVideoComponent                 
+                  key={i}
+                  className="stream-container"
+                  onClick={() => handleMainVideoStream(participant)}
+                  style={{ flexBasis: getFlexBasis() }}
+                  streamManager={participant} />
+              </>
             );
           })}
           </ParticipantGrid>
-          {(subscribers.length + 1) > maxVisible && (
+          {(visibleParticipants.length + 1) > maxVisible && (
             <>
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
-              {(currentIndex!==subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+              {(currentIndex!==visibleParticipants.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (visibleParticipants.length + 1)}>
                 &gt;
               </RightScrollButton>}
             </>

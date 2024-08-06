@@ -7,8 +7,7 @@ const VideoWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 400px;
-  aspect-ratio: 4 / 3;
+  overflow: hidden;
   border-radius: 8px; /* Optional: ensure border-radius is applied */
 `;
 
@@ -16,8 +15,8 @@ const Video = styled.video`
   border-radius: 8px;
   width: 100%;
   height: 100%;
-  min-height: 400px;
   aspect-ratio: 4 / 3;
+  object-fit: cover;
   border: 3px solid ${({ status }) => {
     if (status === 'help') return 'red';
     if (status === 'done') return 'green';
@@ -44,6 +43,7 @@ const Button = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  white-space: nowrap;
 `;
 
 
@@ -109,10 +109,10 @@ function UserVideoComponent({ streamManager }) {
         <VideoWrapper>
           <Video status={myStatus} autoPlay={true} ref={videoRef} />
           <NameTag>{getNicknameTag()}</NameTag>
-          <ButtonsWrapper>
+          {(roleId==1 && videoRoleId==1) && <ButtonsWrapper>
             <Button onClick={onHelp}>도움이 필요해요</Button>
             <Button onClick={onDone}>단계를 완료했어요</Button>
-          </ButtonsWrapper>
+          </ButtonsWrapper>}
         </VideoWrapper>
       ) : null}
     </div>
