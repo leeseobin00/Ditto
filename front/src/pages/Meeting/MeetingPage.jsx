@@ -39,7 +39,7 @@ const ParticipantGrid = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  max-height: calc(100vh - 200px);
+  height: calc(100vh - 240px);
 `;
 
 const ScrollButton = styled.button`
@@ -87,6 +87,7 @@ function MeetingPage() {
   const [subscribers, setSubscribers] = useState([]);
   // chat
   const [chatMessages, setChatMessages] = useState([]);
+  const [statusMessages, setStatusMessages] = useState([]);
   // State for mute and video control
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -158,6 +159,10 @@ function MeetingPage() {
     // });
     // return response.data; // The token
     const response = await axios.post(`http://localhost:8080/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
+    if(response?.data?.code==403){
+      alert(response?.data?.message);
+      navigate("/video");
+    }
     const token = response?.data?.data;
     return token;
   };
@@ -174,17 +179,24 @@ function MeetingPage() {
     );
   };
 
+  useEffect(()=>{
+    console.log(statusMessages);
+  },[statusMessages]);
+
   const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
 
     newSession.on('streamCreated', (event) => {
-      if (event.stream.connection.connectionId !== newSession.connection.connectionId) {
-        const subscriber = newSession.subscribe(event.stream, undefined);
-        const parsedData = JSON.parse(subscriber?.stream?.connection?.data.split('%/%user-data')[0]);
-        if (parsedData?.username !== myUserName) {
-          setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
-        }
+      const connectionData = event.stream.connection;
+      const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
+      if(connectionData.connectionId == newSession.connection.connectionId) return;
+
+      // 수강생이면 강사만 subscribe할 수 있음
+      if(roleId==1 && parsedData.data?.roleId==1) return;
+      const subscriber = newSession.subscribe(event.stream, undefined);
+      if (parsedData?.username !== myUserName) {
+        setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
 
@@ -202,6 +214,13 @@ function MeetingPage() {
       const parsedData = JSON.parse(event.data);
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
       setChatMessages((prev)=>[...prev, parsedData]);
+    });
+
+    newSession.on('signal:status', (event) => {
+      console.log('New chat message:', event.data);
+      const parsedData = JSON.parse(event.data);
+      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      setStatusMessages((prev)=>[...prev, parsedData]);
     });
 
     const token = await getToken();
@@ -281,6 +300,7 @@ function MeetingPage() {
     SpeechRecognition.startListening({ language: 'ko-KR', continuous: true });
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
+    setStatusMessages([]);
   }
   const handleNextStep = async () => {
     setStepLoading(true);
@@ -292,6 +312,7 @@ function MeetingPage() {
     resetTranscript();
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
+    setStatusMessages([]);
   }
   const handleEndStep = async() => {
     if (!listening) return;
@@ -306,6 +327,7 @@ function MeetingPage() {
     setStepLoading(false);
     SpeechRecognition.abortListening();
     setStepLoading(false);
+    setStatusMessages([]);
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -329,6 +351,25 @@ function MeetingPage() {
     });
     };
   }
+  const sendStatus = (senderName, senderMsg, time) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            message: senderMsg, 
+            sender: senderName,
+            time: time,
+        }),
+        to: [],
+        type: 'status'
+    })
+    .then(() => {
+        console.log('Message successfully sent');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
@@ -343,6 +384,8 @@ function MeetingPage() {
       value={{
         sendChat,
         chatMessages,
+        sendStatus,
+        statusMessages,
         publisher,
         subscribers,
       }}
