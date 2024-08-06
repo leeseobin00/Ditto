@@ -10,5 +10,7 @@ import lombok.*;
 public class PaymentApprovalRequest {
     private String paymentKey;
     private String orderId;
-    private int amount;
+    private Integer amount;
+    private Integer userId;
+    private Integer lectureId;
 }

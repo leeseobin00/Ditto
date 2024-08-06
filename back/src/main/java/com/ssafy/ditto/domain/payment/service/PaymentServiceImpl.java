@@ -1,9 +1,16 @@
 package com.ssafy.ditto.domain.payment.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.repository.LectureRepository;
+import com.ssafy.ditto.domain.payment.domain.Payment;
+import com.ssafy.ditto.domain.payment.dto.PayType;
 import com.ssafy.ditto.domain.payment.dto.PaymentApprovalRequest;
-import com.ssafy.ditto.domain.payment.dto.PaymentRequest;
+import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
+import com.ssafy.ditto.domain.user.domain.User;
+import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 @Service
@@ -20,13 +30,18 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    @Value("{TOSS_SECRET_KEY}")
+    @Value("${TOSS_SECRET_KEY}")
     private String TOSS_SECRET_KEY;
+    private final PaymentRepository paymentRepository;
+    private final LectureRepository lectureRepository;
+    private final UserRepository userRepository;
 
-    public String requestPayment(PaymentRequest paymentRequest) {
+    @Override
+    public String approvePayment(PaymentApprovalRequest approvalRequest) {
         RestTemplate restTemplate = new RestTemplate();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        String url = "https://api.tosspayments.com/v1/payments";
+        String url = "https://api.tosspayments.com/v1/payments/confirm";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -34,40 +49,49 @@ public class PaymentServiceImpl implements PaymentService {
         String auth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
         headers.set("Authorization", "Basic " + auth);
 
-        JSONObject body = new JSONObject();
-        body.put("method", paymentRequest.getMethod());
-        body.put("orderId", paymentRequest.getOrderId());
-        body.put("amount", paymentRequest.getAmount());
-        body.put("orderName", paymentRequest.getOrderName());
-        body.put("successUrl", paymentRequest.getSuccessUrl());
-        body.put("failUrl", paymentRequest.getFailUrl());
+        JsonNode body = objectMapper.createObjectNode()
+                .put("paymentKey", approvalRequest.getPaymentKey())
+                .put("orderId", approvalRequest.getOrderId())
+                .put("amount", approvalRequest.getAmount());
 
         HttpEntity<String> request = new HttpEntity<>(body.toString(), headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-        return response.getBody();
-    }
+        try {
+            JsonNode responseBody = objectMapper.readTree(response.getBody());
 
-    public String approvePayment(PaymentApprovalRequest approvalRequest) {
-        RestTemplate restTemplate = new RestTemplate();
+            // 데이터베이스에 저장
+            LocalDateTime approvedAt = LocalDateTime.now();
+            String approvedAtStr = responseBody.path("approvedAt").asText("");
+            if (!approvedAtStr.isEmpty()) {
+                OffsetDateTime approvedAtOffsetDateTime = OffsetDateTime.parse(approvedAtStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                approvedAt = approvedAtOffsetDateTime.toLocalDateTime();
+            }
 
-        String url = "https://api.tosspayments.com/v1/payments/confirm";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            // 사용자 정보 설정
+            User user = userRepository.findById(approvalRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 여기에 secretKey를 설정하세요.
-        String secretKey = "test_sk_DnyRpQWGrNzBm674Y2qlrKwv1M9E";
-        String auth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
-        headers.set("Authorization", "Basic " + auth);
+            Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
 
-        JSONObject body = new JSONObject();
-        body.put("paymentKey", approvalRequest.getPaymentKey());
-        body.put("orderId", approvalRequest.getOrderId());
-        body.put("amount", approvalRequest.getAmount());
+            Payment payment = Payment.builder()
+                    .orderName(lecture.getClassName())
+                    .paymentKey(responseBody.path("paymentKey").asText(""))
+                    .orderId(responseBody.path("orderId").asText(""))
+                    .amount(responseBody.path("totalAmount").asLong(0))
+                    .orderName(responseBody.path("orderName").asText(""))
+                    .payTime(approvedAt)
+                    .paySuccessYN(true)
+                    .payType(PayType.CARD) // 기본 값으로 카드 사용 (필요 시 수정)
+                    .userId(user)
+                    .lectureId(lecture)
+                    .build();
 
-        HttpEntity<String> request = new HttpEntity<>(body.toString(), headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            paymentRepository.save(payment);
 
-        return response.getBody();
+            return "Payment approved and saved successfully.";
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse payment approval response", e);
+        }
     }
 }

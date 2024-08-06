@@ -16,14 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
     private final PaymentService paymentService;
 
-//    @PostMapping("/request")
-//    public String requestPayment(@RequestBody PaymentRequest paymentRequest) {
-//        return paymentService.requestPayment(paymentRequest);
-//    }
-
     @PostMapping("/approve")
     public String approvePayment(@RequestBody PaymentApprovalRequest approvalRequest) {
         return paymentService.approvePayment(approvalRequest);
     }
-
 }
