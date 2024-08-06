@@ -118,7 +118,11 @@ function MeetingPage() {
 
   useEffect(() => {
     if (OV && myUserName && userId && roleId && lectureId) {
-      createSession();
+      if(roleId==2){
+        createSession();
+      }else if(roleId==1){
+        joinSession();
+      }
     }
   }, [OV, myUserName, userId, roleId, lectureId]);
 
@@ -127,16 +131,6 @@ function MeetingPage() {
       leaveSession();
     };
   },[session]);
-  
-  useEffect(()=>{
-    if(!isSession) return;
-    if(isSession===200){
-      joinSession();
-    }else{
-      alert("세션에 접근할 수 없습니다!");
-      navigate("/video");
-    }
-  },[isSession]);
 
   const createSession = async (sessionId) => {
     // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
@@ -144,7 +138,12 @@ function MeetingPage() {
     // });
     // return response.data; // The sessionId
     const response = await axios.post(`http://localhost:8080/sessions/${lectureId}?userId=${userId}`, null);
-    setIsSession(response?.data?.code);
+    if(response?.data?.code==200){
+      joinSession();
+    }else{
+      alert("세션에 접근할 수 없습니다!");
+      navigate("/video");
+    }
   };
 
   const getToken = async () => {
@@ -159,7 +158,7 @@ function MeetingPage() {
     // });
     // return response.data; // The token
     const response = await axios.post(`http://localhost:8080/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
-    const token = response?.data?.data?.token;
+    const token = response?.data?.data;
     return token;
   };
 
@@ -286,36 +285,25 @@ function MeetingPage() {
   const handleNextStep = async () => {
     setStepLoading(true);
     setText(transcript);
-    const postData = {
-      originText: [
-        transcript,
-      ]
-    };
-    try{
-      const response = await axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, postData);
-      console.log(response);
-    }catch(error){
-      console.log(error);
-    }finally{
-      resetTranscript();
-      setCurrentStep((prev) => prev + 1);
-      setStepLoading(false);
-    }
+    const sendText = transcript;
+    const originText = [sendText];
+    // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
+    axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, originText);
+    resetTranscript();
+    setCurrentStep((prev) => prev + 1);
+    setStepLoading(false);
   }
   const handleEndStep = async() => {
     if (!listening) return;
     setStepLoading(true);
     setText(transcript);
-    try{
-      const response = await axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, postData);
-      console.log(response);
-    }catch(error){
-      console.log(error);
-    }finally{
-      resetTranscript();
-      setCurrentStep((prev) => prev + 1);
-      setStepLoading(false);
-    }
+    const sendText = transcript;
+    const originText = [sendText];
+    // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
+    axios.post(`http://localhost:8080/summary/${lectureId}/${currentStep+1}`, originText);
+    resetTranscript();
+    setCurrentStep((prev) => prev + 1);
+    setStepLoading(false);
     SpeechRecognition.abortListening();
     setStepLoading(false);
   }
@@ -346,6 +334,9 @@ function MeetingPage() {
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
+
+  console.log("===========>publisher", publisher);
+  console.log("===========>subscribers", subscribers);
 
   return (
     <MeetingContext.Provider
