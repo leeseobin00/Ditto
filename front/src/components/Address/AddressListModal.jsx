@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import Modal from "../common/Modal";
-import AddressList from "../MyPage/Address/AddressList";
+import AddressList from "./AddressList";
 import OutlineButton from "../common/OutlineButton";
 
 const Title = styled.div`
