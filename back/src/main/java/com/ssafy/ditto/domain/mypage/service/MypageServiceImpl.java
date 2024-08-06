@@ -89,11 +89,11 @@ public class MypageServiceImpl implements MypageService {
         // 1. 닉네임 변경
         if (!mypageRequest.getNickname().isEmpty()) {
             String newNickname = mypageRequest.getNickname();
-            if (userRepository.existsByNickname(newNickname)) {
-                throw new UserDuplicateException();
+            if (!userRepository.existsByNickname(newNickname)) {
+                user.changeNickname(newNickname);
             }
-            user.changeNickname(newNickname);
         }
+
         // 2. 비밀번호 변경
         if (!mypageRequest.getPassword().isEmpty()) {
             user.changePassword(passwordEncoder.encode(mypageRequest.getPassword()));
