@@ -1,23 +1,25 @@
-import { useState, useEffect } from 'react';
-import { styled } from 'styled-components';
-import { isPasswordMatch, isPasswordValid } from '../../../utils/passwordValidation'; // 비밀번호 확인 및 유효성 검사 함수 임포트
-import { checkNicknameAvailability } from '../../../utils/checkNicknameAvailability'; // 닉네임 중복 확인 함수 임포트
-import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect } from "react";
+import { styled } from "styled-components";
+import {
+  isPasswordMatch,
+  isPasswordValid,
+} from "../../../utils/passwordValidation"; // 비밀번호 확인 및 유효성 검사 함수 임포트
+import { checkNicknameAvailability } from "../../../utils/checkNicknameAvailability"; // 닉네임 중복 확인 함수 임포트
+import { useSelector, useDispatch } from "react-redux";
 import { changeNickname } from "../../../features/auth/authSlice";
 import axios from "axios";
-import useAxios from '../../../hooks/useAxios';
+import useAxios from "../../../hooks/useAxios";
 import useAuthAxios from "../../../hooks/useAuthAxios";
-import useFormDataAxios from '../../../hooks/useFormDataAxios';
-import axiosIntercepter from '../../../features/axiosIntercepter';
-import defaultProfile from '../../../assets/img/profile-user.png';
+import useFormDataAxios from "../../../hooks/useFormDataAxios";
+import axiosIntercepter from "../../../features/axiosIntercepter";
+import defaultProfile from "../../../assets/img/profile-user.png";
 import RoundButton from "../../../components/common/RoundButton";
 import OutlineButton from "../../../components/common/OutlineButton";
 import WriteIcon from "../../../assets/icon/profile/write-white.png";
-import ModifyProfileImage from './ModifyProfileImage';
-import Modal from '../../common/Modal';
+import ModifyProfileImage from "./ModifyProfileImage";
+import Modal from "../../common/Modal";
 
-const UserInfoContainer = styled.div`
-`;
+const UserInfoContainer = styled.div``;
 
 const ProfileImageContainer = styled.div`
   display: flex;
@@ -59,7 +61,6 @@ const ProfileIconImage = styled.img`
   width: 16px;
   height: 16px;
 `;
-
 
 const ProfileInfo = styled.div`
   display: flex;
@@ -135,9 +136,10 @@ const UserInfo = ({ userData }) => {
   const [name, setName] = useState("");
   const [isPasswordValidState, setIsPasswordValidState] = useState(true);
   const [isPasswordMatchState, setIsPasswordMatchState] = useState(false);
-  const [isNicknameAvailableState, setIsNicknameAvailableState] = useState(true);
-  const [nicknameMessage, setNicknameMessage] = useState('');
-  const [error, setError] = useState('');
+  const [isNicknameAvailableState, setIsNicknameAvailableState] =
+    useState(true);
+  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [error, setError] = useState("");
   // modal
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const handleOpenProfileModal = () => {
@@ -149,33 +151,34 @@ const UserInfo = ({ userData }) => {
   };
 
   // 초기 form 구성
-  useEffect(()=>{
-    if(userData){
+  useEffect(() => {
+    if (userData) {
       const fileId = userData?.data?.fileId;
-      if(fileId){
+      if (fileId) {
         handleGetProfileImage(fileId);
       }
     }
-  },[userData]);
+  }, [userData]);
 
-  const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
-  const handleGetProfileImage = async(fileId) => {    
+  const handleGetProfileImage = async (fileId) => {
     const baseURL = import.meta.env.VITE_BASE_URL;
 
     const response = await axios.get(`${baseURL}/files/download/${fileId}`, {
-      responseType: 'blob'
+      responseType: "blob",
     });
     const fileBlob = response.data;
     const base64 = await toBase64(fileBlob);
 
     setCurProfileImage(base64);
-  }
+  };
 
   // 마이페이지 수정
   const handlePasswordChange = (event) => {
@@ -183,69 +186,74 @@ const UserInfo = ({ userData }) => {
     setIsPasswordValidState(isPasswordValid(curPassword));
     setIsPasswordMatchState(isPasswordMatch(curPassword, confirmPassword));
     setPassword(curPassword);
-  }
+  };
 
   const handleConfirmPasswordChange = (event) => {
     const curConfirmPassword = event.target.value;
     setIsPasswordMatchState(isPasswordMatch(password, curConfirmPassword));
     setConfirmPassword(curConfirmPassword);
-  }
+  };
 
-  const handleNicknameChange = async(event) => {
+  const handleNicknameChange = async (event) => {
     const curNickname = event.target.value;
     setName(curNickname);
-    if(curNickname){
+    if (curNickname) {
       try {
         const isAvailable = await checkNicknameAvailability(curNickname);
         setIsNicknameAvailableState(isAvailable);
-        setNicknameMessage(isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
+        setNicknameMessage(
+          isAvailable
+            ? "사용 가능한 닉네임입니다."
+            : "이미 사용 중인 닉네임입니다."
+        );
       } catch (error) {
         console.error(error.message);
         setIsNicknameAvailableState(false);
         setNicknameMessage(error.message);
       }
     }
-  }
+  };
 
   const checkError = () => {
     if (!isPasswordMatchState) {
-      setError('비밀번호가 일치하지 않습니다.');
+      setError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
     if (!isPasswordValidState) {
-      setError('비밀번호가 유효하지 않습니다.');
+      setError("비밀번호가 유효하지 않습니다.");
       return;
     }
 
     if (!isNicknameAvailableState) {
-      setError('사용할 수 없는 닉네임입니다.');
+      setError("사용할 수 없는 닉네임입니다.");
       return;
     }
 
     setError(false);
-  }
+  };
 
   const handleCancel = () => {
     //setPassword('');
-    setError('');
-    setPassword('');
-    setConfirmPassword('');
+    setError("");
+    setPassword("");
+    setConfirmPassword("");
     setName(nickname);
-    setNicknameMessage('');
+    setNicknameMessage("");
     setIsNicknameAvailableState(true);
     setIsPasswordMatchState(true);
     checkError();
   };
 
   const handleSave = async () => {
-    if(domain === "local") {
-      if(error){
+    if (domain === "local") {
+      if (error) {
         alert("회원 정보를 수정할 수 없습니다.");
-        return;        
+        return;
       }
-    }else{ // 카카오 회원인 경우
-      if(!isNicknameAvailableState){
+    } else {
+      // 카카오 회원인 경우
+      if (!isNicknameAvailableState) {
         alert("해당 닉네임으로는 변경할 수 없습니다.");
         return;
       }
@@ -261,31 +269,31 @@ const UserInfo = ({ userData }) => {
       const response = await sendAuthRequest(`/mypage/${userId}`, patchData, "patch");
       console.log("전송완료");
       if (response.code == 200) {
-        console.log('수정 성공:', patchData);
+        console.log("수정 성공:", patchData);
         dispatch(changeNickname({ nickname: name }));
       } else {
-        setError('수정 실패. 다시 시도해주세요.');
+        setError("수정 실패. 다시 시도해주세요.");
       }
-      alert('수정 성공:', patchData);
+      alert("수정 성공:", patchData);
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        setError('이미 사용중인 닉네임입니다.');
+        setError("이미 사용중인 닉네임입니다.");
       } else {
-        console.error('저장 에러:', error);
-        setError('저장 실패. 다시 시도해주세요.');
+        console.error("저장 에러:", error);
+        setError("저장 실패. 다시 시도해주세요.");
       }
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     checkError();
-  },[isPasswordMatchState, isPasswordValidState, isNicknameAvailableState]);
+  }, [isPasswordMatchState, isPasswordValidState, isNicknameAvailableState]);
 
-  useEffect(()=>{
-    if(nickname){
+  useEffect(() => {
+    if (nickname) {
       setName(nickname);
     }
-  },[nickname]);
+  }, [nickname]);
 
   return (
     <UserInfoContainer>
@@ -293,7 +301,7 @@ const UserInfo = ({ userData }) => {
         <ProfileImageWrapper>
           <ProfileImage src={curProfileImage || defaultProfile} alt="Profile" />
           <ProfileEditButton
-            position={{ top: "10px", left: "120px"}}
+            position={{ top: "10px", left: "120px" }}
             onClick={handleOpenProfileModal}
           >
             <ProfileIconImage src={WriteIcon} alt="Edit Icon" />
@@ -303,39 +311,47 @@ const UserInfo = ({ userData }) => {
       <ProfileInfo>
         <ProfileField>
           <InputLabel>Email</InputLabel>
-          <ProfileInput type="text" value={email || ''} readOnly />
+          <ProfileInput type="text" value={email || ""} readOnly />
         </ProfileField>
-        {(domain==="local") && <>
-          <ProfileField>
-          <InputLabel>PW</InputLabel>
-          <ProfileInput
-            type="password"
-            placeholder="비밀번호"
-            name="password"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          {!isPasswordValidState && <ErrorMessage>영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.</ErrorMessage>}
-        </ProfileField>
-        <ProfileField>
-          <InputLabel>PW 확인</InputLabel>
-          <ProfileInput
-            type="password"
-            placeholder="비밀번호 확인"
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-          />
-          {!isPasswordMatchState && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
-        </ProfileField>
-        </>}
+        {domain === "local" && (
+          <>
+            <ProfileField>
+              <InputLabel>PW</InputLabel>
+              <ProfileInput
+                type="password"
+                placeholder="비밀번호"
+                name="password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+              {!isPasswordValidState && (
+                <ErrorMessage>
+                  영어, 숫자, 특수문자 포함 8~32자로 설정해주세요.
+                </ErrorMessage>
+              )}
+            </ProfileField>
+            <ProfileField>
+              <InputLabel>PW 확인</InputLabel>
+              <ProfileInput
+                type="password"
+                placeholder="비밀번호 확인"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+              />
+              {!isPasswordMatchState && (
+                <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>
+              )}
+            </ProfileField>
+          </>
+        )}
         <ProfileField>
           <InputLabel>닉네임</InputLabel>
           <ProfileInput
             type="text"
             placeholder={name || "닉네임"}
             name="nickname"
-            value={name || ''}
+            value={name || ""}
             onChange={handleNicknameChange}
           />
           <MessageWrapper>
@@ -346,7 +362,12 @@ const UserInfo = ({ userData }) => {
         </ProfileField>
       </ProfileInfo>
       <ButtonGroup>
-        <OutlineButton label="취소" $cancel onClick={handleCancel} />
+        <OutlineButton
+          label="취소"
+          $cancel
+          onClick={handleCancel}
+          color={"default"}
+        />
         <RoundButton label="수정" onClick={handleSave} />
       </ButtonGroup>
 
@@ -355,11 +376,10 @@ const UserInfo = ({ userData }) => {
           <ModifyProfileImage
             curProfileImage={curProfileImage}
             handleProfileImage={setCurProfileImage}
-            onClose={handleCloseProfileModal} />
+            onClose={handleCloseProfileModal}
+          />
         </Modal>
       )}
-
-
     </UserInfoContainer>
   );
 };

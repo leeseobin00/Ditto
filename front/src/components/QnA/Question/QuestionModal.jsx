@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import useAxios from "../../../hooks/useAxios";
@@ -57,13 +57,28 @@ const ContentInput = styled.textarea`
   }
 `;
 
-function QuestionAddModal({ show, classId, userId, onClose, onSubmit }) {
+function QuestionModal({
+  show,
+  classId,
+  userId,
+  onClose,
+  onSubmit,
+  isEdit = false,
+  question,
+}) {
   if (!show) {
     return null;
   }
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+
+  useEffect(() => {
+    if (isEdit && question) {
+      setTitle(question.title);
+      setContent(question.content);
+    }
+  }, [isEdit, question]);
 
   const { sendRequest } = useAxios();
 
@@ -88,9 +103,28 @@ function QuestionAddModal({ show, classId, userId, onClose, onSubmit }) {
     }
   };
 
+  const handleEditQuestion = async () => {
+    try {
+      await sendRequest(
+        `/classes/${classId}/questions/${question?.questionId}`,
+        {
+          title: title,
+          content: content,
+        },
+        "patch"
+      );
+      onSubmit();
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = isEdit ? handleEditQuestion : handleAddQuestion;
+
   return (
     <Modal onClose={onClose}>
-      <Title>문의하기</Title>
+      <Title>{isEdit ? "문의 수정" : "문의하기"}</Title>
       <ContentContainer>
         <TitleInput
           type="text"
@@ -104,9 +138,9 @@ function QuestionAddModal({ show, classId, userId, onClose, onSubmit }) {
           onChange={(e) => setContent(e.target.value)}
         />
       </ContentContainer>
-      <OutlineButton label={"작성"} onClick={handleAddQuestion} />
+      <OutlineButton label={isEdit ? "수정" : "작성"} onClick={handleSubmit} />
     </Modal>
   );
 }
 
-export default QuestionAddModal;
+export default QuestionModal;

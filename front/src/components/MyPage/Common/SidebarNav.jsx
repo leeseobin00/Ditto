@@ -32,8 +32,8 @@ const SidebarNav = ({ roleId }) => {
       {roleId == "1" && (
         <>
           <NavItem to="userinfo">계정 정보</NavItem>
-          <NavItem to="payments">결제 내역</NavItem>
-          <NavItem to="questions">작성한 문의</NavItem>
+          <NavItem to="payment">결제 내역</NavItem>
+          <NavItem to="question">작성한 문의</NavItem>
           <NavItem to="reviews">작성한 리뷰</NavItem>
           <NavItem to="liked">관심 목록</NavItem>
         </>
@@ -42,7 +42,7 @@ const SidebarNav = ({ roleId }) => {
         <>
           <NavItem to="prouserinfo">계정 정보</NavItem>
           <NavItem to="mileage">마일리지 출금</NavItem>
-          <NavItem to="proquestion">문의 내역</NavItem>
+          <NavItem to="question">문의 내역</NavItem>
         </>
       )}
     </Sidebar>
