@@ -11,11 +11,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LearningRepository extends JpaRepository<Learning, Integer>, JpaSpecificationExecutor<Learning> {
-    @Query("SELECT COUNT(l) FROM Learning l WHERE l.lectureId.id = :lectureId")
+    @Query("SELECT COUNT(l) FROM Learning l WHERE l.lecture.lectureId = :lectureId")
     int countByLectureId(@Param("lectureId") Integer lectureId);
 
-    boolean existsByStudentIdAndLectureId(User user, Lecture lecture);
-    boolean existsByTeacherIdAndLectureId(User teacher, Lecture lecture);
+    boolean existsByStudentAndLecture(User student, Lecture lecture);
 
-    List<Learning> findAllByLectureId(Lecture lecture);
+    List<Learning> findAllByLecture(Lecture lecture);
 }

@@ -24,6 +24,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
             "AND l.isDeleted = false")
     List<Lecture> findLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
 
-    @Query("SELECT l FROM Learning l where l.classId.classId = :classId AND l.studentId.userId = :userId AND l.isFinished")
+    @Query("SELECT l FROM Learning l where l.dClass.classId = :classId AND l.student.userId = :userId AND l.isFinished")
     List<Lecture> findCompletedLearningsByClassAndUser(@Param("classId") Integer classId, @Param("userId") Integer userId);
 }

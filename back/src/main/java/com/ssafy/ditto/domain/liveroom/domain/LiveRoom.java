@@ -29,8 +29,8 @@ public class LiveRoom {
     @OneToMany(mappedBy = "liveRoom")
     private List<Learning> liveUsers = new ArrayList<>();
 
-    @Column(name = "url", length = 1000)
-    private String url;
+    @Column(name = "session_id", length = 1000)
+    private String sessionId;
 
     @Column(name = "name", length = 50)
     private String name;

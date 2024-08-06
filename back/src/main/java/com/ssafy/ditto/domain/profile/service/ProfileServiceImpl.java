@@ -230,7 +230,7 @@ public class ProfileServiceImpl implements ProfileService {
         }, pageable);
 
         List<DClass> classList = learningPage.getContent().stream()
-                .map(Learning::getClassId)
+                .map(Learning::getDClass)
                 .toList();
 
         List<ClassResponse> classResponses = classList.stream().map(dClass -> {

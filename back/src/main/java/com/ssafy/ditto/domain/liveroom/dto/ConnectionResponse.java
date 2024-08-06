@@ -12,5 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ConnectionResponse {
     private String token;
+    private String connectionId;
     private OpenViduRole role;
 }

@@ -4,15 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.*;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.dto.ConnectionResponse;
-import com.ssafy.ditto.domain.liveroom.dto.RecordResponse;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
+import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import io.openvidu.java.client.*;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -21,20 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// json
-import com.google.gson.stream.JsonReader;
-import java.io.FileReader;
-
-// unzip
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 
 @RestController
@@ -46,13 +30,12 @@ public class SessionController {
 	private OpenVidu openVidu;
 	private LearningService learningService;
 	private LectureService lectureService;
+	private LiveRoomService liveRoomService;
 
 	// Collection to pair session names and OpenVidu Session objects
 	private Map<Integer, Session> lectureSessions = new ConcurrentHashMap<>();
 	// Collection to pair session names and tokens (the inner Map pairs tokens and role associated)
 	private Map<String, Map<Integer, ConnectionResponse>> sessionUserToken = new ConcurrentHashMap<>();
-	// Collection to pair session names and recording objects
-	private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
 
 	// URL where our OpenVidu server is listening
 	private String OPENVIDU_URL;
@@ -61,17 +44,18 @@ public class SessionController {
 
 	@Autowired
 	public SessionController(@Value("${openvidu.secret}") String secret, @Value("${openvidu.url}") String openviduUrl,
-							 LearningService learningService,LectureService lectureService) {
+							 LearningService learningService,LectureService lectureService,LiveRoomService liveRoomService) {
 		this.SECRET = secret;
 		this.OPENVIDU_URL = openviduUrl;
 		this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
 		this.learningService = learningService;
 		this.lectureService = lectureService;
+		this.liveRoomService = liveRoomService;
 	}
 
 	// 생성
 	@PostMapping("/{lectureId}")
-	public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
+	public ResponseDto<?> createLiveRoom(@PathVariable int lectureId, @RequestParam Integer userId) {
 		logger.info("*** create 메소드 호출");
 		boolean isValidTeacher = lectureService.isValidTeacher(userId,lectureId);
 		if (!isValidTeacher) {
@@ -88,11 +72,13 @@ public class SessionController {
 				this.lectureSessions.put(lectureId, session);
 				this.sessionUserToken.put(session.getSessionId(), new HashMap<>());
 
+				liveRoomService.setSession(lectureId,session.getSessionId());
+
 				showMap();
 				// 세션 정보 출력
 				printSessionDetails(session);
 
-				return ResponseDto.of(HttpStatus.OK.value(), "라이브 방송 링크가 생성되었습니다.");
+				return ResponseDto.of(HttpStatus.OK.value(), "라이브 방송 링크가 생성되었습니다.", session.getSessionId());
 			} catch (OpenViduJavaClientException e) {
 				e.printStackTrace();
 				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 클라이언트 오류 발생: " + e.getMessage());
@@ -147,21 +133,20 @@ public class SessionController {
 			logger.info("기존 세션 존재: lectureId={}", lectureId);
 			try {
 				// 방금 생성한 connectionProperties로 새 토큰 생성
-				String token = session.createConnection(properties).getToken();
+				Connection connection = session.createConnection(properties);
+				String token = connection.getToken();
+				String connectionId = connection.getConnectionId();
 				logger.info("토큰 생성 완료: token={}", token);
 
 				ConnectionResponse resp = new ConnectionResponse();
 				resp.setToken(token);
+				resp.setConnectionId(connectionId);
 				resp.setRole(role);
 
 				// 새 토큰을 저장하는 컬렉션 업데이트
 				this.sessionUserToken.get(session.getSessionId()).put(userId, resp);
 
-				// 응답 준비
-				JsonObject responseJson = new JsonObject();
-				responseJson.addProperty("token", token);
-
-				return ResponseDto.of(HttpStatus.OK.value(), "토큰 생성 성공", responseJson);
+				return ResponseDto.of(HttpStatus.OK.value(), "토큰 생성 성공", token);
 			} catch (OpenViduJavaClientException e1) {
 				logger.error("OpenViduJavaClientException 발생: {}", e1.getMessage());
 				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), e1.getMessage());
@@ -238,7 +223,6 @@ public class SessionController {
 				// 세션과 관련된 데이터 삭제
 				this.lectureSessions.remove(lectureId);
 				this.sessionUserToken.remove(session.getSessionId());
-				this.sessionRecordings.remove(session.getSessionId());
 
 				return ResponseDto.of(HttpStatus.OK.value(), "세션이 정상적으로 종료되었습니다.");
 			} catch (Exception e) {
@@ -252,365 +236,122 @@ public class SessionController {
 		}
 	}
 
-	// 특정 세션의 상태 조회
 	@GetMapping("/fetch/{lectureId}")
-	public ResponseDto<?> fetchInfo(@PathVariable int lectureId,
-									@RequestBody(required = false) Map<String, Object> params) {
-		// 강의 ID로 세션을 조회
+	public ResponseDto<?> fetchInfo(@PathVariable int lectureId) {
 		Session session = this.lectureSessions.get(lectureId);
 		if (session == null) {
-			// 세션이 존재하지 않음
-			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
-			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+			logger.error("세션을 찾을 수 없음: lectureId={}", lectureId);
+			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션을 찾을 수 없습니다.");
 		}
-		// 세션 정보 출력
-		printSessionDetails(session);
 
-		try {
-			// 세션이 존재하는 경우
-			if (this.sessionUserToken.get(session.getSessionId()) != null) {
-				boolean changed = session.fetch();
-				System.out.println("Any change: " + changed);
-
-				return ResponseDto.of(HttpStatus.OK.value(), "세션 정보 조회 성공", this.sessionToJson(session));
-			} else {
-				// 세션이 존재하지 않음
-				System.out.println("Problems in the app server: the SESSION does not exist");
-				return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Problems in the app server: the SESSION does not exist");
-			}
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			e.printStackTrace();
-			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
-		}
+		return ResponseDto.of(HttpStatus.OK.value(), "세션 정보 가져오기 성공", sessionToMap(session));
 	}
 
-	// 모든 세션의 상태 조회
 	@GetMapping("/fetch")
 	public ResponseDto<?> fetchAll() {
-		try {
-			System.out.println("Fetching all session info");
-			boolean changed = this.openVidu.fetch();
-			System.out.println("Any change: " + changed);
-			JsonArray jsonArray = new JsonArray();
-			for (Session session : this.openVidu.getActiveSessions()) {
-				jsonArray.add(this.sessionToJson(session));
-			}
-			return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 조회 성공", jsonArray);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			e.printStackTrace();
-			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu API 에러: " + e.getMessage());
-		}
+		return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 가져오기 성공", sessionsToMap());
 	}
 
-//	@DeleteMapping("/force-disconnect")
-//	public ResponseEntity<JsonObject> forceDisconnect(@RequestBody Map<String, Object> params) {
-//		try {
-//			// BODY에서 매개변수 가져오기
-//			String session = (String) params.get("sessionName");
-//			String connectionId = (String) params.get("connectionId");
-//
-//			// 세션이 존재하는 경우
-//			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
-//				Session s = this.lectureSessions.get(session);
-//				s.forceDisconnect(connectionId);
-//				return new ResponseEntity<>(HttpStatus.OK);
-//			} else {
-//				// 세션이 존재하지 않음
-//				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//			}
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			e.printStackTrace();
-//			return getErrorResponse(e);
-//		}
-//	}
-//
-//	@DeleteMapping("/force-unpublish")
-//	public ResponseEntity<JsonObject> forceUnpublish(@RequestBody Map<String, Object> params) {
-//		try {
-//			// BODY에서 매개변수 가져오기
-//			String session = (String) params.get("sessionName");
-//			String streamId = (String) params.get("streamId");
-//
-//			// 세션이 존재하는 경우
-//			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
-//				Session s = this.lectureSessions.get(session);
-//				s.forceUnpublish(streamId);
-//				return new ResponseEntity<>(HttpStatus.OK);
-//			} else {
-//				// 세션이 존재하지 않음
-//				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//			}
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			e.printStackTrace();
-//			return getErrorResponse(e);
-//		}
-//	}
-
-	/*******************/
-	/** Recording API **/
-	/*******************/
-	@PostMapping("/recording/{lectureId}/start")
-	public ResponseDto<?> startRecording(@PathVariable int lectureId,
-										 @RequestBody Map<String, Object> params) {
-		// 강의 ID로 세션을 조회
-		Session session = this.lectureSessions.get(lectureId);
-		if (session == null) {
-			// 세션이 존재하지 않음
-			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
-			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
-		}
-		String sessionId = session.getSessionId();
-		Recording.OutputMode outputMode = Recording.OutputMode.valueOf((String) params.get("outputMode"));
-		boolean hasAudio = (boolean) params.get("hasAudio");
-		boolean hasVideo = (boolean) params.get("hasVideo");
-
-		RecordingProperties properties = new RecordingProperties.Builder()
-																.outputMode(outputMode)
-																.hasAudio(hasAudio)
-																.hasVideo(hasVideo)
-																.build();
-
-		System.out.println("Starting recording for session " + sessionId + " with properties {outputMode=" + outputMode
-				+ ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "}");
-
+	// 특정 사용자 강제 연결 해제
+	@DeleteMapping("/force-disconnect/{lectureId}")
+	public ResponseDto<?> forceDisconnect(@PathVariable int lectureId, @RequestParam Integer userId) {
 		try {
-			Recording recording = this.openVidu.startRecording(sessionId, properties);
-			logger.info("Recording started successfully: {}", recording.getUrl());
-			this.sessionRecordings.put(sessionId, true);
-			return ResponseDto.of(HttpStatus.OK.value(), "Recording started successfully", recording);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			logger.error("Error starting recording: {}", e.getMessage());
-			return ResponseDto.of(HttpStatus.BAD_REQUEST.value(), "Error starting recording: " + e.getMessage());
-		}
-	}
+			// 강의 ID로 세션을 조회
+			Session session = this.lectureSessions.get(lectureId);
 
-	@PostMapping("/recording/{lectureId}/stop")
-	public ResponseDto<?> stopRecording(@PathVariable int lectureId,
-										@RequestBody Map<String, Object> params) throws IOException {
-		// 강의 ID로 세션을 조회
-		Session session = this.lectureSessions.get(lectureId);
-		if (session == null) {
-			// 세션이 존재하지 않음
-			logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
-			return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
-		}
-
-		String recordingId = (String) params.get("recording");
-		String connectionId = (String) params.get("connectionId");
-
-		System.out.println("Stoping recording | {recordingId}=" + recordingId);
-		System.out.println("Stoping recording | {connectionId}=" + connectionId);
-
-		try {
-			Recording recording = this.openVidu.stopRecording(recordingId);
-			System.out.println("stop recording - url: " + recording.getUrl());
-
-			String sessionId = recording.getSessionId();
-			System.out.println("stop recording - sessionid: " + sessionId);
-
-			// upzip
-			String zipPath = File.separator + "opt" + File.separator + "openvidu" + File.separator + "recordings" + File.separator + sessionId + File.separator + sessionId + ".zip";
-			File zipFile = new File(zipPath);
-			// 압축 해제 위치 = 해제한 파일 위치 -> openvidu에서 제공하는 delete 사용 가능
-			String upzipDir = File.separator + "opt" + File.separator + "openvidu" + File.separator + "recordings" + File.separator + sessionId + File.separator;
-
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath));
-			ZipEntry ze = zis.getNextEntry();
-
-			while(ze!=null){
-				String entryName = ze.getName();
-				System.out.print("Extracting " + entryName + " -> " + upzipDir + File.separator +  entryName + "...");
-				File f = new File(upzipDir + File.separator +  entryName);
-				//create all folder needed to store in correct relative path.
-				f.getParentFile().mkdirs();
-				FileOutputStream fos = new FileOutputStream(f);
-				int len;
-				byte buffer[] = new byte[1024];
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
+			// 세션이 존재하는 경우
+			if (session != null) {
+				String sessionId = session.getSessionId();
+				Map<Integer, ConnectionResponse> userConnections = this.sessionUserToken.get(sessionId);
+				if (userConnections != null) {
+					ConnectionResponse connectionResponse = userConnections.get(userId);
+					if (connectionResponse != null) {
+						String connectionId = connectionResponse.getConnectionId();
+						if (connectionId != null) {
+							session.forceDisconnect(connectionId);
+							return ResponseDto.of(HttpStatus.OK.value(), "연결 강제 해제 성공");
+						} else {
+							logger.error("connectionId가 null입니다: lectureId={}, userId={}", lectureId, userId);
+							return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "connectionId가 없습니다.");
+						}
+					} else {
+						logger.error("ConnectionResponse를 찾을 수 없습니다: lectureId={}, userId={}", lectureId, userId);
+						return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "ConnectionResponse를 찾을 수 없습니다.");
+					}
+				} else {
+					logger.error("userConnections를 찾을 수 없습니다: sessionId={}", sessionId);
+					return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "userConnections를 찾을 수 없습니다.");
 				}
-				fos.close();
-				System.out.println("OK!");
-				ze = zis.getNextEntry();
+			} else {
+				// 세션이 존재하지 않음
+				logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+				return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
 			}
-			zis.closeEntry();
-			zis.close();
-
-			// 녹화본 정보가 담긴 json 파일 읽기
-			Gson gson = new Gson();
-			String jsonPath = File.separator + "opt" + File.separator + "openvidu" + File.separator + "recordings" + File.separator + sessionId + File.separator + sessionId + ".json";
-			JsonReader recordJson = new JsonReader(new FileReader(jsonPath));
-			JsonObject jsonObject = gson.fromJson(recordJson, JsonObject.class);
-			System.out.println(jsonObject.get("files"));
-
-			// files 읽어서 params와 같은 connectionId를 갖는 name 가져오기
-			JsonArray recordArray = (JsonArray) jsonObject.get("files");
-			String recordName = "";
-			for(int i = 0; i < recordArray.size(); i++) {
-				JsonObject recordFile = (JsonObject) recordArray.get(i);
-				System.out.println("recordFile: " + recordFile);
-				String curConnectionId = recordFile.get("connectionId").toString().replace("\"", "");
-				System.out.println("curConnectionId: " + curConnectionId);
-				System.out.println(connectionId.equals(curConnectionId));
-				if(connectionId.equals(curConnectionId)) {
-					recordName = (String)recordFile.get("name").toString().replace("\"", "");
-					System.out.println(recordName);
-					break;
-				}
-			}
-
-			// 사용자 녹화본 URL 생성
-			String uRecordUrl = "https://i11a106.p.ssafy.io/openvidu/recordings/" + sessionId + "/" + recordName;
-			logger.info("uRecordUrl: {}", uRecordUrl);
-
-			RecordResponse url = new RecordResponse(recording, uRecordUrl);
-			this.sessionRecordings.remove(recording.getSessionId());
-
-			return ResponseDto.of(HttpStatus.OK.value(),"성공적으로 녹화 중지 성공",url);
 		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			logger.error("Error stopping recording: {}", e.getMessage());
-			return ResponseDto.of(HttpStatus.BAD_REQUEST.value(), "녹화를 중지하는 동안 오류가 발생했습니다: " + e.getMessage());
+			logger.error("OpenVidu 예외 발생: ", e);
+			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 예외가 발생했습니다.");
 		}
 	}
 
-//	@GetMapping("/recording/get/{recordingId}")
-//	public ResponseEntity<?> getRecording(@PathVariable(value = "recordingId") String recordingId) {
-//
-//		System.out.println("Getting recording | {recordingId}=" + recordingId);
-//
-//		try {
-//			Recording recording = this.openVidu.getRecording(recordingId);
-//			// url 확인 출력
-//			System.out.println("get recording: " + recording.getUrl());
-//			return new ResponseEntity<>(recording, HttpStatus.OK);
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//		}
-//	}
-//
-//	@GetMapping("/api/recording/list")
-//	public ResponseEntity<?> listRecordings() {
-//
-//		System.out.println("Listing recordings");
-//
-//		try {
-//			List<Recording> recordings = this.openVidu.listRecordings();
-//
-//			return new ResponseEntity<>(recordings, HttpStatus.OK);
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//		}
-//	}
+	// 스트림 중지
+	@DeleteMapping("/force-unpublish/{lectureId}")
+	public ResponseDto<?> forceUnpublish(@PathVariable int lectureId, @RequestParam String streamId) {
+		try {
+			// 강의 ID로 세션을 조회
+			Session session = this.lectureSessions.get(lectureId);
 
-	private ResponseEntity<JsonObject> getErrorResponse(Exception e) {
-		JsonObject json = new JsonObject();
-		json.addProperty("cause", e.getCause().toString());
-		json.addProperty("error", e.getMessage());
-		json.addProperty("exception", e.getClass().getCanonicalName());
-		return new ResponseEntity<>(json, HttpStatus.INTERNAL_SERVER_ERROR);
+			// 세션이 존재하는 경우
+			if (session != null) {
+				// streamId로 스트림을 강제로 중지
+				session.forceUnpublish(streamId);
+				return ResponseDto.of(HttpStatus.OK.value(), "스트림 강제 중단 성공");
+			} else {
+				// 세션이 존재하지 않음
+				logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+				return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+			}
+		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+			logger.error("OpenVidu 예외 발생: ", e);
+			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 예외가 발생했습니다.");
+		}
 	}
 
-	protected JsonObject sessionToJson(Session session) {
-		Gson gson = new Gson();
-		JsonObject json = new JsonObject();
-
-		json.addProperty("sessionId", session.getSessionId());
-
-		// customSessionId (nullable)
-		if (!session.getProperties().customSessionId().isEmpty()) {
-			String customSessionId = session.getProperties().customSessionId();
-			json.addProperty("customSessionId", customSessionId);
-			logger.debug("customSessionId: {}", customSessionId);
-		}
-
-		// recording
-		boolean isBeingRecorded = session.isBeingRecorded();
-		json.addProperty("recording", isBeingRecorded);
-
-		// mediaMode
-		if (session.getProperties().mediaMode() != null) {
-			String mediaModeName = session.getProperties().mediaMode().name();
-			json.addProperty("mediaMode", mediaModeName);
-		}
-
-		// recordingMode
-		if (session.getProperties().recordingMode() != null) {
-			String recordingModeName = session.getProperties().recordingMode().name();
-			json.addProperty("recordingMode", recordingModeName);
-		}
-
-		// defaultRecordingProperties
-		JsonElement defaultRecordingProperties = gson.toJsonTree(session.getProperties().defaultRecordingProperties());
-		if (defaultRecordingProperties != null && defaultRecordingProperties.isJsonObject()) {
-			json.add("defaultRecordingProperties", defaultRecordingProperties.getAsJsonObject());
-		}
-
-		// connections
-		JsonObject connections = new JsonObject();
-		connections.addProperty("numberOfElements", session.getConnections().size());
-
-		JsonArray jsonArrayConnections = new JsonArray();
-		session.getConnections().forEach(con -> {
-			JsonObject c = new JsonObject();
-			c.addProperty("connectionId", con.getConnectionId());
-
-			// role
-			if (con.getRole() != null) {
-				String roleName = con.getRole().name();
-				c.addProperty("role", roleName);
-			}
-
-			// token
-			if (con.getToken() != null) {
-				c.addProperty("token", con.getToken());
-			}
-
-			// clientData
-			if (!con.getClientData().isEmpty()) {
-				c.addProperty("clientData", con.getClientData());
-			}
-
-			// serverData
-			if (!con.getServerData().isEmpty()) {
-				c.addProperty("serverData", con.getServerData());
-			}
-
-			// publishers
-//			JsonArray pubs = new JsonArray();
-//			con.getPublishers().forEach(p -> {
-//				JsonElement pubElement = gson.toJsonTree(p);
-//				if (pubElement != null && pubElement.isJsonObject()) {
-//					pubs.add(pubElement.getAsJsonObject());
-//				}
-//			});
-//			c.add("publishers", pubs);
-//			logger.debug("publishers: {}", pubs);
-
-			// subscribers
-//			JsonArray subs = new JsonArray();
-//			con.getSubscribers().forEach(sub -> {
-//				JsonElement subElement = gson.toJsonTree(sub);
-//				if (subElement != null && subElement.isJsonPrimitive()) {
-//					subs.add(subElement.getAsJsonPrimitive());
-//				}
-//			});
-//			c.add("subscribers", subs);
-//			logger.debug("subscribers: {}", subs);
-
-			jsonArrayConnections.add(c);
-		});
-
-		connections.add("content", jsonArrayConnections);
-		json.add("connections", connections);
-
-		return json;
-	}
 
 	private void showMap() {
 		System.out.println("------------------------------");
 		System.out.println(this.lectureSessions.toString());
 		System.out.println(this.sessionUserToken.toString());
 		System.out.println("------------------------------");
+	}
+
+	private Map<String, Object> sessionToMap(Session session) {
+		Map<String, Object> sessionInfo = new HashMap<>();
+		sessionInfo.put("sessionId", session.getSessionId());
+		sessionInfo.put("customSessionId", session.getProperties().customSessionId());
+		sessionInfo.put("isBeingRecorded", session.isBeingRecorded());
+		sessionInfo.put("mediaMode", session.getProperties().mediaMode());
+		sessionInfo.put("connections", session.getConnections().size());
+
+		Map<String, Object> connectionsInfo = new HashMap<>();
+		session.getConnections().forEach(con -> {
+			Map<String, Object> connectionInfo = new HashMap<>();
+			connectionInfo.put("connectionId", con.getConnectionId());
+			connectionInfo.put("role", con.getRole());
+			connectionInfo.put("token", con.getToken());
+			connectionInfo.put("clientData", con.getClientData());
+			connectionInfo.put("serverData", con.getServerData());
+			connectionsInfo.put(con.getConnectionId(), connectionInfo);
+		});
+		sessionInfo.put("connectionsInfo", connectionsInfo);
+		return sessionInfo;
+	}
+
+	private Map<Integer, Map<String, Object>> sessionsToMap() {
+		Map<Integer, Map<String, Object>> allSessions = new HashMap<>();
+		this.lectureSessions.forEach((lectureId, session) -> {
+			allSessions.put(lectureId, sessionToMap(session));
+		});
+		return allSessions;
 	}
 
 	private void printSessionDetails(Session session) {
