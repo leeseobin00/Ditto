@@ -41,7 +41,4 @@ public class Learning {
 
     @Column
     private Boolean isFinished;
-
-    @Column
-    private String liveToken;
 }
