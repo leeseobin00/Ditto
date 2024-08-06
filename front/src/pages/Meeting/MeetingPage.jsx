@@ -188,6 +188,7 @@ function MeetingPage() {
     const newSession = OV.initSession();
     setSession(newSession);
 
+    console.log("===>newSession: ", newSession);
     newSession.on('streamCreated', (event) => {
       console.log("A======>",event.stream.connection);
       const connectionData = event.stream.connection;
