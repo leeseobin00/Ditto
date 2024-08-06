@@ -36,8 +36,6 @@ public class SessionController {
 	private Map<Integer, Session> lectureSessions = new ConcurrentHashMap<>();
 	// Collection to pair session names and tokens (the inner Map pairs tokens and role associated)
 	private Map<String, Map<Integer, ConnectionResponse>> sessionUserToken = new ConcurrentHashMap<>();
-	// Collection to pair session names and recording objects
-	private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
 
 	// URL where our OpenVidu server is listening
 	private String OPENVIDU_URL;
@@ -135,11 +133,14 @@ public class SessionController {
 			logger.info("기존 세션 존재: lectureId={}", lectureId);
 			try {
 				// 방금 생성한 connectionProperties로 새 토큰 생성
-				String token = session.createConnection(properties).getToken();
+				Connection connection = session.createConnection(properties);
+				String token = connection.getToken();
+				String connectionId = connection.getConnectionId();
 				logger.info("토큰 생성 완료: token={}", token);
 
 				ConnectionResponse resp = new ConnectionResponse();
 				resp.setToken(token);
+				resp.setConnectionId(connectionId);
 				resp.setRole(role);
 
 				// 새 토큰을 저장하는 컬렉션 업데이트
@@ -222,7 +223,6 @@ public class SessionController {
 				// 세션과 관련된 데이터 삭제
 				this.lectureSessions.remove(lectureId);
 				this.sessionUserToken.remove(session.getSessionId());
-				this.sessionRecordings.remove(session.getSessionId());
 
 				return ResponseDto.of(HttpStatus.OK.value(), "세션이 정상적으로 종료되었습니다.");
 			} catch (Exception e) {
@@ -249,58 +249,73 @@ public class SessionController {
 
 	@GetMapping("/fetch")
 	public ResponseDto<?> fetchAll() {
+		return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 가져오기 성공", sessionsToMap());
+	}
+
+	// 특정 사용자 강제 연결 해제
+	@DeleteMapping("/force-disconnect/{lectureId}")
+	public ResponseDto<?> forceDisconnect(@PathVariable int lectureId, @RequestParam Integer userId) {
 		try {
-			boolean changed = this.openVidu.fetch();
-			return ResponseDto.of(HttpStatus.OK.value(), "모든 세션 정보 가져오기 성공", sessionsToMap());
+			// 강의 ID로 세션을 조회
+			Session session = this.lectureSessions.get(lectureId);
+
+			// 세션이 존재하는 경우
+			if (session != null) {
+				String sessionId = session.getSessionId();
+				Map<Integer, ConnectionResponse> userConnections = this.sessionUserToken.get(sessionId);
+				if (userConnections != null) {
+					ConnectionResponse connectionResponse = userConnections.get(userId);
+					if (connectionResponse != null) {
+						String connectionId = connectionResponse.getConnectionId();
+						if (connectionId != null) {
+							session.forceDisconnect(connectionId);
+							return ResponseDto.of(HttpStatus.OK.value(), "연결 강제 해제 성공");
+						} else {
+							logger.error("connectionId가 null입니다: lectureId={}, userId={}", lectureId, userId);
+							return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "connectionId가 없습니다.");
+						}
+					} else {
+						logger.error("ConnectionResponse를 찾을 수 없습니다: lectureId={}, userId={}", lectureId, userId);
+						return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "ConnectionResponse를 찾을 수 없습니다.");
+					}
+				} else {
+					logger.error("userConnections를 찾을 수 없습니다: sessionId={}", sessionId);
+					return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "userConnections를 찾을 수 없습니다.");
+				}
+			} else {
+				// 세션이 존재하지 않음
+				logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+				return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+			}
 		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			logger.error("모든 세션 정보 가져오기 오류: {}", e.getMessage());
-			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "모든 세션 정보 가져오기 오류: " + e.getMessage());
+			logger.error("OpenVidu 예외 발생: ", e);
+			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 예외가 발생했습니다.");
 		}
 	}
 
-//	@DeleteMapping("/force-disconnect")
-//	public ResponseEntity<JsonObject> forceDisconnect(@RequestBody Map<String, Object> params) {
-//		try {
-//			// BODY에서 매개변수 가져오기
-//			String session = (String) params.get("sessionName");
-//			String connectionId = (String) params.get("connectionId");
-//
-//			// 세션이 존재하는 경우
-//			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
-//				Session s = this.lectureSessions.get(session);
-//				s.forceDisconnect(connectionId);
-//				return new ResponseEntity<>(HttpStatus.OK);
-//			} else {
-//				// 세션이 존재하지 않음
-//				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//			}
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			e.printStackTrace();
-//			return getErrorResponse(e);
-//		}
-//	}
-//
-//	@DeleteMapping("/force-unpublish")
-//	public ResponseEntity<JsonObject> forceUnpublish(@RequestBody Map<String, Object> params) {
-//		try {
-//			// BODY에서 매개변수 가져오기
-//			String session = (String) params.get("sessionName");
-//			String streamId = (String) params.get("streamId");
-//
-//			// 세션이 존재하는 경우
-//			if (this.lectureSessions.get(session) != null && this.sessionIdUserIdToken.get(session) != null) {
-//				Session s = this.lectureSessions.get(session);
-//				s.forceUnpublish(streamId);
-//				return new ResponseEntity<>(HttpStatus.OK);
-//			} else {
-//				// 세션이 존재하지 않음
-//				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//			}
-//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-//			e.printStackTrace();
-//			return getErrorResponse(e);
-//		}
-//	}
+	// 스트림 중지
+	@DeleteMapping("/force-unpublish/{lectureId}")
+	public ResponseDto<?> forceUnpublish(@PathVariable int lectureId, @RequestParam String streamId) {
+		try {
+			// 강의 ID로 세션을 조회
+			Session session = this.lectureSessions.get(lectureId);
+
+			// 세션이 존재하는 경우
+			if (session != null) {
+				// streamId로 스트림을 강제로 중지
+				session.forceUnpublish(streamId);
+				return ResponseDto.of(HttpStatus.OK.value(), "스트림 강제 중단 성공");
+			} else {
+				// 세션이 존재하지 않음
+				logger.error("세션이 존재하지 않음: lectureId={}", lectureId);
+				return ResponseDto.of(HttpStatus.NOT_FOUND.value(), "세션이 존재하지 않습니다.");
+			}
+		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+			logger.error("OpenVidu 예외 발생: ", e);
+			return ResponseDto.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "OpenVidu 예외가 발생했습니다.");
+		}
+	}
+
 
 	private void showMap() {
 		System.out.println("------------------------------");
@@ -333,8 +348,8 @@ public class SessionController {
 
 	private Map<Integer, Map<String, Object>> sessionsToMap() {
 		Map<Integer, Map<String, Object>> allSessions = new HashMap<>();
-		this.lectureSessions.values().forEach(session -> {
-			allSessions.put(Integer.parseInt(session.getSessionId()), sessionToMap(session));
+		this.lectureSessions.forEach((lectureId, session) -> {
+			allSessions.put(lectureId, sessionToMap(session));
 		});
 		return allSessions;
 	}
