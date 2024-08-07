@@ -468,14 +468,11 @@ function MeetingPage() {
               return;
             }
             return (
-              <>
-                {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
-                <UserVideoComponent                 
-                  key={i}
-                  className="stream-container"
-                  onClick={() => handleMainVideoStream(participant)}
-                  streamManager={participant} />
-              </>
+              <UserVideoComponent                 
+                key={i}
+                className="stream-container"
+                onClick={() => handleMainVideoStream(participant)}
+                streamManager={participant} />
             );
           })}
           </ParticipantGrid>
