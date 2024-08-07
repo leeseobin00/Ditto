@@ -199,10 +199,13 @@ function MeetingPage() {
       const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
       if(connectionData.connectionId == newSession.connection.connectionId) return;
 
+      console.log("====>RoleId: ", parsedData?.data?.roleId);
+      console.log("====>roleId");
       // 수강생이면 강사만 subscribe할 수 있음
       if(roleId==1 && parsedData.data?.roleId==1) return;
       const subscriber = newSession.subscribe(event.stream, undefined);
       if (parsedData?.username !== myUserName) {
+        console.log("난 널 구독해");
         setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
