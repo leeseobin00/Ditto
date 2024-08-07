@@ -13,7 +13,7 @@ import BoardAddPage from "../pages/Board/BoardAddPage";
 import ProfileDetailPage from "../pages/Profile/ProfileDetailPage";
 import ProfileSearchPage from "../pages/Profile/ProfileSearchPage";
 import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
-import PaymentPage from "../pages/Mypage/PaymentPage/PaymentPage";
+import PaymentPage from "../pages/Mypage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
