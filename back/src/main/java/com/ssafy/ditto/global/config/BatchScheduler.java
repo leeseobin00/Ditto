@@ -3,10 +3,12 @@ package com.ssafy.ditto.global.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,20 +26,17 @@ public class BatchScheduler {
     @Autowired
     private BatchConfig batchConfig;
 
-    @Scheduled(cron = "0 30 5 * * *") // 특정 시간에 실행
+    @Scheduled(cron = "0 * * * * *")  // Run every minute
     public void runJob() {
-
-        // job parameter 설정
-        Map<String, JobParameter<?>> confMap = new HashMap<>();
-        confMap.put("time", new JobParameter<>(String.valueOf(System.currentTimeMillis()), String.class));
-        JobParameters jobParameters = new JobParameters(confMap);
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
 
         try {
             jobLauncher.run(batchConfig.job(), jobParameters);
         } catch (JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException
-                 | JobParametersInvalidException | org.springframework.batch.core.repository.JobRestartException e) {
-
-            log.error(e.getMessage(), e);
+                 | JobParametersInvalidException | JobRestartException e) {
+            log.error("Job execution failed", e);
         }
     }
 }
