@@ -30,6 +30,7 @@ const MainContent = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: calc(100% - 240px);
   margin-bottom: 16px;
 `;
 
@@ -40,7 +41,7 @@ const ParticipantGrid = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  height: calc(100vh - 240px);
+  height: 100%;
   margin: 0px 32px;
 `;
 
@@ -288,7 +289,7 @@ function MeetingPage() {
   };
 
   // Include publisher in pagination logic
-  const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher, ...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
+  const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
     return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
