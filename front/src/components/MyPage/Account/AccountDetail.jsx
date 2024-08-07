@@ -36,7 +36,9 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  padding: 10px;
+  font-family: inherit;
+  padding: 12px 16px;
+  font-size: 16px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   width: 100%;
@@ -49,10 +51,12 @@ const Input = styled.input`
 `;
 
 const Select = styled.select`
+  font-family: inherit;
   padding: 10px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   width: 100%;
+  font-size: 16px;
   &:focus {
     border-style: solid;
     border-width: 2px;

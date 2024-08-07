@@ -9,9 +9,15 @@ const useAxios = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const sendRequest = async (endpoint, data, method) => {
+  const sendRequest = async (
+    endpoint,
+    data,
+    method,
+    additionalOptions = {}
+  ) => {
     setLoading(true);
     setError(null);
+
     try {
       const url = `${baseURL}${endpoint}`;
       const result = await axios({
@@ -23,6 +29,7 @@ const useAxios = () => {
             data instanceof FormData
               ? "multipart/form-data"
               : "application/json",
+          ...additionalOptions.headers, // 추가된 헤더 병합
         },
       });
       setResponse(result.data);

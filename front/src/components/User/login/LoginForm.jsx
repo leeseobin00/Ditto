@@ -157,14 +157,12 @@ const LoginForm = () => {
       return;
     }
 
-    console.log(email);
     try {
       const response = await axios.post(`${baseURL}/users/login`, {
         email,
         password,
       });
 
-      console.log(response);
       const { accessToken, refreshToken, nickname, roleId, domain } =
         response?.data?.data;
       const decodedToken = jwtDecode(accessToken);
@@ -185,8 +183,7 @@ const LoginForm = () => {
       // alert("로그인 성공!");
       navigate("/"); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
-      console.log(error);
-      console.error("로그인 에러:", error);
+      console.error(error);
       setError("로그인 실패. 다시 시도해주세요.");
     } finally {
       setLoading(false);
