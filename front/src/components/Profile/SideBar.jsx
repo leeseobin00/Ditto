@@ -25,7 +25,7 @@ const NavLink = styled.a`
   }
 `;
 
-function Sidebar({ children }) {
+function Sidebar({ profileName, children }) {
   const roleId = useSelector((state)=>state.auth.roleId);
 
   return (
@@ -35,10 +35,13 @@ function Sidebar({ children }) {
         <NavItem>
           <NavLink href="#intro">소개글</NavLink>
         </NavItem>
-        <NavItem>
+        { roleId==1 && <NavItem>
           <NavLink href="#classes">참여 Class</NavLink>
-        </NavItem>
-        { roleId===2 && <NavItem>
+        </NavItem>}
+        { roleId==2 && <NavItem>
+          <NavLink href="#proClasses">{profileName}'s Class</NavLink>
+        </NavItem>}
+        { roleId==2 && <NavItem>
           <NavLink href="#reviews">강의 리뷰</NavLink>
         </NavItem>}
         <NavItem>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 
 import Card from "./ClassCard";
@@ -21,15 +22,22 @@ const Cards = styled.div`
 `;
 
 function CardList({ cards }) {
+  const [classes, setClasses] = useState([]);
+  
+  useEffect(()=>{
+    setClasses(cards);
+  },[cards]);
+
   return (
     <Cards>
-      {cards?.map((card, index) => (
+      {classes?.map((classItem, index) => (
         <Card
-          key={index}
-          title={card?.title}
-          date={card?.date}
-          name={card?.name}
-          tag={card?.tag}
+          key={classItem?.classId}
+          title={classItem?.className}
+          date={classItem?.createdDate?.split('T')[0]}
+          name={classItem?.user?.nickname}
+          tag={classItem?.tag?.tagName}
+          fileId={classItem?.file?.fileId}
         />
       ))}
     </Cards>
