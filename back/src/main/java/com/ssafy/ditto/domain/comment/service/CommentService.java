@@ -9,6 +9,6 @@ public interface CommentService {
     String writeComment(int postId, CommentRequest commentReq);
     List<CommentResponse> getCommentList(int postId);
 
-    String modifyComment(int commentId, CommentRequest commentReq);
-    String deleteComment(int commentId);
+    void modifyComment(int commentId, CommentRequest commentReq);
+    void deleteComment(int commentId);
 }
