@@ -189,27 +189,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String modifyPost(int postId, PostRequest postReq) {
+    public void modifyPost(int postId, PostRequest postReq) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         if (post != null) {
             post.setTitle(postReq.getTitle());
             post.setContent(postReq.getContent());
             postRepository.save(post);
         }
-
-        return postReq.getBoardId()+"번 게시판에 "+postId+"번 게시글 수정";
     }
 
     @Override
-    public String deletePost(int postId) {
+    public void deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         postRepository.delete(post);
-
-        return postId+"번 게시글 삭제";
     }
 
     @Override
-    public String addLike(int postId, int userId) {
+    public void addLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
         Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
@@ -219,11 +215,10 @@ public class PostServiceImpl implements PostService {
             int likeCount = postRepository.countLikes(postId);
             postRepository.likeCountUpdate(postId, likeCount);
         }
-        return postId+"번 게시글 "+userId+"번 유저 좋아요 누름";
     }
 
     @Override
-    public String removeLike(int postId, int userId) {
+    public void removeLike(int postId, int userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
         Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
@@ -233,7 +228,6 @@ public class PostServiceImpl implements PostService {
             int likeCount = postRepository.countLikes(postId);
             postRepository.likeCountUpdate(postId, likeCount);
         }
-        return postId+"번 게시글 "+userId+"번 유저 좋아요 취소";
     }
 
     @Override
