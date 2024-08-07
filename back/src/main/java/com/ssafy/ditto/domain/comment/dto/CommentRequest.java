@@ -11,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class CommentRequest {
-    
+
     @Schema(description = "사용자 ID", example = "1")
     private Integer userId;
 

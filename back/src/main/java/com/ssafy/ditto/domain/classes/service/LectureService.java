@@ -1,8 +1,11 @@
 package com.ssafy.ditto.domain.classes.service;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LectureService {
@@ -19,4 +22,6 @@ public interface LectureService {
     List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
 
     List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
+
+    List<Lecture> getLecturesForDate(LocalDate date);
 }

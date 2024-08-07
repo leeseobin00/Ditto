@@ -4,8 +4,13 @@ import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,16 +21,24 @@ public class LiveRoomController {
     private final LectureService lectureService;
 
     // lecture 생성 후 별도의 api 호출 필요
+    @Operation(summary = "라이브 방 생성", description = "강의가 진행될 라이브 방을 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "라이브 방 생성이 성공적으로 완료되었습니다.")
+    })
     @PostMapping("/{lectureId}")
     public ResponseDto<Void> createLiveRoom(@PathVariable int lectureId) {
         liveRoomService.createLiveRoom(lectureId);
-        return ResponseDto.of(201, "라이브 방이 생성되었습니다.");
+        return ResponseDto.of(CREATED.value(), "라이브 방이 생성되었습니다.");
     }
 
+    @Operation(summary = "라이브 방 종료", description = "강의가 진행될 라이브 방을 종료합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "라이브 방 종료가 성공적으로 완료되었습니다.")
+    })
     @DeleteMapping("/{lectureId}")
-    public ResponseDto<Void> deleteLiveRoom(@PathVariable int lectureId) {
-        liveRoomService.deleteLiveRoom(lectureId);
-        return ResponseDto.of(200, "라이브 방이 종료되었습니다.");
+    public ResponseDto<Void> endLiveRoom(@PathVariable int lectureId) {
+        liveRoomService.endLiveRoom(lectureId);
+        return ResponseDto.of(OK.value(), "라이브 방이 종료되었습니다.");
     }
 
     @GetMapping("/{lectureId}")
