@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.classes.service.ClassService;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import com.ssafy.ditto.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,9 +33,9 @@ public class ClassController {
     private final FileService fileService;
 
     @Operation(summary = "클래스 생성", description = "새로운 클래스를 생성합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "클래스가 성공적으로 생성되었습니다."),
-            @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> createClass(@RequestPart("classRequest") ClassRequest classRequest,
@@ -60,10 +61,10 @@ public class ClassController {
     }
 
     @Operation(summary = "클래스 수정", description = "기존 클래스를 수정합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "클래스가 성공적으로 수정되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping(value = "/{classId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> updateClass(@PathVariable Integer classId,
@@ -90,9 +91,9 @@ public class ClassController {
     }
 
     @Operation(summary = "클래스 삭제", description = "기존 클래스를 삭제합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "클래스가 성공적으로 삭제되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{classId}")
     public ResponseDto<String> deleteClass(@PathVariable Integer classId) {
@@ -101,9 +102,9 @@ public class ClassController {
     }
 
     @Operation(summary = "클래스 상세 조회", description = "클래스의 상세 정보를 조회합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "클래스 상세 정보 조회가 성공적으로 완료되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{classId}")
     public ResponseDto<ClassDetailResponse> getClassDetail(@PathVariable Integer classId) {
@@ -112,7 +113,7 @@ public class ClassController {
     }
 
     @Operation(summary = "클래스 목록 조회", description = "클래스 목록을 조회합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "클래스 목록 조회가 성공적으로 완료되었습니다.")
     })
     @GetMapping
@@ -137,7 +138,7 @@ public class ClassController {
     }
 
     @Operation(summary = "주간 인기 클래스 조회", description = "주간 인기 클래스 목록을 조회합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "인기 클래스 목록 조회가 성공적으로 완료되었습니다.")
     })
     @GetMapping("/weeklybest")
@@ -146,7 +147,7 @@ public class ClassController {
     }
 
     @Operation(summary = "주간 최신 클래스 조회", description = "주간 최신 클래스 목록을 조회합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "최신 클래스 목록 조회가 성공적으로 완료되었습니다.")
     })
     @GetMapping("/weeklynew")
@@ -155,7 +156,7 @@ public class ClassController {
     }
 
     @Operation(summary = "리뷰 작성하지 않은 완료한 차시 조회", description = "사용자가 완료한 리뷰 작성하지 않은 차시를 조회합니다.")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자가 완료한 리뷰 작성하지 않은 차시 조회가 성공적으로 완료되었습니다.")
     })
     @GetMapping("/{classId}/completed-lectures/reviews")
