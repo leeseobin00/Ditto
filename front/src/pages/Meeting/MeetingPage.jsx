@@ -90,6 +90,9 @@ function MeetingPage() {
   // chat
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
+  // timer
+  const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   // State for mute and video control
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -225,6 +228,14 @@ function MeetingPage() {
       const parsedData = JSON.parse(event.data);
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
       setStatusMessages((prev)=>[...prev, parsedData]);
+    });
+
+    newSession.on('signal:timer', (event) => {
+      console.log('New chat message:', event.data);
+      const parsedData = JSON.parse(event.data);
+      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      console.log("=====timer parsedData: ",  parsedData);
+      startTimer(parsedData?.minute, parsedData?.second);
     });
 
     const token = await getToken();
@@ -374,6 +385,43 @@ function MeetingPage() {
     });
     };
   }
+  const sendTimer = (senderName, minute, second) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+            minute: minute, 
+            second: second,
+        }),
+        to: [],
+        type: 'timer'
+    })
+    .then(() => {
+        console.log('Message successfully sent');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
+  useEffect(() => {
+    console.log("============================");
+    let timerInterval;
+    if (isTimerRunning && timer > 0) {
+      timerInterval = setInterval(() => {
+        setTimer((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsTimerRunning(false);
+    }
+    return () => clearInterval(timerInterval);
+  }, [isTimerRunning, timer]);
+
+  const startTimer = (minute, second) => {
+    console.log("ddddddddddd");
+    setTimer(minute * 60 + second);
+    setIsTimerRunning(true);
+  };
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
@@ -392,6 +440,8 @@ function MeetingPage() {
         statusMessages,
         publisher,
         subscribers,
+        timer,
+        sendTimer,
       }}
     >
       <PageContainer>

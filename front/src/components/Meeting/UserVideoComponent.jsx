@@ -18,8 +18,8 @@ const Video = styled.video`
   aspect-ratio: 4 / 3;
   object-fit: cover;
   border: 3px solid ${({ status }) => {
-    if (status === 'help') return 'red';
-    if (status === 'done') return 'green';
+    if (status === 'help') return "var(--RED)";
+    if (status === 'done') return "var(--GREEN)";
     return 'transparent'; // or another color for 'normal'
   }};
 `;
@@ -43,9 +43,17 @@ const Button = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  color: var(--LIGHT);
   white-space: nowrap;
 `;
 
+const HelpButton = styled(Button)`
+  background-color: var(--RED);
+`;
+
+const CompleteButton = styled(Button)`
+  background-color: var(--GREEN);
+`;
 
 function UserVideoComponent({ streamManager }) {
   const roleId = useSelector((state) => state.auth.roleId);
@@ -56,13 +64,31 @@ function UserVideoComponent({ streamManager }) {
   const videoRef = useRef(null);
   const [videoRoleId, setVideoRoleId] = useState(undefined);
   const [myStatus, setMyStatus] = useState("normal");
+  const [isHelp, setIsHelp] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
   const onHelp = () => {
-    sendStatus(username, '도와주세요');
+    if(isHelp==false){
+      setIsHelp(true);
+      setIsDone(false);
+      sendStatus(username, '도와주세요');
+    }else if(isHelp==true){
+      setIsHelp(false);
+      setIsDone(false);
+      sendStatus(username, 'normal');
+    }
   };
 
   const onDone = () => {
-    sendStatus(username, '완료');
+    if(isDone==false){
+      setIsDone(true);
+      setIsHelp(false);
+      sendStatus(username, '완료');
+    }else if(isDone==true){
+      setIsHelp(false);
+      setIsDone(false);
+      sendStatus(username, 'normal');
+    }
   };
 
   useEffect(() => {
@@ -109,9 +135,9 @@ function UserVideoComponent({ streamManager }) {
         <VideoWrapper>
           <Video status={myStatus} autoPlay={true} ref={videoRef} />
           <NameTag>{getNicknameTag()}</NameTag>
-          {(roleId==1 && videoRoleId==1) && <ButtonsWrapper>
-            <Button onClick={onHelp}>도움이 필요해요</Button>
-            <Button onClick={onDone}>단계를 완료했어요</Button>
+          {(roleId==1 && videoRoleId==1) || true && <ButtonsWrapper>
+            <HelpButton onClick={onHelp}>도움이 필요해요</HelpButton>
+            <CompleteButton onClick={onDone}>단계를 완료했어요</CompleteButton>
           </ButtonsWrapper>}
         </VideoWrapper>
       ) : null}
