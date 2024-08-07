@@ -203,7 +203,7 @@ function MeetingPage() {
       console.log("====>RoleId: ", parsedData?.roleId);
       console.log("====>roleId: ", roleId);
       // 수강생이면 강사만 subscribe할 수 있음
-      if(roleId==1 && parsedData.data?.roleId==1) return;
+      if(roleId==1 && parsedData?.roleId==1) return;
       const subscriber = newSession.subscribe(event.stream, undefined);
       if (parsedData?.username !== myUserName) {
         console.log("난 널 구독해");
