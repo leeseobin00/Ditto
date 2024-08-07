@@ -243,6 +243,14 @@ function MeetingPage() {
       startTimer(parsedData?.minute, parsedData?.second);
     });
 
+    newSession.on('signal:progress', (event) => {
+      console.log('New chat message:', event.data);
+      const parsedData = JSON.parse(event.data);
+      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      console.log("=====timer parsedData: ",  parsedData);
+      setCurrentStep(parsedData?.curProgress);
+    });
+
     const token = await getToken();
 
     newSession.connect(token, JSON.stringify({ username: myUserName, roleId: roleId }))
@@ -316,6 +324,7 @@ function MeetingPage() {
   const handleStartStep = () => {
     setStepLoading(true);
     SpeechRecognition.startListening({ language: 'ko-KR', continuous: true });
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     setStatusMessages([]);
@@ -328,6 +337,7 @@ function MeetingPage() {
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
     axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     setStatusMessages([]);
@@ -341,6 +351,7 @@ function MeetingPage() {
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
     axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     SpeechRecognition.abortListening();
@@ -419,12 +430,29 @@ function MeetingPage() {
     }
     return () => clearInterval(timerInterval);
   }, [isTimerRunning, timer]);
-
   const startTimer = (minute, second) => {
     console.log("ddddddddddd");
     setTimer(minute * 60 + second);
     setIsTimerRunning(true);
   };
+  const sendProgress = (senderName, curProgress) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+            curProgress: curProgress,
+        }),
+        to: [],
+        type: 'progress'
+    })
+    .then(() => {
+        console.log('Message successfully sent');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {

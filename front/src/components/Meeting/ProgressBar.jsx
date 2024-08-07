@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 
 import MeetingButton from "./MeetingButton";
+import { useSelector } from "react-redux";
 
 const ProgressBarWrapper = styled.div`
   display: flex;
@@ -65,6 +66,7 @@ function ProgressBar({ steps
   , handleStartStep
   , handleNextStep
   , handleEndStep }){
+  const roleId = useSelector((state)=>state.auth.roleId);
   return (
     <ProgressBarWrapper>
       <Bar>
@@ -74,12 +76,12 @@ function ProgressBar({ steps
       </Bar>
       <ProgressDescription>
         <ProgressName>{steps[currentStep]}</ProgressName>
-        {!loading ? <>
+        {(roleId==2 && !loading) && <>
           {currentStep==-1 && <MeetingButton label="Start" onClick={handleStartStep} />}
           {(currentStep>=0 && currentStep<steps.length-1) && <MeetingButton label="Next" onClick={handleNextStep} />}
           {currentStep>=steps.length-1 && <MeetingButton label="End" onClick={handleEndStep} />}
-        </>  
-        :<Spinner/>}
+        </>}
+        {(roleId==2 && loading) && <Spinner/>}
       </ProgressDescription>
     </ProgressBarWrapper>
   );
