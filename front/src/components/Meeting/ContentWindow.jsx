@@ -1,5 +1,6 @@
-import styled from "styled-components";
+import { styled } from "styled-components";
 import { IoClose } from "react-icons/io5";
+import { BiRefresh } from "react-icons/bi";
 
 const WindowWrapper = styled.div`
   position: fixed; /* Footer를 기준으로 고정된 위치를 설정 */
@@ -26,8 +27,16 @@ const WindowHeader = styled.div`
   border-bottom: 1px solid var(--MEETING_SECONDARY);
 `;
 
-const WindowTitle = styled.p`
+const WindowTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 18px;
+`;
+
+const CustomRefreshIcon = styled(BiRefresh)`
+  margin-left: 16px;
+  cursor: pointer;
 `;
 
 const FileContents = styled.div`
@@ -58,7 +67,10 @@ function ContentWindow({ handleWindow, summaries }) {
   return (
     <WindowWrapper>
       <WindowHeader>
-        <WindowTitle>Contents</WindowTitle>
+        <WindowTitle>
+          Contents
+          <CustomRefreshIcon />
+        </WindowTitle>
         <IoClose onClick={handleWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <FileContents>

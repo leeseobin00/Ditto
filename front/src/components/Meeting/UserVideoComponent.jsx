@@ -5,8 +5,8 @@ import { MeetingContext } from '../../pages/Meeting/MeetingPage';
 
 const VideoWrapper = styled.div`
   position: relative;
-  width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 8px; /* Optional: ensure border-radius is applied */
 `;
@@ -139,7 +139,7 @@ function UserVideoComponent({ streamManager }) {
   console.log(roleId);
   console.log("videoRole: ", getRoleId());
   return (
-    <div>
+    <>
       {streamManager !== undefined ? (
         <VideoWrapper>
           <Video videoRoleId={getRoleId()} status={myStatus} autoPlay={true} ref={videoRef} />
@@ -150,7 +150,7 @@ function UserVideoComponent({ streamManager }) {
           </ButtonsWrapper>}
         </VideoWrapper>
       ) : null}
-    </div>
+    </>
   );
 }
 
