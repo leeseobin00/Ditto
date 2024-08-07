@@ -1,11 +1,10 @@
 package com.ssafy.ditto.domain.question.domain;
 
-import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import com.ssafy.ditto.domain.classes.domain.DClass;
 
 @Entity
 @Table
