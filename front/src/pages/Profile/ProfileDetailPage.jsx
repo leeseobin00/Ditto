@@ -172,9 +172,19 @@ function ProfileDetailPage() {
     }
   }
 
+  // class //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleGetClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
     setClasses(result?.data?.classList);
+  }
+
+  const onNextClassess = async() => {
+    if(classPage<totalClassPage){
+      const curPage = classPage;
+      setPostPage((prev)=>prev+1);
+      const result = await getPosts(`/profiles/${profileId}/class?page=${curPage+1}&size=${postSize}`, null, "get");
+      setClasses((prev)=>[...prev, ...result?.data?.classList]);
+    }
   }
 
   const handleGetProClasses = async() => {
@@ -182,11 +192,24 @@ function ProfileDetailPage() {
     setProClasses(result?.data?.classList);
   }
 
+  const onNextProClassess = async() => {
+    if(classPage<totalClassPage){
+      const curPage = classPage;
+      setPostPage((prev)=>prev+1);
+      const result = await getPosts(`/profiles/${profileId}/pro-class?page=${curPage+1}&size=${postSize}`, null, "get");
+      setClasses((prev)=>[...prev, ...result?.data?.classList]);
+    }
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // reviews ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleGetReviews = async() => {
     const result = await getReviews(`/profiles/${profileId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
     setReviews(result?.data?.data?.Content);
   }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // posts //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleGetPosts = async() => {
     const result = await getPosts(`/profiles/${profileId}/post?page=${postPage}&size=${postSize}`, null, "get");
     setPosts(result?.data?.posts);
@@ -201,7 +224,9 @@ function ProfileDetailPage() {
       setPosts((prev)=>[...prev, ...result?.data?.posts]);
     }
   }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // 프로필에 하트 누르기 /////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handlePostHeart = async() => {
     await postHeart(`/profiles/${profileId}/like?seekerId=${userId}`, null, "post");
   }
@@ -209,11 +234,12 @@ function ProfileDetailPage() {
   const handleDeleteHeart = async() => {
     await deleteHeart(`/profiles/${profileId}/like?seekerId=${userId}`, null, "delete");
   }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleRating = async() => {
     const result = await getRating(`/profiles/${userId}`)
     setStudentSum(result?.data?.studentSum);
-      setAvgRating(result?.data?.avgRating);
+    setAvgRating(result?.data?.avgRating);
   }
 
   useEffect(() => {
@@ -282,14 +308,14 @@ function ProfileDetailPage() {
           </Section>
 
           {profileRoleId==1 &&
-            <Section id="classes" title="참여 Class">
+            <Section id="classes" title="참여 Class" onClick={onNextClassess} curPage={classPage} totalPage={totalClassPage}>
               <CardList cards={classes} />
             </Section>          
           }
 
           {profileRoleId==2 && 
             <>
-              <Section id="proClasses" title={`${profileName}'s Class`}>
+              <Section id="proClasses" title={`${profileName}'s Class`} onClick={onNextProClassess} curPage={classPage} totalPage={totalClassPage}>
                 <CardList cards={proClasses} />
               </Section> 
               <Section id="reviews" title="강의 리뷰">
