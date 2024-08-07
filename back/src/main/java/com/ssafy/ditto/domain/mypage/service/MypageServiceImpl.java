@@ -59,26 +59,59 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional(readOnly = true)
     public MypageResponse getUserMypage(int userId) {
+        List<AddressListResponse> addressListResponses = new ArrayList<>();
+
         User user = userRepository.findByUserId(userId);
         List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+
+        for (Address address : addresses){
+            AddressListResponse addressListResponse = AddressListResponse.builder()
+                    .addressId(address.getAddressId())
+                    .zipCode(address.getZipCode())
+                    .address1(address.getAddress1())
+                    .address2(address.getAddress2())
+                    .addressName(address.getAddressName())
+                    .receiver(address.getReceiver())
+                    .phoneNumber(address.getPhoneNumber())
+                    .isDefault(address.getIsDefault())
+                    .build();
+
+            addressListResponses.add(addressListResponse);
+        }
 
         return MypageResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .fileId(user.getFileId().getFileId())
                 .fileUrl(user.getFileId().getFileUrl())
-                .addresses(addresses)
+                .addresses(addressListResponses)
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
     public AddressResponse getAddress(int userId) {
-        User user = userRepository.findByUserId(userId);
+        List<AddressListResponse> addressListResponses = new ArrayList<>();
+
         List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
 
+        for (Address address : addresses){
+            AddressListResponse addressListResponse = AddressListResponse.builder()
+                    .addressId(address.getAddressId())
+                    .zipCode(address.getZipCode())
+                    .address1(address.getAddress1())
+                    .address2(address.getAddress2())
+                    .addressName(address.getAddressName())
+                    .receiver(address.getReceiver())
+                    .phoneNumber(address.getPhoneNumber())
+                    .isDefault(address.getIsDefault())
+                    .build();
+
+            addressListResponses.add(addressListResponse);
+        }
+
         return AddressResponse.builder()
-                .addresses(addresses)
+                .addresses(addressListResponses)
                 .build();
     }
 

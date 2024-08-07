@@ -1,6 +1,8 @@
 package com.ssafy.ditto.domain.classes.repository;
 
 import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.user.domain.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -19,4 +21,6 @@ public interface ClassRepository extends JpaRepository<DClass, Integer>, JpaSpec
     List<DClass> findRecentClasses(LocalDateTime oneWeekAgo, Pageable pageable);
 
     DClass findByClassId(Integer classId);
+
+    Page<DClass> findAllByUserId(User byUserId, Pageable pageable);
 }

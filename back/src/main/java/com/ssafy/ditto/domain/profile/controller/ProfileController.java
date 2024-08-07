@@ -78,6 +78,15 @@ public class ProfileController {
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),classList);
     }
 
+    @GetMapping("/{userId}/myclass")
+    public ResponseDto<ClassListResponse> getMyClass(@PathVariable("userId") int userId,
+                                                       @RequestParam int page,
+                                                       @RequestParam int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ClassListResponse classList = profileService.userMyClass(userId, pageRequest);
+        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),classList);
+    }
+
     @GetMapping("/{userId}/review")
     public ResponseDto<Page<ReviewDetailResponse>> getUserReview(@PathVariable("userId") int userId,
                                                                  @RequestParam int page,

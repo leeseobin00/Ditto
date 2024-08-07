@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 @Builder
 public class AddressResponse {
-    private List<Address> addresses;
+    private List<AddressListResponse> addresses;
 }

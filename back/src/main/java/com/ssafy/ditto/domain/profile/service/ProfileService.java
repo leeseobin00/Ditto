@@ -26,9 +26,11 @@ public interface ProfileService {
 
     PostList userPost(int userId, Map<String,String> map);
     ClassListResponse userClass(int userId, PageRequest pageRequest);
+    ClassListResponse userMyClass(int userId, PageRequest pageRequest);
     Page<ReviewDetailResponse> userReview(int userId, PageRequest pageRequest);
 
     String addLike(int likeGetterId, int likeGiverId);
     String removeLike(int likeGetterId, int likeGiverId);
     Boolean checkLike(int likeGetterId, int likeGiverId);
+
 }
