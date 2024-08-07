@@ -27,6 +27,7 @@ import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.domain.UserTag;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
+import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import jakarta.persistence.criteria.Join;
@@ -64,6 +65,7 @@ public class ProfileServiceImpl implements ProfileService {
     public final ReviewRepository reviewRepository;
     public final FileService fileService;
     public final FileRepository fileRepository;
+    public final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -265,6 +267,51 @@ public class ProfileServiceImpl implements ProfileService {
                     .tag(tagResponse)
                     .build();
         }).collect(Collectors.toList());
+
+        return ClassListResponse.builder()
+                .classList(classResponses)
+                .build();
+    }
+
+    @Override
+    public ClassListResponse userMyClass(int userId, PageRequest pageRequest) {
+        List<ClassResponse> classResponses = new ArrayList<>();
+
+        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
+        List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
+
+        for (DClass dClass : classList){
+            TagResponse tagResponse = TagResponse.builder()
+                    .tagId(dClass.getTagId().getTagId())
+                    .tagName(dClass.getTagId().getTagName())
+                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
+                    .build();
+            ClassResponse classResponse = ClassResponse.builder()
+                    .classId(dClass.getClassId())
+                    .className(dClass.getClassName())
+                    .classPrice(dClass.getClassPrice())
+                    .classHour(dClass.getClassHour())
+                    .classMinute(dClass.getClassMinute())
+                    .classExplanation(dClass.getClassExplanation())
+                    .classMin(dClass.getClassMin())
+                    .classMax(dClass.getClassMax())
+                    .studentSum(dClass.getStudentSum())
+                    .createdDate(dClass.getCreatedDate())
+                    .modifiedDate(dClass.getModifiedDate())
+                    .isDeleted(dClass.getIsDeleted())
+                    .likeCount(dClass.getLikeCount())
+                    .reviewCount(dClass.getReviewCount())
+                    .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
+                    .userNickname(dClass.getUserId().getNickname())
+                    .file(dClass.getFileId() != null ? FileResponse.builder()
+                            .fileId(dClass.getFileId().getFileId())
+                            .uploadFileName(dClass.getFileId().getUploadFileName())
+                            .fileUrl(dClass.getFileId().getFileUrl())
+                            .build() : null)
+                    .user(UserResponse.of(dClass.getUserId()))
+                    .tag(tagResponse)
+                    .build();
+        }
 
         return ClassListResponse.builder()
                 .classList(classResponses)

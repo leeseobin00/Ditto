@@ -1,6 +1,5 @@
 package com.ssafy.ditto.domain.mypage.dto;
 
-import com.ssafy.ditto.domain.mypage.domain.Address;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,5 +12,5 @@ public class MypageResponse {
     private String nickname;
     private Integer fileId;
     private String fileUrl;
-    private List<Address> addresses;
+    private List<AddressListResponse> addresses;
 }
