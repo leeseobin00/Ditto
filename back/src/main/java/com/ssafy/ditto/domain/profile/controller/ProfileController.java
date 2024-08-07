@@ -1,12 +1,10 @@
 package com.ssafy.ditto.domain.profile.controller;
 
-import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
 import com.ssafy.ditto.domain.profile.service.ProfileService;
-import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.ssafy.ditto.global.dto.ResponseMessage.*;
@@ -73,17 +70,17 @@ public class ProfileController {
     public ResponseDto<ClassListResponse> getUserClass(@PathVariable("userId") int userId,
                                                        @RequestParam int page,
                                                        @RequestParam int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
         ClassListResponse classList = profileService.userClass(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),classList);
     }
 
-    @GetMapping("/{userId}/myclass")
-    public ResponseDto<ClassListResponse> getMyClass(@PathVariable("userId") int userId,
-                                                       @RequestParam int page,
-                                                       @RequestParam int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        ClassListResponse classList = profileService.userMyClass(userId, pageRequest);
+    @GetMapping("/{userId}/pro-class")
+    public ResponseDto<ClassListResponse> getProClass(@PathVariable("userId") int userId,
+                                                      @RequestParam int page,
+                                                      @RequestParam int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        ClassListResponse classList = profileService.proClass(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),classList);
     }
 
@@ -91,7 +88,7 @@ public class ProfileController {
     public ResponseDto<Page<ReviewDetailResponse>> getUserReview(@PathVariable("userId") int userId,
                                                                  @RequestParam int page,
                                                                  @RequestParam int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<ReviewDetailResponse> reviewList = profileService.userReview(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(),reviewList);
     }
