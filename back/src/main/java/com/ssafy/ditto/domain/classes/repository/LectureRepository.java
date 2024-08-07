@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LectureRepository extends JpaRepository<Lecture, Integer> {
@@ -40,4 +41,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
                                                 @Param("currentDay") Byte currentDay,
                                                 @Param("currentHour") Byte currentHour,
                                                 @Param("currentMinute") Byte currentMinute);
+
+    @Query("SELECT l FROM Lecture l WHERE l.startTime BETWEEN :start AND :end")
+    List<Lecture> findLecturesByStartTimeBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

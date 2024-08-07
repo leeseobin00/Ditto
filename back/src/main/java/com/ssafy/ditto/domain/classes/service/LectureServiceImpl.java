@@ -123,4 +123,8 @@ public class LectureServiceImpl implements LectureService {
         boolean isTeacher = lectureRepository.existsByClassId_UserIdAndLectureId(teacher, lectureId);
         return isTeacher;
     }
+
+    public List<Lecture> getUpcomingLectures(LocalDateTime time) {
+        return lectureRepository.findLecturesByStartTimeBetween(time, time.plusMinutes(30));
+    }
 }

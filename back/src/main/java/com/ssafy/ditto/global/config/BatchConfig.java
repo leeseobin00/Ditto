@@ -1,5 +1,10 @@
 package com.ssafy.ditto.global.config;
 
+import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -8,28 +13,30 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 @EnableBatchProcessing
 public class BatchConfig {
-
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+    private final RestTemplate restTemplate;
+    private final LectureService lectureService;
 
-    @Autowired
-    public BatchConfig(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        this.jobRepository = jobRepository;
-        this.transactionManager = transactionManager;
-    }
+//    @Value()
+    private String baseUrl="https://i11a106.p.ssafy.io/:8080";
 
     @Bean
     public Job job() {
-        return new JobBuilder("openAi", jobRepository)
+        return new JobBuilder("manageLiveRooms", jobRepository)
                 .start(step())
                 .build();
     }
@@ -38,9 +45,23 @@ public class BatchConfig {
     public Step step() {
         return new StepBuilder("step", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    /*
-                      여기에 실행하고 싶은 로직 생성
-                    */
+                    LocalDateTime now = LocalDateTime.now();
+                    List<Lecture> upcomingLectures = lectureService.getUpcomingLectures(now);
+
+                    for (Lecture lecture : upcomingLectures) {
+                        LocalDateTime lectureStartTime = lecture.getStartTime();
+                        LocalDateTime createTime = lectureStartTime.minusMinutes(30);
+                        LocalDateTime endTime = lectureStartTime.plusHours(3);
+
+                        if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
+                            restTemplate.postForObject(baseUrl+"/live-rooms/" + lecture.getLectureId(), null, String.class);
+                        }
+
+                        if (now.isAfter(endTime)) {
+                            restTemplate.delete(baseUrl+"/live-rooms/" + lecture.getLectureId());
+                        }
+                    }
+
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();

@@ -4,6 +4,8 @@ import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 @Getter
@@ -47,4 +49,16 @@ public class Lecture extends BaseTimeEntity {
 
     @Column
     private Boolean isDeleted;
+
+    @Column
+    private LocalDateTime startTime;
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    public void computeStartTime() {
+        if (year != null && month != null && day != null && hour != null && minute != null) {
+            this.startTime = LocalDateTime.of(year, month, day, hour, minute);
+        }
+    }
 }

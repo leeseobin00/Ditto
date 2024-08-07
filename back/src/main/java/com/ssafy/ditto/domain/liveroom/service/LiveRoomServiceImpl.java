@@ -46,7 +46,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     }
 
     @Override
-    public void deleteLiveRoom(int lectureId) {
+    public void endLiveRoom(int lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Optional<LiveRoom> liveRoomOptional = liveRoomRepository.findByLecture(lecture);
         if (liveRoomOptional.isPresent()) {
