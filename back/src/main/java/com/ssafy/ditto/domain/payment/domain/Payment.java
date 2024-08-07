@@ -44,7 +44,8 @@ public class Payment {
     @Column(nullable = false, name = "order_id")
     private String orderId;
 
-    private boolean paySuccessYN;
+    private Boolean isPaySuccess;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private User userId;
@@ -56,7 +57,7 @@ public class Payment {
     private String failReason;
 
     @Column
-    private boolean cancelYN;
+    private Boolean isCanceled;
 
     @Column
     private String cancelReason;
