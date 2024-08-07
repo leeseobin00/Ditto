@@ -252,7 +252,7 @@ function AddressInput({ onChange, initialddress, isEdit = false }) {
           type="checkbox"
           name="isDefault"
           checked={isDefault}
-          onChange={(e) => setIsDefault(e.target.value)}
+          onChange={(e) => setIsDefault(e.target.checked)}
         />
         <CheckboxLabel>기본 배송지로 설정</CheckboxLabel>
       </AddressLineContainer>

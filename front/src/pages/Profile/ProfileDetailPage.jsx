@@ -100,6 +100,7 @@ function ProfileDetailPage() {
   const [avgRating, setAvgRating] = useState(0);
   const [intro, setIntro] = useState("");
   const [classes, setClasses] = useState([]);
+  const [myClasses, setMyClasses] = useState([]);
   const [classPage, setClassPage] = useState(1);
   const [totalClassPage, setTotalClassPage] = useState(1);
   const classSize = 3;
@@ -136,6 +137,14 @@ function ProfileDetailPage() {
   const handleGetProfile = async() => {    
     const result = await getProfile(`/profiles/${profileId}`, null, "get");
     if(result){
+      setProfileName(result?.data?.nickname);
+      setProfileRoleId(result?.data?.roleId);
+      setTags(result?.data?.tags);
+      setLikeCount(result?.data?.likeCount);
+      setAvgRating(result?.data?.avgRating);
+      setStudentSum(result?.data?.studentSum);
+      setIntro(result?.data?.intro);
+
       const baseURL = import.meta.env.VITE_BASE_URL;
       const fileId = result?.data?.fileId;
 
@@ -146,19 +155,17 @@ function ProfileDetailPage() {
       const base64 = await toBase64(fileBlob);
 
       setProfileImageURL(base64);
-      setProfileName(result?.data?.nickname);
-      setProfileRoleId(result?.data?.roleId);
-      setTags(result?.data?.tags);
-      setLikeCount(result?.data?.likeCount);
-      setAvgRating(result?.data?.avgRating);
-      setStudentSum(result?.data?.studentSum);
-      setIntro(result?.data?.intro);
     }
   }
 
   const handleGetClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
     setClasses(result?.data?.classList);
+  }
+
+  const handleGetMyClasses = async() => {
+    const result = await getClasses(`/profiles/${profileId}/myclass?page=${classPage}&size=${classSize}`, null, "get");
+    setMyClasses(result?.data?.classList);
   }
 
   const handleGetReviews = async() => {
@@ -198,13 +205,17 @@ function ProfileDetailPage() {
   useEffect(()=>{
     if(profileId){
       handleGetProfile();
-      handleGetClasses();
-      handleGetPosts();
+      console.log(profileRoleId);
+      if(profileRoleId==1){
+        handleGetClasses();
+      }
       //강사일때만
       if(profileRoleId==2){
         handleGetReviews();
         handleRating();
+        handleGetMyClasses();
       }
+      handleGetPosts();
     }
   },[profileId]);
 
@@ -267,13 +278,22 @@ function ProfileDetailPage() {
             </IntroContent>
           </Section>
 
-          <Section id="classes" title="참여 Class">
-            <CardList cards={classes} />
-          </Section>
+          {profileRoleId==1 &&
+            <Section id="classes" title="참여 Class">
+              <CardList cards={classes} />
+            </Section>          
+          }
 
-          {profileRoleId==2 && <Section id="reviews" title="강의 리뷰">
-            <ReviewList reviews={reviews} />
-          </Section>}
+          {profileRoleId==2 && 
+            <>
+              <Section id="myClasses" title={`${profileName}'s Class`}>
+                <CardList cards={myClasses} />
+              </Section> 
+              <Section id="reviews" title="강의 리뷰">
+                <ReviewList reviews={reviews} />
+              </Section>            
+            </>
+          }
 
           <Section id="posts" title="작성한 글" onClick={onNextPosts} curPage={postPage} totalPage={totalPostPage}>
             <PostList posts={posts}/>

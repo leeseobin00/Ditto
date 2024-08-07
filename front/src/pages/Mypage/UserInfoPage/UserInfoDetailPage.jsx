@@ -39,7 +39,7 @@ const UserInfoDetail = () => {
         .then((response) => {
           console.log(response?.data);
           setUserData(response?.data); // fileURL 데이터 가져옴
-          setAddresses(response?.data?.addresses); // addresses 리스트 가져옴
+          setAddresses(response?.data?.data?.addresses); // addresses 리스트 가져옴
           setIsLoading(false);
         })
         .catch((error) => {

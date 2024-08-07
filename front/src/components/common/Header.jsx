@@ -256,7 +256,7 @@ const Header = () => {
         </MenuButton>
         <MobileDropdownMenu open={menuOpen}>
           <DropdownItem to="/">홈</DropdownItem>
-          <DropdownItem to="/classes">카테고리</DropdownItem>
+          <DropdownItem to="/classes">클래스</DropdownItem>
           <DropdownItem to="/board/all">커뮤니티</DropdownItem>
           <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
           <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
@@ -292,7 +292,7 @@ const Header = () => {
       </TopSection>
       <BottomSection>
         <PageLink to="/">홈</PageLink>
-        <PageLink to="/classes">카테고리</PageLink>
+        <PageLink to="/classes">클래스</PageLink>
         <PageLink to="/board/all">커뮤니티</PageLink>
         <ProfileWrapper>
           <MenuItem to="/profile/" onClick={handlePreventClick}>
