@@ -2,6 +2,7 @@ package com.ssafy.ditto.global.config;
 
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.liveroom.controller.SessionController;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -29,11 +30,10 @@ import java.util.List;
 public class BatchConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final RestTemplate restTemplate;
     private final LectureService lectureService;
+    private final LiveRoomService liveRoomService;
+//    private final SessionController sessionController;
 
-//    @Value()
-    private String baseUrl="https://i11a106.p.ssafy.io:8080";
 
     @Bean
     public Job job() {
@@ -58,11 +58,12 @@ public class BatchConfig {
                         LocalDateTime endTime = lectureStartTime.plusHours(3);
 
                         if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
-                            restTemplate.postForObject(baseUrl + "/live-rooms/" + lecture.getLectureId(), null, String.class);
+                            liveRoomService.createLiveRoom(lecture.getLectureId());
+//                            sessionController.createLiveRoom(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
                         }
 
                         if (now.isAfter(endTime)) {
-                            restTemplate.delete(baseUrl + "/live-rooms/" + lecture.getLectureId());
+                            liveRoomService.endLiveRoom(lecture.getLectureId());
                         }
                     }
 
