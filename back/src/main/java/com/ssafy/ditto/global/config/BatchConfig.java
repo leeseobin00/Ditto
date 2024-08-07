@@ -32,7 +32,7 @@ public class BatchConfig {
     private final LectureService lectureService;
 
 //    @Value()
-    private String baseUrl="https://i11a106.p.ssafy.io/:8080";
+    private String baseUrl="https://i11a106.p.ssafy.io:8080";
 
     @Bean
     public Job job() {
