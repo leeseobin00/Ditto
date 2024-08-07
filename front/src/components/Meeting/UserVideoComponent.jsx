@@ -144,7 +144,7 @@ function UserVideoComponent({ streamManager }) {
         <VideoWrapper>
           <Video videoRoleId={getRoleId()} status={myStatus} autoPlay={true} ref={videoRef} />
           <NameTag>{getNicknameTag()}</NameTag>
-          {(roleId==1 && getRoleId()==1) && <ButtonsWrapper>
+          {(roleId==1) && <ButtonsWrapper>
             <HelpButton onClick={onHelp}>도움이 필요해요</HelpButton>
             <CompleteButton onClick={onDone}>단계를 완료했어요</CompleteButton>
           </ButtonsWrapper>}
