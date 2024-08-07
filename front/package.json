@@ -14,6 +14,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.6",
     "@tosspayments/payment-widget-sdk": "^0.11.1",
+    "@tosspayments/tosspayments-sdk": "^2.2.4",
     "axios": "^1.7.2",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
@@ -28,7 +29,8 @@
     "react-scroll": "^1.9.0",
     "react-speech-recognition": "^3.10.0",
     "regenerator-runtime": "^0.14.1",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.7.0",

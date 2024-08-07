@@ -34,33 +34,36 @@ axiosIntercepter.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // // 액세스 토큰 만료 오류 감지
-    // if (error.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    //   try {
-    //     const refreshToken = Cookies.get('refreshToken');
-    //     if (!refreshToken) {
-    //       store.dispatch(sessionExpired()); // 세션 만료 처리
-    //       return Promise.reject(error);
-    //     }
-    //     console.log("리프레시토큰으로 엑세스토큰 요청");
-    //     const response = await axios.post('http://localhost:8080/users/refresh-token', {
-    //       refreshToken,
-    //     });
+    // 액세스 토큰 만료 오류 감지
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshToken = Cookies.get("refreshToken");
+        if (!refreshToken) {
+          store.dispatch(sessionExpired()); // 세션 만료 처리
+          return Promise.reject(error);
+        }
+        console.log("리프레시토큰으로 엑세스토큰 요청");
+        const response = await axios.post(
+          "http://localhost:8080/users/refresh-token",
+          {
+            refreshToken,
+          }
+        );
 
-    //     const newAccessToken = response.data.data;
-    //     console.log(newAccessToken);
-    //     store.dispatch(refresh(newAccessToken)); // Redux 상태 업데이트
-    //     localStorage.setItem('accessToken', newAccessToken);
-    //     axiosIntercepter.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
-    //     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-    //     return axiosIntercepter(originalRequest);
-    //   } catch (refreshError) {
-    //     console.error('리프레시 토큰 사용 오류:', refreshError);
-    //     store.dispatch(logout()); // 로그아웃 처리
-    //     return Promise.reject(refreshError);
-    //   }
-    // }
+        const newAccessToken = response.data.data;
+        console.log(newAccessToken);
+        store.dispatch(refresh(newAccessToken)); // Redux 상태 업데이트
+        localStorage.setItem("accessToken", newAccessToken);
+        axiosIntercepter.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosIntercepter(originalRequest);
+      } catch (refreshError) {
+        console.error("리프레시 토큰 사용 오류:", refreshError);
+        store.dispatch(logout()); // 로그아웃 처리
+        return Promise.reject(refreshError);
+      }
+    }
 
     return Promise.reject(error);
   }

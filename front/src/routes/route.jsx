@@ -22,6 +22,7 @@ import MileagePage from "../pages/Mypage/Mileage/MileagePage";
 import QuestionPage from "../pages/Mypage/QuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 import OrderPage from "../pages/Order/OrderPage";
+import OrderSuccessPage from "../pages/Order/OrderSuccessPage";
 import VideoPage from "../pages/Video/VideoPage";
 
 const AppRoutes = () => {
@@ -34,6 +35,7 @@ const AppRoutes = () => {
       <Route path="/classes/add" element={<ClassAddPage />} />
       <Route path="/classes/edit/:classId" element={<ClassAddPage />} />
       <Route path="/order" element={<OrderPage />} />
+      <Route path="/order/success" element={<OrderSuccessPage />} />
       <Route path="/meeting/:lectureId" element={<MeetingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />

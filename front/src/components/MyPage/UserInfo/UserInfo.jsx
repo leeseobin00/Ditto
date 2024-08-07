@@ -85,11 +85,12 @@ const InputLabel = styled.label`
 `;
 
 const ProfileInput = styled.input`
+  font-family: inherit;
   padding: 12px 16px;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 16px;
   width: 100%;
-  font-size: 14px;
+  font-size: 16px;
   &[readonly] {
     pointer-events: none;
     background-color: var(--BACKGROUND_COLOR); /* Gray background color */
@@ -275,7 +276,11 @@ const UserInfo = ({ userData }) => {
       };
 
       console.log(patchData);
-      const response = await sendAuthRequest(`/mypage/${userId}`, patchData, "patch");
+      const response = await sendAuthRequest(
+        `/mypage/${userId}`,
+        patchData,
+        "patch"
+      );
       console.log("전송완료");
       if (response.code == 200) {
         dispatch(changeNickname({ nickname: name }));

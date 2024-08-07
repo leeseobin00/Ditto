@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import styled from "styled-components";
 
 import useAxios from "../../hooks/useAxios";
@@ -136,6 +138,8 @@ const AddressContainer = styled.div`
 function OrderPage() {
   const userId = useSelector((state) => state.auth.userId);
   const roleId = useSelector((state) => state.auth.roleId);
+  const email = useSelector((state) => state.auth.email);
+  const nickname = useSelector((state) => state.auth.nickname);
 
   const navigate = useNavigate();
 
@@ -166,6 +170,7 @@ function OrderPage() {
   const [classInfo, setClassInfo] = useState(null);
   const [lectureList, setLectureList] = useState(null);
   const [lectureInfo, setLectureInfo] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const { sendRequest: getClassInfo, sendRequest: getLectureList } = useAxios();
 
@@ -218,12 +223,62 @@ function OrderPage() {
     }
   }, [lectureList, lectureId]);
 
+  useEffect(() => {
+    if (classInfo?.classPrice) {
+      setTotalPrice(classInfo.classPrice + 3000);
+    }
+  }, [classInfo]);
+
   // 배송지 목록 모달 조작
   const [showModal, setShowModal] = useState(false);
 
   const handleShowModal = () => {
     setShowModal(!showModal);
   };
+
+  const handleAddressChange = () => {};
+
+  // 결제 구현
+  const [payment, setPayment] = useState();
+  const clientKey = "test_ck_5OWRapdA8djBBkmjYKwYVo1zEqZK";
+  const customerKey = uuidv4();
+
+  const initializeTossPayments = async () => {
+    const tossPayments = await loadTossPayments(clientKey);
+    setPayment(tossPayments.payment({ customerKey }));
+  };
+
+  useEffect(() => {
+    initializeTossPayments();
+  }, []);
+
+  async function requestPayment() {
+    // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+    // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+    await payment.requestPayment({
+      method: "CARD", // 카드 결제
+      amount: {
+        currency: "KRW",
+        value: totalPrice,
+      },
+      orderId: uuidv4(), // 고유 주분번호
+      orderName: classInfo?.className,
+      successUrl:
+        `${window.location.origin}/order` +
+        `/success?userId=${userId}&lectureId=${lectureId}`, // 결제 요청이 성공하면 리다이렉트되는 URL
+      failUrl: window.location.origin + "/fail", // 결제 요청이 실패하면 리다이렉트되는 URL
+      customerEmail: email,
+      customerName: nickname,
+      // customerMobilePhone: nickname,
+      // 카드 결제에 필요한 정보
+      card: {
+        useEscrow: false,
+        flowMode: "DEFAULT", // 통합결제창 여는 옵션
+        useCardPoint: false,
+        useAppCardOnly: false,
+      },
+    });
+  }
 
   return (
     <OrderPageContainer>
@@ -276,7 +331,7 @@ function OrderPage() {
               <Bold>{(classInfo?.classPrice + 3000).toLocaleString()} 원</Bold>
             </LineContainer>
           </PriceContainer>
-          <RoundButton label={"결제하기"} size="lg" />
+          <RoundButton label={"결제하기"} size="lg" onClick={requestPayment} />
         </OrderPrice>
       </LineContainer>
       <OrderInfo>
@@ -289,7 +344,7 @@ function OrderPage() {
           />
         </TitleLine>
         <AddressContainer>
-          <AddressInput />
+          <AddressInput onChange={handleAddressChange} />
         </AddressContainer>
       </OrderInfo>
       <AddressListModal show={showModal} onClose={handleShowModal} />

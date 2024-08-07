@@ -6,7 +6,7 @@ import axiosIntercepter from "../../../features/axiosIntercepter";
 import UserInfo from "../../../components/MyPage/UserInfo/UserInfo";
 import AddressList from "../../../components/Address/AddressList";
 import RoundButton from "../../../components/common/RoundButton";
-import AddressAddModal from "../../../components/Address/AddressAddModal";
+import AddressModal from "../../../components/Address/AddressModal";
 
 const Title = styled.div`
   font-size: 20px;
@@ -66,7 +66,7 @@ const UserInfoDetail = () => {
         <RoundButton label={"추가"} onClick={handleAddressModal} />
       </TitleLine>
       <AddressList addresses={addresses} />
-      <AddressAddModal
+      <AddressModal
         show={showAddressModal}
         onClose={handleAddressModal}
         userId={userId}
