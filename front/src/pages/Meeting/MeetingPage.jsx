@@ -29,7 +29,7 @@ const MainContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: ${(props) => (props.isopen) ? "calc(100% - 400px)" : "100%"};
   height: calc(100% - 240px);
   margin-bottom: 16px;
 `;
@@ -430,6 +430,7 @@ function MeetingPage() {
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
+  console.log("==========================>isOpen: ", isOpen);
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
@@ -457,7 +458,7 @@ function MeetingPage() {
           handleNextStep={handleNextStep}
           handleEndStep={handleEndStep}
         />
-        <MainContent>
+        <MainContent isopen={isOpen}>
           <div>{text}</div>
           <ParticipantGrid>
           {visibleParticipants.map((participant, i) => {
