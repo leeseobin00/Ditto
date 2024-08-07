@@ -12,10 +12,10 @@ public interface PostService {
     PostList bestPost();
     PostList userPost(int userId, Map<String,String> map);
     PostResponse getPost(int postId);
-    String modifyPost(int postId, PostRequest postReq);
-    String deletePost(int postId);
+    void modifyPost(int postId, PostRequest postReq);
+    void deletePost(int postId);
 
-    String addLike(int postId, int userId);
-    String removeLike(int postId, int userId);
+    void addLike(int postId, int userId);
+    void removeLike(int postId, int userId);
     Boolean checkLike(int postId, int userId);
 }

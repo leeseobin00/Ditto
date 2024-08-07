@@ -1,10 +1,19 @@
 package com.ssafy.ditto.domain.post.exception;
 
+import com.ssafy.ditto.global.error.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class PostException extends RuntimeException {
-    private final PostErrorCode errorCode;
+    private final ErrorCode errorCode;
+
+    public PostException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
 }
