@@ -18,7 +18,7 @@ public class Summary {
     @Column(name = "summary_id")
     private Integer summaryId;
 
-    @Column(name = "summary_content")
+    @Column(name = "summary_content", length = 2000)
     private String summaryContent;
 
     //FK

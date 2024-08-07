@@ -12,8 +12,8 @@ import java.util.List;
 public class ChatGptService {
     private final OpenAIService openAIService;
 
-    public String summarize(List<String> originText) {
-        return originText.get(0).substring(0, originText.get(0).length()/2);
-//        return openAIService.summarize(originText);
+    public Mono<String> summarize(String originText) {
+//        return originText.substring(0, originText.length()/2);
+        return openAIService.summarize(originText);
     }
 }
