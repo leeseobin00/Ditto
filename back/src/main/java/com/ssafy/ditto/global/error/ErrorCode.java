@@ -37,6 +37,8 @@ public enum ErrorCode {
     BOARD_NOT_EXIST(404,"BOARD_NOT_EXIST", "게시판이 존재하지 않습니다."),
     POST_NOT_EXIST(404,"POST_NOT_EXIST", "게시글이 존재하지 않습니다."),
     POST_LIKE_EXIST_ERROR(404,"POST_LIKE_EXIST_ERROR", "이미 좋아요를 눌렀습니다. 추가할 수 없습니다."),
+    COMMENT_NOT_EXIST(404,"COMMENT_NOT_EXIST", "댓글이 존재하지 않습니다."),
+    PARENT_COMMENT_NOT_EXIST(404,"PARENT_COMMENT_NOT_EXIST", "부모 댓글이 존재하지 않습니다."),
 
 
     // 중복 관련 오류
@@ -52,7 +54,10 @@ public enum ErrorCode {
     TOO_MANY_REQUESTS(429, "TOO_MANY_REQUESTS", "요청이 너무 많습니다."),
     SERVICE_UNAVAILABLE(503, "SERVICE_UNAVAILABLE", "서비스를 사용할 수 없습니다."),
     EMAIL_CODE_NOTEXIST(401, "EMAIL_CODE_NOTEXIST", "이메일에 해당하는 인증번호가 존재하지 않습니다."),
-    POST_LIKE_CANCEL_ERROR(401,"POST_LIKE_CANCEL_ERROR", "좋아요가 존재하지 않아 취소할 수 없습니다.");
+    POST_LIKE_CANCEL_ERROR(401,"POST_LIKE_CANCEL_ERROR", "좋아요가 존재하지 않아 취소할 수 없습니다."),
+    COMMENT_LEVEL_EXCEED(400,"COMMENT_LEVEL_EXCEED", "댓글 레벨을 초과했습니다."),
+    COMMENT_NOT_SAME_POST(400,"COMMENT_NOT_SAME_POST", "부모 댓글과 자식 댓글이 동일한 게시글에 있지 않습니다."),
+    CANNOT_MODIFY_DELETED_COMMENT(400,"CANNOT_MODIFY_DELETED_COMMENT", "삭제된 댓글은 수정할 수 없습니다.");
 
     private final int httpStatus;
     private final String code;

@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ssafy.ditto.domain.comment.exception.CommentErrorCode.*;
-
 @Component
 @Service
 @RequiredArgsConstructor
@@ -53,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         if(comment.getLevel() > MAX_COMMENT_LEVEL) { // 댓글 레벨 제한
-            throw new CommentException(COMMENT_LEVEL_EXCEED);
+            throw new CommentException(ErrorCode.COMMENT_LEVEL_EXCEED);
         }
         commentRepository.save(comment);
         int commentCnt = postRepository.countComments(post.getPostId());
@@ -92,23 +90,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public String modifyComment(int commentId, CommentRequest commentReq) {
+    public void modifyComment(int commentId, CommentRequest commentReq) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_EXIST));
 
         if (comment.getIsDeleted()) {
-            throw new CommentException(CANNOT_MODIFY_DELETED_COMMENT);
+            throw new CommentException(ErrorCode.CANNOT_MODIFY_DELETED_COMMENT);
         }
 
         comment.setContent(commentReq.getContent());
-        return comment.getCommentId() + "번 댓글 수정";
     }
 
     @Override
     @Transactional
-    public String deleteComment(int commentId) {
+    public void deleteComment(int commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentException(COMMENT_NOT_EXIST));
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_EXIST));
         Post post = comment.getPost();
 
         if (comment.getLevel() == 0) { // 댓글
@@ -127,7 +124,6 @@ public class CommentServiceImpl implements CommentService {
         }
         int commentCnt = postRepository.countComments(post.getPostId());
         postRepository.commentCountUpdate(post.getPostId(),commentCnt);
-        return comment.getCommentId() + "번 댓글 삭제";
     }
 
     private boolean hasActiveChildren(Comment comment) {
@@ -142,9 +138,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public Comment getParent(int postId, int parentId) {
-        Comment parent = commentRepository.findById(parentId).orElseThrow(()-> new CommentException(PARENT_COMMENT_NOT_EXIST));
+        Comment parent = commentRepository.findById(parentId).orElseThrow(()-> new CommentException(ErrorCode.PARENT_COMMENT_NOT_EXIST));
         if(parent.getPost().getPostId() != postId) { // 부모와 자식 댓글의 게시글이 같은지 확인
-            throw new CommentException(COMMENT_NOT_SAME_POST);
+            throw new CommentException(ErrorCode.COMMENT_NOT_SAME_POST);
         }
         return parent;
     }
