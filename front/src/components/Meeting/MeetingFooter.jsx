@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import {
   BsClock,
@@ -12,6 +12,8 @@ import {
 import TimerSetting from "./TimerWindow";
 import ChatWindow from "./ChatWindow";
 import ContentWindow from "./ContentWindow";
+import { useSelector } from "react-redux";
+import { MeetingContext } from "../../pages/Meeting/MeetingPage";
 
 const Footer = styled.div`
   position: fixed; /* 화면의 고정 위치를 위해 fixed 사용 */
@@ -126,6 +128,10 @@ function MeetingFooter({
   videoEnabled,
   handleVideoEnabled,
   handleIsOpen }) {
+  const username = useSelector((state)=>state.auth.username);
+  const roleId = useSelector((state)=>state.auth.roleId);
+  const { timer, sendTimer } = useContext(MeetingContext);
+
   const summaries = [
     {
       title: "1단계. 향수 기본 구성요소 설명",
@@ -154,6 +160,9 @@ function MeetingFooter({
   const [isChatWindow, setIsChatWindow] = useState(false);
   const [isMicActive, setIsMicActive] = useState(false);
   const [isVideoActive, setIsVideoActive] = useState(false);
+
+  const [inputMinute, setInputMinute] = useState(0);
+  const [inputSecond, setInputSecond] = useState(0);
 
   const handleTimerWindow = () => {
     setIsTimerWindow((prev) => !prev);
@@ -188,45 +197,31 @@ function MeetingFooter({
     else handleIsOpen(false);
   }, [isChatWindow, isContentWindow]);
 
-  const [inputMinute, setInputMinute] = useState(1);
-  const [inputSecond, setInputSecond] = useState(0);
-  const [timer, setTimer] = useState(60); // Set initial timer value to 60 seconds
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-
-  useEffect(() => {
-    let timerInterval;
-    if (isTimerRunning && timer > 0) {
-      timerInterval = setInterval(() => {
-        setTimer((prevTime) => prevTime - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      setIsTimerRunning(false);
-    }
-    return () => clearInterval(timerInterval);
-  }, [isTimerRunning, timer]);
-
   const startTimer = () => {
-    setTimer(inputMinute * 60 + inputSecond);
-    setIsTimerRunning(true);
+    sendTimer(username, inputMinute, inputSecond);
     setIsTimerWindow(false);
-  };
+  }
 
   return (
     <>
       <Footer>
         <FooterButtons>
           <TimerWrapper>
-            <CustomClockIcon onClick={handleTimerWindow} />
-            {isTimerWindow && (
-              <TimerSetting
-                title="타이머 설정"
-                inputMinute={inputMinute}
-                handleMinute={setInputMinute}
-                inputSecond={inputSecond}
-                handleSecond={setInputSecond}
-                handleStart={startTimer}
-                handleClose={handleTimerWindow}
-              />
+            {roleId==2 && (
+              <>
+              <CustomClockIcon onClick={handleTimerWindow} />
+              {isTimerWindow && (
+                <TimerSetting
+                  title="타이머 설정"
+                  inputMinute={inputMinute}
+                  handleMinute={setInputMinute}
+                  inputSecond={inputSecond}
+                  handleSecond={setInputSecond}
+                  handleStart={startTimer}
+                  handleClose={handleTimerWindow}
+                />
+              )}
+              </>
             )}
           </TimerWrapper>
           <TimerDisplay>{`${String(Math.floor(timer / 60)).padStart(2, "0")}:${String(timer % 60).padStart(2, "0")}`}</TimerDisplay>
@@ -237,7 +232,7 @@ function MeetingFooter({
             isActive={isVideoActive}
             onClick={handleVideoToggle}
           />
-          <CustomScreenIcon />
+          {/* <CustomScreenIcon /> */}
         </FooterButtons>
         <FooterButtons>
           <CustomFiletextIcon onClick={handleContentWindow} />
