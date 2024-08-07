@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,9 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String secretKey = TOSS_SECRET_KEY;
-        String auth = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
-        headers.set("Authorization", "Basic " + auth);
+        String secretKey = TOSS_SECRET_KEY + ":";
+        String encodedSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+        headers.set("Authorization", "Basic " + encodedSecretKey);
 
         JsonNode body = objectMapper.createObjectNode()
                 .put("paymentKey", approvalRequest.getPaymentKey())
