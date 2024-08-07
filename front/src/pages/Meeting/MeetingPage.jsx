@@ -199,7 +199,8 @@ function MeetingPage() {
       const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
       if(connectionData.connectionId == newSession.connection.connectionId) return;
 
-      console.log("====>RoleId: ", parsedData?.data?.roleId);
+      console.log(parsedData);
+      console.log("====>RoleId: ", parsedData?.roleId);
       console.log("====>roleId: ", roleId);
       // 수강생이면 강사만 subscribe할 수 있음
       if(roleId==1 && parsedData.data?.roleId==1) return;
@@ -462,7 +463,11 @@ function MeetingPage() {
           <ParticipantGrid>
           {visibleParticipants.map((participant, i) => {
             if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
-            if (roleId==1 && (participant?.stream?.connection?.data?.split('%/%user-data')[0])?.roleId==1) return;
+            if (roleId==1 && (participant?.stream?.connection?.data?.split('%/%user-data')[0])?.roleId==1) {
+              console.log(roleId);
+              console.log(participant);
+              return;
+            }
             return (
               <>
                 {/* <span>{participant?.streamManager?.id || 'Publisher'}</span> */}
