@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+import useAxios from "../../hooks/useAxios";
 import OutlineButton from "../common/OutlineButton";
 import CallIcon from "../../assets/icon/mypage/call.png";
 
@@ -13,7 +14,7 @@ const LineContainer = styled.div`
 const FullContainer = styled(LineContainer)`
   width: 100%;
   height: 140px;
-  padding: 15px;
+  padding: 15px 25px;
   border-style: solid;
   border-color: var(--BORDER_COLOR);
   border-radius: 10px;
@@ -29,7 +30,11 @@ const ColumnContainer = styled.div`
 `;
 
 const AddressInfo = styled(ColumnContainer)`
-  width: 75%;
+  width: 100%;
+`;
+
+const ButtonContainer = styled(ColumnContainer)`
+  margin-left: 10%;
 `;
 
 const AddressName = styled.div`
@@ -49,13 +54,32 @@ const Icon = styled.img`
   margin-right: 10px;
 `;
 
-function AddressItem({ address, isPayment = false }) {
+function AddressItem({ address, isPayment = false, userId, onUpdate, onEdit }) {
+  const { sendRequest } = useAxios();
+
+  const handleDeleteAddress = async () => {
+    try {
+      await sendRequest(
+        `/mypage/${userId}/address/${address.addressId}`,
+        null,
+        "delete"
+      );
+      onUpdate();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <FullContainer>
       <AddressInfo>
         <LineContainer>
           <AddressName>{address?.addressName}</AddressName>
-          {address?.isDefault && <MediumFont>기본 배송지</MediumFont>}
+          {address?.isDefault && (
+            <MediumFont style={{ color: "var(--GREEN)" }}>
+              기본 배송지
+            </MediumFont>
+          )}
         </LineContainer>
         <LineContainer>
           <SecondaryFont>{address?.zipCode}</SecondaryFont>
@@ -71,11 +95,17 @@ function AddressItem({ address, isPayment = false }) {
           <SecondaryFont>{address?.receiver}</SecondaryFont>
         </LineContainer>
       </AddressInfo>
-
-      <ColumnContainer>
-        <OutlineButton label={"수정"} size={"sm"} />
-        <OutlineButton label={"삭제"} size={"sm"} color={"ACCENT1"} />
-      </ColumnContainer>
+      {!isPayment && (
+        <ButtonContainer>
+          <OutlineButton label={"수정"} size={"sm"} onClick={onEdit} />
+          <OutlineButton
+            label={"삭제"}
+            size={"sm"}
+            color={"ACCENT1"}
+            onClick={handleDeleteAddress}
+          />
+        </ButtonContainer>
+      )}
     </FullContainer>
   );
 }

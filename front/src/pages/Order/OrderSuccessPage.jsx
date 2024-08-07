@@ -46,18 +46,14 @@ function OrderSuccessPage() {
     };
 
     async function confirm() {
-      const response = await sendRequest(
-        "/payments/approve",
-        requestData,
-        "post"
-      );
-
-      if (!response.ok) {
-        return;
+      try {
+        await sendRequest("/payments/approve", requestData, "post");
+      } catch {
+        console.error(error);
       }
     }
     confirm();
-  }, []);
+  }, [searchParams]);
 
   const navigate = useNavigate();
 

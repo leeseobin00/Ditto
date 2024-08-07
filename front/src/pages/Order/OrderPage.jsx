@@ -334,7 +334,7 @@ function OrderPage() {
           <RoundButton label={"결제하기"} size="lg" onClick={requestPayment} />
         </OrderPrice>
       </LineContainer>
-      <OrderInfo>
+      <OrderInfo style={{ height: "400px" }}>
         <TitleLine>
           <ContainerTitle>배송지 정보</ContainerTitle>
           <OutlineButton
@@ -347,7 +347,11 @@ function OrderPage() {
           <AddressInput onChange={handleAddressChange} />
         </AddressContainer>
       </OrderInfo>
-      <AddressListModal show={showModal} onClose={handleShowModal} />
+      <AddressListModal
+        show={showModal}
+        onClose={handleShowModal}
+        userId={userId}
+      />
     </OrderPageContainer>
   );
 }

@@ -21,18 +21,11 @@ const ContentContainer = styled.div`
   justify-content: space-between;
 `;
 
-const ErrorMessage = styled.div`
-  color: var(--RED);
-  font-size: 14px;
-  margin-top: 5px;
-  text-align: center;
-`;
-
-const AddressAddModal = ({
+const AddressPostModal = ({
   show,
   initialAddress,
   onClose,
-  onSubmit,
+  onUpdate,
   userId,
   isEdit = false,
 }) => {
@@ -75,6 +68,7 @@ const AddressAddModal = ({
         await axiosIntercepter.post(`/mypage/${userId}/address`, addressData);
       }
       alert("배송지 등록이 완료되었습니다.");
+      onUpdate();
       onClose();
     } catch (error) {
       console.error(error);
@@ -84,7 +78,7 @@ const AddressAddModal = ({
   return (
     show && (
       <Modal onClose={onClose}>
-        <Title>배송지 입력</Title>
+        <Title>{isEdit ? "배송지 수정" : "배송지 입력"}</Title>
         <ContentContainer>
           <AddressInput
             initialAddress={addressData}
@@ -101,4 +95,4 @@ const AddressAddModal = ({
   );
 };
 
-export default AddressAddModal;
+export default AddressPostModal;

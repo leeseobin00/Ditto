@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-import useAxios from "../../hooks/useAxios";
 import AddressItem from "./AddressItem";
 
 const ListContainer = styled.div`
@@ -16,12 +15,25 @@ const AddressNull = styled.div`
   text-align: center;
 `;
 
-function AddressList({ addresses }) {
+function AddressList({
+  addresses,
+  isPayment = false,
+  userId,
+  onUpdate,
+  onEdit,
+}) {
   return (
     <ListContainer>
       {addresses ? (
         addresses.map((address) => (
-          <AddressItem key={address.id} isPayment={true} address={address} />
+          <AddressItem
+            key={address.addressId}
+            isPayment={isPayment}
+            address={address}
+            userId={userId}
+            onUpdate={onUpdate}
+            onEdit={onEdit}
+          />
         ))
       ) : (
         <AddressNull>등록된 배송지가 없습니다.</AddressNull>
