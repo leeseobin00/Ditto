@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Getter
@@ -13,12 +14,26 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDetailResponse {
+
+    @Schema(description = "리뷰 ID", example = "1")
     private Integer reviewId;
+
+    @Schema(description = "리뷰 내용", example = "This is a great class!")
     private String reviewContent;
+
+    @Schema(description = "평점", example = "5")
     private Byte rating;
+
+    @Schema(description = "리뷰어 정보")
     private UserResponse reviewer;
+
+    @Schema(description = "강사 정보")
     private UserResponse teacher;
+
+    @Schema(description = "클래스 상세 정보")
     private ClassDetailResponse classDetail;
+
+    @Schema(description = "강의 상세 정보")
     private LectureResponse lectureDetail;
 
     public static ReviewDetailResponse of(Review review, User reviewer, User teacher) {
