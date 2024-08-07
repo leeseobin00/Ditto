@@ -31,7 +31,6 @@ public class PaymentController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "결제가 성공적으로 승인되었습니다."),
             @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "서버 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/approve")
     public ResponseDto<String> approvePayment(@RequestBody PaymentApprovalRequest approvalRequest) {
