@@ -41,6 +41,7 @@ const ParticipantGrid = styled.div`
   align-items: center;
   gap: 8px;
   height: calc(100vh - 240px);
+  margin: 0px 32px;
 `;
 
 const ScrollButton = styled.button`
@@ -98,7 +99,7 @@ function MeetingPage() {
   const [videoEnabled, setVideoEnabled] = useState(true);
   // State for pagination
   const [currentIndex, setCurrentIndex] = useState(0);
-  const maxVisible = 2; // Maximum visible participants
+  const maxVisible = 3; // Maximum visible participants
 
   const handleAudioEnabled = () => {
     if (publisher) {
@@ -286,6 +287,8 @@ function MeetingPage() {
     setMyUserName(undefined);
   };
 
+  // Include publisher in pagination logic
+  const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher, ...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
     return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
@@ -299,10 +302,6 @@ function MeetingPage() {
   const handleNext = () => {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
-
-  // Include publisher in pagination logic
-  const visibleParticipants = [publisher, ...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
-
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const steps = [
     "1단계. 향 조합 비율 결정하기",
@@ -474,7 +473,6 @@ function MeetingPage() {
                   key={i}
                   className="stream-container"
                   onClick={() => handleMainVideoStream(participant)}
-                  style={{ flexBasis: getFlexBasis() }}
                   streamManager={participant} />
               </>
             );
