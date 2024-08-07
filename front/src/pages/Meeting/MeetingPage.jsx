@@ -213,7 +213,6 @@ function MeetingPage() {
 
     newSession.on('streamDestroyed', (event) => {
       deleteSubscriber(event.stream.streamManager);
-      leaveSession();
     });
 
     newSession.on('exception', (exception) => {
