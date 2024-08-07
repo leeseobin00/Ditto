@@ -116,8 +116,8 @@ public class SessionController {
 			role = OpenViduRole.MODERATOR;
 			logger.info("사용자 역할: 강사 (MODERATOR)");
 		} else {
-			role = OpenViduRole.SUBSCRIBER;
-			logger.info("사용자 역할: 수강생 (SUBSCRIBER)");
+			role = OpenViduRole.MODERATOR;
+			logger.info("사용자 역할: 수강생 (MODERATOR)");
 		}
 
 		// serverData와 역할을 사용하여 connectionProperties 객체 생성
