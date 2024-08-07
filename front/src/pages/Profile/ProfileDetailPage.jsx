@@ -174,12 +174,12 @@ function ProfileDetailPage() {
 
   const handleGetClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
-    setClasses(result?.data?.data?.classList);
+    setClasses(result?.data?.classList);
   }
 
   const handleGetProClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/pro-class?page=${classPage}&size=${classSize}`, null, "get");
-    setProClasses(result?.data?.data?.classList);
+    setProClasses(result?.data?.classList);
   }
 
   const handleGetReviews = async() => {
@@ -234,7 +234,7 @@ function ProfileDetailPage() {
         setIntro,}}
     >
       <Container>
-        <Sidebar>
+        <Sidebar profileName={profileName}>
           {isMyProfile ? 
             <MyProfile
               profileImageURL={profileImageURL}

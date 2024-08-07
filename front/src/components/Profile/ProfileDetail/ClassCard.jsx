@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-
+import axios from "axios";
 import Tag from "../Tag";
 
 const CardWrapper = styled.div`
@@ -45,10 +46,38 @@ const Instructor = styled.div`
   color: var(--TEXT_TERTIARY);
 `;
 
-function ClassCard({ title, date, name, tag }) {
+function ClassCard({ fileId, title, date, name, tag }) {
+  const baseURL = import.meta.env.VITE_BASE_URL;
+  const [image, setImage] = useState(undefined);
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+  
+  const getImage = async(fileId) => {
+    const response = await axios.get(
+      `${baseURL}/files/download/${fileId}`,
+      {
+        responseType: "blob",
+      }
+    );
+    const fileBlob = response.data;
+    const base64 = await toBase64(fileBlob);
+    setImage(base64);
+  }
+
+  useEffect(()=>{
+    if(fileId){
+      getImage(fileId);
+    }
+  },[fileId]);
+
   return (
     <CardWrapper>
-      <Image />
+      <Image src={image} />
       <ContentWrapper>
         <Title>{title}</Title>
         <Info>
