@@ -3,6 +3,7 @@ package com.ssafy.ditto.domain.user.service;
 import com.ssafy.ditto.domain.user.dto.EmailCodeRequest;
 import com.ssafy.ditto.domain.user.exception.NullCodeException;
 import com.ssafy.ditto.domain.user.repository.EmailRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +14,9 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,12 @@ public class EmailServiceImpl implements EmailService{
 
     private final JavaMailSender javaMailSender;
     private final EmailRepository emailRepository;
+    private ScheduledExecutorService scheduledExecutorService;
+
+    @PostConstruct
+    public void init() {
+        scheduledExecutorService = Executors.newScheduledThreadPool(20);
+    }
 
     @Override
     public String createCode() throws NoSuchAlgorithmException {
@@ -32,6 +42,7 @@ public class EmailServiceImpl implements EmailService{
     public void sendEmail(String email) throws MessagingException, NoSuchAlgorithmException  {
         String code = createCode();
         emailRepository.saveCode(email, code);
+        scheduleRemoveCode(email, 30);
 
         String subject = "Ditto 계정 본인 확인";
         String content = "<div style='font-size:16px;'>"
@@ -49,6 +60,11 @@ public class EmailServiceImpl implements EmailService{
         javaMailSender.send(mimeMessage);
     }
 
+    private void scheduleRemoveCode(String email, int delay) {
+        Runnable removeCodeTask = emailRepository.removeCode(email);
+        scheduledExecutorService.schedule(removeCodeTask, delay, TimeUnit.SECONDS);
+    }
+
     @Override
     public boolean checkCode(EmailCodeRequest emailCodeRequest) {
         String email = emailCodeRequest.getEmail();
@@ -58,7 +74,7 @@ public class EmailServiceImpl implements EmailService{
         if (save == null){
             throw new NullCodeException();
         } else if (code.equals(save)) {
-            emailRepository.removeCode(email);
+            emailRepository.removeCode(email).run();
             return true;
         } else {
             return false;

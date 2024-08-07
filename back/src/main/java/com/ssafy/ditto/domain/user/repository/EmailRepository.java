@@ -1,9 +1,7 @@
 package com.ssafy.ditto.domain.user.repository;
 
-import lombok.Data;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -16,8 +14,9 @@ public class EmailRepository {
     }
 
     // 이메일에 해당하는 코드 삭제
-    public void removeCode(String email) {
+    public Runnable removeCode(String email) {
         emailAndCode.remove(email);
+        return null;
     }
 
     // 이메일에 해당하는 코드 검색
