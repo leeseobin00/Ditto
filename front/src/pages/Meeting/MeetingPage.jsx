@@ -89,6 +89,8 @@ function MeetingPage() {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
+  // meeting에 참여하는 멤버들 이름
+  const [members, setMembers] = useState([]);
   // chat
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
@@ -209,6 +211,7 @@ function MeetingPage() {
       const subscriber = newSession.subscribe(event.stream, undefined);
       if (parsedData?.username !== myUserName) {
         console.log("난 널 구독해");
+        setMembers((prev)=>[...prev, parsedData?.username]);
         setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
@@ -225,7 +228,10 @@ function MeetingPage() {
       console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
-      setChatMessages((prev)=>[...prev, parsedData]);
+      console.log("===========>receiveChat:", parsedData);
+      if(parsedData?.target=="모두에게" || parsedData?.target==username || parsedData?.sender==username){
+        setChatMessages((prev)=>[...prev, parsedData]);
+      }
     });
 
     newSession.on('signal:status', (event) => {
@@ -368,8 +374,9 @@ function MeetingPage() {
             message: senderMsg, 
             sender: senderName,
             time: time,
+            target: target,
         }),
-        to: target ? [] : [],
+        to: [],
         type: 'chat'
     })
     .then(() => {
@@ -474,6 +481,7 @@ function MeetingPage() {
         subscribers,
         timer,
         sendTimer,
+        members
       }}
     >
       <PageContainer>
@@ -486,7 +494,7 @@ function MeetingPage() {
           handleNextStep={handleNextStep}
           handleEndStep={handleEndStep}
         />
-        <MainContent isopen={isOpen}>
+        <MainContent isopen={isOpen.toString()}>
           <div>{text}</div>
           <ParticipantGrid>
           {visibleParticipants.map((participant, i) => {
