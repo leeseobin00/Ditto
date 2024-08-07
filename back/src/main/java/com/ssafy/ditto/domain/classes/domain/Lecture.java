@@ -50,15 +50,7 @@ public class Lecture extends BaseTimeEntity {
     @Column
     private Boolean isDeleted;
 
-    @Column
-    private LocalDateTime startTime;
-
-    @PostLoad
-    @PostPersist
-    @PostUpdate
-    public void computeStartTime() {
-        if (year != null && month != null && day != null && hour != null && minute != null) {
-            this.startTime = LocalDateTime.of(year, month, day, hour, minute);
-        }
+    public LocalDateTime getStartDateTime() {
+        return LocalDateTime.of(year, month, day, hour, minute);
     }
 }

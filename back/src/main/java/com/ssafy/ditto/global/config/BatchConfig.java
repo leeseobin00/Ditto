@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,19 +47,22 @@ public class BatchConfig {
         return new StepBuilder("step", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     LocalDateTime now = LocalDateTime.now();
-                    List<Lecture> upcomingLectures = lectureService.getUpcomingLectures(now);
+                    LocalDate today = now.toLocalDate();
 
-                    for (Lecture lecture : upcomingLectures) {
-                        LocalDateTime lectureStartTime = lecture.getStartTime();
-                        LocalDateTime createTime = lectureStartTime.minusMinutes(30);
+                    // 현재 날짜를 기준으로 강의 목록 조회
+                    List<Lecture> lectures = lectureService.getLecturesForDate(today);
+
+                    for (Lecture lecture : lectures) {
+                        LocalDateTime lectureStartTime = lecture.getStartDateTime();
+                        LocalDateTime createTime = lectureStartTime.minusHours(1);
                         LocalDateTime endTime = lectureStartTime.plusHours(3);
 
                         if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
-                            restTemplate.postForObject(baseUrl+"/live-rooms/" + lecture.getLectureId(), null, String.class);
+                            restTemplate.postForObject(baseUrl + "/live-rooms/" + lecture.getLectureId(), null, String.class);
                         }
 
                         if (now.isAfter(endTime)) {
-                            restTemplate.delete(baseUrl+"/live-rooms/" + lecture.getLectureId());
+                            restTemplate.delete(baseUrl + "/live-rooms/" + lecture.getLectureId());
                         }
                     }
 
