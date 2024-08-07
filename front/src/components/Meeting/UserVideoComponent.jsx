@@ -17,9 +17,9 @@ const Video = styled.video`
   height: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border: 3px solid ${({ videoRoleId }) => {
-    if (videoRoleId===1 && status === 'help') return "var(--RED)";
-    if (videoRoleId===1 && status === 'done') return "var(--GREEN)";
+  border: 3px solid ${({ videoRoleId, status }) => {
+    if (videoRoleId==1 && status === 'help') return "var(--RED)";
+    if (videoRoleId==1 && status === 'done') return "var(--GREEN)";
     return 'transparent'; // or another color for 'normal'
   }};
 `;
@@ -113,6 +113,13 @@ function UserVideoComponent({ streamManager }) {
     return parsedData?.username;
   };
 
+  const getRoleId = () => {
+    const parsedData = JSON.parse(
+      streamManager?.stream?.connection?.data.split('%/%user-data')[0]
+    );
+    return parsedData?.roleId;
+  };
+
   useEffect(() => {
     const videoUsername = getNicknameTag();
     if(statusMessages.length===0) setMyStatus("normal");
@@ -128,14 +135,16 @@ function UserVideoComponent({ streamManager }) {
 
   console.log(myStatus);
   console.log(statusMessages);
-
+  console.log(videoRoleId);
+  console.log(roleId);
+  console.log(getRoleId());
   return (
     <div>
       {streamManager !== undefined ? (
         <VideoWrapper>
-          <Video videoRoleId={videoRoleId} status={myStatus} autoPlay={true} ref={videoRef} />
+          <Video videoRoleId={getRoleId()} status={myStatus} autoPlay={true} ref={videoRef} />
           <NameTag>{getNicknameTag()}</NameTag>
-          {(roleId==1 && videoRoleId==1) && <ButtonsWrapper>
+          {(roleId==1 && getRoleId()==1) && <ButtonsWrapper>
             <HelpButton onClick={onHelp}>도움이 필요해요</HelpButton>
             <CompleteButton onClick={onDone}>단계를 완료했어요</CompleteButton>
           </ButtonsWrapper>}
