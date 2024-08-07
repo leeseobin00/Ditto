@@ -100,7 +100,7 @@ function ProfileDetailPage() {
   const [avgRating, setAvgRating] = useState(0);
   const [intro, setIntro] = useState("");
   const [classes, setClasses] = useState([]);
-  const [myClasses, setMyClasses] = useState([]);
+  const [proClasses, setProClasses] = useState([]);
   const [classPage, setClassPage] = useState(1);
   const [totalClassPage, setTotalClassPage] = useState(1);
   const classSize = 3;
@@ -137,13 +137,26 @@ function ProfileDetailPage() {
   const handleGetProfile = async() => {    
     const result = await getProfile(`/profiles/${profileId}`, null, "get");
     if(result){
+      const role = result?.data?.roleId;
       setProfileName(result?.data?.nickname);
-      setProfileRoleId(result?.data?.roleId);
+      setProfileRoleId(role);
       setTags(result?.data?.tags);
       setLikeCount(result?.data?.likeCount);
       setAvgRating(result?.data?.avgRating);
       setStudentSum(result?.data?.studentSum);
       setIntro(result?.data?.intro);
+
+      //수강생일때만
+      if(role==1){
+        handleGetClasses();
+      }
+      //강사일때만
+      if(role==2){
+        handleGetReviews();
+        handleRating();
+        handleGetProClasses();
+      }
+      handleGetPosts();
 
       const baseURL = import.meta.env.VITE_BASE_URL;
       const fileId = result?.data?.fileId;
@@ -155,22 +168,23 @@ function ProfileDetailPage() {
       const base64 = await toBase64(fileBlob);
 
       setProfileImageURL(base64);
+
     }
   }
 
   const handleGetClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
-    setClasses(result?.data?.classList);
+    setClasses(result?.data?.data?.classList);
   }
 
-  const handleGetMyClasses = async() => {
-    const result = await getClasses(`/profiles/${profileId}/myclass?page=${classPage}&size=${classSize}`, null, "get");
-    setMyClasses(result?.data?.classList);
+  const handleGetProClasses = async() => {
+    const result = await getClasses(`/profiles/${profileId}/pro-class?page=${classPage}&size=${classSize}`, null, "get");
+    setProClasses(result?.data?.data?.classList);
   }
 
   const handleGetReviews = async() => {
     const result = await getReviews(`/profiles/${profileId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
-    setReviews(result?.data);
+    setReviews(result?.data?.data?.Content);
   }
 
   const handleGetPosts = async() => {
@@ -202,22 +216,11 @@ function ProfileDetailPage() {
       setAvgRating(result?.data?.avgRating);
   }
 
-  useEffect(()=>{
-    if(profileId){
+  useEffect(() => {
+    if (profileId) {
       handleGetProfile();
-      console.log(profileRoleId);
-      if(profileRoleId==1){
-        handleGetClasses();
-      }
-      //강사일때만
-      if(profileRoleId==2){
-        handleGetReviews();
-        handleRating();
-        handleGetMyClasses();
-      }
-      handleGetPosts();
     }
-  },[profileId]);
+  }, [profileId]);
 
   return (
     <ProfileContext.Provider
@@ -286,8 +289,8 @@ function ProfileDetailPage() {
 
           {profileRoleId==2 && 
             <>
-              <Section id="myClasses" title={`${profileName}'s Class`}>
-                <CardList cards={myClasses} />
+              <Section id="proClasses" title={`${profileName}'s Class`}>
+                <CardList cards={proClasses} />
               </Section> 
               <Section id="reviews" title="강의 리뷰">
                 <ReviewList reviews={reviews} />
