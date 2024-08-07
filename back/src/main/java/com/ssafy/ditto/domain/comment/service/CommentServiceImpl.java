@@ -10,6 +10,7 @@ import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
+import com.ssafy.ditto.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ssafy.ditto.domain.comment.exception.CommentErrorCode.*;
-import static com.ssafy.ditto.domain.post.exception.PostErrorCode.POST_NOT_EXIST;
 
 @Component
 @Service
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public String writeComment(int postId, CommentRequest commentReq) {
         User user = userRepository.findById(commentReq.getUserId()).orElse(null);
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         Comment comment = new Comment();
         comment.setContent(commentReq.getContent());
         comment.setUser(user);
@@ -64,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public List<CommentResponse> getCommentList(int postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         List<Comment> commentList = commentRepository.findAllByPost_PostId(post.getPostId());
 
         List<CommentResponse> responseList = new ArrayList<>();

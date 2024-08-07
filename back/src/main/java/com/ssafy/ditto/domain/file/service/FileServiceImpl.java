@@ -11,6 +11,7 @@ import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.PostRepository;
+import com.ssafy.ditto.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.ssafy.ditto.domain.file.exception.FileErrorCode.FILE_NOT_EXIST;
-import static com.ssafy.ditto.domain.post.exception.PostErrorCode.POST_NOT_EXIST;
 
 @Component
 @Service
@@ -46,7 +46,7 @@ public class FileServiceImpl implements FileService {
     }
 
     public void saveList(int postId, List<MultipartFile> requestFiles) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         List<UploadFile> uploadFiles = fileStore.storeFiles(requestFiles);
 
         List<File> fileList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteList(int postId) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         List<File> files = fileRepository.findByPostId(postId);
         for (File file : files) {
             List<FilePost> filePosts = filePostRepository.findByFile(file);

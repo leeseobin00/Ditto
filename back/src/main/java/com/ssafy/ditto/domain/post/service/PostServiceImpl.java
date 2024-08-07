@@ -13,7 +13,6 @@ import com.ssafy.ditto.domain.post.domain.LikePost;
 import com.ssafy.ditto.domain.post.domain.Post;
 import com.ssafy.ditto.domain.post.dto.PostRequest;
 import com.ssafy.ditto.domain.post.dto.PostResponse;
-import com.ssafy.ditto.domain.post.exception.BoardException;
 import com.ssafy.ditto.domain.post.exception.PostException;
 import com.ssafy.ditto.domain.post.repository.BoardRepository;
 import com.ssafy.ditto.domain.post.repository.LikePostRepository;
@@ -33,9 +32,6 @@ import com.ssafy.ditto.domain.post.dto.PostList;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.ssafy.ditto.domain.post.exception.BoardErrorCode.*;
-import static com.ssafy.ditto.domain.post.exception.PostErrorCode.*;
-
 @Component
 @Service
 @RequiredArgsConstructor
@@ -52,7 +48,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public int writePost(PostRequest postReq) {
         Board board = boardRepository.findById(postReq.getBoardId())
-                .orElseThrow(() -> new BoardException(BOARD_NOT_EXIST));
+                .orElseThrow(() -> new ServiceException(ErrorCode.BOARD_NOT_EXIST));
         Category category = categoryRepository.findById(postReq.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
         Tag tag = tagRepository.findById(postReq.getTagId())
@@ -184,7 +180,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPost(int postId) {
         postRepository.addView(postId); // 조회수 먼저 올리기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         List<File> files = fileRepository.findByPostId(postId);
 
         PostResponse postResp = PostResponse.of(post);
@@ -194,7 +190,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String modifyPost(int postId, PostRequest postReq) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         if (post != null) {
             post.setTitle(postReq.getTitle());
             post.setContent(postReq.getContent());
@@ -206,7 +202,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String deletePost(int postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         postRepository.delete(post);
 
         return postId+"번 게시글 삭제";
@@ -214,7 +210,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String addLike(int postId, int userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
         Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
         if(likePostList.isEmpty()) {
@@ -228,7 +224,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public String removeLike(int postId, int userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
         Optional<LikePost> likePostList = likePostRepository.findByUserAndPost(user,post);
         if(likePostList.isPresent()) {
@@ -242,7 +238,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Boolean checkLike(int postId, int userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_EXIST));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND));
         return likePostRepository.findByUserAndPost(user,post).isPresent();
     }
