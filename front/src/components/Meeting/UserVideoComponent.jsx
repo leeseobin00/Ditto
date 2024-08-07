@@ -17,9 +17,9 @@ const Video = styled.video`
   height: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border: 3px solid ${({ status }) => {
-    if (roleId===1 && status === 'help') return "var(--RED)";
-    if (roleId===1 && status === 'done') return "var(--GREEN)";
+  border: 3px solid ${({ videoRoleId }) => {
+    if (videoRoleId===1 && status === 'help') return "var(--RED)";
+    if (videoRoleId===1 && status === 'done') return "var(--GREEN)";
     return 'transparent'; // or another color for 'normal'
   }};
 `;
@@ -133,7 +133,7 @@ function UserVideoComponent({ streamManager }) {
     <div>
       {streamManager !== undefined ? (
         <VideoWrapper>
-          <Video roleId={roleId} status={myStatus} autoPlay={true} ref={videoRef} />
+          <Video videoRoleId={videoRoleId} status={myStatus} autoPlay={true} ref={videoRef} />
           <NameTag>{getNicknameTag()}</NameTag>
           {(roleId==1 && videoRoleId==1) && <ButtonsWrapper>
             <HelpButton onClick={onHelp}>도움이 필요해요</HelpButton>
