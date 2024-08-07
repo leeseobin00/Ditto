@@ -2,7 +2,9 @@ package com.ssafy.ditto.domain.payment.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.payment.domain.Payment;
@@ -37,6 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final LectureRepository lectureRepository;
+    private final ClassRepository classRepository;
     private final UserRepository userRepository;
     private final LearningService learningService;
 
@@ -46,7 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(UserNotFoundException::new);
 
         Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
-
+        DClass dClass = classRepository.findByClassId(lecture.getClassId().getClassId());
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,6 +91,8 @@ public class PaymentServiceImpl implements PaymentService {
                     .userId(user)
                     .lectureId(lecture)
                     .build();
+            lecture.setUserCount((byte) (lecture.getUserCount() + 1));
+            dClass.setStudentSum(dClass.getStudentSum() + 1);
 
             paymentRepository.save(payment);
 
