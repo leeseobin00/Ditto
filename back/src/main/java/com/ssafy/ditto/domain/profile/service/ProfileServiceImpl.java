@@ -223,12 +223,13 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClassListResponse userClass(int userId, PageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
 
         // Learning 엔티티를 통해 DClass를 조회
         Page<Learning> learningPage = learningRepository.findAll((root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get("studentId").get("userId"), userId);
+            return criteriaBuilder.equal(root.get("student").get("userId"), userId);
         }, pageable);
 
         List<DClass> classList = learningPage.getContent().stream()
@@ -274,12 +275,13 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ClassListResponse userMyClass(int userId, PageRequest pageRequest) {
+    @Transactional(readOnly = true)
+    public ClassListResponse proClass(int userId, PageRequest pageRequest) {
         List<ClassResponse> classResponses = new ArrayList<>();
-
+        System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
         List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
-
+        System.out.println(classList.size());
         for (DClass dClass : classList){
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
@@ -311,6 +313,8 @@ public class ProfileServiceImpl implements ProfileService {
                     .user(UserResponse.of(dClass.getUserId()))
                     .tag(tagResponse)
                     .build();
+
+            classResponses.add(classResponse);
         }
 
         return ClassListResponse.builder()
@@ -320,11 +324,12 @@ public class ProfileServiceImpl implements ProfileService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ReviewDetailResponse> userReview(int userId, PageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Order.desc("createdDate")));
 
         Page<Review> reviewPage = reviewRepository.findAll((root, query, criteriaBuilder) -> {
-            Join<Review, DClass> classJoin = root.join("classId");
+            Join<Review, DClass> classJoin = root.join("dclass");
             return criteriaBuilder.equal(classJoin.get("userId").get("userId"), userId);
         }, pageable);
 
