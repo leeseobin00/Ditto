@@ -89,6 +89,8 @@ function MeetingPage() {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
+  // meeting에 참여하는 멤버들 이름
+  const [members, setMembers] = useState([]);
   // chat
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
@@ -209,6 +211,7 @@ function MeetingPage() {
       const subscriber = newSession.subscribe(event.stream, undefined);
       if (parsedData?.username !== myUserName) {
         console.log("난 널 구독해");
+        setMembers((prev)=>[...prev, parsedData?.username]);
         setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
@@ -225,7 +228,10 @@ function MeetingPage() {
       console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
-      setChatMessages((prev)=>[...prev, parsedData]);
+      console.log("===========>receiveChat:", parsedData);
+      if(parsedData?.target=="모두에게" || parsedData?.target==username || parsedData?.sender==username){
+        setChatMessages((prev)=>[...prev, parsedData]);
+      }
     });
 
     newSession.on('signal:status', (event) => {
@@ -241,6 +247,14 @@ function MeetingPage() {
       // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
       console.log("=====timer parsedData: ",  parsedData);
       startTimer(parsedData?.minute, parsedData?.second);
+    });
+
+    newSession.on('signal:progress', (event) => {
+      console.log('New chat message:', event.data);
+      const parsedData = JSON.parse(event.data);
+      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      console.log("=====timer parsedData: ",  parsedData);
+      setCurrentStep(parsedData?.curProgress);
     });
 
     const token = await getToken();
@@ -316,6 +330,7 @@ function MeetingPage() {
   const handleStartStep = () => {
     setStepLoading(true);
     SpeechRecognition.startListening({ language: 'ko-KR', continuous: true });
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     setStatusMessages([]);
@@ -328,6 +343,7 @@ function MeetingPage() {
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
     axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     setStatusMessages([]);
@@ -341,6 +357,7 @@ function MeetingPage() {
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
     axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
     resetTranscript();
+    sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
     setStepLoading(false);
     SpeechRecognition.abortListening();
@@ -357,8 +374,9 @@ function MeetingPage() {
             message: senderMsg, 
             sender: senderName,
             time: time,
+            target: target,
         }),
-        to: target ? [] : [],
+        to: [],
         type: 'chat'
     })
     .then(() => {
@@ -419,12 +437,29 @@ function MeetingPage() {
     }
     return () => clearInterval(timerInterval);
   }, [isTimerRunning, timer]);
-
   const startTimer = (minute, second) => {
     console.log("ddddddddddd");
     setTimer(minute * 60 + second);
     setIsTimerRunning(true);
   };
+  const sendProgress = (senderName, curProgress) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+            curProgress: curProgress,
+        }),
+        to: [],
+        type: 'progress'
+    })
+    .then(() => {
+        console.log('Message successfully sent');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
@@ -446,6 +481,7 @@ function MeetingPage() {
         subscribers,
         timer,
         sendTimer,
+        members
       }}
     >
       <PageContainer>
@@ -458,7 +494,7 @@ function MeetingPage() {
           handleNextStep={handleNextStep}
           handleEndStep={handleEndStep}
         />
-        <MainContent isopen={isOpen}>
+        <MainContent isopen={isOpen.toString()}>
           <div>{text}</div>
           <ParticipantGrid>
           {visibleParticipants.map((participant, i) => {

@@ -124,18 +124,26 @@ function ChatWindow({ handleWindow }) {
   // redux
   const username = useSelector((state)=>state.auth.nickname);
   // context API
-  const { sendChat, chatMessages, publisher, subscribers } = useContext(MeetingContext);
+  const { sendChat, chatMessages, publisher, subscribers, members } = useContext(MeetingContext);
 
   console.log("pub: ", publisher);
-  console.log("sub: ", subscribers);
+  console.log("chat=====================>sub: ", subscribers);
+  console.log("chat=====================>members: ", members);
   //const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedUser, setSelectedUser] = useState("모두에게");
+  const [users, setUsers] = useState(["모두에게"]);
   const messagesEndRef = useRef(null);
 
-  const users = ["모두에게"]; // 실제 사용자 목록으로 대체하세요.
+  useEffect(() => {
+    setUsers((prev) => {
+      const uniqueUsers = Array.from(new Set([...prev, ...members]));
+      return uniqueUsers;
+    });
+  }, [members]);
 
   const handleSend = () => {
+    alert(selectedUser);
     if (inputValue.trim()) {
       const newMessage = {
         user: selectedUser,
@@ -152,7 +160,7 @@ function ChatWindow({ handleWindow }) {
           hour: "2-digit",
           minute: "2-digit",
         }), 
-        "ddd");
+        selectedUser);
       //setMessages([...messages, newMessage]);
       setInputValue("");
     }
@@ -201,13 +209,13 @@ function ChatWindow({ handleWindow }) {
         <div ref={messagesEndRef} />
       </ChatMessages>
       <ChatInputWrapper>
-        {/* <Select value={selectedUser} onChange={handleUserChange}>
+        <Select value={selectedUser} onChange={handleUserChange}>
           {users.map((user, index) => (
             <option key={index} value={user}>
               {user}
             </option>
           ))}
-        </Select> */}
+        </Select>
         <ChatInput>
           <Input
             type="text"
