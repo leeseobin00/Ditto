@@ -4,26 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.dto.ConnectionResponse;
 import com.ssafy.ditto.domain.liveroom.dto.SessionCreationResponse;
-import com.ssafy.ditto.domain.liveroom.service.LearningService;
-import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
-import com.ssafy.ditto.global.dto.ResponseDto;
+import com.ssafy.ditto.global.error.ErrorCode;
+import com.ssafy.ditto.global.error.ServiceException;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import static java.security.KeyRep.Type.SECRET;
 
 @Component
 @Service
@@ -69,10 +61,10 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public SessionCreationResponse createSession(int lectureId, int userId) throws ResponseStatusException {
+    public SessionCreationResponse createSession(int lectureId, int userId) {
         boolean isValidTeacher = lectureService.isValidTeacher(userId, lectureId);
         if (!isValidTeacher) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사용자가 교사 역할이 아닙니다.");
+            throw new ServiceException(ErrorCode.FORBIDDEN);
         }
 
         if (lectureSessions.containsKey(lectureId)) {
@@ -87,30 +79,28 @@ public class SessionServiceImpl implements SessionService {
 
                 return new SessionCreationResponse(HttpStatus.OK.value(), "라이브 방송 링크가 생성되었습니다.", session.getSessionId());
             } catch (OpenViduJavaClientException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenVidu 클라이언트 오류 발생: " + e.getMessage(), e);
+                throw new ServiceException(ErrorCode.OPENVIDU_CLIENT_ERROR, e);
             } catch (OpenViduHttpException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenVidu HTTP 오류 발생: " + e.getMessage(), e);
+                throw new ServiceException(ErrorCode.OPENVIDU_HTTP_ERROR, e);
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "세션 생성 중 알 수 없는 오류가 발생했습니다: " + e.getMessage(), e);
+                throw new ServiceException(ErrorCode.UNKNOWN_ERROR, e);
             }
         }
     }
 
     @Override
-    public ConnectionResponse getToken(int lectureId, int userId) throws ResponseStatusException {
+    public ConnectionResponse getToken(int lectureId, int userId) {
         // 사용자의 역할을 결정
         OpenViduRole role;
         if (learningService.isValidUser(userId, lectureId) || lectureService.isValidTeacher(userId, lectureId)) {
             role = OpenViduRole.MODERATOR;
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "유효하지 않은 사용자입니다.");
+            throw new ServiceException(ErrorCode.INVALID_USER);
         }
 
-        // 강의 ID로 세션을 조회
         Session session = this.lectureSessions.get(lectureId);
         if (session != null) {
             try {
-                // 방금 생성한 connectionProperties로 새 토큰 생성
                 ConnectionProperties properties = new ConnectionProperties.Builder()
                         .type(ConnectionType.WEBRTC)
                         .role(role)
@@ -126,7 +116,6 @@ public class SessionServiceImpl implements SessionService {
                 resp.setConnectionId(connectionId);
                 resp.setRole(role);
 
-                // 새 토큰을 저장하는 컬렉션 업데이트
                 this.sessionUserToken.computeIfAbsent(session.getSessionId(), k -> new HashMap<>()).put(userId, resp);
 
                 return resp;
@@ -135,23 +124,23 @@ public class SessionServiceImpl implements SessionService {
                     this.lectureSessions.remove(lectureId);
                     this.sessionUserToken.remove(session.getSessionId());
                 }
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                throw new ServiceException(ErrorCode.OPENVIDU_HTTP_ERROR, e);
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다.");
+            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
         }
     }
 
     @Override
-    public void removeUser(int lectureId, int userId) throws ResponseStatusException {
+    public void removeUser(int lectureId, int userId) {
         Session session = this.lectureSessions.get(lectureId);
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "세션이 존재하지 않습니다.");
+            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
         }
 
         Map<Integer, ConnectionResponse> userTokens = this.sessionUserToken.get(session.getSessionId());
         if (userTokens == null || !userTokens.containsKey(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 사용자 또는 토큰이 존재하지 않습니다.");
+            throw new ServiceException(ErrorCode.INVALID_USER);
         }
 
         String token = userTokens.get(userId).getToken();
@@ -162,15 +151,15 @@ public class SessionServiceImpl implements SessionService {
                 this.sessionUserToken.remove(session.getSessionId());
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 토큰입니다.");
+            throw new ServiceException(ErrorCode.INVALID_TOKEN);
         }
     }
 
     @Override
-    public void closeSession(int lectureId) throws ResponseStatusException {
+    public void closeSession(int lectureId) {
         Session session = this.lectureSessions.get(lectureId);
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다.");
+            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
         }
 
         try {
@@ -178,15 +167,15 @@ public class SessionServiceImpl implements SessionService {
             this.lectureSessions.remove(lectureId);
             this.sessionUserToken.remove(session.getSessionId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "세션 종료 중 오류가 발생했습니다: " + e.getMessage());
+            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
 
     @Override
-    public Map<String, Object> fetchInfo(int lectureId) throws ResponseStatusException {
+    public Map<String, Object> fetchInfo(int lectureId) {
         Session session = this.lectureSessions.get(lectureId);
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다.");
+            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
         }
         return sessionToMap(session);
     }
@@ -197,33 +186,33 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void forceDisconnect(int lectureId, int userId) throws ResponseStatusException {
+    public void forceDisconnect(int lectureId, int userId) {
         Session session = this.lectureSessions.get(lectureId);
 
         if (session == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "세션이 존재하지 않습니다.");
+            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
         }
 
         String sessionId = session.getSessionId();
         Map<Integer, ConnectionResponse> userConnections = this.sessionUserToken.get(sessionId);
         if (userConnections == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "userConnections를 찾을 수 없습니다.");
+            throw new ServiceException(ErrorCode.INVALID_USER);
         }
 
         ConnectionResponse connectionResponse = userConnections.get(userId);
         if (connectionResponse == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ConnectionResponse를 찾을 수 없습니다.");
+            throw new ServiceException(ErrorCode.INVALID_USER);
         }
 
         String connectionId = connectionResponse.getConnectionId();
         if (connectionId == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "connectionId가 없습니다.");
+            throw new ServiceException(ErrorCode.INVALID_TOKEN);
         }
 
         try {
             session.forceDisconnect(connectionId);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenVidu 예외가 발생했습니다.");
+            throw new ServiceException(ErrorCode.OPENVIDU_CLIENT_ERROR, e);
         }
     }
 
