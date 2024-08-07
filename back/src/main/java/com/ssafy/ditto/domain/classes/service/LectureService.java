@@ -4,6 +4,7 @@ import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,5 +23,5 @@ public interface LectureService {
 
     List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 
-    public List<Lecture> getUpcomingLectures(LocalDateTime time);
+    List<Lecture> getLecturesForDate(LocalDate date);
 }

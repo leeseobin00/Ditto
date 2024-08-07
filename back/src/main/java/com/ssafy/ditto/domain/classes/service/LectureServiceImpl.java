@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,7 +125,8 @@ public class LectureServiceImpl implements LectureService {
         return isTeacher;
     }
 
-    public List<Lecture> getUpcomingLectures(LocalDateTime time) {
-        return lectureRepository.findLecturesByStartTimeBetween(time, time.plusMinutes(30));
+    @Override
+    public List<Lecture> getLecturesForDate(LocalDate date)  {
+        return lectureRepository.findByYearAndMonthAndDay(date.getYear(), (byte) date.getMonthValue(), (byte) date.getDayOfMonth());
     }
 }
