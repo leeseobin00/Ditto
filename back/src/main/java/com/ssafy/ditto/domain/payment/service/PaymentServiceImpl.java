@@ -15,6 +15,8 @@ import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,11 +40,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${TOSS_SECRET_KEY}")
     private String TOSS_SECRET_KEY;
 
+    @Value("${TOSS_CLIENT_KEY}")
+    private String TOSS_CLIENT_KEY;
+
     private final PaymentRepository paymentRepository;
     private final LectureRepository lectureRepository;
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
     private final LearningService learningService;
+
+    private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     @Override
     public String approvePayment(PaymentApprovalRequest approvalRequest) {
@@ -62,6 +69,8 @@ public class PaymentServiceImpl implements PaymentService {
         String encodedSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
         headers.set("Authorization", "Basic " + encodedSecretKey);
 
+        logger.info("Authorization Header: Basic " + encodedSecretKey);
+
         JsonNode body = objectMapper.createObjectNode()
                 .put("paymentKey", approvalRequest.getPaymentKey())
                 .put("orderId", approvalRequest.getOrderId())
@@ -70,39 +79,43 @@ public class PaymentServiceImpl implements PaymentService {
         HttpEntity<String> request = new HttpEntity<>(body.toString(), headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-        try {
-            JsonNode responseBody = objectMapper.readTree(response.getBody());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            try {
+                JsonNode responseBody = objectMapper.readTree(response.getBody());
 
-            LocalDateTime approvedAt = LocalDateTime.now();
-            String approvedAtStr = responseBody.path("approvedAt").asText("");
-            if (!approvedAtStr.isEmpty()) {
-                OffsetDateTime approvedAtOffsetDateTime = OffsetDateTime.parse(approvedAtStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                approvedAt = approvedAtOffsetDateTime.toLocalDateTime();
+                LocalDateTime approvedAt = LocalDateTime.now();
+                String approvedAtStr = responseBody.path("approvedAt").asText("");
+                if (!approvedAtStr.isEmpty()) {
+                    OffsetDateTime approvedAtOffsetDateTime = OffsetDateTime.parse(approvedAtStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                    approvedAt = approvedAtOffsetDateTime.toLocalDateTime();
+                }
+
+                Payment payment = Payment.builder()
+                        .orderName(lecture.getClassName())
+                        .paymentKey(responseBody.path("paymentKey").asText(""))
+                        .orderId(responseBody.path("orderId").asText(""))
+                        .amount(responseBody.path("totalAmount").asLong(0))
+                        .orderName(responseBody.path("orderName").asText(""))
+                        .payTime(approvedAt)
+                        .isPaySuccess(true)
+                        .isCanceled(false)
+                        .payType(PayType.CARD)
+                        .userId(user)
+                        .lectureId(lecture)
+                        .build();
+                lecture.setUserCount((byte) (lecture.getUserCount() + 1));
+                dClass.setStudentSum(dClass.getStudentSum() + 1);
+
+                paymentRepository.save(payment);
+
+                learningService.addStudent(user.getUserId(), lecture.getLectureId());
+
+                return "Payment approved and saved successfully.";
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to parse payment approval response", e);
             }
-
-            Payment payment = Payment.builder()
-                    .orderName(lecture.getClassName())
-                    .paymentKey(responseBody.path("paymentKey").asText(""))
-                    .orderId(responseBody.path("orderId").asText(""))
-                    .amount(responseBody.path("totalAmount").asLong(0))
-                    .orderName(responseBody.path("orderName").asText(""))
-                    .payTime(approvedAt)
-                    .isPaySuccess(true)
-                    .isCanceled(false)
-                    .payType(PayType.CARD)
-                    .userId(user)
-                    .lectureId(lecture)
-                    .build();
-            lecture.setUserCount((byte) (lecture.getUserCount() + 1));
-            dClass.setStudentSum(dClass.getStudentSum() + 1);
-
-            paymentRepository.save(payment);
-
-            learningService.addStudent(user.getUserId(), lecture.getLectureId());
-
-            return "Payment approved and saved successfully.";
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse payment approval response", e);
+        } else {
+            throw new RuntimeException("Payment approval failed with status: " + response.getStatusCode());
         }
     }
 }
