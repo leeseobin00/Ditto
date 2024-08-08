@@ -1,6 +1,8 @@
 import { styled } from "styled-components";
 import { IoClose } from "react-icons/io5";
 import { BiRefresh } from "react-icons/bi";
+import { useContext, useEffect, useState } from "react";
+import { MeetingContext } from "../../pages/Meeting/MeetingPage";
 
 const WindowWrapper = styled.div`
   position: fixed; /* Footer를 기준으로 고정된 위치를 설정 */
@@ -63,21 +65,28 @@ const SummaryDescription = styled.p`
   font-size: 14px;
 `;
 
-function ContentWindow({ onCloseWindow, summaries }) {
+function ContentWindow({ onCloseWindow }) {
+  const { getSummary, summaries } = useContext(MeetingContext);
+  const [summaryList, setSummaryList] = useState([]);
+
+  useEffect(()=>{
+    setSummaryList(summaries);
+  }, [summaries]);
+
   return (
     <WindowWrapper>
       <WindowHeader>
         <WindowTitle>
           Contents
-          <CustomRefreshIcon />
+          <CustomRefreshIcon onClick={getSummary} />
         </WindowTitle>
         <IoClose onClick={onCloseWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <FileContents>
-        {summaries.map((summary, index) => (
-          <SummaryContainer key={index}>
-            <SummaryTitle>{summary.title}</SummaryTitle>
-            <SummaryDescription>{summary.description}</SummaryDescription>
+        {summaryList.map((summary, index) => (
+          <SummaryContainer key={summary?.summaryId}>
+            <SummaryTitle>{summary?.stepId}단계</SummaryTitle>
+            <SummaryDescription>{summary?.summaryContent}</SummaryDescription>
           </SummaryContainer>
         ))}
       </FileContents>

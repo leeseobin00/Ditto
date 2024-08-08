@@ -132,29 +132,6 @@ function MeetingFooter({
   const roleId = useSelector((state)=>state.auth.roleId);
   const { timer, sendTimer } = useContext(MeetingContext);
 
-  const summaries = [
-    {
-      title: "1단계. 향수 기본 구성요소 설명",
-      description:
-        "이제 각 구성 요소인 탑 노트, 미들 노트, 베이스 노트가 무엇인지, 그리고 이들이 어떻게 함께 조화를 이루어 향수의 특성을 만들어내는지 살펴보겠습니다.",
-    },
-    {
-      title: "2단계. 향수 샘플링 및 향의 특성 경험",
-      description:
-        "다양한 향료들을 직접 샘플링하며, 각 향료의 고유한 특성과 향수에 미치는 영향을 경험해보겠습니다. 여러분이 직접 향수를 만들어볼 때 이 지식들이 얼마나 중요한지 알게 될 겁니다.",
-    },
-    {
-      title: "1단계. 향수 기본 구성요소 설명",
-      description:
-        "이제 각 구성 요소인 탑 노트, 미들 노트, 베이스 노트가 무엇인지, 그리고 이들이 어떻게 함께 조화를 이루어 향수의 특성을 만들어내는지 살펴보겠습니다.",
-    },
-    {
-      title: "2단계. 향수 샘플링 및 향의 특성 경험",
-      description:
-        "다양한 향료들을 직접 샘플링하며, 각 향료의 고유한 특성과 향수에 미치는 영향을 경험해보겠습니다. 여러분이 직접 향수를 만들어볼 때 이 지식들이 얼마나 중요한지 알게 될 겁니다.",
-    },
-  ];
-
   const [isTimerWindow, setIsTimerWindow] = useState(false);
   const [isContentWindow, setIsContentWindow] = useState(false);
   const [isChatWindow, setIsChatWindow] = useState(false);
@@ -249,7 +226,6 @@ function MeetingFooter({
       {isContentWindow && (
         <ContentWindow
           onCloseWindow={closeContentWindow}
-          summaries={summaries}
         />
       )}
       {isChatWindow && <ChatWindow onCloseWindow={closeChatWindow} />}

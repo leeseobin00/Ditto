@@ -103,12 +103,19 @@ function MeetingPage() {
   // pagination
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxVisible = 3; // Maximum visible participants
+  // summary
+  const [summaries, setSummaries] = useState([]);
 
   const getLectureInfo = async() => {
     const result = await sendRequest(`/live-rooms/${lectureId}`);
     setClassName(result?.data?.className);
     setStepList(result?.data?.stepList);
     return result;
+  }
+  
+  const getSummary = async() => {
+    const result = await sendRequest(`/summary/${lectureId}`);
+    setSummaries(result?.data);
   }
 
   const handleAudioEnabled = () => {
@@ -326,11 +333,6 @@ function MeetingPage() {
   };
 
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
-  const steps = [
-    "1단계. 향 조합 비율 결정하기",
-    "2단계. 향기 선택하기",
-    "3단계. 향 배합 비율 확인하기",
-  ];
   const [currentStep, setCurrentStep] = useState(-1);
   const [stepLoading, setStepLoading] = useState(false);
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
@@ -485,7 +487,9 @@ function MeetingPage() {
         subscribers,
         timer,
         sendTimer,
-        members
+        members,
+        getSummary,
+        summaries
       }}
     >
       <PageContainer>
