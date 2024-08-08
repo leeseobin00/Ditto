@@ -5,7 +5,6 @@ import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LectureService {
@@ -19,9 +18,10 @@ public interface LectureService {
 
     boolean isValidTeacher(Integer userId, int lectureId);
 
-    List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
+    List<Lecture> getLecturesForDate(LocalDate date);
 
     List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 
-    List<Lecture> getLecturesForDate(LocalDate date);
+    List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
 }
+
