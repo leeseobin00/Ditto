@@ -286,9 +286,13 @@ public class ProfileServiceImpl implements ProfileService {
         System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
         List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
-        System.out.println(classList.size());
-        
-        for (DClass dClass : classList){
+
+        // Pagination
+        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
+        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
+        List<DClass> paginatedList = classList.subList(start, end);
+
+        for (DClass dClass : paginatedList){
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
