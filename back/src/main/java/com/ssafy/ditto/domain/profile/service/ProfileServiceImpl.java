@@ -237,12 +237,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .map(Learning::getDClass)
                 .toList();
 
-        // Pagination
-        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
-        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
-        List<DClass> paginatedList = classList.subList(start, end);
-
-        List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
+        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
@@ -279,31 +274,28 @@ public class ProfileServiceImpl implements ProfileService {
                 .classListResponse(ClassListResponse.builder()
                         .classList(classResponses)
                         .build())
-                .currentPage(pageRequest.getPageNumber()+1)
-                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
+                .currentPage(learningPage.getNumber() + 1)
+                .totalPageCount(learningPage.getTotalPages())
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserClassListResponse proClass(int userId, PageRequest pageRequest) {
-        List<ClassResponse> classResponses = new ArrayList<>();
-        System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
-        List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
 
-        // Pagination
-        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
-        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
-        List<DClass> paginatedList = classList.subList(start, end);
+        // DClass 엔티티를 UserId로 조회
+        Page<DClass> classPage = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable);
 
-        for (DClass dClass : paginatedList){
+        List<DClass> classList = classPage.getContent();
+
+        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
                     .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
-            ClassResponse classResponse = ClassResponse.builder()
+            return ClassResponse.builder()
                     .classId(dClass.getClassId())
                     .className(dClass.getClassName())
                     .classPrice(dClass.getClassPrice())
@@ -328,18 +320,17 @@ public class ProfileServiceImpl implements ProfileService {
                     .user(UserResponse.of(dClass.getUserId()))
                     .tag(tagResponse)
                     .build();
-
-            classResponses.add(classResponse);
-        }
+        }).collect(Collectors.toList());
 
         return UserClassListResponse.builder()
                 .classListResponse(ClassListResponse.builder()
                         .classList(classResponses)
                         .build())
-                .currentPage(pageRequest.getPageNumber()+1)
-                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
+                .currentPage(classPage.getNumber() + 1)
+                .totalPageCount(classPage.getTotalPages())
                 .build();
     }
+
 
 
     @Override
