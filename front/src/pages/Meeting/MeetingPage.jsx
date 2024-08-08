@@ -10,6 +10,7 @@ import ProgressBar from "../../components/Meeting/ProgressBar";
 import MeetingFooter from "../../components/Meeting/MeetingFooter";
 import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
 import axios from "axios";
+import useAxios from "../../hooks/useAxios";
 
 const PageContainer = styled.div`
   display: flex;
@@ -75,6 +76,11 @@ function MeetingPage() {
   const roleId = useSelector((state)=>state.auth.roleId);
   const { lectureId } = useParams();
   const navigate = useNavigate();
+  // axios
+  const { sendRequest } = useAxios();
+  // class
+  const [className, setClassName] = useState("");
+  const [stepList, setStepList] = useState([]);
   // openvidu state
   const [OV, setOV] = useState(undefined);
   const [isSession, setIsSession] = useState(undefined);   // 현재 createSession 응답을 저장해서 강사가 미리 세션을 만든 경우가 아니면 다시 내강의실로 navigate되도록 구현
@@ -98,6 +104,13 @@ function MeetingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxVisible = 3; // Maximum visible participants
 
+  const getLectureInfo = async() => {
+    const result = await sendRequest(`/live-rooms/${lectureId}`);
+    setClassName(result?.data?.className);
+    setStepList(result?.data?.stepList);
+    return result;
+  }
+
   const handleAudioEnabled = () => {
     if (publisher) {
       publisher.publishAudio(!audioEnabled);
@@ -114,6 +127,7 @@ function MeetingPage() {
 
   useEffect(() => {
     setOV(new OpenVidu());
+    getLectureInfo();
   }, []);
 
   useEffect(()=>{
@@ -218,7 +232,18 @@ function MeetingPage() {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      setStatusMessages((prev)=>[...prev, parsedData]);
+      let isExist = false;
+      const newStatusMessage = [];
+      statusMessages.forEach((message)=>{
+        if(message?.sender != parsedData?.sender){
+          newStatusMessage.push(message);
+        }else{
+          isExist = true;
+        }
+      });
+      if(!isExist) newStatusMessage.push(parsedData); 
+      console.timeLog(newStatusMessage);
+      setStatusMessages(newStatusMessage);
     });
 
     newSession.on('signal:timer', (event) => {
@@ -464,9 +489,9 @@ function MeetingPage() {
       }}
     >
       <PageContainer>
-        <MeetingHeader title="내가 원하는 대로! 나만의 커스텀 향수 만들기 입문" />
+        <MeetingHeader title={className} />
         <ProgressBar
-          steps={steps}
+          steps={stepList}
           currentStep={currentStep}
           loading={stepLoading}
           handleStartStep={handleStartStep}
