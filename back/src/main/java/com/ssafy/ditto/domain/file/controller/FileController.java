@@ -27,7 +27,7 @@ import static com.ssafy.ditto.global.dto.ResponseMessage.SUCCESS;
 import static com.ssafy.ditto.global.dto.ResponseMessage.SUCCESS_WRITE;
 import static org.springframework.http.HttpStatus.OK;
 
-@Tag(name = "File", description = "파일 관리 API")
+@Tag(name = "File", description = "File API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/files")

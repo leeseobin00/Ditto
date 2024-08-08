@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
-@Tag(name = "Lecture", description = "클래스 차시 관련 API")
+@Tag(name = "Lecture", description = "Lecture API")
 @RestController
 @RequestMapping("/classes/{classId}/lectures")
 @RequiredArgsConstructor
