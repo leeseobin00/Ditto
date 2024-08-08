@@ -27,7 +27,7 @@ const ClassSideBarConatiner = styled.div`
   margin-top: 25px;
   margin-left: 15px;
   justify-content: space-between;
-  z-index: 4;
+  z-index: 3;
 `;
 
 const ClassPriceContainer = styled.div`
@@ -56,6 +56,7 @@ const SelectBoxContainer = styled.div`
 `;
 
 const SelectBox = styled.select`
+  font-family: inherit;
   border-radius: 25px;
   border-color: var(--BORDER_COLOR);
   height: 40px;

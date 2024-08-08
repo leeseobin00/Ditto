@@ -74,7 +74,7 @@ const PaymentPage = () => {
   return (
     <Container>
       <Title>결제/수강 내역</Title>
-      {payments ? (
+      {payments.length > 0 ? (
         <>
           <PaymentDetail payments={payments} setPayments={setPayments} />
           {showMoreButton && <MoreButton onClick={loadMorePayments} />}

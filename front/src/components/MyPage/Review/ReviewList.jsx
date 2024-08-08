@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import EditReviewModal from './EditReviewModal';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import styled from "styled-components";
+import EditReviewModal from "./EditReviewModal";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ListContainer = styled.div`
@@ -118,11 +118,11 @@ const LoadMoreButton = styled.button`
   }
 `;
 
-const ReviewList = ({ reviews, setReviews, fetchMoreReviews }) => {
+const ReviewList = ({ reviewList, setReviews, fetchMoreReviews }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [isEditing, setIsEditing] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
-  const [editContent, setEditContent] = useState('');
+  const [editContent, setEditContent] = useState("");
   const [editRating, setEditRating] = useState(0);
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [classId, setClassId] = useState(null);
@@ -140,32 +140,37 @@ const ReviewList = ({ reviews, setReviews, fetchMoreReviews }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`);
-      alert('리뷰가 성공적으로 삭제되었습니다.');
+      await axios.delete(
+        `${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`
+      );
+      alert("리뷰가 성공적으로 삭제되었습니다.");
       //setQuestions(questions.map(q => q.answer?.answerId === answerId ? { ...q, answer: null, isAnswered: false } : q));
       //삭제
     } catch (error) {
-      alert('리뷰 삭제 실패. 다시 시도해주세요.');
-      console.error('리뷰 삭제 에러:', error);
+      alert("리뷰 삭제 실패. 다시 시도해주세요.");
+      console.error("리뷰 삭제 에러:", error);
     }
   };
 
   const handleSaveEdit = async () => {
     try {
       console.log(userId);
-      await axios.patch(`${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`, {
-        reviewContent: editContent,
-        rating: editRating,
-        userId: userId,
-        lectureId: lectureId,
-      });
-      alert('리뷰가 성공적으로 수정되었습니다.');
+      await axios.patch(
+        `${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`,
+        {
+          reviewContent: editContent,
+          rating: editRating,
+          userId: userId,
+          lectureId: lectureId,
+        }
+      );
+      alert("리뷰가 성공적으로 수정되었습니다.");
       // setReviews(reviews.map(r => r?.reviewId === ));
       // 수정
       setIsEditing(false);
     } catch (error) {
-      alert('리뷰 수정 실패. 다시 시도해주세요.');
-      console.error('리뷰 수정 에러:', error);
+      alert("리뷰 수정 실패. 다시 시도해주세요.");
+      console.error("리뷰 수정 에러:", error);
     }
   };
 
@@ -175,26 +180,29 @@ const ReviewList = ({ reviews, setReviews, fetchMoreReviews }) => {
 
   return (
     <ListContainer>
-      {reviews.map((review) => (
+      {reviewList.map((review) => (
         <ReviewItemContainer key={review.reviewId}>
           <ClassInfo onClick={() => handleClassClick(review.classId)}>
             <ClassImage src={review.fileUrl} alt={review.className} />
             <ClassDetails>
               <ClassName>{review.className}</ClassName>
-              <ClassDate>{`${review.year}.${String(review.month).padStart(2, '0')}.${String(review.day).padStart(2, '0')} ${String(review.hour).padStart(2, '0')}:${String(review.minute).padStart(2, '0')}`}</ClassDate>
+              <ClassDate>{`${review.year}.${String(review.month).padStart(2, "0")}.${String(review.day).padStart(2, "0")} ${String(review.hour).padStart(2, "0")}:${String(review.minute).padStart(2, "0")}`}</ClassDate>
             </ClassDetails>
           </ClassInfo>
           <ReviewHeader>
             <Rating>
-              {'★'.repeat(review.rating)}{' '}
-              {'☆'.repeat(5 - review.rating)}
+              {"★".repeat(review.rating)} {"☆".repeat(5 - review.rating)}
             </Rating>
-            <ReviewDate>{new Date(review.createdDate).toLocaleDateString()}</ReviewDate>
+            <ReviewDate>
+              {new Date(review.createdDate).toLocaleDateString()}
+            </ReviewDate>
           </ReviewHeader>
           <ReviewContent>{review.reviewContent}</ReviewContent>
           <ButtonGroup>
             <EditButton onClick={() => handleEdit(review)}>수정</EditButton>
-            <DeleteButton onClick={() => handleDelete(review.reviewId)}>삭제</DeleteButton>
+            <DeleteButton onClick={() => handleDelete(review.reviewId)}>
+              삭제
+            </DeleteButton>
           </ButtonGroup>
         </ReviewItemContainer>
       ))}

@@ -17,28 +17,7 @@ const ReviewNull = styled.div`
   padding: 20px;
 `;
 
-function ReviewList() {
-  const reviewList = [
-    {
-      reviewContent: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      rating: 4,
-      userNickname: "김디토",
-    },
-    {
-      reviewContent: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      rating: 5,
-      userNickname: "김디토",
-    },
-    {
-      reviewContent: "너무 유익하고 강사님이 친절하십니다!",
-      createdDate: "2024-07-06",
-      rating: 3,
-      userNickname: "김디토",
-    },
-  ];
-
+function ReviewList({ reviewList, totalReviewCount, curReviewpage, onUpdate }) {
   return (
     <ReviewListContainer>
       {reviewList.length == 0 && (
@@ -47,7 +26,7 @@ function ReviewList() {
       {reviewList.map((review, index) => (
         <ReviewItem key={index} review={review} />
       ))}
-      <MoreButton />
+      {curReviewpage < totalReviewCount && <MoreButton onClick={onUpdate} />}
     </ReviewListContainer>
   );
 }

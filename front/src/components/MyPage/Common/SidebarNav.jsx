@@ -4,7 +4,9 @@ import { styled } from "styled-components";
 const Sidebar = styled.div`
   min-width: 240px;
   border-right: 1px solid var(--BORDER_COLOR);
-  padding-top: 16px;
+  padding-top: 20px;
+  padding-left: 18px;
+  min-height: calc(100vh - 150px);
 `;
 
 const NavItem = styled(NavLink)`

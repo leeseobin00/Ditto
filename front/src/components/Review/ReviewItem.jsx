@@ -32,7 +32,7 @@ const Icon = styled.img`
 
 const DetailLineSecondary = styled(DetailLine)`
   color: var(--TEXT_SECONDARY);
-  width: 150px;
+  /* width: 150px; */
   justify-content: space-between;
   align-self: flex-end;
 `;
@@ -50,9 +50,9 @@ function ReviewItem({ review }) {
       </DetailLine>
       <DetailLine>{review.reviewContent}</DetailLine>
       <DetailLineSecondary>
-        <div>{review.userNickname}</div>
-        <div>|</div>
-        <div>{review.createdDate}</div>
+        <div>{review.reviewer.nickname}</div>
+        <div style={{ margin: "0 10px", color: "var(--TEXT_PRIMARY" }}>|</div>
+        <div>{review.createdDate.substring(0, 10)}</div>
       </DetailLineSecondary>
     </ReviewItemContainer>
   );
