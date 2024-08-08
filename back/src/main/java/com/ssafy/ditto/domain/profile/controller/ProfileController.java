@@ -111,7 +111,7 @@ public class ProfileController {
     public ResponseDto<Page<ReviewDetailResponse>> getUserReview(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
                                                                  @Parameter(description = "페이지 번호", example = "0") @RequestParam int page,
                                                                  @Parameter(description = "페이지 크기", example = "10") @RequestParam int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<ReviewDetailResponse> reviewList = profileService.userReview(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), reviewList);
     }
