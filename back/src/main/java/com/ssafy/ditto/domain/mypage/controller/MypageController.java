@@ -115,13 +115,7 @@ public class MypageController {
     }
 
     //Mypage_007
-    @Operation(summary = "요약 조회", description = "강의 요약을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "요약 조회 성공")
-    @GetMapping("lecture/{lectureId}/summary")
-    public ResponseDto<List<SummaryResponse>> getSummary(@Parameter(description = "강의 ID", example = "1") @PathVariable("lectureId") int lectureId) {
-        List<SummaryResponse> summaryResponses = mypageService.getSummary(lectureId);
-        return ResponseDto.of(OK.value(), "요약 조회 성공", summaryResponses);
-    }
+    //SummaryController
 
     //Mypage_008
     @Operation(summary = "내 문의 조회", description = "내 문의를 조회합니다.")

@@ -256,23 +256,6 @@ public class MypageServiceImpl implements MypageService {
     }
 
     @Override
-    public List<SummaryResponse> getSummary(int lectureId) {
-        List<SummaryResponse> summaryResponseList = new ArrayList<>();
-        List<Summary> summaries = summaryRepository.findAllByLecture(lectureRepository.findByLectureId(lectureId));
-        for (Summary summary : summaries) {
-            SummaryResponse newSummaryResponse = SummaryResponse.builder()
-                    .summaryId(summary.getSummaryId())
-                    .stepId(summary.getStep().getStepId())
-                    .summaryContent(summary.getSummaryContent())
-                    .build();
-
-            summaryResponseList.add(newSummaryResponse);
-        }
-
-        return summaryResponseList;
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<QuestionResponse> getMyQuestion(int userId, LocalDateTime dateTime) {
         List<QuestionResponse> questionResponseList = new ArrayList<>();

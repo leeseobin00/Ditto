@@ -1,4 +1,4 @@
-package com.ssafy.ditto.domain.mypage.dto;
+package com.ssafy.ditto.domain.summary.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
