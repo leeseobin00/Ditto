@@ -47,16 +47,15 @@ public class ManageLiveRoomsTasklet implements Tasklet {
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
 
-                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
-
-                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
-                for(Integer studentId : studentList) {
-                    sessionService.getToken(lecture.getLectureId(), studentId);
-                }
+//                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
+//                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
+//                for(Integer studentId : studentList) {
+//                    sessionService.getToken(lecture.getLectureId(), studentId);
+//                }
             }
 
             if (now.isAfter(endTime)) {
-                liveRoomService.endLiveRoom(lecture.getLectureId());
+//                liveRoomService.endLiveRoom(lecture.getLectureId());
                 /*
                 lecture도 is finished 설정해야함 그리고 한번만 endliveroom
                 if lecture is finished지만 정산 못 받았다
