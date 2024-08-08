@@ -41,8 +41,8 @@ public class ManageLiveRoomsTasklet implements Tasklet {
 
             // 끝나는 시간 클래스 진행시간 + 1시간 후에 자동으로 라이브 룸 삭제
             DClass dClass = lecture.getClassId();
-            LocalDateTime endTime = lectureStartTime.plusHours(dClass.getClassHour()+1)
-                                                    .plusMinutes(dClass.getClassMinute());
+            LocalDateTime endTime = lectureStartTime.plusHours(dClass.getClassHour())
+                                                    .plusMinutes(dClass.getClassMinute()+30);
 
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
@@ -54,11 +54,16 @@ public class ManageLiveRoomsTasklet implements Tasklet {
 //                }
             }
 
-            if (now.isAfter(endTime)) {
-//                liveRoomService.endLiveRoom(lecture.getLectureId());
+            if (now.isAfter(endTime) && now.isBefore(endTime.plusMinutes(30))) {
+                liveRoomService.endLiveRoom(lecture.getLectureId());
+                learningService.changeStatus(lecture.getLectureId());
+                sessionService.closeSession(lecture.getLectureId());
+
+
+//                lectureService
                 /*
-                lecture도 is finished 설정해야함 그리고 한번만 endliveroom
-                if lecture is finished지만 정산 못 받았다
+                lecture도 is finished 설정 ?
+                if lecture is finished지만 정산 못 받았다 -> 정산 관련 메서드 추가 필요
                 마일리지 추가 후 마일리지 히스토리에 등록하는 메서드 필요
                  */
             }

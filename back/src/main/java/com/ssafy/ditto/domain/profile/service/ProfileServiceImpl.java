@@ -226,18 +226,25 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public UserClassListResponse userClass(int userId, PageRequest pageRequest) {
-        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
-
         // Learning 엔티티를 통해 DClass를 조회
-        Page<Learning> learningPage = learningRepository.findAll((root, query, criteriaBuilder) -> {
+        List<Learning> learningList = learningRepository.findAll((root, query, criteriaBuilder) -> {
             return criteriaBuilder.equal(root.get("student").get("userId"), userId);
-        }, pageable);
+        });
 
-        List<DClass> classList = learningPage.getContent().stream()
+        // 중복되지 않은 DClass 객체를 추출
+        List<DClass> classList = learningList.stream()
                 .map(Learning::getDClass)
-                .toList();
+                .distinct()
+                .collect(Collectors.toList());
 
-        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
+        // Pagination
+        int totalElements = classList.size();
+        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
+        int end = Math.min(start + pageRequest.getPageSize(), totalElements);
+
+        List<DClass> paginatedList = classList.subList(start, end);
+
+        List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
@@ -274,10 +281,11 @@ public class ProfileServiceImpl implements ProfileService {
                 .classListResponse(ClassListResponse.builder()
                         .classList(classResponses)
                         .build())
-                .currentPage(learningPage.getNumber() + 1)
-                .totalPageCount(learningPage.getTotalPages())
+                .currentPage(pageRequest.getPageNumber() + 1)
+                .totalPageCount((int) Math.ceil((double) totalElements / pageRequest.getPageSize()))
                 .build();
     }
+
 
     @Override
     @Transactional(readOnly = true)
