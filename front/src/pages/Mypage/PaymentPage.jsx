@@ -27,9 +27,10 @@ const PaymentNull = styled.div`
 
 const PaymentPage = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(false);
   const { userId } = useSelector((state) => state.auth);
+
+  const [payments, setPayments] = useState([]);
+  const [showMoreButton, setShowMoreButton] = useState(true);
 
   useEffect(() => {
     fetchPayments();
@@ -42,20 +43,14 @@ const PaymentPage = () => {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       });
-      console.log(response?.data);
-      setPayments(response?.data);
+      setPayments(response?.data?.data);
     } catch (error) {
       console.error("Error fetching payment data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const loadMorePayments = async () => {
-    if (payments.length === 0) return;
-
     const finalDate = payments[payments.length - 1].payTime;
-    setLoading(true);
     try {
       const response = await axios.get(
         `${baseURL}/mypage/${userId}/payment-more?final-date=${finalDate}`,
@@ -66,22 +61,23 @@ const PaymentPage = () => {
         }
       );
       setPayments((prevPayments) => [...prevPayments, ...response?.data?.data]);
+      if (response?.data?.data.length == 0) {
+        alert("더이상 불러올 결제 내역이 없습니다.");
+        setShowMoreButton(false);
+        return;
+      }
     } catch (error) {
       console.error("Error loading more payments:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <Container>
       <Title>결제/수강 내역</Title>
-      {payments.length > 0 ? (
+      {payments ? (
         <>
           <PaymentDetail payments={payments} setPayments={setPayments} />
-          <MoreButton onClick={loadMorePayments} disabled={loading}>
-            {loading ? "불러오는 중..." : "더보기"}
-          </MoreButton>
+          {showMoreButton && <MoreButton onClick={loadMorePayments} />}
         </>
       ) : (
         <PaymentNull>결제/수강한 클래스가 없습니다.</PaymentNull>

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import SummaryModal from './SummaryModal'; // SummaryModal 컴포넌트 경로 수정
-import RefundPolicyModal from './RefundPolicyModal'; // RefundPolicyModal 컴포넌트 경로 수정
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 수정
+import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -102,8 +102,9 @@ const PaymentActions = styled.div`
 
 const ActionButton = styled.button`
   padding: 5px 10px;
-  background-color: ${(props) => (props.$cancel ? 'var(--LIGHT)' : 'var(--SECONDARY)')};
-  color: ${(props) => (props.$cancel ? 'var(--RED)' : 'var(--LIGHT)')};
+  background-color: ${(props) =>
+    props.$cancel ? "var(--LIGHT)" : "var(--SECONDARY)"};
+  color: ${(props) => (props.$cancel ? "var(--RED)" : "var(--LIGHT)")};
   border: 1px solid var(--TEXT_SECONDARY);
   border-radius: 15px;
   font-size: 12px;
@@ -124,9 +125,9 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState("");
   const [summaries, setSummaries] = useState([]);
-  const [refundPolicy, setRefundPolicy] = useState('');
+  const [refundPolicy, setRefundPolicy] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
 
   const handleClassClick = (classId) => {
@@ -138,8 +139,8 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
     try {
       const response = await axios.get(`${baseURL}/mypage/payment/cancel`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
 
       if (response.status === 200) {
@@ -147,32 +148,35 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
         setIsRefundPolicy(true);
         setIsModalOpen(true);
       } else {
-        alert('환불 규정 조회 실패. 다시 시도해주세요.');
+        alert("환불 규정 조회 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      alert('환불 규정 조회 실패. 다시 시도해주세요.');
-      console.error('환불 규정 조회 에러:', error);
+      alert("환불 규정 조회 실패. 다시 시도해주세요.");
+      console.error("환불 규정 조회 에러:", error);
     }
   };
 
   const handleSummaryClick = async (lectureId) => {
     try {
-      const response = await axios.get(`${baseURL}/mypage/lecture/${lectureId}/summary`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      const response = await axios.get(
+        `${baseURL}/mypage/lecture/${lectureId}/summary`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
-      });
+      );
 
       if (response.status === 200) {
         setSummaries(response.data.data.summaries);
         setIsRefundPolicy(false);
         setIsModalOpen(true);
       } else {
-        alert('요약 조회 실패. 다시 시도해주세요.');
+        alert("요약 조회 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      alert('요약 조회 실패. 다시 시도해주세요.');
-      console.error('요약 조회 에러:', error);
+      alert("요약 조회 실패. 다시 시도해주세요.");
+      console.error("요약 조회 에러:", error);
     }
   };
 
@@ -183,9 +187,9 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const closeModal = () => {
     setIsModalOpen(false);
     setIsRefundPolicy(false);
-    setModalMessage('');
+    setModalMessage("");
     setSummaries([]);
-    setRefundPolicy('');
+    setRefundPolicy("");
   };
 
   const handleConfirmCancel = async () => {
@@ -195,13 +199,13 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
         { lectureId: currentLectureId },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
       );
 
       if (response.status === 200) {
-        setModalMessage('결제/수강 취소 성공');
+        setModalMessage("결제/수강 취소 성공");
         setPayments(
           payments.map((payment) =>
             payment.lectureId === currentLectureId
@@ -210,11 +214,11 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
           )
         );
       } else {
-        alert('취소 실패. 다시 시도해주세요.');
+        alert("취소 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      alert('취소 실패. 다시 시도해주세요.');
-      console.error('취소 에러:', error);
+      alert("취소 실패. 다시 시도해주세요.");
+      console.error(error);
     } finally {
       setIsRefundPolicy(false);
       setIsModalOpen(true);
@@ -233,7 +237,9 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
         );
         const now = new Date();
         const payTime = new Date(payment.payTime);
-        const payCancelTime = payment.payCancelTime ? new Date(payment.payCancelTime) : null;
+        const payCancelTime = payment.payCancelTime
+          ? new Date(payment.payCancelTime)
+          : null;
 
         return (
           <PaymentItemContainer key={payment.paymentId}>
@@ -241,11 +247,15 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
               <PaymentDate>결제 {payTime.toLocaleDateString()}</PaymentDate>
             </PaymentDateContainer>
             <PaymentDetails>
-              <PaymentImage src={payment.fileUrl} alt={payment.className} onClick={() => handleClassClick(payment.classId)} />
+              <PaymentImage
+                src={`http://i11a106.p.ssafy.io:8080/files/download/${payment.fileId}`}
+                alt={payment.className}
+                onClick={() => handleClassClick(payment.classId)}
+              />
               <PaymentInfo onClick={() => handleClassClick(payment.classId)}>
                 <PaymentName>{payment.className}</PaymentName>
                 <ClassStartDateTime>
-                  {`${payment.year}.${String(payment.month).padStart(2, '0')}.${String(payment.day).padStart(2, '0')} ${String(payment.hour).padStart(2, '0')}:${String(payment.minute).padStart(2, '0')}`}
+                  {`${payment.year}.${String(payment.month).padStart(2, "0")}.${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
                 </ClassStartDateTime>
               </PaymentInfo>
               <PaymentInfoContainer>
@@ -255,7 +265,12 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
               <PaymentPriceContainer>
                 <PaymentActions>
                   {!payCancelTime && classStartDateTime > now && (
-                    <ActionButton $cancel onClick={() => handleCancelClick(payment.lectureId)}>구매 취소</ActionButton>
+                    <ActionButton
+                      $cancel
+                      onClick={() => handleCancelClick(payment.lectureId)}
+                    >
+                      구매 취소
+                    </ActionButton>
                   )}
                   {payCancelTime && (
                     <CancleMessage>
@@ -265,8 +280,16 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
                   )}
                   {!payCancelTime && classStartDateTime <= now && (
                     <>
-                      <ActionButton onClick={() => handleSummaryClick(payment.lectureId)}>요약 보기</ActionButton>
-                      <ActionButton onClick={() => handleReviewClick(payment.classId)}>리뷰 작성</ActionButton>
+                      <ActionButton
+                        onClick={() => handleSummaryClick(payment.lectureId)}
+                      >
+                        요약 보기
+                      </ActionButton>
+                      <ActionButton
+                        onClick={() => handleReviewClick(payment.classId)}
+                      >
+                        리뷰 작성
+                      </ActionButton>
                     </>
                   )}
                 </PaymentActions>
@@ -275,8 +298,8 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
           </PaymentItemContainer>
         );
       })}
-      {isModalOpen && (
-        isRefundPolicy ? (
+      {isModalOpen &&
+        (isRefundPolicy ? (
           <RefundPolicyModal
             isOpen={isModalOpen}
             onClose={closeModal}
@@ -290,8 +313,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
             modalMessage={modalMessage}
             summaries={summaries}
           />
-        )
-      )}
+        ))}
     </ListContainer>
   );
 };
