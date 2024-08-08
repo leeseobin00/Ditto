@@ -44,6 +44,11 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(CorsUtils::isCorsRequest).permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+//                                .requestMatchers(HttpMethod.GET
+//                                        , "/classes/**", "/posts/**", "/comments/**"
+//                                        , "/categories/**", "/files/**", "/profiles/**", "tags/**").permitAll()
+//                                .requestMatchers("/users/**").permitAll()
+//                                .anyRequest().authenticated()
                                 .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);

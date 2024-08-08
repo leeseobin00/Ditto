@@ -58,8 +58,8 @@ public enum ErrorCode {
     UNSUPPORTED_MEDIA_TYPE(415, "UNSUPPORTED_MEDIA_TYPE", "지원되지 않는 미디어 타입입니다."),
     TOO_MANY_REQUESTS(429, "TOO_MANY_REQUESTS", "요청이 너무 많습니다."),
     SERVICE_UNAVAILABLE(503, "SERVICE_UNAVAILABLE", "서비스를 사용할 수 없습니다."),
-    EMAIL_CODE_NOTEXIST(401, "EMAIL_CODE_NOTEXIST", "이메일에 해당하는 인증번호가 존재하지 않습니다."),
-    POST_LIKE_CANCEL_ERROR(401,"POST_LIKE_CANCEL_ERROR", "좋아요가 존재하지 않아 취소할 수 없습니다."),
+    EMAIL_CODE_NOTEXIST(400, "EMAIL_CODE_NOTEXIST", "이메일에 해당하는 인증번호가 존재하지 않습니다."),
+    POST_LIKE_CANCEL_ERROR(400,"POST_LIKE_CANCEL_ERROR", "좋아요가 존재하지 않아 취소할 수 없습니다."),
     COMMENT_LEVEL_EXCEED(400,"COMMENT_LEVEL_EXCEED", "댓글 레벨을 초과했습니다."),
     COMMENT_NOT_SAME_POST(400,"COMMENT_NOT_SAME_POST", "부모 댓글과 자식 댓글이 동일한 게시글에 있지 않습니다."),
     CANNOT_MODIFY_DELETED_COMMENT(400,"CANNOT_MODIFY_DELETED_COMMENT", "삭제된 댓글은 수정할 수 없습니다.");

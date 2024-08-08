@@ -3,6 +3,7 @@ package com.ssafy.ditto.domain.mypage.service;
 import com.ssafy.ditto.domain.answer.domain.Answer;
 import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.classes.domain.DClass;
+import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.payment.domain.Payment;
 import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
@@ -210,21 +211,24 @@ public class MypageServiceImpl implements MypageService {
         User user = userRepository.findByUserId(userId);
 
         for (Payment payment : payments) {
+            Lecture lecture = payment.getLectureId();
+            DClass dClass = lecture.getClassId();
+
             PaymentResponse paymentResponse = PaymentResponse.builder()
                     .paymentId(payment.getPaymentId())
                     .payTime(payment.getPayTime())
                     .payCancelTime(payment.getPayCancelTime())
-                    .fileId(user.getFileId().getFileId())
-                    .fileUrl(user.getFileId().getFileUrl())
-                    .lectureId(payment.getLectureId().getLectureId())
-                    .classId(payment.getLectureId().getClassId().getClassId())
-                    .className(payment.getLectureId().getClassName())
-                    .classPrice(payment.getLectureId().getClassPrice())
-                    .year(payment.getLectureId().getYear())
-                    .month(payment.getLectureId().getMonth())
-                    .day(payment.getLectureId().getDay())
-                    .hour(payment.getLectureId().getHour())
-                    .minute(payment.getLectureId().getMinute())
+                    .fileId(dClass.getFileId().getFileId())
+                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .lectureId(lecture.getLectureId())
+                    .classId(dClass.getClassId())
+                    .className(lecture.getClassName())
+                    .classPrice(lecture.getClassPrice())
+                    .year(lecture.getYear())
+                    .month(lecture.getMonth())
+                    .day(lecture.getDay())
+                    .hour(lecture.getHour())
+                    .minute(lecture.getMinute())
                     .build();
 
             paymentResponses.add(paymentResponse);
