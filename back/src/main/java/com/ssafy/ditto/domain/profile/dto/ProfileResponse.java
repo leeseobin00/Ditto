@@ -74,8 +74,8 @@ public class ProfileResponse {
         return new ProfileResponse(
                 user.getUserId(),
                 user.getNickname(),
-                user.getFileId().getFileId(),
-                user.getFileId().getFileUrl(),
+                user.getFile().getFileId(),
+                user.getFile().getFileUrl(),
                 tags
         );
     }

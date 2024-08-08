@@ -43,7 +43,7 @@ public class ReviewDetailResponse {
                 .rating(review.getRating())
                 .reviewer(UserResponse.of(reviewer))
                 .teacher(UserResponse.of(teacher))
-                .classDetail(ClassDetailResponse.of(review.getDclass(), null, null, null, null, null, null))
+                .classDetail(ClassDetailResponse.of(review.getDClass(), null, null, null, null, null, null))
                 .lectureDetail(LectureResponse.of(review.getLecture()))
                 .build();
     }

@@ -22,7 +22,7 @@ public class Mileage {
     //FK
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     public void changeMileage(int newMileage){
         this.mileage = newMileage;

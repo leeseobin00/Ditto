@@ -48,7 +48,7 @@ public class Payment {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     @Column
     private String paymentKey;

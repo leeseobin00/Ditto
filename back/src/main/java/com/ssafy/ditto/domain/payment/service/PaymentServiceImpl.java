@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(UserNotFoundException::new);
 
         Lecture lecture = lectureRepository.findByLectureId(approvalRequest.getLectureId());
-        DClass dClass = classRepository.findByClassId(lecture.getClassId().getClassId());
+        DClass dClass = classRepository.findByClassId(lecture.getDClass().getClassId());
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -100,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .isPaySuccess(true)
                         .isCanceled(false)
                         .payType(PayType.CARD)
-                        .userId(user)
+                        .user(user)
                         .lectureId(lecture)
                         .build();
                 lecture.setUserCount((byte) (lecture.getUserCount() + 1));

@@ -99,8 +99,8 @@ public class LearningServiceImpl implements LearningService {
         User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-        DClass dClass = lecture.getClassId();
-        User teacher = dClass.getUserId();
+        DClass dClass = lecture.getDClass();
+        User teacher = dClass.getUser();
 
         Learning learning = Learning.builder()
                 .dClass(dClass)

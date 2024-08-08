@@ -14,7 +14,6 @@ import com.ssafy.ditto.domain.user.domain.UserTag;
 import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.*;
-import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import com.ssafy.ditto.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,8 +50,8 @@ public class UserServiceImpl implements UserService {
                 .agreeTOS(true)
                 .agreePICU(true)
                 .isDeleted(false)
-                .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
-                .fileId(file)
+                .role(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
+                .file(file)
                 .domain("local")
                 .build();
 
@@ -85,8 +84,8 @@ public class UserServiceImpl implements UserService {
                 .agreeTOS(true)
                 .agreePICU(true)
                 .isDeleted(false)
-                .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
-                .fileId(null)
+                .role(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
+                .file(null)
                 .domain("local")
                 .build();
 
@@ -102,7 +101,7 @@ public class UserServiceImpl implements UserService {
                 .minActive(proSignUpRequest.getMinActive())
                 .experience(proSignUpRequest.getExperience())
                 .comment(proSignUpRequest.getComment())
-                .userId(user)
+                .user(user)
                 .build();
 
         formRepository.save(form);
@@ -111,8 +110,8 @@ public class UserServiceImpl implements UserService {
         // 강사 관심사 태그 등록
         for (String tagName : proSignUpRequest.getTagName()){
             UserTag userTag = UserTag.builder()
-                    .userId(user)
-                    .tagId(tagRepository.findByTagName(tagName))
+                    .user(user)
+                    .tag(tagRepository.findByTagName(tagName))
                     .build();
 
             userTagRepository.save(userTag);
@@ -122,14 +121,14 @@ public class UserServiceImpl implements UserService {
                 .accountNumber("")
                 .bank("")
                 .receiver("")
-                .userId(user)
+                .user(user)
                 .build();
 
         accountRepository.save(account);
 
         Mileage mileage = Mileage.builder()
                 .mileage(0)
-                .userId(user)
+                .user(user)
                 .build();
 
         mileageRepository.save(mileage);
@@ -160,7 +159,7 @@ public class UserServiceImpl implements UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
-                .roleId(user.getRoleId().getRoleId())
+                .roleId(user.getRole().getRoleId())
                 .domain(user.getDomain())
                 .build();
     }
@@ -215,7 +214,7 @@ public class UserServiceImpl implements UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
-                .roleId(user.getRoleId().getRoleId())
+                .roleId(user.getRole().getRoleId())
                 .domain(user.getDomain())
                 .build();
     }
@@ -237,8 +236,8 @@ public class UserServiceImpl implements UserService {
                 .agreeTOS(true)
                 .agreePICU(true)
                 .isDeleted(false)
-                .roleId(userRoleRepository.findByRoleId(1)) // 일반 유저
-                .fileId(file)
+                .role(userRoleRepository.findByRoleId(1)) // 일반 유저
+                .file(file)
                 .domain("kakao")
                 .build();
 

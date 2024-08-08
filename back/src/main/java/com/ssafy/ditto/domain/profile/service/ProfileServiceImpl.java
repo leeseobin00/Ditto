@@ -93,10 +93,10 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
                 .map(user -> {
-                    List<UserTag> userTags = userTagRepository.findByUserId(user);
+                    List<UserTag> userTags = userTagRepository.findByUser(user);
                     List<String> tagNames = new ArrayList<>();
                     for(UserTag ut : userTags){
-                        Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
+                        Tag tag = tagRepository.findByTagName(ut.getTag().getTagName());
                         tagNames.add(tag.getTagName());
                     }
                     return ProfileResponse.of(user, tagNames);
@@ -117,9 +117,9 @@ public class ProfileServiceImpl implements ProfileService {
         User user = profileRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         // UserTag를 기반으로 Tag 리스트를 가져오기
-        List<UserTag> userTags = userTagRepository.findByUserId(user);
+        List<UserTag> userTags = userTagRepository.findByUser(user);
         List<String> tagNames = userTags.stream()
-                .map(userTag -> userTag.getTagId().getTagName())
+                .map(userTag -> userTag.getTag().getTagName())
                 .toList();
 
         int likeCount = likeUserRepository.countLikesByUserId(userId);
@@ -136,11 +136,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         return new ProfileResponse(
                 user.getUserId(),
-                user.getRoleId().getRoleId(),
+                user.getRole().getRoleId(),
                 user.getNickname(),
-                user.getFileId() != null ? user.getFileId().getFileId() : null,
-                user.getFileId() != null ? user.getFileId().getUploadFileName() : null,
-                user.getFileId() != null ? user.getFileId().getFileUrl() : null,
+                user.getFile() != null ? user.getFile().getFileId() : null,
+                user.getFile() != null ? user.getFile().getUploadFileName() : null,
+                user.getFile() != null ? user.getFile().getFileUrl() : null,
                 likeCount,
                 studentSum != null ? studentSum : 0,
                 avgRating,
@@ -168,14 +168,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void deleteImage(int userId) {
         User user = profileRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-        File currentFile = user.getFileId();
+        File currentFile = user.getFile();
 
         // 기본 프로필 이미지로 변경 위한 코드
         File defaultFile = fileRepository.findById(1).orElseThrow((() -> new FileException(FILE_NOT_EXIST)));
         user.changeFile(defaultFile);
         profileRepository.save(user);
 
-        if (user.getFileId() != null) {
+        if (user.getFile() != null) {
             try {
                 fileService.deleteFile(currentFile.getFileId());
             } catch (IOException e) {
@@ -202,13 +202,13 @@ public class ProfileServiceImpl implements ProfileService {
             tags.add(entry.getValue());
         }
 
-        List<UserTag> userTags = userTagRepository.findByUserId(user);
+        List<UserTag> userTags = userTagRepository.findByUser(user);
         userTagRepository.deleteAll(userTags);
 
         for (String tagName : tags){
             UserTag userTag = UserTag.builder()
-                    .userId(user)
-                    .tagId(tagRepository.findByTagName(tagName))
+                    .user(user)
+                    .tag(tagRepository.findByTagName(tagName))
                     .build();
             userTag = userTagRepository.save(userTag);
         }
@@ -238,9 +238,9 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
+                    .tagId(dClass.getTag().getTagId())
+                    .tagName(dClass.getTag().getTagName())
+                    .categoryId(dClass.getTag().getCategory().getCategoryId())
                     .build();
             return ClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -258,13 +258,13 @@ public class ProfileServiceImpl implements ProfileService {
                     .likeCount(dClass.getLikeCount())
                     .reviewCount(dClass.getReviewCount())
                     .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                    .userNickname(dClass.getUserId().getNickname())
-                    .file(dClass.getFileId() != null ? FileResponse.builder()
-                            .fileId(dClass.getFileId().getFileId())
-                            .uploadFileName(dClass.getFileId().getUploadFileName())
-                            .fileUrl(dClass.getFileId().getFileUrl())
+                    .userNickname(dClass.getUser().getNickname())
+                    .file(dClass.getFile() != null ? FileResponse.builder()
+                            .fileId(dClass.getFile().getFileId())
+                            .uploadFileName(dClass.getFile().getUploadFileName())
+                            .fileUrl(dClass.getFile().getFileUrl())
                             .build() : null)
-                    .user(UserResponse.of(dClass.getUserId()))
+                    .user(UserResponse.of(dClass.getUser()))
                     .tag(tagResponse)
                     .build();
         }).collect(Collectors.toList());
@@ -280,13 +280,13 @@ public class ProfileServiceImpl implements ProfileService {
         List<ClassResponse> classResponses = new ArrayList<>();
         System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
-        List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
+        List<DClass> classList = classRepository.findAllByUser(userRepository.findByUserId(userId), pageable).getContent();
         System.out.println(classList.size());
         for (DClass dClass : classList){
             TagResponse tagResponse = TagResponse.builder()
-                    .tagId(dClass.getTagId().getTagId())
-                    .tagName(dClass.getTagId().getTagName())
-                    .categoryId(dClass.getTagId().getCategory().getCategoryId())
+                    .tagId(dClass.getTag().getTagId())
+                    .tagName(dClass.getTag().getTagName())
+                    .categoryId(dClass.getTag().getCategory().getCategoryId())
                     .build();
             ClassResponse classResponse = ClassResponse.builder()
                     .classId(dClass.getClassId())
@@ -304,13 +304,13 @@ public class ProfileServiceImpl implements ProfileService {
                     .likeCount(dClass.getLikeCount())
                     .reviewCount(dClass.getReviewCount())
                     .averageRating((float) (dClass.getRatingSum() / (dClass.getReviewCount() == 0 ? 1 : dClass.getReviewCount())))
-                    .userNickname(dClass.getUserId().getNickname())
-                    .file(dClass.getFileId() != null ? FileResponse.builder()
-                            .fileId(dClass.getFileId().getFileId())
-                            .uploadFileName(dClass.getFileId().getUploadFileName())
-                            .fileUrl(dClass.getFileId().getFileUrl())
+                    .userNickname(dClass.getUser().getNickname())
+                    .file(dClass.getFile() != null ? FileResponse.builder()
+                            .fileId(dClass.getFile().getFileId())
+                            .uploadFileName(dClass.getFile().getUploadFileName())
+                            .fileUrl(dClass.getFile().getFileUrl())
                             .build() : null)
-                    .user(UserResponse.of(dClass.getUserId()))
+                    .user(UserResponse.of(dClass.getUser()))
                     .tag(tagResponse)
                     .build();
 
@@ -335,7 +335,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {
             User reviewer = review.getUser();
-            User teacher = review.getDclass().getUserId();
+            User teacher = review.getDClass().getUser();
 
             return ReviewDetailResponse.of(review, reviewer, teacher);
         }).collect(Collectors.toList());

@@ -1,13 +1,9 @@
 package com.ssafy.ditto.domain.user.domain;
 
 import com.ssafy.ditto.domain.file.domain.File;
-import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.global.shared.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -51,12 +47,12 @@ public class User extends BaseTimeEntity {
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
-    private File fileId;
+    private File file;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    private UserRole roleId;
+    private UserRole role;
 
     public void changePassword(String newPassword){
         this.password = newPassword;
@@ -71,7 +67,7 @@ public class User extends BaseTimeEntity {
     }
 
     public void changeFile(File newFile) {
-        this.fileId = newFile;
+        this.file = newFile;
     }
 
     public void updateIntro(String newIntro) {

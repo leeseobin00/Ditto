@@ -36,7 +36,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
         if(liveRoomOptional.isPresent()) return ;
 
         LiveRoom liveRoom = new LiveRoom();
-        User user = lecture.getClassId().getUserId();
+        User user = lecture.getDClass().getUser();
         liveRoom.setLecture(lecture);
         liveRoom.setIsFinished(false);
         int learnCount = learningRepository.countByLectureId(lectureId);
