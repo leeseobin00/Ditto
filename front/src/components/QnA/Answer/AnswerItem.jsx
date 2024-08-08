@@ -60,7 +60,7 @@ function AnswerItem({ show, answer, isInstructor, question }) {
           )}
         </DetailLine>
         <DetailLine>{currentAnswer?.answer}</DetailLine>
-        <DetailLineSecondary style={{ textAlign: "right" }}>
+        <DetailLineSecondary style={{ justifyContent: "flex-end" }}>
           {answer?.createdDate?.substring(0, 10)}
         </DetailLineSecondary>
       </AnswerItemContainer>

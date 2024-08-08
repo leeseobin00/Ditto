@@ -43,7 +43,7 @@ const sizeStyle = css`
   ${({ size = "md" }) => {
     if (size === "sm") {
       return css`
-        padding: 6px 8px;
+        padding: 6px 10px;
         font-size: 12px;
         font-weight: 500;
       `;

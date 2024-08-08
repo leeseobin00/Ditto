@@ -86,7 +86,7 @@ const UserInfoDetail = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Title style={{ margin: "10px" }}>Loading...</Title>;
   }
 
   return (
