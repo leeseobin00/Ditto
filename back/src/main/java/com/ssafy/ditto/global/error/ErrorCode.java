@@ -62,7 +62,9 @@ public enum ErrorCode {
     POST_LIKE_CANCEL_ERROR(400,"POST_LIKE_CANCEL_ERROR", "좋아요가 존재하지 않아 취소할 수 없습니다."),
     COMMENT_LEVEL_EXCEED(400,"COMMENT_LEVEL_EXCEED", "댓글 레벨을 초과했습니다."),
     COMMENT_NOT_SAME_POST(400,"COMMENT_NOT_SAME_POST", "부모 댓글과 자식 댓글이 동일한 게시글에 있지 않습니다."),
-    CANNOT_MODIFY_DELETED_COMMENT(400,"CANNOT_MODIFY_DELETED_COMMENT", "삭제된 댓글은 수정할 수 없습니다.");
+    CANNOT_MODIFY_DELETED_COMMENT(400,"CANNOT_MODIFY_DELETED_COMMENT", "삭제된 댓글은 수정할 수 없습니다."),
+    ALREADY_HAS_SESSION(400, "ALREADY_HAS_SESSION", "이미 세션이 존재합니다."),
+    ALREADY_HAS_TOKEN(400, "ALREADY_HAS_TOKEN", "이미 토큰이 있습니다.");
 
     private final int httpStatus;
     private final String code;
