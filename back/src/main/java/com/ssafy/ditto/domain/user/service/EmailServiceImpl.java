@@ -42,13 +42,14 @@ public class EmailServiceImpl implements EmailService{
     public void sendEmail(String email) throws MessagingException, NoSuchAlgorithmException  {
         String code = createCode();
         emailRepository.saveCode(email, code);
-        scheduleRemoveCode(email, 30);
+        scheduledExecutorService.schedule(emailRepository.removeCode(email), 300, TimeUnit.SECONDS);
 
         String subject = "Ditto 계정 본인 확인";
         String content = "<div style='font-size:16px;'>"
                 + "<p><strong>인증번호: <span style='font-size:24px;'>" + code + "</span></strong></p>"
                 + "<p>안녕하세요!</p>"
-                + "<p>Ditto 계정 본인 확인 메일입니다. 상기 코드를 입력하여 계정이 본인 소유임을 인증하여 주시기 바랍니다.</p>"
+                + "<p>Ditto 계정 본인 확인 메일입니다.</p>"
+                + "<p>5분 내로 상기 코드를 입력하여 계정이 본인 소유임을 인증하여 주시기 바랍니다.</p>"
                 + "</div>";
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -58,11 +59,6 @@ public class EmailServiceImpl implements EmailService{
         helper.setText(content, true); // 두 번째 인자를 true로 설정하여 HTML을 사용함을 나타냄.
 
         javaMailSender.send(mimeMessage);
-    }
-
-    private void scheduleRemoveCode(String email, int delay) {
-        Runnable removeCodeTask = emailRepository.removeCode(email);
-        scheduledExecutorService.schedule(removeCodeTask, delay, TimeUnit.SECONDS);
     }
 
     @Override

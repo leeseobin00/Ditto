@@ -15,8 +15,9 @@ public class EmailRepository {
 
     // 이메일에 해당하는 코드 삭제
     public Runnable removeCode(String email) {
-        emailAndCode.remove(email);
-        return null;
+        return () -> {
+            emailAndCode.remove(email);
+        };
     }
 
     // 이메일에 해당하는 코드 검색
