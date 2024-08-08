@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.answer.repository.AnswerRepository;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.LikeClass;
+import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.payment.domain.Payment;
 import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
 import com.ssafy.ditto.domain.summary.domain.Summary;
@@ -55,6 +56,7 @@ public class MypageServiceImpl implements MypageService {
     private final LikeUserRepository likeUserRepository;
     private final UserTagRepository userTagRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LearningService learningService;
 
     @Override
     @Transactional(readOnly = true)
@@ -212,8 +214,6 @@ public class MypageServiceImpl implements MypageService {
 
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
-        User user = userRepository.findByUserId(userId);
-
         for (Payment payment : payments) {
             Lecture lecture = payment.getLectureId();
             DClass dClass = lecture.getClassId();
@@ -257,6 +257,8 @@ public class MypageServiceImpl implements MypageService {
         Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
         payment.setPayCancelTime(LocalDateTime.now());
+        payment.setIsCanceled(true);
+        learningService.deleteStudent(userId, lectureId);
     }
 
     @Override
