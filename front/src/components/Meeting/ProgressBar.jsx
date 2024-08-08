@@ -1,7 +1,6 @@
-import styled, { keyframes } from "styled-components";
-
-import MeetingButton from "./MeetingButton";
+import { styled, keyframes } from "styled-components";
 import { useSelector } from "react-redux";
+import MeetingButton from "./MeetingButton";
 
 const ProgressBarWrapper = styled.div`
   display: flex;
@@ -67,6 +66,7 @@ function ProgressBar({ steps
   , handleNextStep
   , handleEndStep }){
   const roleId = useSelector((state)=>state.auth.roleId);
+  
   return (
     <ProgressBarWrapper>
       <Bar>

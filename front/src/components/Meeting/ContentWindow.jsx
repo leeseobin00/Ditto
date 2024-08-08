@@ -63,7 +63,7 @@ const SummaryDescription = styled.p`
   font-size: 14px;
 `;
 
-function ContentWindow({ handleWindow, summaries }) {
+function ContentWindow({ onCloseWindow, summaries }) {
   return (
     <WindowWrapper>
       <WindowHeader>
@@ -71,7 +71,7 @@ function ContentWindow({ handleWindow, summaries }) {
           Contents
           <CustomRefreshIcon />
         </WindowTitle>
-        <IoClose onClick={handleWindow} style={{ cursor: "pointer" }} />
+        <IoClose onClick={onCloseWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <FileContents>
         {summaries.map((summary, index) => (

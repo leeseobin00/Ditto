@@ -1,17 +1,16 @@
 import 'regenerator-runtime/runtime';
 import { useEffect, useState, createContext, useRef } from "react";
 import { styled } from "styled-components";
-import { OpenVidu } from 'openvidu-browser';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { OpenVidu } from 'openvidu-browser';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MeetingHeader from "../../components/Meeting/MeetingHeader";
 import ProgressBar from "../../components/Meeting/ProgressBar";
 import MeetingFooter from "../../components/Meeting/MeetingFooter";
-import axios from "axios";
 import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
+import axios from "axios";
 
-// Container for the entire page
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,14 +21,13 @@ const PageContainer = styled.div`
   height: 100vh;
 `;
 
-// Main content area
 const MainContent = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: ${(props) => (props.isopen) ? "calc(100% - 400px)" : "100%"};
+  width: ${(props) => (props.isopen == "true") ? "calc(100% - 400px)" : "100%"};
   height: calc(100% - 240px);
   margin-bottom: 16px;
 `;
@@ -68,8 +66,7 @@ const RightScrollButton = styled(ScrollButton)`
   right: 10px;
 `;
 
-// Context 정의
-export const MeetingContext = createContext(); // Context를 export하여 다른 파일에서 사용할 수 있도록 함
+export const MeetingContext = createContext();
 
 function MeetingPage() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -78,11 +75,9 @@ function MeetingPage() {
   const roleId = useSelector((state)=>state.auth.roleId);
   const { lectureId } = useParams();
   const navigate = useNavigate();
-  const APPLICATION_SERVER_URL = "http://localhost:5000/";
+  // openvidu state
   const [OV, setOV] = useState(undefined);
-  // 현재 createSession 응답을 저장해서 강사가 미리 세션을 만든 경우가 아니면
-  // 다시 내강의실로 navigate되도록 구현해놓았습니다.
-  const [isSession, setIsSession] = useState(undefined);
+  const [isSession, setIsSession] = useState(undefined);   // 현재 createSession 응답을 저장해서 강사가 미리 세션을 만든 경우가 아니면 다시 내강의실로 navigate되도록 구현
   const [mySessionId, setMySessionId] = useState('SessionA');
   const [myUserName, setMyUserName] = useState(undefined);
   const [session, setSession] = useState(undefined);
@@ -91,16 +86,15 @@ function MeetingPage() {
   const [subscribers, setSubscribers] = useState([]);
   // meeting에 참여하는 멤버들 이름
   const [members, setMembers] = useState([]);
-  // chat
+  // chat, timer
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
-  // timer
   const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  // State for mute and video control
+  // 음소거, 화면끄기
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
-  // State for pagination
+  // pagination
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxVisible = 3; // Maximum visible participants
 
@@ -128,6 +122,7 @@ function MeetingPage() {
 
   useEffect(() => {
     if (OV && myUserName && userId && roleId && lectureId) {
+      // TODO: 토큰 자동 생성 구현 후에 roleId에 관계없이 joinSession으로 통합예정
       if(roleId==2){
         createSession();
       }else if(roleId==1){
@@ -143,10 +138,6 @@ function MeetingPage() {
   },[session]);
 
   const createSession = async (sessionId) => {
-    // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
-    //   headers: { 'Content-Type': 'application/json', },
-    // });
-    // return response.data; // The sessionId
     const response = await axios.post(`${baseURL}/sessions/${lectureId}?userId=${userId}`, null);
     if(response?.data?.code==200){
       joinSession();
@@ -157,16 +148,10 @@ function MeetingPage() {
   };
 
   const getToken = async () => {
-    // const sessionId = await createSession(mySessionId);
-    // return await createToken(sessionId);
     return await createToken();
   };
 
   const createToken = async () => {
-    // const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-    //   headers: { 'Content-Type': 'application/json', },
-    // });
-    // return response.data; // The token
     const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
     if(response?.data?.code==403){
       alert(response?.data?.message);
@@ -188,29 +173,24 @@ function MeetingPage() {
     );
   };
 
-  useEffect(()=>{
-    console.log(statusMessages);
-  },[statusMessages]);
-
   const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
 
-    console.log("===>newSession: ", newSession);
+    console.log("====>newSession: ", newSession);
     newSession.on('streamCreated', (event) => {
-      console.log("A======>",event.stream.connection);
+      console.log("====>streamCreated: ",event.stream.connection);
       const connectionData = event.stream.connection;
       const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
       if(connectionData.connectionId == newSession.connection.connectionId) return;
 
-      console.log(parsedData);
-      console.log("====>RoleId: ", parsedData?.roleId);
-      console.log("====>roleId: ", roleId);
+      console.log("====>streamCreated====>parsedData_roleId: ", parsedData?.roleId);
+      console.log("====>streamCreated====>loginUser_roleId: ", roleId);
+      
       // 수강생이면 강사만 subscribe할 수 있음
       if(roleId==1 && parsedData?.roleId==1) return;
       const subscriber = newSession.subscribe(event.stream, undefined);
       if (parsedData?.username !== myUserName) {
-        console.log("난 널 구독해");
         setMembers((prev)=>[...prev, parsedData?.username]);
         setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
@@ -227,33 +207,33 @@ function MeetingPage() {
     newSession.on('signal:chat', (event) => {
       console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
-      console.log("===========>receiveChat:", parsedData);
+      // 이벤트 수신시 로직
+      console.log("=====>received chat:", parsedData);
       if(parsedData?.target=="모두에게" || parsedData?.target==username || parsedData?.sender==username){
         setChatMessages((prev)=>[...prev, parsedData]);
       }
     });
 
     newSession.on('signal:status', (event) => {
-      console.log('New chat message:', event.data);
+      console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
+      // 이벤트 수신시 로직
       setStatusMessages((prev)=>[...prev, parsedData]);
     });
 
     newSession.on('signal:timer', (event) => {
-      console.log('New chat message:', event.data);
+      console.log('New timer message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
-      console.log("=====timer parsedData: ",  parsedData);
+      // 이벤트 수신시 로직
+      console.log("=====>timer parsedData: ",  parsedData);
       startTimer(parsedData?.minute, parsedData?.second);
     });
 
     newSession.on('signal:progress', (event) => {
       console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 여기에 메시지를 화면에 표시하는 로직을 추가할 수 있습니다.
-      console.log("=====timer parsedData: ",  parsedData);
+      // 이벤트 수신시 로직
+      console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
     });
 
@@ -285,6 +265,7 @@ function MeetingPage() {
   const leaveSession = async() => {
     if (session) {
       session.disconnect();
+      // TODO: 자동화 구현 후 코드 삭제 예정
       // if(roleId==1){
       //   // 수강생이면 그냥 토큰 제거
       //   const res = await axios.post(`${baseURL}/session/${lectureId}/remove-token?userId=${userId}`, null);
@@ -302,14 +283,14 @@ function MeetingPage() {
     setMyUserName(undefined);
   };
 
-  // Include publisher in pagination logic
+  // Include publisher in pagination logic 
   const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
     return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
   };
 
-  // Functions to navigate between subscriber groups
+  // pagination을 위한 함수
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
@@ -317,6 +298,7 @@ function MeetingPage() {
   const handleNext = () => {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
+
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const steps = [
     "1단계. 향 조합 비율 결정하기",
@@ -339,9 +321,8 @@ function MeetingPage() {
     setStepLoading(true);
     setText(transcript);
     const sendText = transcript;
-    const originText = [sendText];
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
+    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, {"originText": sendText});
     resetTranscript();
     sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
@@ -353,9 +334,8 @@ function MeetingPage() {
     setStepLoading(true);
     setText(transcript);
     const sendText = transcript;
-    const originText = [sendText];
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, originText);
+    axios.post(`${baseURL}/summary/${lectureId}/${currentStep+1}`, {"originText": sendText});
     resetTranscript();
     sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
@@ -366,7 +346,7 @@ function MeetingPage() {
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
-  // chat ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  // event: chat, status, timer, progress////////////////////////////////////////////////////////////////////////
   const sendChat = (senderName, senderMsg, time, target) => {
     if(session){
       session.signal({
@@ -380,7 +360,7 @@ function MeetingPage() {
         type: 'chat'
     })
     .then(() => {
-        console.log('Message successfully sent');
+        console.log('Message successfully sent: chat');
     })
     .catch(error => {
         console.error(error);
@@ -399,7 +379,7 @@ function MeetingPage() {
         type: 'status'
     })
     .then(() => {
-        console.log('Message successfully sent');
+        console.log('Message successfully sent: status');
     })
     .catch(error => {
         console.error(error);
@@ -418,7 +398,7 @@ function MeetingPage() {
         type: 'timer'
     })
     .then(() => {
-        console.log('Message successfully sent');
+        console.log('Message successfully sent: timer');
     })
     .catch(error => {
         console.error(error);
@@ -426,7 +406,6 @@ function MeetingPage() {
     };
   }
   useEffect(() => {
-    console.log("============================");
     let timerInterval;
     if (isTimerRunning && timer > 0) {
       timerInterval = setInterval(() => {
@@ -438,7 +417,6 @@ function MeetingPage() {
     return () => clearInterval(timerInterval);
   }, [isTimerRunning, timer]);
   const startTimer = (minute, second) => {
-    console.log("ddddddddddd");
     setTimer(minute * 60 + second);
     setIsTimerRunning(true);
   };
@@ -453,7 +431,7 @@ function MeetingPage() {
         type: 'progress'
     })
     .then(() => {
-        console.log('Message successfully sent');
+        console.log('Message successfully sent: progress');
     })
     .catch(error => {
         console.error(error);
@@ -465,11 +443,11 @@ function MeetingPage() {
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
-  console.log("==========================>isOpen: ", isOpen);
+  console.log("==========================>isopen: ", isOpen);
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
-  console.log("currentIdx: ", currentIndex, "dd: ", subscribers.length, "dd2: ", subscribers.length/maxVisible);
+  console.log("currentIdx: ", currentIndex, "subscribers_length: ", subscribers.length, "subscribers_length / maxVisible: ", subscribers.length/maxVisible);
   return (
     <MeetingContext.Provider
       value={{

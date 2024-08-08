@@ -120,16 +120,12 @@ const MessageTime = styled.p`
   color: var(--TEXT_TERITARY);
 `;
 
-function ChatWindow({ handleWindow }) {
+function ChatWindow({ onCloseWindow }) {
   // redux
   const username = useSelector((state)=>state.auth.nickname);
   // context API
-  const { sendChat, chatMessages, publisher, subscribers, members } = useContext(MeetingContext);
+  const { sendChat, chatMessages, members } = useContext(MeetingContext);
 
-  console.log("pub: ", publisher);
-  console.log("chat=====================>sub: ", subscribers);
-  console.log("chat=====================>members: ", members);
-  //const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedUser, setSelectedUser] = useState("모두에게");
   const [users, setUsers] = useState(["모두에게"]);
@@ -143,17 +139,7 @@ function ChatWindow({ handleWindow }) {
   }, [members]);
 
   const handleSend = () => {
-    alert(selectedUser);
     if (inputValue.trim()) {
-      const newMessage = {
-        user: selectedUser,
-        text: inputValue,
-        time: new Date().toLocaleTimeString("ko-KR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        isOwnMessage: true,
-      };
       sendChat(username, 
         inputValue, 
         new Date().toLocaleTimeString("ko-KR", {
@@ -161,7 +147,6 @@ function ChatWindow({ handleWindow }) {
           minute: "2-digit",
         }), 
         selectedUser);
-      //setMessages([...messages, newMessage]);
       setInputValue("");
     }
   };
@@ -190,7 +175,7 @@ function ChatWindow({ handleWindow }) {
     <WindowWrapper>
       <WindowHeader>
         <WindowTitle>Chat</WindowTitle>
-        <IoClose onClick={handleWindow} style={{ cursor: "pointer" }} />
+        <IoClose onClick={onCloseWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <ChatMessages>
         {chatMessages.map((message, index) => (
