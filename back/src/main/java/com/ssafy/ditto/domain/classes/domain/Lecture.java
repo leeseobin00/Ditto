@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(name = "lecture")
 @Getter
 @Setter
 @Builder
@@ -16,38 +16,38 @@ import java.time.LocalDateTime;
 public class Lecture extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "lecture_id")
     private Integer lectureId;
 
-    @Column
+    @Column(name = "year")
     private Integer year;
 
-    @Column
+    @Column(name = "month")
     private Byte month;
 
-    @Column
+    @Column(name = "day")
     private Byte day;
 
-    @Column
+    @Column(name = "hour")
     private Byte hour;
 
-    @Column
+    @Column(name = "minute")
     private Byte minute;
 
-    @Column
+    @Column(name = "user_count")
     private Byte userCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private DClass classId;
+    private DClass dclass;
 
-    @Column
+    @Column(name = "class_name")
     private String className;
 
-    @Column
+    @Column(name = "class_price")
     private Integer classPrice;
 
-    @Column
+    @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     public LocalDateTime getStartDateTime() {

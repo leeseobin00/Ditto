@@ -42,7 +42,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
         if(liveRoomOptional.isPresent()) return ;
 
         LiveRoom liveRoom = new LiveRoom();
-        User user = lecture.getClassId().getUserId();
+        User user = lecture.getDclass().getUser();
         liveRoom.setLecture(lecture);
         liveRoom.setIsFinished(false);
         int learnCount = learningRepository.countByLectureId(lectureId);
@@ -139,7 +139,7 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     @Transactional
     public LiveRoomInfoResponse getLiveRoomInfo(int lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
-        DClass dClass = lecture.getClassId();
+        DClass dClass = lecture.getDclass();
         List<Step> steps = stepRepository.findAllByClassId(dClass);
         List<StepDetailResponse> stepDetailResponses = steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList());
 

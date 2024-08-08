@@ -19,5 +19,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
             "LIMIT 5", nativeQuery = true)
     List<Payment> getPaymentList(@Param("userId") Integer userId, @Param("dateTime") LocalDateTime dateTime);
 
-    Payment findByUserIdAndLectureId(User userId, Lecture lectureId);
+    Payment findByUserIdAndLecture(User userId, Lecture lectureId);
 }

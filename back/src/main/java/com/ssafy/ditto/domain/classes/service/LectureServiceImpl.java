@@ -36,7 +36,7 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public void createLecture(Integer classId, LectureRequest lectureRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(dClass.getUser().getUserId()).orElseThrow(UserNotFoundException::new);
 
         Lecture lecture = Lecture.builder()
                 .year(lectureRequest.getYear())
@@ -44,7 +44,7 @@ public class LectureServiceImpl implements LectureService {
                 .day(lectureRequest.getDay())
                 .hour(lectureRequest.getHour())
                 .minute(lectureRequest.getMinute())
-                .classId(dClass)
+                .dclass(dClass)
                 .className(dClass.getClassName())
                 .userCount((byte) 0)
                 .classPrice(dClass.getClassPrice())
@@ -81,7 +81,7 @@ public class LectureServiceImpl implements LectureService {
     public List<LectureResponse> getUpcomingLecturesByClassId(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         LocalDateTime now = LocalDateTime.now();
-        List<Lecture> lectures = lectureRepository.findUpcomingLecturesByClassId(
+        List<Lecture> lectures = lectureRepository.findUpcomingLecturesByDclass(
                 dClass,
                 now.getYear(),
                 (byte) now.getMonthValue(),
@@ -98,7 +98,7 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(dClass.getUser().getUserId()).orElseThrow(UserNotFoundException::new);
 
         List<Lecture> lectures = lectureRepository.findLecturesWithoutReviews(classId, userId);
         return lectures.stream()
@@ -117,7 +117,7 @@ public class LectureServiceImpl implements LectureService {
     @Override
     public boolean isValidTeacher(Integer userId, int lectureId) {
         User teacher = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-        boolean isTeacher = lectureRepository.existsByClassId_UserIdAndLectureId(teacher, lectureId);
+        boolean isTeacher = lectureRepository.existsByDclass_UserAndLectureId(teacher, lectureId);
         return isTeacher;
     }
 
