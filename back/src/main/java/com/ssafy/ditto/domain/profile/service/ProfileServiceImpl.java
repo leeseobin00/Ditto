@@ -16,6 +16,7 @@ import com.ssafy.ditto.domain.post.repository.PostRepository;
 import com.ssafy.ditto.domain.post.service.PostService;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
+import com.ssafy.ditto.domain.profile.dto.UserClassListResponse;
 import com.ssafy.ditto.domain.profile.repository.LikeUserRepository;
 import com.ssafy.ditto.domain.profile.repository.ProfileRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
@@ -224,7 +225,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public ClassListResponse userClass(int userId, PageRequest pageRequest) {
+    public UserClassListResponse userClass(int userId, PageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
 
         // Learning 엔티티를 통해 DClass를 조회
@@ -274,14 +275,18 @@ public class ProfileServiceImpl implements ProfileService {
                     .build();
         }).collect(Collectors.toList());
 
-        return ClassListResponse.builder()
-                .classList(classResponses)
+        return UserClassListResponse.builder()
+                .classListResponse(ClassListResponse.builder()
+                        .classList(classResponses)
+                        .build())
+                .currentPage(pageRequest.getPageNumber()+1)
+                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ClassListResponse proClass(int userId, PageRequest pageRequest) {
+    public UserClassListResponse proClass(int userId, PageRequest pageRequest) {
         List<ClassResponse> classResponses = new ArrayList<>();
         System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
@@ -327,8 +332,12 @@ public class ProfileServiceImpl implements ProfileService {
             classResponses.add(classResponse);
         }
 
-        return ClassListResponse.builder()
-                .classList(classResponses)
+        return UserClassListResponse.builder()
+                .classListResponse(ClassListResponse.builder()
+                        .classList(classResponses)
+                        .build())
+                .currentPage(pageRequest.getPageNumber()+1)
+                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
                 .build();
     }
 
