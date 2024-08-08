@@ -232,7 +232,18 @@ function MeetingPage() {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      setStatusMessages((prev)=>[...prev, parsedData]);
+      let isExist = false;
+      const newStatusMessage = [];
+      statusMessages.forEach((message)=>{
+        if(message?.sender != parsedData?.sender){
+          newStatusMessage.push(message);
+        }else{
+          isExist = true;
+        }
+      });
+      if(!isExist) newStatusMessage.push(parsedData); 
+      console.timeLog(newStatusMessage);
+      setStatusMessages(newStatusMessage);
     });
 
     newSession.on('signal:timer', (event) => {
