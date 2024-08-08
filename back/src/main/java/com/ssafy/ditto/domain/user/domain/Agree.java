@@ -15,6 +15,6 @@ public class Agree {
     @Column(name = "agree_id")
     private Integer agreeId;
 
-    @Column(name = "agree")
+    @Column(name = "agree", length = 4000)
     private String agree;
 }

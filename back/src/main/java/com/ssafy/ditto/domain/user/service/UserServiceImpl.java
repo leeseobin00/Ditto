@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void proSignup(ProSignUpRequest proSignUpRequest) {
+        File file = fileRepository.findByFileId(1);
         //강사 회원 등록
         User user = User.builder()
                 .email(proSignUpRequest.getEmail())
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
                 .agreePICU(true)
                 .isDeleted(false)
                 .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
-                .fileId(null)
+                .fileId(file)
                 .domain("local")
                 .build();
 
