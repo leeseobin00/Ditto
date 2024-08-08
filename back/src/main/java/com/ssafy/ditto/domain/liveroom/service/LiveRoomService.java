@@ -1,5 +1,7 @@
 package com.ssafy.ditto.domain.liveroom.service;
 
+import com.ssafy.ditto.domain.liveroom.dto.LiveRoomInfoResponse;
+
 public interface LiveRoomService {
     void createLiveRoom(int lectureId);
     void endLiveRoom(int lectureId);
@@ -8,4 +10,5 @@ public interface LiveRoomService {
     Integer enterLiveRoom(int lectureId) throws Exception;
     void leaveLiveRoom(int lectureId) throws Exception;
     Integer getUserCount(int lectureId) throws Exception;
+    LiveRoomInfoResponse getLiveRoomInfo(int lectureId);
 }

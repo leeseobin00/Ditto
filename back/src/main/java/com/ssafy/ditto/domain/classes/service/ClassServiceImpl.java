@@ -143,7 +143,13 @@ public class ClassServiceImpl implements ClassService {
         UserResponse userResponse = UserResponse.of(dClass.getUserId());
         TagResponse tagResponse = TagResponse.of(dClass.getTagId());
 
-        return ClassDetailResponse.of(dClass, dClass.getFileId() != null ? FileResponse.of(dClass.getFileId()) : null, KitDetailResponse.of(dClass.getKitId(), dClass.getKitId().getFileId() != null ? FileResponse.of(dClass.getKitId().getFileId()) : null), steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList()), lectures.stream().map(LectureResponse::of).collect(Collectors.toList()), userResponse, tagResponse);
+        return ClassDetailResponse.of(dClass,
+                dClass.getFileId() != null ? FileResponse.of(dClass.getFileId()) : null,
+                KitDetailResponse.of(dClass.getKitId(), dClass.getKitId().getFileId() != null ? FileResponse.of(dClass.getKitId().getFileId()) : null),
+                steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList()),
+                lectures.stream().map(LectureResponse::of).collect(Collectors.toList()),
+                userResponse,
+                tagResponse);
     }
 
     @Override
