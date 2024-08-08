@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 const SidebarWrapper = styled.nav`
   width: 240px;
+  min-width: 180px;
   border-right: 1px solid var(--BORDER_COLOR);
 `;
 
