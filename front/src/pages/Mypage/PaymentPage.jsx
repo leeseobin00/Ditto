@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { styled } from "styled-components";
+
 import axios from "axios";
 import PaymentDetail from "../../components/MyPage/Payment/PaymentDetail";
+import MoreButton from "../../components/common/MoreButton";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 20px;
 `;
 
@@ -22,20 +23,6 @@ const PaymentNull = styled.div`
   color: var(--TEXT_SECONDARY);
   padding: 40px;
   text-align: center;
-`;
-
-const LoadMoreButton = styled.button`
-  padding: 10px 20px;
-  background-color: var(--SECONDARY);
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 20px;
-  &:hover {
-    filter: brightness(0.9);
-  }
 `;
 
 const PaymentPage = () => {
@@ -90,13 +77,15 @@ const PaymentPage = () => {
     <Container>
       <Title>결제/수강 내역</Title>
       {payments.length > 0 ? (
-        <PaymentDetail payments={payments} setPayments={setPayments} />
+        <>
+          <PaymentDetail payments={payments} setPayments={setPayments} />
+          <MoreButton onClick={loadMorePayments} disabled={loading}>
+            {loading ? "불러오는 중..." : "더보기"}
+          </MoreButton>
+        </>
       ) : (
         <PaymentNull>결제/수강한 클래스가 없습니다.</PaymentNull>
       )}
-      <LoadMoreButton onClick={loadMorePayments} disabled={loading}>
-        {loading ? "불러오는 중..." : "더보기"}
-      </LoadMoreButton>
     </Container>
   );
 };
