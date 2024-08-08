@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.ssafy.ditto.global.dto.ResponseMessage.*;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "Class", description = "Class API")
 @RestController
@@ -57,7 +57,7 @@ public class ClassController {
         } catch (IOException e) {
             return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
         }
-        return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(), "클래스가 성공적으로 생성되었습니다.");
+        return ResponseDto.of(CREATED.value(), SUCCESS_WRITE.getMessage(), "클래스가 성공적으로 생성되었습니다.");
     }
 
     @Operation(summary = "클래스 수정", description = "기존 클래스를 수정합니다.")
@@ -98,7 +98,7 @@ public class ClassController {
     @DeleteMapping("/{classId}")
     public ResponseDto<String> deleteClass(@PathVariable Integer classId) {
         classService.deleteClass(classId);
-        return ResponseDto.of(OK.value(), SUCCESS_DELETE.getMessage(), "클래스가 성공적으로 삭제되었습니다.");
+        return ResponseDto.of(NO_CONTENT.value(), SUCCESS_DELETE.getMessage(), "클래스가 성공적으로 삭제되었습니다.");
     }
 
     @Operation(summary = "클래스 상세 조회", description = "클래스의 상세 정보를 조회합니다.")
