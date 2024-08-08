@@ -1,7 +1,14 @@
 package com.ssafy.ditto.domain.liveroom.service;
 
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.domain.Step;
+import com.ssafy.ditto.domain.classes.dto.LectureResponse;
+import com.ssafy.ditto.domain.classes.dto.StepDetailResponse;
 import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
+import com.ssafy.ditto.domain.classes.repository.StepRepository;
+import com.ssafy.ditto.domain.file.dto.FileResponse;
+import com.ssafy.ditto.domain.liveroom.dto.LiveRoomInfoResponse;
 import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
@@ -13,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -22,15 +31,12 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     private final LiveRoomRepository liveRoomRepository;
     private final LearningRepository learningRepository;
     private final LectureRepository lectureRepository;
+    private final StepRepository stepRepository;
 
     // 라이브 생성
     @Override
     @Transactional
     public void createLiveRoom(int lectureId) {
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Optional<LiveRoom> liveRoomOptional = liveRoomRepository.findByLecture(lecture);
         if(liveRoomOptional.isPresent()) return ;
@@ -47,10 +53,6 @@ public class LiveRoomServiceImpl implements LiveRoomService {
         liveRoom.setName(liveSessionName);
         liveRoom.setOpenTime(LocalDateTime.now());
         liveRoomRepository.save(liveRoom);
-
-        System.out.println("******** "+liveRoom+"번 방 생성");
-        System.out.println("******** "+liveRoom+"번 방 생성");
-        System.out.println("******** "+liveRoom+"번 방 생성");
     }
 
     @Override
@@ -131,5 +133,20 @@ public class LiveRoomServiceImpl implements LiveRoomService {
             return (int)liveRoom.getCurrentCount();
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public LiveRoomInfoResponse getLiveRoomInfo(int lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        DClass dClass = lecture.getClassId();
+        List<Step> steps = stepRepository.findAllByClassId(dClass);
+        List<StepDetailResponse> stepDetailResponses = steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList());
+
+        return LiveRoomInfoResponse.builder()
+                .className(dClass.getClassName())
+                .lectureResponse(LectureResponse.of(lecture))
+                .stepList(stepDetailResponses)
+                .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.liveroom.controller;
 
 import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.liveroom.dto.LiveRoomInfoResponse;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.global.dto.ResponseDto;
@@ -41,16 +42,26 @@ public class LiveRoomController {
         return ResponseDto.of(OK.value(), "라이브 방이 종료되었습니다.");
     }
 
+    @Operation(summary = "라이브 방 정보 조회", description = "강의가 진행될 라이브 방의 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "라이브 방과 관련된 상세 정보 조회가 성공적으로 완료되었습니다.")
+    })
     @GetMapping("/{lectureId}")
-    public ResponseDto<Integer> getUserCount(@PathVariable int lectureId) {
-        int userCount = 0;
-        try {
-            userCount = liveRoomService.getUserCount(lectureId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.of(200, "라이브 참여 인원 조회가 성공적으로 완료되었습니다.",userCount);
+    public ResponseDto<LiveRoomInfoResponse> getLectureInfo(@PathVariable int lectureId) {
+        LiveRoomInfoResponse liveRoomInfoResponse = liveRoomService.getLiveRoomInfo(lectureId);
+        return ResponseDto.of(200, "라이브 방 상세 정보 조회가 성공적으로 완료되었습니다.",liveRoomInfoResponse);
     }
+
+//    @GetMapping("/{lectureId}")
+//    public ResponseDto<Integer> getUserCount(@PathVariable int lectureId) {
+//        int userCount = 0;
+//        try {
+//            userCount = liveRoomService.getUserCount(lectureId);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        return ResponseDto.of(200, "라이브 참여 인원 조회가 성공적으로 완료되었습니다.",userCount);
+//    }
 
     @GetMapping("/enter/{lectureId}")
     public ResponseDto<String> getSessionName(@PathVariable Integer lectureId, @RequestParam Integer userId) {
