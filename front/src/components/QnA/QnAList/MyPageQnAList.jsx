@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { styled } from "styled-components";
 
 import useAxios from "../../../hooks/useAxios";
@@ -65,6 +64,12 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
   const { sendRequest: getQuestions } = useAxios();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!initialQuestions) {
+      setShowMore(false);
+    }
+  }, [initialQuestions]);
 
   const loadMoreQuestions = async () => {
     const lastDate = questions[questions.length - 1]?.createdDate;
