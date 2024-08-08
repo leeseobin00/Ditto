@@ -6,6 +6,7 @@ import { MeetingContext } from '../../pages/Meeting/MeetingPage';
 const VideoWrapper = styled.div`
   position: relative;
   height: auto;
+  max-height: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 8px; /* Optional: ensure border-radius is applied */
