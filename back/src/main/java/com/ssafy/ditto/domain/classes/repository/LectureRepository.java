@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LectureRepository extends JpaRepository<Lecture, Integer> {
@@ -43,4 +42,9 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
                                                 @Param("currentMinute") Byte currentMinute);
 
     List<Lecture> findByYearAndMonthAndDay(Integer year, Byte month, Byte day);
+
+    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.isDeleted = false AND l.lectureId NOT IN " +
+            "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId) AND EXISTS " +
+            "(SELECT ln FROM Learning ln WHERE ln.lecture.lectureId = l.lectureId AND ln.student.userId = :userId AND ln.isFinished = true)")
+    List<Lecture> findCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 }
