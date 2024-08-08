@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Tag from "../Tag";
 
@@ -46,7 +47,7 @@ const Instructor = styled.div`
   color: var(--TEXT_TERTIARY);
 `;
 
-function ClassCard({ fileId, title, date, name, tag }) {
+function ClassCard({ classId, fileId, title, date, name, tag }) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [image, setImage] = useState(undefined);
 
@@ -76,17 +77,19 @@ function ClassCard({ fileId, title, date, name, tag }) {
   },[fileId]);
 
   return (
-    <CardWrapper>
-      <Image src={image} />
-      <ContentWrapper>
-        <Title>{title}</Title>
-        <Info>
-          <Date>{date}</Date>
-          <Instructor>{name}</Instructor>
-          <Tag tagName={tag} />
-        </Info>
-      </ContentWrapper>
-    </CardWrapper>
+    <Link to={`/classes/detail/${classId}`}>
+      <CardWrapper>
+        <Image src={image} />
+        <ContentWrapper>
+          <Title>{title}</Title>
+          <Info>
+            <Date>{date}</Date>
+            <Instructor>{name}</Instructor>
+            <Tag tagName={tag} />
+          </Info>
+        </ContentWrapper>
+      </CardWrapper>
+    </Link>
   );
 }
 
