@@ -8,12 +8,17 @@ import lombok.Getter;
 public enum ErrorCode {
     // 서버 오류
     INTERNAL_SERVER_ERROR(500, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."),
+    OPENVIDU_CLIENT_ERROR(500, "OPENVIDU_CLIENT_ERROR", "OpenVidu 클라이언트 오류 발생"),
+    OPENVIDU_HTTP_ERROR(500, "OPENVIDU_HTTP_ERROR", "OpenVidu HTTP 오류 발생"),
+    UNKNOWN_ERROR(500, "UNKNOWN_ERROR", "세션 생성 중 알 수 없는 오류가 발생했습니다."),
 
     // 인증 관련 오류
     INVALID_TOKEN(401, "INVALID_TOKEN", "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(403, "EXPIRED_TOKEN", "만료된 토큰입니다."),
     UNAUTHORIZED(401, "UNAUTHORIZED", "인증이 필요합니다."),
     FORBIDDEN(403, "FORBIDDEN", "접근 권한이 없습니다."),
+    FORBIDDEN_USER(403, "FORBIDDEN", "사용자가 교사 역할이 아닙니다."),
+    INVALID_USER(403, "INVALID_USER", "유효하지 않은 사용자입니다."),
 
     // 요청 관련 오류
     BAD_REQUEST(400, "BAD_REQUEST", "잘못된 요청입니다."),
@@ -39,7 +44,7 @@ public enum ErrorCode {
     POST_LIKE_EXIST_ERROR(404,"POST_LIKE_EXIST_ERROR", "이미 좋아요를 눌렀습니다. 추가할 수 없습니다."),
     COMMENT_NOT_EXIST(404,"COMMENT_NOT_EXIST", "댓글이 존재하지 않습니다."),
     PARENT_COMMENT_NOT_EXIST(404,"PARENT_COMMENT_NOT_EXIST", "부모 댓글이 존재하지 않습니다."),
-
+    SESSION_NOT_FOUND(404, "SESSION_NOT_FOUND", "세션을 찾을 수 없습니다."),
 
     // 중복 관련 오류
     DUPLICATE_RESOURCE(409, "DUPLICATE_RESOURCE", "중복된 리소스가 있습니다."),
