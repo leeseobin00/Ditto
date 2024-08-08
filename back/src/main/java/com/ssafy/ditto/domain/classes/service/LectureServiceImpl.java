@@ -107,12 +107,8 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
-        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
-
-        List<Lecture> lectures = lectureRepository.findCompletedLearningsByClassAndUser(classId, userId);
+        List<Lecture> lectures = lectureRepository.findCompletedLecturesWithoutReviews(classId, userId);
         return lectures.stream()
                 .map(LectureResponse::of)
                 .collect(Collectors.toList());
@@ -126,7 +122,7 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public List<Lecture> getLecturesForDate(LocalDate date)  {
+    public List<Lecture> getLecturesForDate(LocalDate date) {
         return lectureRepository.findByYearAndMonthAndDay(date.getYear(), (byte) date.getMonthValue(), (byte) date.getDayOfMonth());
     }
 }

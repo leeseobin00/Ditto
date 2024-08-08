@@ -8,6 +8,8 @@ import com.ssafy.ditto.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -36,11 +38,17 @@ public class ReviewDetailResponse {
     @Schema(description = "강의 상세 정보")
     private LectureResponse lectureDetail;
 
+    private LocalDateTime createdDate;
+
+    private LocalDateTime modifiedDate;
+
     public static ReviewDetailResponse of(Review review, User reviewer, User teacher) {
         return ReviewDetailResponse.builder()
                 .reviewId(review.getReviewId())
                 .reviewContent(review.getReviewContent())
                 .rating(review.getRating())
+                .createdDate(review.getCreatedDate())
+                .modifiedDate(review.getModifiedDate())
                 .reviewer(UserResponse.of(reviewer))
                 .teacher(UserResponse.of(teacher))
                 .classDetail(ClassDetailResponse.of(review.getDclass(), null, null, null, null, null, null))

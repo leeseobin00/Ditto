@@ -162,6 +162,9 @@ public class ClassController {
     @GetMapping("/{classId}/completed-lectures/reviews")
     public ResponseDto<List<LectureResponse>> getCompletedLecturesWithoutReviews(@PathVariable Integer classId, @RequestParam Integer userId) {
         List<LectureResponse> lectures = lectureService.getCompletedLecturesWithoutReviews(classId, userId);
+        if (lectures.isEmpty()) {
+            return ResponseDto.of(BAD_REQUEST.value(), "사용자가 해당 수업을 듣지 않았습니다.");
+        }
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), lectures);
     }
 }
