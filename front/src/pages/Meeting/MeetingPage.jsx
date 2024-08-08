@@ -160,7 +160,7 @@ function MeetingPage() {
 
   const createSession = async (sessionId) => {
     const response = await axios.post(`${baseURL}/sessions/${lectureId}?userId=${userId}`, null);
-    if(response?.data?.code==200){
+    if(response?.data?.code==200 || response?.data?.code==400){
       joinSession();
     }else{
       alert("세션에 접근할 수 없습니다!");
@@ -299,13 +299,13 @@ function MeetingPage() {
     if (session) {
       session.disconnect();
       // TODO: 자동화 구현 후 코드 삭제 예정
-      // if(roleId==1){
-      //   // 수강생이면 그냥 토큰 제거
-      //   const res = await axios.post(`${baseURL}/session/${lectureId}/remove-token?userId=${userId}`, null);
-      // }else if(roleId==2){
-      //   // 강사이면 토큰 제거 + 라이브 세션 제거
-      //   const res = await axios.delete(`${baseURL}/sessions/${lectureId}?userId=${userId}`);
-      // }
+      if(roleId==1){
+        // 수강생이면 그냥 토큰 제거
+        const res = await axios.post(`${baseURL}/session/${lectureId}/remove-token?userId=${userId}`, null);
+      }else if(roleId==2){
+        // 강사이면 토큰 제거 + 라이브 세션 제거
+        const res = await axios.delete(`${baseURL}/sessions/${lectureId}?userId=${userId}`);
+      }
     }
 
     setOV(null);
