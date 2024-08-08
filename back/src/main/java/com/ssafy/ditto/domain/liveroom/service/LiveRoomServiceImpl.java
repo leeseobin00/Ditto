@@ -27,10 +27,6 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     @Override
     @Transactional
     public void createLiveRoom(int lectureId) {
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-        System.out.println("******** "+lectureId+"번 라이브 방 생성 시도");
-
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Optional<LiveRoom> liveRoomOptional = liveRoomRepository.findByLecture(lecture);
         if(liveRoomOptional.isPresent()) return ;
@@ -47,10 +43,6 @@ public class LiveRoomServiceImpl implements LiveRoomService {
         liveRoom.setName(liveSessionName);
         liveRoom.setOpenTime(LocalDateTime.now());
         liveRoomRepository.save(liveRoom);
-
-        System.out.println("******** "+liveRoom+"번 방 생성");
-        System.out.println("******** "+liveRoom+"번 방 생성");
-        System.out.println("******** "+liveRoom+"번 방 생성");
     }
 
     @Override

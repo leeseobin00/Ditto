@@ -1,5 +1,6 @@
 package com.ssafy.ditto.global.tasklet;
 
+import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
@@ -35,7 +36,11 @@ public class ManageLiveRoomsTasklet implements Tasklet {
         for (Lecture lecture : lectures) {
             LocalDateTime lectureStartTime = lecture.getStartDateTime();
             LocalDateTime createTime = lectureStartTime.minusMinutes(30);
-            LocalDateTime endTime = lectureStartTime.plusHours(3);
+
+            // 끝나는 시간 클래스 진행시간 + 1시간 후에 자동으로 라이브 룸 삭제
+            DClass dClass = lecture.getClassId();
+            LocalDateTime endTime = lectureStartTime.plusHours(dClass.getClassHour()+1)
+                                                    .plusMinutes(dClass.getClassMinute());
 
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
@@ -45,6 +50,11 @@ public class ManageLiveRoomsTasklet implements Tasklet {
 
             if (now.isAfter(endTime)) {
                 liveRoomService.endLiveRoom(lecture.getLectureId());
+                /*
+                lecture도 is finished 설정해야함
+                if lecture is finished지만 정산 못 받았다
+                마일리지 추가 후 마일리지 히스토리에 등록하는 메서드 필요
+                 */
             }
         }
 
