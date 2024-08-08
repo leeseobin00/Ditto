@@ -204,7 +204,7 @@ function ProfileDetailPage() {
       const curPage = classPage;
       setClassPage((prev)=>prev+1);
       const result = await getPosts(`/profiles/${profileId}/pro-class?page=${curPage+1}&size=${postSize}`, null, "get");
-      setClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
+      setProClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
     }
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
