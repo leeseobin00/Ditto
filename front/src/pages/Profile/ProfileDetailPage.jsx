@@ -32,6 +32,7 @@ const LectureDetails = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  white-space: nowrap;
 `;
 
 const LectureDetail = styled.div`
@@ -41,11 +42,13 @@ const LectureDetail = styled.div`
   align-items: center;
   width: 50%;
   height: 48px;
+  white-space: nowrap;
 `;
 
 const DetailTitle = styled.div`
   color: var(--TEXT_SECONDARY);
   margin-bottom: 8px;
+  white-space: nowrap;
 `;
 
 const DetailContent = styled.div`
@@ -56,6 +59,7 @@ const DetailContent = styled.div`
   color: var(--TEXT_PRIMARY);
   font-weight: 500;
   font-size: 18px;
+  white-space: nowrap;
 `;
 
 const CustomPersonIcon = styled(BsPersonFill)`
@@ -72,6 +76,7 @@ const CustomStarIcon = styled(BsStarFill)`
 
 const Content = styled.div`
   width: calc(100% - 240px);
+  min-width: 420px;
 `;
 
 const IntroContent = styled.div`
@@ -175,29 +180,31 @@ function ProfileDetailPage() {
   // class //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleGetClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/class?page=${classPage}&size=${classSize}`, null, "get");
-    setClasses(result?.data?.classList);
+    setClasses(result?.data?.classListResponse?.classList);
+    setTotalClassPage(result?.data?.totalPageCount);
   }
 
   const onNextClassess = async() => {
     if(classPage<totalClassPage){
       const curPage = classPage;
-      setPostPage((prev)=>prev+1);
+      setClassPage((prev)=>prev+1);
       const result = await getPosts(`/profiles/${profileId}/class?page=${curPage+1}&size=${postSize}`, null, "get");
-      setClasses((prev)=>[...prev, ...result?.data?.classList]);
+      setClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
     }
   }
 
   const handleGetProClasses = async() => {
     const result = await getClasses(`/profiles/${profileId}/pro-class?page=${classPage}&size=${classSize}`, null, "get");
-    setProClasses(result?.data?.classList);
+    setProClasses(result?.data?.classListResponse?.classList);
+    setTotalClassPage(result?.data?.totalPageCount);
   }
 
   const onNextProClassess = async() => {
     if(classPage<totalClassPage){
       const curPage = classPage;
-      setPostPage((prev)=>prev+1);
+      setClassPage((prev)=>prev+1);
       const result = await getPosts(`/profiles/${profileId}/pro-class?page=${curPage+1}&size=${postSize}`, null, "get");
-      setClasses((prev)=>[...prev, ...result?.data?.classList]);
+      setClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
     }
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

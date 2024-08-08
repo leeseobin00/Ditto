@@ -9,12 +9,12 @@ const Cards = styled.div`
   gap: 32px;
   width: calc(780px + 64px);
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1240px) {
     grid-template-columns: repeat(2, 1fr);
     width: calc(520px + 32px);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     grid-template-columns: repeat(1, 1fr);
     width: 260px;
     gap: 0px;
