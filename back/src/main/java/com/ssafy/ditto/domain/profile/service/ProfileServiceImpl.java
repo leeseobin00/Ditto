@@ -236,7 +236,12 @@ public class ProfileServiceImpl implements ProfileService {
                 .map(Learning::getDClass)
                 .toList();
 
-        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
+        // Pagination
+        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
+        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
+        List<DClass> paginatedList = classList.subList(start, end);
+
+        List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
@@ -282,6 +287,7 @@ public class ProfileServiceImpl implements ProfileService {
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
         List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
         System.out.println(classList.size());
+        
         for (DClass dClass : classList){
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
