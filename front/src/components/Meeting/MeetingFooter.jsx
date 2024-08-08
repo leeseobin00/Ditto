@@ -183,14 +183,21 @@ function MeetingFooter({
     setIsVideoActive(!videoEnabled);
   },[audioEnabled, videoEnabled]);
 
+  const openContentWindow = () => {
+    setIsContentWindow(true);
+  }
 
-  const handleContentWindow = () => {
-    setIsContentWindow((prev) => !prev);
-  };
+  const closeContentWindow = () => {
+    setIsContentWindow(false);
+  }
 
-  const handleChatWindow = () => {
-    setIsChatWindow((prev) => !prev);
-  };
+  const openChatWindow = () => {
+    setIsChatWindow(true);
+  }
+
+  const closeChatWindow = () => {
+    setIsChatWindow(false);
+  }
 
   useEffect(() => {
     if (isChatWindow === true || isContentWindow === true) handleIsOpen(true);
@@ -235,17 +242,17 @@ function MeetingFooter({
           {/* <CustomScreenIcon /> */}
         </FooterButtons>
         <FooterButtons>
-          <CustomFiletextIcon onClick={handleContentWindow} />
-          <CustomChatIcon onClick={handleChatWindow} />
+          <CustomFiletextIcon onClick={openContentWindow} />
+          <CustomChatIcon onClick={openChatWindow} />
         </FooterButtons>
       </Footer>
       {isContentWindow && (
         <ContentWindow
-          handleWindow={handleContentWindow}
+          onCloseWindow={closeContentWindow}
           summaries={summaries}
         />
       )}
-      {isChatWindow && <ChatWindow handleWindow={handleChatWindow} />}
+      {isChatWindow && <ChatWindow onCloseWindow={closeChatWindow} />}
     </>
   );
 }

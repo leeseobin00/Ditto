@@ -120,7 +120,7 @@ const MessageTime = styled.p`
   color: var(--TEXT_TERITARY);
 `;
 
-function ChatWindow({ handleWindow }) {
+function ChatWindow({ onCloseWindow }) {
   // redux
   const username = useSelector((state)=>state.auth.nickname);
   // context API
@@ -190,7 +190,7 @@ function ChatWindow({ handleWindow }) {
     <WindowWrapper>
       <WindowHeader>
         <WindowTitle>Chat</WindowTitle>
-        <IoClose onClick={handleWindow} style={{ cursor: "pointer" }} />
+        <IoClose onClick={onCloseWindow} style={{ cursor: "pointer" }} />
       </WindowHeader>
       <ChatMessages>
         {chatMessages.map((message, index) => (

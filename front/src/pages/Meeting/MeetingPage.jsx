@@ -29,7 +29,7 @@ const MainContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: ${(props) => (props.isopen) ? "calc(100% - 400px)" : "100%"};
+  width: ${(props) => (props.isopen == "true") ? "calc(100% - 400px)" : "100%"};
   height: calc(100% - 240px);
   margin-bottom: 16px;
 `;
