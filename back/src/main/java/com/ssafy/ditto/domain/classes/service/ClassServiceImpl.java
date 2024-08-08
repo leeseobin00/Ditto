@@ -23,9 +23,9 @@ import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +54,8 @@ public class ClassServiceImpl implements ClassService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -62,7 +64,7 @@ public class ClassServiceImpl implements ClassService {
         Kit kit = Kit.builder()
                 .kitName(classRequest.getKit().getKitName())
                 .kitExplanation(classRequest.getKit().getKitExplanation())
-                .fileId(kitFileId != null ? fileRepository.findById(kitFileId).orElse(null) : null)
+                .file(kitFileId != null ? fileRepository.findById(kitFileId).orElse(null) : null)
                 .build();
         kit = kitRepository.save(kit);
 
@@ -73,10 +75,10 @@ public class ClassServiceImpl implements ClassService {
 
         DClass dClass = DClass.builder()
                 .className(classRequest.getClassName())
-                .userId(user)
-                .categoryId(categoryRepository.findById(classRequest.getCategoryId())
+                .user(user)
+                .category(categoryRepository.findById(classRequest.getCategoryId())
                         .orElseThrow(CategoryNotFoundException::new))
-                .tagId(tagRepository.findById(classRequest.getTagId())
+                .tag(tagRepository.findById(classRequest.getTagId())
                         .orElseThrow(TagNotFoundException::new))
                 .classPrice(classRequest.getClassPrice())
                 .classHour(classRequest.getClassHour().byteValue())
@@ -84,8 +86,8 @@ public class ClassServiceImpl implements ClassService {
                 .classMin(classRequest.getClassMin().byteValue())
                 .classMax(classRequest.getClassMax().byteValue())
                 .classExplanation(classRequest.getClassExplanation())
-                .kitId(kit)
-                .fileId(classFile)
+                .kit(kit)
+                .file(classFile)
                 .isDeleted(false)
                 .studentSum(0)
                 .likeCount(0)
@@ -102,18 +104,18 @@ public class ClassServiceImpl implements ClassService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         User user = userRepository.findById(classRequest.getUserId()).orElseThrow(UserNotFoundException::new);
 
-        Kit kit = dClass.getKitId();
+        Kit kit = dClass.getKit();
         kit.setKitName(classRequest.getKit().getKitName());
         kit.setKitExplanation(classRequest.getKit().getKitExplanation());
         if (kitFileId != null) {
-            kit.setFileId(fileRepository.findById(kitFileId).orElse(null));
+            kit.setFile(fileRepository.findById(kitFileId).orElse(null));
         }
         kitRepository.save(kit);
 
         dClass.setClassName(classRequest.getClassName());
-        dClass.setUserId(user);
-        dClass.setCategoryId(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new));
-        dClass.setTagId(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new));
+        dClass.setUser(user);
+        dClass.setCategory(categoryRepository.findById(classRequest.getCategoryId()).orElseThrow(CategoryNotFoundException::new));
+        dClass.setTag(tagRepository.findById(classRequest.getTagId()).orElseThrow(TagNotFoundException::new));
         dClass.setClassPrice(classRequest.getClassPrice());
         dClass.setClassHour(classRequest.getClassHour().byteValue());
         dClass.setClassMinute(classRequest.getClassMinute().byteValue());
@@ -121,7 +123,7 @@ public class ClassServiceImpl implements ClassService {
         dClass.setClassMax(classRequest.getClassMax().byteValue());
         dClass.setClassExplanation(classRequest.getClassExplanation());
         if (classFileId != null) {
-            dClass.setFileId(fileRepository.findById(classFileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST)));
+            dClass.setFile(fileRepository.findById(classFileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST)));
         }
         classRepository.save(dClass);
     }
@@ -139,13 +141,13 @@ public class ClassServiceImpl implements ClassService {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
         List<Step> steps = stepRepository.findAllByClassId(dClass);
-        List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
-        UserResponse userResponse = UserResponse.of(dClass.getUserId());
-        TagResponse tagResponse = TagResponse.of(dClass.getTagId());
+        List<Lecture> lectures = lectureRepository.findAllByDclassAndIsDeletedFalse(dClass);
+        UserResponse userResponse = UserResponse.of(dClass.getUser());
+        TagResponse tagResponse = TagResponse.of(dClass.getTag());
 
         return ClassDetailResponse.of(dClass,
-                dClass.getFileId() != null ? FileResponse.of(dClass.getFileId()) : null,
-                KitDetailResponse.of(dClass.getKitId(), dClass.getKitId().getFileId() != null ? FileResponse.of(dClass.getKitId().getFileId()) : null),
+                dClass.getFile() != null ? FileResponse.of(dClass.getFile()) : null,
+                KitDetailResponse.of(dClass.getKit(), dClass.getKit().getFile() != null ? FileResponse.of(dClass.getKit().getFile()) : null),
                 steps.stream().map(step -> StepDetailResponse.of(step, step.getFileId() != null ? FileResponse.of(step.getFileId()) : null)).collect(Collectors.toList()),
                 lectures.stream().map(LectureResponse::of).collect(Collectors.toList()),
                 userResponse,
@@ -155,24 +157,28 @@ public class ClassServiceImpl implements ClassService {
     @Override
     @Transactional
     public ClassListResponse getClassList(ClassListRequest request) {
-        List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (request.getCategoryId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("categoryId").get("categoryId"), request.getCategoryId()));
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<DClass> query = cb.createQuery(DClass.class);
+        Root<DClass> root = query.from(DClass.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (request.getCategoryId() != null) {
+            predicates.add(cb.equal(root.get("category").get("categoryId"), request.getCategoryId()));
+        }
+        if (request.getTagId() != null) {
+            predicates.add(cb.equal(root.get("tag").get("tagId"), request.getTagId()));
+        }
+        if (request.getSearchBy() != null && request.getKeyword() != null) {
+            if (request.getSearchBy().equals("nickname")) {
+                Join<DClass, User> userJoin = root.join("user", JoinType.INNER);
+                predicates.add(cb.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
+            } else if (request.getSearchBy().equals("className")) {
+                predicates.add(cb.like(root.get("className"), "%" + request.getKeyword() + "%"));
             }
-            if (request.getTagId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("tagId").get("tagId"), request.getTagId()));
-            }
-            if (request.getSearchBy() != null && request.getKeyword() != null) {
-                if (request.getSearchBy().equals("nickname")) {
-                    Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
-                    predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
-                } else if (request.getSearchBy().equals("className")) {
-                    predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
-                }
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        });
+        }
+
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+        List<DClass> classList = entityManager.createQuery(query).getResultList();
 
         // Sort
         switch (request.getSortBy() != null ? request.getSortBy() : "createdDate") {

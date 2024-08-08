@@ -29,7 +29,7 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     @Column(nullable = false, name = "pay_type")
     @Enumerated(EnumType.STRING)

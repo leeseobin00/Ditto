@@ -8,7 +8,6 @@ import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.payment.domain.Payment;
 import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
-import com.ssafy.ditto.domain.summary.domain.Summary;
 import com.ssafy.ditto.domain.classes.repository.*;
 import com.ssafy.ditto.domain.mypage.domain.*;
 import com.ssafy.ditto.domain.mypage.repository.*;
@@ -19,10 +18,8 @@ import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
-import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -215,15 +212,15 @@ public class MypageServiceImpl implements MypageService {
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
         for (Payment payment : payments) {
-            Lecture lecture = payment.getLectureId();
-            DClass dClass = lecture.getClassId();
+            Lecture lecture = payment.getLecture();
+            DClass dClass = lecture.getDclass();
 
             PaymentResponse paymentResponse = PaymentResponse.builder()
                     .paymentId(payment.getPaymentId())
                     .payTime(payment.getPayTime())
                     .payCancelTime(payment.getPayCancelTime())
-                    .fileId(dClass.getFileId().getFileId())
-                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .fileId(dClass.getFile().getFileId())
+                    .fileUrl(dClass.getFile().getFileUrl())
                     .lectureId(lecture.getLectureId())
                     .classId(dClass.getClassId())
                     .className(lecture.getClassName())
@@ -254,7 +251,7 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional
     public void patchRefund(int userId, int lectureId) {
-        Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
+        Payment payment = paymentRepository.findByUserIdAndLecture(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
         payment.setPayCancelTime(LocalDateTime.now());
         payment.setIsCanceled(true);
@@ -280,8 +277,8 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(question.getModifiedDate())
                     .isDeleted(question.getIsDeleted())
                     .isAnswered(question.getIsAnswered())
-                    .fileId(dClass.getFileId().getFileId())
-                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .fileId(dClass.getFile().getFileId())
+                    .fileUrl(dClass.getFile().getFileUrl())
                     .classId(dClass.getClassId())
                     .className(dClass.getClassName())
                     .build();
@@ -312,8 +309,8 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(review.getModifiedDate())
                     .isDeleted(review.getIsDeleted())
                     .rating(review.getRating())
-                    .fileId(dClass.getFileId().getFileId())
-                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .fileId(dClass.getFile().getFileId())
+                    .fileUrl(dClass.getFile().getFileUrl())
                     .classId(dClass.getClassId())
                     .className(dClass.getClassName())
                     .lectureId(lecture.getLectureId())
@@ -352,12 +349,12 @@ public class MypageServiceImpl implements MypageService {
                         .likeCount(dClass.getLikeCount())
                         .reviewCount(dClass.getReviewCount())
                         .ratingSum(dClass.getRatingSum())
-                        .userId(dClass.getUserId().getUserId())
-                        .nickname(dClass.getUserId().getNickname())
-                        .tagId(dClass.getTagId().getTagId())
-                        .tagName(dClass.getTagId().getTagName())
-                        .fileId(dClass.getFileId().getFileId())
-                        .fileUrl(dClass.getFileId().getFileUrl())
+                        .userId(dClass.getUser().getUserId())
+                        .nickname(dClass.getUser().getNickname())
+                        .tagId(dClass.getTag().getTagId())
+                        .tagName(dClass.getTag().getTagName())
+                        .fileId(dClass.getFile().getFileId())
+                        .fileUrl(dClass.getFile().getFileUrl())
                         .likeClassId(likeClass.get().getLikeClassId())
                         .createdDate(likeClass.get().getCreatedDate())
                         .modifiedDate(likeClass.get().getModifiedDate())
@@ -541,8 +538,8 @@ public class MypageServiceImpl implements MypageService {
                     .isAnswered(question.getIsAnswered())
                     .userId(question.getUser().getUserId())
                     .nickname(question.getUser().getNickname())
-                    .fileId(question.getDclass().getFileId().getFileId())
-                    .fileUrl(question.getDclass().getFileId().getFileUrl())
+                    .fileId(question.getDclass().getFile().getFileId())
+                    .fileUrl(question.getDclass().getFile().getFileUrl())
                     .classId(question.getDclass().getClassId())
                     .className(question.getDclass().getClassName())
                     .build();

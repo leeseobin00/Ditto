@@ -12,39 +12,41 @@ import java.util.List;
 public interface LectureRepository extends JpaRepository<Lecture, Integer> {
     Lecture findByLectureId(int lectureId);
 
-    List<Lecture> findAllByClassId(DClass classId);
+    List<Lecture> findAllByDclass(DClass dclass);
 
-    @Query("SELECT l FROM Lecture l WHERE l.classId = :classId AND l.isDeleted = false")
-    List<Lecture> findAllByClassIdAndIsDeletedFalse(DClass classId);
+    @Query("SELECT l FROM Lecture l WHERE l.dclass = :dclass AND l.isDeleted = false")
+    List<Lecture> findAllByDclassAndIsDeletedFalse(@Param("dclass") DClass dclass);
 
-    boolean existsByClassId_UserIdAndLectureId(User user, Integer lectureId);
+    @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END FROM Lecture l WHERE l.dclass.user = :user AND l.lectureId = :lectureId")
+    boolean existsByDclass_UserAndLectureId(@Param("user") User user, @Param("lectureId") Integer lectureId);
 
-    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.lectureId NOT IN " +
+    @Query("SELECT l FROM Lecture l WHERE l.dclass.classId = :classId AND l.lectureId NOT IN " +
             "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId AND r.dclass.classId = :classId) " +
             "AND l.isDeleted = false")
     List<Lecture> findLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
 
-    @Query("SELECT l FROM Learning l where l.dClass.classId = :classId AND l.student.userId = :userId AND l.isFinished")
+    // Corrected query to join with Learning entity
+    @Query("SELECT l FROM Lecture l JOIN Learning ln ON l.lectureId = ln.lecture.lectureId WHERE ln.dclass.classId = :classId AND ln.student.userId = :userId AND ln.isFinished = true")
     List<Lecture> findCompletedLearningsByClassAndUser(@Param("classId") Integer classId, @Param("userId") Integer userId);
 
-    @Query("SELECT l FROM Lecture l WHERE l.classId = :classId AND l.isDeleted = false AND " +
+    @Query("SELECT l FROM Lecture l WHERE l.dclass = :dclass AND l.isDeleted = false AND " +
             "(l.year > :currentYear OR " +
             "(l.year = :currentYear AND l.month > :currentMonth) OR " +
             "(l.year = :currentYear AND l.month = :currentMonth AND l.day > :currentDay) OR " +
             "(l.year = :currentYear AND l.month = :currentMonth AND l.day = :currentDay AND l.hour > :currentHour) OR " +
             "(l.year = :currentYear AND l.month = :currentMonth AND l.day = :currentDay AND l.hour = :currentHour AND l.minute > :currentMinute)) " +
             "ORDER BY l.year, l.month, l.day, l.hour, l.minute ASC")
-    List<Lecture> findUpcomingLecturesByClassId(@Param("classId") DClass classId,
-                                                @Param("currentYear") Integer currentYear,
-                                                @Param("currentMonth") Byte currentMonth,
-                                                @Param("currentDay") Byte currentDay,
-                                                @Param("currentHour") Byte currentHour,
-                                                @Param("currentMinute") Byte currentMinute);
+    List<Lecture> findUpcomingLecturesByDclass(@Param("dclass") DClass dclass,
+                                               @Param("currentYear") Integer currentYear,
+                                               @Param("currentMonth") Byte currentMonth,
+                                               @Param("currentDay") Byte currentDay,
+                                               @Param("currentHour") Byte currentHour,
+                                               @Param("currentMinute") Byte currentMinute);
 
     List<Lecture> findByYearAndMonthAndDay(Integer year, Byte month, Byte day);
 
-    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.isDeleted = false AND l.lectureId NOT IN " +
+    @Query("SELECT l FROM Lecture l WHERE l.dclass.classId = :classId AND l.isDeleted = false AND l.lectureId NOT IN " +
             "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId) AND EXISTS " +
             "(SELECT ln FROM Learning ln WHERE ln.lecture.lectureId = l.lectureId AND ln.student.userId = :userId AND ln.isFinished = true)")
-    List<Lecture> findCompletedLecturesWithoutReviews(Integer classId, Integer userId);
+    List<Lecture> findCompletedLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
 }

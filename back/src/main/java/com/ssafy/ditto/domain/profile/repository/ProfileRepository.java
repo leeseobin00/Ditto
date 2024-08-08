@@ -27,13 +27,13 @@ public interface ProfileRepository extends JpaRepository<User,Integer> {
                          @Param("keyword") String keyword);
 
 
-    @Query("SELECT SUM(c.studentSum) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.studentSum) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalStudentSumByUserId(@Param("user") User user);
 
-    @Query("SELECT SUM(c.ratingSum) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.ratingSum) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalRatingSumByUserId(@Param("user") User user);
 
-    @Query("SELECT SUM(c.reviewCount) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.reviewCount) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalReviewCountByUserId(@Param("user") User user);
 
 

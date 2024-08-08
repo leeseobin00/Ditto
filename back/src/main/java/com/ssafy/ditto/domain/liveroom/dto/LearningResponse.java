@@ -28,7 +28,7 @@ public class LearningResponse {
         return LearningResponse.builder()
                 .classId(dClass.getClassId())
                 .className(dClass.getClassName())
-                .file(FileResponse.of(dClass.getFileId()))
+                .file(FileResponse.of(dClass.getFile()))
                 .lectureId(lecture.getLectureId())
                 .year(lecture.getYear())
                 .month(lecture.getMonth())

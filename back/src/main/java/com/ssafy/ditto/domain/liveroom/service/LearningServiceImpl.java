@@ -63,7 +63,7 @@ public class LearningServiceImpl implements LearningService {
 
         return LearningPageResponse.of(
                 learningPage.stream().map(learning -> {
-                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
+                    DClass dClass = classRepository.findById(learning.getDclass().getClassId())
                             .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
                     Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
                             .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
@@ -83,7 +83,7 @@ public class LearningServiceImpl implements LearningService {
 
         return LearningPageResponse.of(
                 learningPage.stream().map(learning -> {
-                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
+                    DClass dClass = classRepository.findById(learning.getDclass().getClassId())
                             .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
                     Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
                             .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
@@ -100,11 +100,11 @@ public class LearningServiceImpl implements LearningService {
         User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-        DClass dClass = lecture.getClassId();
-        User teacher = dClass.getUserId();
+        DClass dClass = lecture.getDclass();
+        User teacher = dClass.getUser();
 
         Learning learning = Learning.builder()
-                .dClass(dClass)
+                .dclass(dClass)
                 .lecture(lecture)
                 .student(student)
                 .teacher(teacher)
