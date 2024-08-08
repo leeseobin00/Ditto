@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface UserTagRepository extends JpaRepository<UserTag, Integer> {
-    List<UserTag> findByUserId(@Param("userId") User user);
+    List<UserTag> findByUser(@Param("userId") User user);
 
     @Query(value =
             "SELECT t.* " +

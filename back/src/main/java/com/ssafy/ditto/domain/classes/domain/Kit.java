@@ -25,5 +25,5 @@ public class Kit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id", nullable = true)
-    private File fileId;
+    private File file;
 }

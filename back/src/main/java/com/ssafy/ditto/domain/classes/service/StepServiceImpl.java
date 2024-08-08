@@ -44,7 +44,7 @@ public class StepServiceImpl implements StepService {
                 .stepNo(stepRequest.getStepNo().byteValue())
                 .stepName(stepRequest.getStepName())
                 .stepDetail(stepRequest.getStepDetail())
-                .classId(dClass)
+                .dClass(dClass)
                 .build()).collect(Collectors.toList());
 
         stepRepository.saveAll(steps);
@@ -54,7 +54,7 @@ public class StepServiceImpl implements StepService {
             MultipartFile file = stepFiles.get(i);
             Integer fileId = fileService.saveFile(file);
             File savedFile = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
-            step.setFileId(savedFile);
+            step.setFile(savedFile);
         }
 
         stepRepository.saveAll(steps);
@@ -69,14 +69,14 @@ public class StepServiceImpl implements StepService {
 
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
 
-        List<Step> existingSteps = stepRepository.findAllByClassId(dClass);
+        List<Step> existingSteps = stepRepository.findAllByDClass(dClass);
         stepRepository.deleteAll(existingSteps);
 
         List<Step> steps = stepRequests.stream().map(stepRequest -> Step.builder()
                 .stepNo(stepRequest.getStepNo().byteValue())
                 .stepName(stepRequest.getStepName())
                 .stepDetail(stepRequest.getStepDetail())
-                .classId(dClass)
+                .dClass(dClass)
                 .build()).collect(Collectors.toList());
 
         stepRepository.saveAll(steps);
@@ -86,7 +86,7 @@ public class StepServiceImpl implements StepService {
             MultipartFile file = stepFiles.get(i);
             Integer fileId = fileService.saveFile(file);
             File savedFile = fileRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_EXIST));
-            step.setFileId(savedFile);
+            step.setFile(savedFile);
         }
 
         stepRepository.saveAll(steps);

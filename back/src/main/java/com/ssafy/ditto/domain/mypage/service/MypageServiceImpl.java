@@ -20,7 +20,6 @@ import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,7 @@ public class MypageServiceImpl implements MypageService {
         List<AddressListResponse> addressListResponses = new ArrayList<>();
 
         User user = userRepository.findByUserId(userId);
-        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+        List<Address> addresses = addressRepository.findAllByUser(userRepository.findByUserId(userId));
 
         for (Address address : addresses){
             AddressListResponse addressListResponse = AddressListResponse.builder()
@@ -82,8 +81,8 @@ public class MypageServiceImpl implements MypageService {
         return MypageResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .fileId(user.getFileId().getFileId())
-                .fileUrl(user.getFileId().getFileUrl())
+                .fileId(user.getFile().getFileId())
+                .fileUrl(user.getFile().getFileUrl())
                 .addresses(addressListResponses)
                 .build();
     }
@@ -93,7 +92,7 @@ public class MypageServiceImpl implements MypageService {
     public AddressResponse getAddress(int userId) {
         List<AddressListResponse> addressListResponses = new ArrayList<>();
 
-        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+        List<Address> addresses = addressRepository.findAllByUser(userRepository.findByUserId(userId));
 
         for (Address address : addresses){
             AddressListResponse addressListResponse = AddressListResponse.builder()
@@ -143,7 +142,7 @@ public class MypageServiceImpl implements MypageService {
         // 기본배송지로 들어온 경우
         if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
+            Address address = addressRepository.findByUserAndIsDefault(user, true);
             if (!(address == null)) {
                 address.changeDefault(false);
             }
@@ -157,7 +156,7 @@ public class MypageServiceImpl implements MypageService {
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
                 .isDefault(addressRequest.getIsDefault())
-                .userId(user)
+                .user(user)
                 .build();
 
         addressRepository.save(newAddress);
@@ -170,7 +169,7 @@ public class MypageServiceImpl implements MypageService {
         // 기본배송지로 들어오면
         if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
+            Address address = addressRepository.findByUserAndIsDefault(user, true);
             if (!(address == null)) {
                 address.changeDefault(false);
             }
@@ -186,7 +185,7 @@ public class MypageServiceImpl implements MypageService {
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
                 .isDefault(addressRequest.getIsDefault())
-                .userId(user)
+                .user(user)
                 .build();
 
         addressRepository.save(newAddress);
@@ -214,10 +213,10 @@ public class MypageServiceImpl implements MypageService {
                     .paymentId(payment.getPaymentId())
                     .payTime(payment.getPayTime())
                     .payCancelTime(payment.getPayCancelTime())
-                    .fileId(user.getFileId().getFileId())
-                    .fileUrl(user.getFileId().getFileUrl())
+                    .fileId(user.getFile().getFileId())
+                    .fileUrl(user.getFile().getFileUrl())
                     .lectureId(payment.getLectureId().getLectureId())
-                    .classId(payment.getLectureId().getClassId().getClassId())
+                    .classId(payment.getLectureId().getDClass().getClassId())
                     .className(payment.getLectureId().getClassName())
                     .classPrice(payment.getLectureId().getClassPrice())
                     .year(payment.getLectureId().getYear())
@@ -246,7 +245,7 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional
     public void patchRefund(int userId, int lectureId) {
-        Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
+        Payment payment = paymentRepository.findByUserAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
         payment.setPayCancelTime(LocalDateTime.now());
     }
@@ -287,8 +286,8 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(question.getModifiedDate())
                     .isDeleted(question.getIsDeleted())
                     .isAnswered(question.getIsAnswered())
-                    .fileId(question.getDclass().getFileId().getFileId())
-                    .fileUrl(question.getDclass().getFileId().getFileUrl())
+                    .fileId(question.getDclass().getFile().getFileId())
+                    .fileUrl(question.getDclass().getFile().getFileUrl())
                     .classId(question.getDclass().getClassId())
                     .className(question.getDclass().getClassName())
                     .build();
@@ -317,10 +316,10 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(review.getModifiedDate())
                     .isDeleted(review.getIsDeleted())
                     .rating(review.getRating())
-                    .fileId(review.getDclass().getFileId().getFileId())
-                    .fileUrl(review.getDclass().getFileId().getFileUrl())
-                    .classId(review.getDclass().getClassId())
-                    .className(review.getDclass().getClassName())
+                    .fileId(review.getDClass().getFile().getFileId())
+                    .fileUrl(review.getDClass().getFile().getFileUrl())
+                    .classId(review.getDClass().getClassId())
+                    .className(review.getDClass().getClassName())
                     .lectureId(review.getLecture().getLectureId())
                     .year(review.getLecture().getYear())
                     .month(review.getLecture().getMonth())
@@ -357,12 +356,12 @@ public class MypageServiceImpl implements MypageService {
                         .likeCount(dClass.getLikeCount())
                         .reviewCount(dClass.getReviewCount())
                         .ratingSum(dClass.getRatingSum())
-                        .userId(dClass.getUserId().getUserId())
-                        .nickname(dClass.getUserId().getNickname())
-                        .tagId(dClass.getTagId().getTagId())
-                        .tagName(dClass.getTagId().getTagName())
-                        .fileId(dClass.getFileId().getFileId())
-                        .fileUrl(dClass.getFileId().getFileUrl())
+                        .userId(dClass.getUser().getUserId())
+                        .nickname(dClass.getUser().getNickname())
+                        .tagId(dClass.getTag().getTagId())
+                        .tagName(dClass.getTag().getTagName())
+                        .fileId(dClass.getFile().getFileId())
+                        .fileUrl(dClass.getFile().getFileUrl())
                         .likeClassId(likeClass.get().getLikeClassId())
                         .createdDate(likeClass.get().getCreatedDate())
                         .modifiedDate(likeClass.get().getModifiedDate())
@@ -402,8 +401,8 @@ public class MypageServiceImpl implements MypageService {
                     .userId(getterUser.getUserId())
                     .nickname(getterUser.getNickname())
                     .tags(tags)
-                    .fileId(getterUser.getFileId().getFileId())
-                    .fileUrl(getterUser.getFileId().getFileUrl())
+                    .fileId(getterUser.getFile().getFileId())
+                    .fileUrl(getterUser.getFile().getFileUrl())
                     .likeUserId(likeUser.getLikeUserId())
                     .createdDate(likeUser.getCreatedDate())
                     .build();
@@ -425,12 +424,12 @@ public class MypageServiceImpl implements MypageService {
     @Transactional(readOnly = true)
     public ProMypageResponse getProMypage(int userId) {
         User user = userRepository.findByUserId(userId);
-        Account account = accountRepository.findByUserId(user);
+        Account account = accountRepository.findByUser(user);
 
         return ProMypageResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .fileUrl(user.getFileId().getFileUrl())
+                .fileUrl(user.getFile().getFileUrl())
                 .accountId(account.getAccountId())
                 .accountNumber(account.getAccountNumber())
                 .bank(account.getBank())
@@ -441,7 +440,7 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional
     public void modifyAccount(int userId, AccountRequest accountRequest) {
-        Account account = accountRepository.findByUserId(userRepository.findByUserId(userId));
+        Account account = accountRepository.findByUser(userRepository.findByUserId(userId));
 
         account.changeAccountNumber(accountRequest.getAccountNumber());
         account.changeBank(accountRequest.getBank());
@@ -452,10 +451,10 @@ public class MypageServiceImpl implements MypageService {
     @Transactional(readOnly = true)
     public MileageResponse getMileage(int userId) {
         User user = userRepository.findByUserId(userId);
-        Account account = accountRepository.findByUserId(user);
+        Account account = accountRepository.findByUser(user);
 
         return MileageResponse.builder()
-                .mileage(mileageRepository.findByUserId(user).getMileage())
+                .mileage(mileageRepository.findByUser(user).getMileage())
                 .accountNumber(account.getAccountNumber())
                 .bank(account.getBank())
                 .receiver(account.getReceiver())
@@ -477,7 +476,7 @@ public class MypageServiceImpl implements MypageService {
             if (mileageHistory.getState() == 0){
                 milageHistoryResponse = MilageHistoryResponse.builder()
                         .historyId(mileageHistory.getHistoryId())
-                        .className(mileageHistory.getLectureId().getClassName())
+                        .className(mileageHistory.getLecture().getClassName())
                         .mileageAmount(mileageHistory.getMileageAmount())
                         .time(mileageHistory.getTime())
                         .state(mileageHistory.getState())
@@ -503,7 +502,7 @@ public class MypageServiceImpl implements MypageService {
     @Transactional
     public boolean userWithdraw(int userId, Integer requestMoney) {
         User user = userRepository.findByUserId(userId);
-        Mileage mileage = mileageRepository.findByUserId(user);
+        Mileage mileage = mileageRepository.findByUser(user);
         int finalAmount = mileage.getMileage() - requestMoney;
 
         if (finalAmount < 0){
@@ -515,8 +514,8 @@ public class MypageServiceImpl implements MypageService {
                 .time(LocalDateTime.now())
                 .state(2)
                 .finalAmount(finalAmount)
-                .mileageId(mileage)
-                .userId(user)
+                .mileage(mileage)
+                .user(user)
                 .build();
 
         mileageHistoryRepository.save(mileageHistory);
@@ -546,8 +545,8 @@ public class MypageServiceImpl implements MypageService {
                     .isAnswered(question.getIsAnswered())
                     .userId(question.getUser().getUserId())
                     .nickname(question.getUser().getNickname())
-                    .fileId(question.getDclass().getFileId().getFileId())
-                    .fileUrl(question.getDclass().getFileId().getFileUrl())
+                    .fileId(question.getDclass().getFile().getFileId())
+                    .fileUrl(question.getDclass().getFile().getFileUrl())
                     .classId(question.getDclass().getClassId())
                     .className(question.getDclass().getClassName())
                     .build();

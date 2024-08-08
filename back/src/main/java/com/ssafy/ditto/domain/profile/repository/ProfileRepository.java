@@ -14,11 +14,11 @@ import java.util.List;
 public interface ProfileRepository extends JpaRepository<User,Integer> {
 
     @Query("SELECT u FROM User u " +
-            "LEFT JOIN UserTag ut ON u.userId = ut.userId.userId " +
-            "LEFT JOIN Tag t ON ut.tagId.tagId = t.tagId " +
+            "LEFT JOIN UserTag ut ON u.userId = ut.user.userId " +
+            "LEFT JOIN Tag t ON ut.tag.tagId = t.tagId " +
             "WHERE (:categoryId IS NULL OR t.category.categoryId = :categoryId) " +
             "AND (:tagId IS NULL OR t.tagId = :tagId) " +
-            "AND (u.roleId.roleId = :role) " +
+            "AND (u.role.roleId = :role) " +
             "AND (:keyword IS NULL OR u.nickname LIKE %:keyword%) " +
             "AND u.isDeleted = false")
     List<User> findUsers(@Param("categoryId") Integer categoryId,
@@ -27,13 +27,13 @@ public interface ProfileRepository extends JpaRepository<User,Integer> {
                          @Param("keyword") String keyword);
 
 
-    @Query("SELECT SUM(c.studentSum) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.studentSum) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalStudentSumByUserId(@Param("user") User user);
 
-    @Query("SELECT SUM(c.ratingSum) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.ratingSum) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalRatingSumByUserId(@Param("user") User user);
 
-    @Query("SELECT SUM(c.reviewCount) FROM DClass c WHERE c.userId = :user AND c.isDeleted = false")
+    @Query("SELECT SUM(c.reviewCount) FROM DClass c WHERE c.user = :user AND c.isDeleted = false")
     Integer getTotalReviewCountByUserId(@Param("user") User user);
 
 

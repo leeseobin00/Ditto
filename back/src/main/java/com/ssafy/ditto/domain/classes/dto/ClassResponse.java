@@ -90,14 +90,14 @@ public class ClassResponse {
                 .likeCount(dClass.getLikeCount())
                 .reviewCount(dClass.getReviewCount())
                 .averageRating(dClass.getReviewCount() == 0 ? 0 : (float) dClass.getRatingSum() / dClass.getReviewCount())
-                .userNickname(dClass.getUserId().getNickname())
-                .file(dClass.getFileId() != null ? FileResponse.builder()
-                        .fileId(dClass.getFileId().getFileId())
-                        .uploadFileName(dClass.getFileId().getUploadFileName())
-                        .fileUrl(dClass.getFileId().getFileUrl())
+                .userNickname(dClass.getUser().getNickname())
+                .file(dClass.getFile() != null ? FileResponse.builder()
+                        .fileId(dClass.getFile().getFileId())
+                        .uploadFileName(dClass.getFile().getUploadFileName())
+                        .fileUrl(dClass.getFile().getFileUrl())
                         .build() : null)
-                .user(UserResponse.of(dClass.getUserId()))
-                .tag(TagResponse.of(dClass.getTagId()))
+                .user(UserResponse.of(dClass.getUser()))
+                .tag(TagResponse.of(dClass.getTag()))
                 .build();
     }
 }

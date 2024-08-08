@@ -43,7 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewContent(reviewRequest.getReviewContent())
                 .rating(reviewRequest.getRating())
                 .user(user)
-                .dclass(dClass)
+                .dClass(dClass)
                 .lecture(lecture)
                 .isDeleted(false)
                 .build();
@@ -91,7 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewsPage.stream().map(review -> {
                     User user = userRepository.findById(review.getUser().getUserId())
                             .orElseThrow(UserNotFoundException::new);
-                    User teacher = userRepository.findById(dClass.getUserId().getUserId())
+                    User teacher = userRepository.findById(dClass.getUser().getUserId())
                             .orElseThrow(UserNotFoundException::new);
                     return ReviewDetailResponse.of(review, user, teacher);
                 }).collect(Collectors.toList()),

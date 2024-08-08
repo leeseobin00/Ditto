@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "MileageHistory")
@@ -35,15 +34,15 @@ public class MileageHistory {
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mileage_id")
-    private Mileage mileageId;
+    private Mileage mileage;
 
     //FK
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 }

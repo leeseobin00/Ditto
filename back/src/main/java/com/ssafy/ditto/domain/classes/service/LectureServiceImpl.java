@@ -13,7 +13,6 @@ import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 
 import static com.ssafy.ditto.global.error.ErrorCode.USER_NOT_FOUND;
 
-@Component
 @Service
 @RequiredArgsConstructor
 public class LectureServiceImpl implements LectureService {
@@ -36,7 +34,7 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public void createLecture(Integer classId, LectureRequest lectureRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(dClass.getUser().getUserId()).orElseThrow(UserNotFoundException::new);
 
         Lecture lecture = Lecture.builder()
                 .year(lectureRequest.getYear())
@@ -44,7 +42,7 @@ public class LectureServiceImpl implements LectureService {
                 .day(lectureRequest.getDay())
                 .hour(lectureRequest.getHour())
                 .minute(lectureRequest.getMinute())
-                .classId(dClass)
+                .dClass(dClass)
                 .className(dClass.getClassName())
                 .userCount((byte) 0)
                 .classPrice(dClass.getClassPrice())
@@ -98,7 +96,7 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         List<Lecture> lectures = lectureRepository.findLecturesWithoutReviews(classId, userId);
         return lectures.stream()
@@ -109,8 +107,8 @@ public class LectureServiceImpl implements LectureService {
     @Override
     @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
-        DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
+        classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         List<Lecture> lectures = lectureRepository.findCompletedLearningsByClassAndUser(classId, userId);
         return lectures.stream()
@@ -121,12 +119,11 @@ public class LectureServiceImpl implements LectureService {
     @Override
     public boolean isValidTeacher(Integer userId, int lectureId) {
         User teacher = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-        boolean isTeacher = lectureRepository.existsByClassId_UserIdAndLectureId(teacher, lectureId);
-        return isTeacher;
+        return lectureRepository.existsByDClass_UserAndLectureId(teacher, lectureId);
     }
 
     @Override
-    public List<Lecture> getLecturesForDate(LocalDate date)  {
+    public List<Lecture> getLecturesForDate(LocalDate date) {
         return lectureRepository.findByYearAndMonthAndDay(date.getYear(), (byte) date.getMonthValue(), (byte) date.getDayOfMonth());
     }
 }

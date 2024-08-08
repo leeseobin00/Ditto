@@ -39,5 +39,5 @@ public class Form extends BaseTimeEntity {
     //FK
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 }
