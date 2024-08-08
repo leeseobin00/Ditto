@@ -15,7 +15,7 @@ import ProfileSearchPage from "../pages/Profile/ProfileSearchPage";
 import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
 import PaymentPage from "../pages/Mypage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
-import ReviewListPage from "../pages/Mypage/ReviewListPage/ReviewListPage";
+import ReviewListPage from "../pages/Mypage/ReviewListPage";
 import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
 import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
 import MileagePage from "../pages/Mypage/Mileage/MileagePage";

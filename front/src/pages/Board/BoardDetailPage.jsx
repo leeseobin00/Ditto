@@ -39,7 +39,7 @@ const MyComment = styled.div`
 
 const Comments = styled.div`
   background-color: var(--BACKGROUND_COLOR);
-  padding: 0px 16px;
+  padding: 10px 30px 0px 16px;
   margin-top: 32px;
   border-radius: 10px;
 `;
@@ -50,7 +50,7 @@ const Comment = styled.div`
   align-items: flex-end;
   width: 100%;
   position: relative;
-  padding: 8px 0px;
+  padding: 15px 0px;
   padding-left: 8px;
   border-bottom: 1px solid var(--BORDER_COLOR);
 `;
@@ -385,69 +385,70 @@ function BoardDetailPage() {
                   )}
                 </CommentTextWrapper>
               </ParentCommentWrapper>
-
-              <ChildCommentWrapper>
-                {comment?.children?.map((c, childIndex) => (
-                  <CommentReplyWrapper key={childIndex}>
-                    {userId == c?.userId && (
-                      <MenuIconWrapper>
-                        <MenuIcon>
-                          <CustomMenuIcon />
-                          <DropdownMenu className="dropdown-menu">
-                            <DropdownItem
-                              onClick={() => handleEditClick(c.commentId)}
-                            >
-                              수정
-                            </DropdownItem>
-                            <DropdownItem
-                              onClick={() => handleDeleteComment(c.commentId)}
-                            >
-                              삭제
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </MenuIcon>
-                      </MenuIconWrapper>
-                    )}
-                    <Profile
-                      fileId={c.fileId}
-                      name={c.nickname}
-                      date={new Date(c.createdDate)
-                        .toISOString()
-                        .split("T")[0]
-                        .replace(/-/g, ".")}
-                      userId={c.userId}
-                    />
-                    <CommentTextWrapper>
-                      {editCommentId === c.commentId ? (
-                        <ReplyForm
-                          commentId={c.commentId}
-                          parentId={c.parentId}
-                          isCancel
-                          onCancel={() => setEditCommentId(null)}
-                          initialContent={c.content}
-                          onUpdateComment={handleUpdateComment}
-                        />
-                      ) : (
-                        <>
-                          <CommentText>{c.content}</CommentText>
-                          {/* <AddComment onClick={() => handleReplyFormOpen(index)}>답글달기</AddComment> */}
-                        </>
+              {comment?.children.length > 0 && (
+                <ChildCommentWrapper>
+                  {comment?.children?.map((c, childIndex) => (
+                    <CommentReplyWrapper key={childIndex}>
+                      {userId == c?.userId && (
+                        <MenuIconWrapper>
+                          <MenuIcon>
+                            <CustomMenuIcon />
+                            <DropdownMenu className="dropdown-menu">
+                              <DropdownItem
+                                onClick={() => handleEditClick(c.commentId)}
+                              >
+                                수정
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => handleDeleteComment(c.commentId)}
+                              >
+                                삭제
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </MenuIcon>
+                        </MenuIconWrapper>
                       )}
-                    </CommentTextWrapper>
-                  </CommentReplyWrapper>
-                ))}
+                      <Profile
+                        fileId={c.fileId}
+                        name={c.nickname}
+                        date={new Date(c.createdDate)
+                          .toISOString()
+                          .split("T")[0]
+                          .replace(/-/g, ".")}
+                        userId={c.userId}
+                      />
+                      <CommentTextWrapper>
+                        {editCommentId === c.commentId ? (
+                          <ReplyForm
+                            commentId={c.commentId}
+                            parentId={c.parentId}
+                            isCancel
+                            onCancel={() => setEditCommentId(null)}
+                            initialContent={c.content}
+                            onUpdateComment={handleUpdateComment}
+                          />
+                        ) : (
+                          <>
+                            <CommentText>{c.content}</CommentText>
+                            {/* <AddComment onClick={() => handleReplyFormOpen(index)}>답글달기</AddComment> */}
+                          </>
+                        )}
+                      </CommentTextWrapper>
+                    </CommentReplyWrapper>
+                  ))}
 
-                {showReplyForms[index] && (
-                  <CommentReplyWrapper>
-                    <ReplyForm
-                      parentId={comment.commentId}
-                      isCancel
-                      onCancel={() => handleReplyFormClose(index)}
-                      onAddComment={handlePostComment}
-                    />
-                  </CommentReplyWrapper>
-                )}
-              </ChildCommentWrapper>
+                  {showReplyForms[index] && (
+                    <CommentReplyWrapper>
+                      <ReplyForm
+                        parentId={comment.commentId}
+                        isCancel
+                        onCancel={() => handleReplyFormClose(index)}
+                        onAddComment={handlePostComment}
+                      />
+                    </CommentReplyWrapper>
+                  )}
+                </ChildCommentWrapper>
+              )}
             </Comment>
           ))}
         </Comments>

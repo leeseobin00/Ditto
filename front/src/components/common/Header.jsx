@@ -203,7 +203,7 @@ const MobileDropdownMenu = styled.div`
   height: 100%;
   background-color: var(--LIGHT);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 2;
+  z-index: 1000;
   white-space: nowrap;
 `;
 
@@ -215,7 +215,7 @@ const Overlay = styled.div`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  z-index: 4;
 `;
 
 const Header = () => {
@@ -248,63 +248,65 @@ const Header = () => {
   };
 
   return (
-    <HeaderContainer>
-      <Overlay open={menuOpen} onClick={handleOverlayClick} />
-      <TopSection>
-        <MenuButton onClick={() => setMenuOpen(!menuOpen)}>
-          <CustomMenuIcon />
-        </MenuButton>
-        <MobileDropdownMenu open={menuOpen}>
-          <DropdownItem to="/">홈</DropdownItem>
-          <DropdownItem to="/classes">클래스</DropdownItem>
-          <DropdownItem to="/board/all">커뮤니티</DropdownItem>
-          <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
-          <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
-          <DropdownItem to="/profile/my">로그아웃</DropdownItem>
-        </MobileDropdownMenu>
-        <NavLink to="/">
-          <Logo>Ditto</Logo>
-        </NavLink>
-        <Icons>
-          <IconLink to="/video">
-            <BiVideo style={{ fontSize: "20px" }} />
-          </IconLink>
-          {/* 알림페이지 구현 후 수정 예정 */}
-          <IconLink to="/notification" onClick={handlePreventClick}>
-            <BiBell style={{ fontSize: "20px" }} />
-          </IconLink>
-          {isAuthenticated ? (
-            isPro == 1 ? (
-              <Icon to="/mypage/userinfo">MyPage</Icon>
+    <>
+      <MobileDropdownMenu open={menuOpen}>
+        <DropdownItem to="/">홈</DropdownItem>
+        <DropdownItem to="/classes">클래스</DropdownItem>
+        <DropdownItem to="/board/all">커뮤니티</DropdownItem>
+        <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
+        <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
+        <DropdownItem to="/profile/my">로그아웃</DropdownItem>
+      </MobileDropdownMenu>
+      <HeaderContainer>
+        <Overlay open={menuOpen} onClick={handleOverlayClick} />
+        <TopSection>
+          <MenuButton onClick={() => setMenuOpen(!menuOpen)}>
+            <CustomMenuIcon />
+          </MenuButton>
+          <NavLink to="/">
+            <Logo>Ditto</Logo>
+          </NavLink>
+          <Icons>
+            <IconLink to="/video">
+              <BiVideo style={{ fontSize: "20px" }} />
+            </IconLink>
+            {/* 알림페이지 구현 후 수정 예정 */}
+            <IconLink to="/notification" onClick={handlePreventClick}>
+              <BiBell style={{ fontSize: "20px" }} />
+            </IconLink>
+            {isAuthenticated ? (
+              isPro == 1 ? (
+                <Icon to="/mypage/userinfo">MyPage</Icon>
+              ) : (
+                <Icon to="/mypage/prouserinfo">MyPage</Icon>
+              )
             ) : (
-              <Icon to="/mypage/prouserinfo">MyPage</Icon>
-            )
-          ) : (
-            <Icon to="/signup">회원가입</Icon>
-          )}
-          {isAuthenticated ? (
-            <NickName>{nickname}</NickName>
-          ) : (
-            <Icon to="/login">로그인</Icon>
-          )}
-          {isAuthenticated && <CustomLogoutIcon onClick={handleLogout} />}
-        </Icons>
-      </TopSection>
-      <BottomSection>
-        <PageLink to="/">홈</PageLink>
-        <PageLink to="/classes">클래스</PageLink>
-        <PageLink to="/board/all">커뮤니티</PageLink>
-        <ProfileWrapper>
-          <MenuItem to="/profile/" onClick={handlePreventClick}>
-            프로필
-          </MenuItem>
-          <DropdownMenu>
-            <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
-            <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
-          </DropdownMenu>
-        </ProfileWrapper>
-      </BottomSection>
-    </HeaderContainer>
+              <Icon to="/signup">회원가입</Icon>
+            )}
+            {isAuthenticated ? (
+              <NickName>{nickname}</NickName>
+            ) : (
+              <Icon to="/login">로그인</Icon>
+            )}
+            {isAuthenticated && <CustomLogoutIcon onClick={handleLogout} />}
+          </Icons>
+        </TopSection>
+        <BottomSection>
+          <PageLink to="/">홈</PageLink>
+          <PageLink to="/classes">클래스</PageLink>
+          <PageLink to="/board/all">커뮤니티</PageLink>
+          <ProfileWrapper>
+            <MenuItem to="/profile/" onClick={handlePreventClick}>
+              프로필
+            </MenuItem>
+            <DropdownMenu>
+              <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
+              <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
+            </DropdownMenu>
+          </ProfileWrapper>
+        </BottomSection>
+      </HeaderContainer>
+    </>
   );
 };
 

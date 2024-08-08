@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -13,6 +13,7 @@ import QuestionModal from "../../components/QnA/Question/QuestionModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
 import Button from "../../components/common/Button";
+import ReviewAddModal from "../../components/Review/ReviewAddModal";
 
 const ClassDetailPageContainer = styled.div`
   display: flex;
@@ -71,7 +72,12 @@ function ClassDetailPage() {
   const roleId = useSelector((state) => state.auth.roleId);
 
   // axios
-  const { sendRequest: getClassInfo, sendRequest: getLectureList } = useAxios();
+  const {
+    sendRequest: getClassInfo,
+    sendRequest: getReviewList,
+    sendRequest: getLectureList,
+    sendRequest: getCanReview,
+  } = useAxios();
 
   // router
   const { classId } = useParams();
@@ -80,7 +86,6 @@ function ClassDetailPage() {
   const [lectureList, setLectureList] = useState([]);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [isInstructor, setIsInstructor] = useState(false);
-  const qnaListRef = useRef(null);
 
   const handleQuestionModal = () => {
     setShowQuestionModal(!showQuestionModal);
@@ -120,16 +125,63 @@ function ClassDetailPage() {
   };
 
   useEffect(() => {
-    handleGetClass();
-  }, [classId]);
-
-  useEffect(() => {
     if (classInfo?.user?.userId == userId) {
       setIsInstructor(true);
     }
   }, [classInfo]);
 
   const handleQuestionSubmit = () => {};
+
+  // 리뷰 조회 기능
+  const [reviewList, setReviewList] = useState([]);
+  const [curReviewPage, setCurReviewPage] = useState(1);
+  const [totalReviewPage, setTotalReviewPage] = useState();
+
+  const handleGetReviewList = async () => {
+    try {
+      const response = await getReviewList(
+        `/classes/${classId}/reviews?page=${curReviewPage}`,
+        null,
+        "get"
+      );
+      setReviewList(response?.data?.reviews);
+      setCurReviewPage(curReviewPage + 1);
+      setTotalReviewPage(response?.data?.totalPageCount);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 리뷰 작성 기능
+  const [canReview, setCanReview] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [canReviewLectures, setCanReviewLectures] = useState([]);
+
+  const handleCanReview = async () => {
+    try {
+      const response = await getCanReview(
+        `/classes/${classId}/completed-lectures/reviews?userId=${userId}`,
+        null,
+        "get"
+      );
+      if (response?.data) {
+        setCanReview(true);
+        setCanReviewLectures(response?.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReviewModal = () => {
+    setShowReviewModal(!showReviewModal);
+  };
+
+  useEffect(() => {
+    handleGetClass();
+    handleGetReviewList();
+    handleCanReview();
+  }, [classId]);
 
   return (
     <ClassDetailPageContainer>
@@ -155,9 +207,24 @@ function ClassDetailPage() {
               <ContentContainer id={titleIds[1]}>
                 <TitleLine>
                   <Title>리뷰</Title>
-                  {/* <Button label={"리뷰작성"} /> */}
+                  {canReview && (
+                    <Button label={"리뷰작성"} onClick={handleReviewModal} />
+                  )}
                 </TitleLine>
-                <ReviewList />
+                <ReviewList
+                  reviewList={reviewList}
+                  totalReviewPage={totalReviewPage}
+                  curReviewPage={curReviewPage}
+                  onUpdate={handleGetReviewList}
+                />
+                <ReviewAddModal
+                  show={showReviewModal}
+                  onClose={handleReviewModal}
+                  lectureList={canReviewLectures}
+                  userId={userId}
+                  classId={classId}
+                  onUpdate={handleGetReviewList}
+                />
               </ContentContainer>
               <ContentContainer id={titleIds[2]}>
                 <TitleLine>

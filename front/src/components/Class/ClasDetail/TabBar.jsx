@@ -12,19 +12,8 @@ const TabBarContainer = styled.div`
   background-color: var(--LIGHT);
   position: sticky;
   top: -1px;
-  z-index: 4;
+  z-index: 3;
   background-color: white;
-`;
-
-const VwContainer = styled.div`
-  height: 50px;
-  width: 100vw;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0 auto;
-  z-index: -1;
-  box-shadow: 0px 5px 10px -8px rgba(0, 0, 0, 0.3);
 `;
 
 const Button = styled.button`
@@ -58,7 +47,6 @@ function TabBar({ titleIds }) {
 
   return (
     <TabBarContainer>
-      <VwContainer></VwContainer>
       <Link
         activeClass="active"
         to={titleIds[0]}

@@ -41,7 +41,7 @@ const ProUserinfoDetailPage = () => {
   }, [userId]);
 
   if (isLoading) {
-    return <Title style={{ margin: "10px" }}>Loading...</Title>;
+    return <Title style={{ margin: "20px" }}>Loading...</Title>;
   }
 
   return (
