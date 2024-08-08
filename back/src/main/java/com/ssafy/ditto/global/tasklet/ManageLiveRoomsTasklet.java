@@ -3,6 +3,7 @@ package com.ssafy.ditto.global.tasklet;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.service.LectureService;
+import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.domain.liveroom.service.SessionService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ManageLiveRoomsTasklet implements Tasklet {
     private final LectureService lectureService;
     private final LiveRoomService liveRoomService;
     private final SessionService sessionService;
+    private final LearningService learningService;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -44,14 +46,19 @@ public class ManageLiveRoomsTasklet implements Tasklet {
 
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
-//                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
-//                토큰 관련 로직 추가필요
+
+                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
+
+                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
+                for(Integer studentId : studentList) {
+                    sessionService.getToken(lecture.getLectureId(), studentId);
+                }
             }
 
             if (now.isAfter(endTime)) {
                 liveRoomService.endLiveRoom(lecture.getLectureId());
                 /*
-                lecture도 is finished 설정해야함
+                lecture도 is finished 설정해야함 그리고 한번만 endliveroom
                 if lecture is finished지만 정산 못 받았다
                 마일리지 추가 후 마일리지 히스토리에 등록하는 메서드 필요
                  */

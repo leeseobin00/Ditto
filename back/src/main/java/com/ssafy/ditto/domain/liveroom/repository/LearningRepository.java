@@ -26,4 +26,7 @@ public interface LearningRepository extends JpaRepository<Learning, Integer>, Jp
     Page<Learning> findByTeacher(User teacher, Pageable pageable);
 
     Optional<Learning> findByStudentAndLecture(User student, Lecture lecture);
+
+    @Query("SELECT l.student.userId FROM Learning l WHERE l.lecture.lectureId = :lectureId")
+    List<Integer> findStudentUserIdsByLectureId(@Param("lectureId") Integer lectureId);
 }

@@ -68,7 +68,8 @@ public class SessionServiceImpl implements SessionService {
         }
 
         if (lectureSessions.containsKey(lectureId)) {
-            return new SessionCreationResponse(HttpStatus.OK.value(), "이미 라이브 방송 링크가 생성되어 있습니다.", null);
+            String existingSessionId = lectureSessions.get(lectureId).getSessionId();
+            return new SessionCreationResponse(ErrorCode.ALREADY_HAS_SESSION.getHttpStatus(), ErrorCode.ALREADY_HAS_SESSION.getMessage(), existingSessionId);
         } else {
             try {
                 Session session = this.openVidu.createSession();
@@ -101,6 +102,12 @@ public class SessionServiceImpl implements SessionService {
         Session session = this.lectureSessions.get(lectureId);
         if (session != null) {
             try {
+                // 사용자가 이미 토큰을 가지고 있는지 확인
+                Map<Integer, ConnectionResponse> userTokens = this.sessionUserToken.get(session.getSessionId());
+                if (userTokens != null && userTokens.containsKey(userId)) {
+                    return userTokens.get(userId);
+                }
+
                 ConnectionProperties properties = new ConnectionProperties.Builder()
                         .type(ConnectionType.WEBRTC)
                         .role(role)

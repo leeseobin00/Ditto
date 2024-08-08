@@ -125,4 +125,12 @@ public class LearningServiceImpl implements LearningService {
             learningRepository.delete(learning);
         }
     }
+
+    @Override
+    @Transactional
+    public List<Integer> getStudentList(Integer lectureId){
+        List<Integer> list = learningRepository.findStudentUserIdsByLectureId(lectureId);
+        System.out.println(list.toString());
+        return list;
+    }
 }
