@@ -32,7 +32,8 @@ function CardList({ cards }) {
     <Cards>
       {classes?.map((classItem, index) => (
         <Card
-          key={classItem?.classId}
+          key={index}
+          classId={classItem?.classId}
           title={classItem?.className}
           date={classItem?.createdDate?.split('T')[0]}
           name={classItem?.user?.nickname}
