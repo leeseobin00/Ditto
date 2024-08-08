@@ -46,7 +46,6 @@ public class MypageServiceImpl implements MypageService {
     private final PaymentRepository paymentRepository;
     private final RefundRepository refundRepository;
     private final LectureRepository lectureRepository;
-    private final SummaryRepository summaryRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ReviewRepository reviewRepository;
@@ -77,7 +76,12 @@ public class MypageServiceImpl implements MypageService {
                     .isDefault(address.getIsDefault())
                     .build();
 
-            addressListResponses.add(addressListResponse);
+            // 기본배송지인 경우 가장 앞으로 보냄
+            if (address.getIsDefault()){
+                addressListResponses.add(0, addressListResponse);
+            }else{
+                addressListResponses.add(addressListResponse);
+            }
         }
 
         return MypageResponse.builder()
@@ -265,7 +269,7 @@ public class MypageServiceImpl implements MypageService {
 
         // 가져온 문의 목록과 대조해서 DTO 생성 후 return
         for (Question question : questions) {
-
+            DClass dClass = question.getDclass();
             QuestionResponse questionResponse = QuestionResponse.builder()
                     .questionId(question.getQuestionId())
                     .title(question.getTitle())
@@ -274,10 +278,10 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(question.getModifiedDate())
                     .isDeleted(question.getIsDeleted())
                     .isAnswered(question.getIsAnswered())
-                    .fileId(question.getDclass().getFileId().getFileId())
-                    .fileUrl(question.getDclass().getFileId().getFileUrl())
-                    .classId(question.getDclass().getClassId())
-                    .className(question.getDclass().getClassName())
+                    .fileId(dClass.getFileId().getFileId())
+                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .classId(dClass.getClassId())
+                    .className(dClass.getClassName())
                     .build();
 
             questionResponseList.add(questionResponse);
@@ -296,6 +300,8 @@ public class MypageServiceImpl implements MypageService {
 
         // 가지고온 리뷰 목록과 대조해서 DTO 생성 후 return
         for (Review review : reviews) {
+            DClass dClass = review.getDclass();
+            Lecture lecture = review.getLecture();
 
             ReviewResponse reviewResponse = ReviewResponse.builder()
                     .reviewId(review.getReviewId())
@@ -304,16 +310,16 @@ public class MypageServiceImpl implements MypageService {
                     .modifiedDate(review.getModifiedDate())
                     .isDeleted(review.getIsDeleted())
                     .rating(review.getRating())
-                    .fileId(review.getDclass().getFileId().getFileId())
-                    .fileUrl(review.getDclass().getFileId().getFileUrl())
-                    .classId(review.getDclass().getClassId())
-                    .className(review.getDclass().getClassName())
-                    .lectureId(review.getLecture().getLectureId())
-                    .year(review.getLecture().getYear())
-                    .month(review.getLecture().getMonth())
-                    .day(review.getLecture().getDay())
-                    .hour(review.getLecture().getHour())
-                    .minute(review.getLecture().getMinute())
+                    .fileId(dClass.getFileId().getFileId())
+                    .fileUrl(dClass.getFileId().getFileUrl())
+                    .classId(dClass.getClassId())
+                    .className(dClass.getClassName())
+                    .lectureId(lecture.getLectureId())
+                    .year(lecture.getYear())
+                    .month(lecture.getMonth())
+                    .day(lecture.getDay())
+                    .hour(lecture.getHour())
+                    .minute(lecture.getMinute())
                     .build();
 
             reviewResponseList.add(reviewResponse);
