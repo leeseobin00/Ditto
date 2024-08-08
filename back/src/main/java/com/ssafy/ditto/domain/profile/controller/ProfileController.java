@@ -4,6 +4,7 @@ import com.ssafy.ditto.domain.classes.dto.ClassListResponse;
 import com.ssafy.ditto.domain.post.dto.PostList;
 import com.ssafy.ditto.domain.profile.dto.ProfileList;
 import com.ssafy.ditto.domain.profile.dto.ProfileResponse;
+import com.ssafy.ditto.domain.profile.dto.UserClassListResponse;
 import com.ssafy.ditto.domain.profile.service.ProfileService;
 import com.ssafy.ditto.domain.review.dto.ReviewDetailResponse;
 import com.ssafy.ditto.global.dto.ResponseDto;
@@ -86,22 +87,22 @@ public class ProfileController {
     @Operation(summary = "유저 클래스 조회", description = "유저의 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "유저 클래스 조회 성공")
     @GetMapping("/{userId}/class")
-    public ResponseDto<ClassListResponse> getUserClass(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
+    public ResponseDto<UserClassListResponse> getUserClass(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
                                                        @Parameter(description = "페이지 번호", example = "1") @RequestParam int page,
                                                        @Parameter(description = "페이지 크기", example = "10") @RequestParam int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
-        ClassListResponse classList = profileService.userClass(userId, pageRequest);
+        UserClassListResponse classList = profileService.userClass(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), classList);
     }
 
     @Operation(summary = "프로 클래스 조회", description = "프로의 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "프로 클래스 조회 성공")
     @GetMapping("/{userId}/pro-class")
-    public ResponseDto<ClassListResponse> getProClass(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
+    public ResponseDto<UserClassListResponse> getProClass(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
                                                       @Parameter(description = "페이지 번호", example = "1") @RequestParam int page,
                                                       @Parameter(description = "페이지 크기", example = "10") @RequestParam int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
-        ClassListResponse classList = profileService.proClass(userId, pageRequest);
+        UserClassListResponse classList = profileService.proClass(userId, pageRequest);
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), classList);
     }
 
