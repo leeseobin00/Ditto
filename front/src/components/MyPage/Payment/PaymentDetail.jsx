@@ -1,23 +1,31 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { styled } from "styled-components";
+
+import axios from "axios";
 import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 수정
 import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
-import axios from "axios";
-import { useSelector } from "react-redux";
+import RoundButton from "../../common/RoundButton";
+import OutlineButton from "../../common/OutlineButton";
 
 const ListContainer = styled.div`
-  margin-top: 20px;
+  margin: 10px;
   width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const PaymentItemContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   padding: 20px;
-  margin-bottom: 10px;
+  margin: 20px 0;
 `;
 
 const PaymentDateContainer = styled.div`
@@ -35,37 +43,45 @@ const PaymentInfoContainer = styled.div`
 `;
 
 const PaymentDate = styled.div`
-  font-weight: bold;
+  font-size: 14px;
+  margin-left: 10px;
   color: var(--TEXT_SECONDARY);
 `;
 
 const PaymentDetails = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
-  width: 100%;
+  justify-content: space-between;
+  height: 100%;
 `;
 
 const CancleMessage = styled.div`
+  height: 50px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: space-between;
   color: var(--TEXT_SECONDARY);
 `;
 
 const PaymentImage = styled.img`
   width: 70px;
   height: 70px;
-  margin-right: 100px;
+  margin-right: 50px;
   margin-left: 10px;
-  border-radius: 10px;
+  border-radius: 50px;
   cursor: pointer;
 `;
 
 const PaymentInfo = styled.div`
+  height: 100%;
+  min-height: 70px;
+  padding: 10px 0;
+  width: 45%;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  justify-content: space-between;
   cursor: pointer;
 `;
 
@@ -77,21 +93,20 @@ const PaymentName = styled.div`
 `;
 
 const ClassStartDateTime = styled.div`
-  margin-bottom: 5px;
   color: var(--TEXT_SECONDARY);
+  font-size: 14px;
 `;
 
 const PaymentPriceContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  min-width: 200px; /* 일정한 영역 확보를 위한 최소 너비 설정 */
+  min-width: 150px;
 `;
 
 const PaymentPrice = styled.div`
   font-weight: bold;
   color: var(--PRIMARY);
-  margin-bottom: 10px;
 `;
 
 const PaymentActions = styled.div`
@@ -244,7 +259,9 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
         return (
           <PaymentItemContainer key={payment.paymentId}>
             <PaymentDateContainer>
-              <PaymentDate>결제 {payTime.toLocaleDateString()}</PaymentDate>
+              <PaymentDate>
+                {payTime.toISOString().split("T")[0]}&nbsp;&nbsp;결제
+              </PaymentDate>
             </PaymentDateContainer>
             <PaymentDetails>
               <PaymentImage
@@ -260,36 +277,41 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
               </PaymentInfo>
               <PaymentInfoContainer>
                 <PaymentUserName>{payment.userName}</PaymentUserName>
-                <PaymentPrice>{payment.classPrice}원</PaymentPrice>
+                <PaymentPrice>{payment.classPrice}&nbsp;원</PaymentPrice>
               </PaymentInfoContainer>
               <PaymentPriceContainer>
                 <PaymentActions>
                   {!payCancelTime && classStartDateTime > now && (
-                    <ActionButton
+                    <OutlineButton
+                      color={"ACCENT1"}
+                      label={"구매 취소"}
+                      size={"sm"}
                       $cancel
                       onClick={() => handleCancelClick(payment.lectureId)}
-                    >
-                      구매 취소
-                    </ActionButton>
+                    />
                   )}
                   {payCancelTime && (
                     <CancleMessage>
-                      <div>취소됨</div>
-                      <div>{payCancelTime.toLocaleDateString()}</div>
+                      <div style={{ fontSize: "14px", color: "var(--RED)" }}>
+                        취소됨
+                      </div>
+                      <div style={{ fontSize: "14px" }}>
+                        {payCancelTime.toISOString().split("T")[0]}
+                      </div>
                     </CancleMessage>
                   )}
                   {!payCancelTime && classStartDateTime <= now && (
                     <>
-                      <ActionButton
+                      <RoundButton
+                        label={"요약 보기"}
+                        size={"sm"}
                         onClick={() => handleSummaryClick(payment.lectureId)}
-                      >
-                        요약 보기
-                      </ActionButton>
-                      <ActionButton
+                      />
+                      <RoundButton
+                        label={"리뷰 작성"}
+                        size={"sm"}
                         onClick={() => handleReviewClick(payment.classId)}
-                      >
-                        리뷰 작성
-                      </ActionButton>
+                      />
                     </>
                   )}
                 </PaymentActions>
