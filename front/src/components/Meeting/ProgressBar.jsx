@@ -75,7 +75,7 @@ function ProgressBar({ steps
         ))}
       </Bar>
       <ProgressDescription>
-        <ProgressName>{steps[currentStep]}</ProgressName>
+        <ProgressName>{steps[currentStep]?.stepName}</ProgressName>
         {(roleId==2 && !loading) && <>
           {currentStep==-1 && <MeetingButton label="Start" onClick={handleStartStep} />}
           {(currentStep>=0 && currentStep<steps.length-1) && <MeetingButton label="Next" onClick={handleNextStep} />}
