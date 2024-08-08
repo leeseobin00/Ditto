@@ -4,6 +4,7 @@ import com.ssafy.ditto.domain.classes.dto.StepRequest;
 import com.ssafy.ditto.domain.classes.service.StepService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import com.ssafy.ditto.global.dto.ResponseMessage;
+import com.ssafy.ditto.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,7 +31,7 @@ public class StepController {
     @Operation(summary = "스텝 추가", description = "클래스에 새로운 스텝과 파일을 추가합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "스텝 정보와 파일이 성공적으로 추가되었습니다."),
-            @ApiResponse(responseCode = "500", description = "파일 추가 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "500", description = "파일 추가 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> addSteps(@PathVariable Integer classId,
@@ -47,7 +48,7 @@ public class StepController {
     @Operation(summary = "스텝 수정", description = "기존 스텝 정보와 파일을 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "스텝 정보와 파일이 성공적으로 수정되었습니다."),
-            @ApiResponse(responseCode = "500", description = "파일 수정 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "500", description = "파일 수정 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDto<String> updateSteps(@PathVariable Integer classId,

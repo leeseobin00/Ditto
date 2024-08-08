@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.global.dto.ResponseDto;
 import com.ssafy.ditto.global.dto.ResponseMessage;
+import com.ssafy.ditto.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,7 +19,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
-@Tag(name = "Lecture", description = "클래스 차시 관련 API")
+@Tag(name = "Lecture", description = "Lecture API")
 @RestController
 @RequestMapping("/classes/{classId}/lectures")
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class LectureController {
     @Operation(summary = "강의 생성", description = "클래스에 새로운 강의를 추가합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "차시가 성공적으로 추가되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스 또는 사용자를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스 또는 사용자를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public ResponseDto<String> createLecture(@PathVariable Integer classId, @RequestBody LectureRequest lectureRequest) {
@@ -49,7 +50,7 @@ public class LectureController {
     @Operation(summary = "강의 수정", description = "기존 강의를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "차시가 성공적으로 수정되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스 또는 차시를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스 또는 차시를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping("/{lectureId}")
     public ResponseDto<String> updateLecture(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestBody LectureRequest lectureRequest) {
@@ -60,7 +61,7 @@ public class LectureController {
     @Operation(summary = "강의 삭제", description = "기존 강의를 삭제합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "차시가 성공적으로 삭제되었습니다."),
-            @ApiResponse(responseCode = "404", description = "클래스 또는 차시를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "클래스 또는 차시를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{lectureId}")
     public ResponseDto<String> deleteLecture(@PathVariable Integer classId, @PathVariable Integer lectureId) {

@@ -4,6 +4,7 @@ import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,27 +16,68 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClassDetailResponse {
+
+    @Schema(description = "클래스 ID", example = "1")
     private Integer classId;
+
+    @Schema(description = "클래스 이름", example = "Spring Boot 강의")
     private String className;
+
+    @Schema(description = "클래스 가격", example = "50000")
     private Integer classPrice;
+
+    @Schema(description = "클래스 시간(시)", example = "1")
     private Byte classHour;
+
+    @Schema(description = "클래스 시간(분)", example = "30")
     private Byte classMinute;
+
+    @Schema(description = "클래스 설명", example = "Spring Boot를 이용한 웹 애플리케이션 개발 강의입니다.")
     private String classExplanation;
+
+    @Schema(description = "최소 수강 인원", example = "5")
     private Byte classMin;
+
+    @Schema(description = "최대 수강 인원", example = "20")
     private Byte classMax;
+
+    @Schema(description = "학생 수", example = "15")
     private Integer studentSum;
+
+    @Schema(description = "생성 날짜", example = "2023-01-01T00:00:00")
     private LocalDateTime createdDate;
+
+    @Schema(description = "수정 날짜", example = "2023-01-01T00:00:00")
     private LocalDateTime modifiedDate;
+
+    @Schema(description = "삭제 여부", example = "false")
     private Boolean isDeleted;
+
+    @Schema(description = "좋아요 수", example = "100")
     private Integer likeCount;
+
+    @Schema(description = "리뷰 수", example = "50")
     private Integer reviewCount;
+
+    @Schema(description = "평균 평점", example = "4.5")
     private Float averageRating;
 
+    @Schema(description = "파일 정보")
     private FileResponse file;
+
+    @Schema(description = "키트 정보")
     private KitDetailResponse kit;
+
+    @Schema(description = "스텝 정보")
     private List<StepDetailResponse> steps;
+
+    @Schema(description = "강의 정보")
     private List<LectureResponse> lectures;
+
+    @Schema(description = "사용자 정보")
     private UserResponse user;
+
+    @Schema(description = "태그 정보")
     private TagResponse tag;
 
     public static ClassDetailResponse of(DClass dClass, FileResponse fileResponse, KitDetailResponse kitDetailResponse, List<StepDetailResponse> stepDetailResponses, List<LectureResponse> lectureResponses, UserResponse userResponse, TagResponse tagResponse) {

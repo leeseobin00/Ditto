@@ -1,13 +1,14 @@
 package com.ssafy.ditto.domain.category.controller;
 
-import com.ssafy.ditto.domain.answer.dto.AnswerResponse;
 import com.ssafy.ditto.domain.category.dto.CategoryResponse;
 import com.ssafy.ditto.domain.category.service.CategoryService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import com.ssafy.ditto.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,10 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @Operation(summary = "카테고리 조회", description = "카테고리를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "카테고리가 성공적으로 조회되었습니다.", content = @Content(schema = @Schema(implementation = AnswerResponse.class)))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "카테고리가 성공적으로 조회되었습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "카테고리를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
     @GetMapping
     public ResponseDto<List<CategoryResponse>> getAllCategories() {
         List<CategoryResponse> categories = categoryService.getAllCategories();

@@ -3,6 +3,13 @@ package com.ssafy.ditto.domain.file.controller;
 import com.ssafy.ditto.domain.file.dto.FileResponse;
 import com.ssafy.ditto.domain.file.service.FileService;
 import com.ssafy.ditto.global.dto.ResponseDto;
+import com.ssafy.ditto.global.error.ErrorResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -20,13 +27,18 @@ import static com.ssafy.ditto.global.dto.ResponseMessage.SUCCESS;
 import static com.ssafy.ditto.global.dto.ResponseMessage.SUCCESS_WRITE;
 import static org.springframework.http.HttpStatus.OK;
 
+@Tag(name = "File", description = "File API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/files")
 public class FileController {
     private final FileService fileService;
 
-    // 기본 프로필 업로드용 더미 API
+    @Operation(summary = "파일 업로드", description = "파일을 업로드합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "파일이 성공적으로 업로드되었습니다."),
+            @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping
     public ResponseDto<String> uploadImage(@RequestPart("file") MultipartFile file) {
         try {
@@ -37,12 +49,20 @@ public class FileController {
         return ResponseDto.of(OK.value(), SUCCESS.getMessage(), "파일 등록 성공");
     }
 
+    @Operation(summary = "파일 조회", description = "파일을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "파일 조회가 성공적으로 완료되었습니다.")
+    })
     @GetMapping("/{fileId}")
     public ResponseDto<FileResponse> getFile(@PathVariable int fileId) {
         FileResponse fileResponse = fileService.getFile(fileId);
         return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(), fileResponse);
     }
 
+    @Operation(summary = "파일 다운로드", description = "파일을 다운로드합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "파일 다운로드가 성공적으로 완료되었습니다.")
+    })
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable int fileId) throws MalformedURLException {
         FileResponse fileResponse = fileService.getFile(fileId);
