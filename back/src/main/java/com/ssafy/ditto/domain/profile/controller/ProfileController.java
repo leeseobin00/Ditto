@@ -105,17 +105,6 @@ public class ProfileController {
         return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), classList);
     }
 
-    @Operation(summary = "내 클래스 조회", description = "내가 생성한 클래스를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "내 클래스 조회 성공")
-    @GetMapping("/{userId}/myclass")
-    public ResponseDto<ClassListResponse> getMyClass(@Parameter(description = "유저 ID", example = "1") @PathVariable("userId") int userId,
-                                                     @Parameter(description = "페이지 번호", example = "0") @RequestParam int page,
-                                                     @Parameter(description = "페이지 크기", example = "10") @RequestParam int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        ClassListResponse classList = profileService.userMyClass(userId, pageRequest);
-        return ResponseDto.of(OK.value(), SUCCESS_FETCH.getMessage(), classList);
-    }
-
     @Operation(summary = "유저 리뷰 조회", description = "유저의 리뷰를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "유저 리뷰 조회 성공")
     @GetMapping("/{userId}/review")
