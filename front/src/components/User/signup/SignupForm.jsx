@@ -217,6 +217,12 @@ const MessageWrapper = styled.div`
   width: 100%;
 `;
 
+const MessageWrapper2 = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+`;
+
 const PasswordMatchMessage = styled.div`
   color: ${({ $isMatch }) => ($isMatch ? "green" : "red")};
   font-size: 14px;
@@ -227,6 +233,13 @@ const PasswordValidMessage = styled.div`
   color: red;
   font-size: 14px;
   margin-top: 5px;
+`;
+
+const TimerMessage = styled.div`
+  color: ${({ timeLeft }) => (timeLeft > 0 ? "green" : "red")};
+  font-size: 14px;
+  margin-top: 5px;
+  margin-right: 70px;
 `;
 
 const NicknameCheckMessage = styled.div`
@@ -280,6 +293,12 @@ const CustomCloseIcon = styled(MdClose)`
   }
 `;
 
+const SuccessMessageStyled = styled.div`
+  color: green;
+  font-size: 14px;
+  margin-right: 70px;
+`;
+
 const Modal = ({ onClose, children }) => {
   return (
     <Overlay onClick={onClose}>
@@ -318,6 +337,7 @@ const SignupForm = () => {
   const [termsContent, setTermsContent] = useState("");
   const [privacyContent, setPrivacyContent] = useState("");
   const [isInstructorStep, setIsInstructorStep] = useState(false); // 강사 추가 정보 입력 단계 여부
+  const [timeLeft, setTimeLeft] = useState(300); // 5분짜리 타이머
 
   useEffect(() => {
     setIsPasswordMatchState(
@@ -328,6 +348,18 @@ const SignupForm = () => {
   useEffect(() => {
     setIsPasswordValidState(isPasswordValid(formData.password));
   }, [formData.password]);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timerId = setInterval(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    }
+  }, [timeLeft]);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -381,15 +413,21 @@ const SignupForm = () => {
   };
 
   const handleEmailVerification = async () => {
+    setIsVerified(false);
     try {
       const result = await axios.post(`${baseURL}/users/signup/email`, {
         email: formData.email,
       });
       if (result?.data?.code !== 409) {
-        alert("인증 코드가 이메일로 전송되었습니다.");
+        alert("인증 코드가 이메일로 전송되었습니다. 5분 안에 인증코드를 입력해주세요.");
         setIsVerificationCodeInputVisible(true);
+        setTimeLeft(300);
       } else {
-        alert("이미 등록된 이메일 입니다.");
+        alert("해당 이메일을 사용하는 계정이 이미 존재합니다.");
+        setFormData({
+          ...formData,
+          email: "",
+        });
       }
     } catch (error) {
       console.error("인증 코드 전송 에러:", error);
@@ -398,6 +436,10 @@ const SignupForm = () => {
   };
 
   const handleVerifyCode = async () => {
+    if (isVerified){
+      alert("이미 인증되었습니다.");
+      return;
+    }
     const postData = {
       code: formData.verificationCode,
       email: formData.email,
@@ -508,6 +550,24 @@ const SignupForm = () => {
     }));
   };
 
+  const Timer = ({ minutes, seconds }) => (
+    <div>
+      {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+    </div>
+  );
+
+  const ExpiredMessage = () => (
+    <div>
+      인증번호가 만료되었습니다.
+    </div>
+  );
+
+  const SuccessMessage = () => (
+    <SuccessMessageStyled>
+      이메일 인증 성공.
+    </SuccessMessageStyled>
+  );
+  
   return (
     <FormContainer>
       {!isInstructorStep ? ( // isInstructorStep에 !를 붙이면 일반 회원가입 페이지 안붙이면 강사 회원가입 페이지 확인가능
@@ -560,11 +620,25 @@ const SignupForm = () => {
               <VerifyButton type="button" onClick={handleEmailVerification}>
                 인증
               </VerifyButton>
+
             </EmailFormGroup>
           </FormGroup>
           {isVerificationCodeInputVisible && (
             <FormGroup>
               <FormLabel>인증번호</FormLabel>
+              <MessageWrapper2>
+                {isVerified ? (
+                  <SuccessMessage />
+                ) : (
+                  <TimerMessage timeLeft={timeLeft}>
+                  {timeLeft > 0 ? (
+                    <Timer minutes={minutes} seconds={seconds} />
+                    ) : (
+                      <ExpiredMessage />
+                    )}
+                  </TimerMessage>                  
+                )}
+              </MessageWrapper2>                
               <EmailFormGroup>
                 <FormInput
                   type="text"
@@ -578,6 +652,7 @@ const SignupForm = () => {
                   확인
                 </VerifyButton>
               </EmailFormGroup>
+             
             </FormGroup>
           )}
           <FormGroup>
