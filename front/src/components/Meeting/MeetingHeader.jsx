@@ -1,6 +1,9 @@
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
+import { useContext } from "react";
+import { MeetingContext } from "../../pages/Meeting/MeetingPage";
+import { useSelector } from "react-redux";
 
 const Header = styled.div`
   display: flex;
@@ -43,10 +46,16 @@ const CustomOutIcon = styled(BiLogOut)`
 `;
 
 function MeetingHeader({ title }) {
+  const { sendEnd } = useContext(MeetingContext);
+  const username = useSelector((state)=>state.auth.username);
+
   const navigate = useNavigate();
 
   const goBack = () => {
-    navigate(-1);
+    if(roleId==2){
+      sendEnd(username);
+    }
+    navigate("/video");
   }
 
   return (
