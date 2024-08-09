@@ -123,12 +123,14 @@ function UserVideoComponent({ streamManager }) {
 
   useEffect(() => {
     const videoUsername = getNicknameTag();
-    if(statusMessages?.has(videoUsername)){
-      console.log("sssss");
-      setMyStatus("normal");
+    console.log("receive StatueMessage: ", statusMessages);
+    
+    if(videoUsername in statusMessages){
+      console.log(statusMessages[videoUsername]);
+      setMyStatus(statusMessages[videoUsername]);
     }else{
-      console.log(statusMessages?.get(videoUsername));
-      setMyStatus(statusMessages?.get(videoUsername));
+        console.log("sssss");
+        setMyStatus("normal");
     }
     // if(statusMessages.length===0) setMyStatus("normal");
     // const matchingMessages = statusMessages.filter(

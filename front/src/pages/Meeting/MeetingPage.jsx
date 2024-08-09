@@ -271,7 +271,12 @@ function MeetingPage() {
       // setStatusMessages(newStatusMessage);
       const newMap = statusMessages;
       newMap.set(parsedData?.sender, parsedData?.message);
+      console.log("===============================newMap: ", newMap);
       setStatusMessages(newMap);
+      setStatusMessages((prevMessages) => ({
+        ...prevMessages,
+        [parsedData?.sender]: parsedData?.message,
+      }));
     });
 
     newSession.on('signal:timer', (event) => {
@@ -526,6 +531,11 @@ function MeetingPage() {
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
+
+  useEffect(()=>{
+    console.log("statusMessages: ", statusMessages);
+  },[statusMessages]);
+
   console.log("==========================>isopen: ", isOpen);
 
   console.log("===========>publisher", publisher);
