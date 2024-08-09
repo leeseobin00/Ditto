@@ -3,11 +3,11 @@ package com.ssafy.ditto.domain.liveroom.service;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
+import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.domain.Learning;
 import com.ssafy.ditto.domain.liveroom.dto.LearningPageResponse;
 import com.ssafy.ditto.domain.liveroom.dto.LearningResponse;
 import com.ssafy.ditto.domain.liveroom.repository.LearningRepository;
-import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.global.error.ServiceException;
@@ -44,13 +44,12 @@ public class LearningServiceImpl implements LearningService {
     @Override
     @Transactional
     public void changeStatus(Integer lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-        // lecture 듣는 모든 수강생들의 상태 변경
-        List<Learning> learnings = learningRepository.findAllByLecture(lecture);
-        for (Learning learning : learnings) {
-            learning.setIsFinished(true);
-            learningRepository.save(learning);
-        }
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
+
+        // Lecture의 isFinished 필드를 true로 설정
+        lecture.setIsFinished(true);
+        lectureRepository.save(lecture);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class LearningServiceImpl implements LearningService {
     public LearningPageResponse getStudentLearning(Integer userId, Pageable pageable) {
         User student = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
 
-        Page<Learning> learningPage = learningRepository.findByStudent(student,pageable);
+        Page<Learning> learningPage = learningRepository.findByStudent(student, pageable);
 
         return LearningPageResponse.of(
                 learningPage.stream().map(learning -> {
@@ -66,9 +65,9 @@ public class LearningServiceImpl implements LearningService {
                             .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
                     Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
                             .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-                    return LearningResponse.of(dClass,lecture,learning.getIsFinished());
+                    return LearningResponse.of(dClass, lecture, lecture.getIsFinished());
                 }).collect(Collectors.toList()),
-                learningPage.getNumber()+1,
+                learningPage.getNumber() + 1,
                 learningPage.getTotalPages()
         );
     }
@@ -96,7 +95,7 @@ public class LearningServiceImpl implements LearningService {
 
         // Response 변환
         List<LearningResponse> learningResponses = paginatedLearnings.stream()
-                .map(learning -> LearningResponse.of(learning.getDClass(), learning.getLecture(), learning.getIsFinished()))
+                .map(learning -> LearningResponse.of(learning.getDClass(), learning.getLecture(), learning.getLecture().getIsFinished()))
                 .collect(Collectors.toList());
 
         return LearningPageResponse.of(
@@ -105,8 +104,6 @@ public class LearningServiceImpl implements LearningService {
                 (int) Math.ceil((double) distinctLearnings.size() / pageable.getPageSize())
         );
     }
-
-
 
     @Override
     @Transactional
@@ -122,7 +119,6 @@ public class LearningServiceImpl implements LearningService {
                 .lecture(lecture)
                 .student(student)
                 .teacher(teacher)
-                .isFinished(false)
                 .build();
 
         learningRepository.save(learning);
@@ -134,8 +130,8 @@ public class LearningServiceImpl implements LearningService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
 
-        Optional<Learning> learningOptional = learningRepository.findByStudentAndLecture(student,lecture);
-        if(learningOptional.isPresent()) {
+        Optional<Learning> learningOptional = learningRepository.findByStudentAndLecture(student, lecture);
+        if (learningOptional.isPresent()) {
             Learning learning = learningOptional.get();
             learningRepository.delete(learning);
         }
@@ -143,7 +139,7 @@ public class LearningServiceImpl implements LearningService {
 
     @Override
     @Transactional
-    public List<Integer> getStudentList(Integer lectureId){
+    public List<Integer> getStudentList(Integer lectureId) {
         List<Integer> list = learningRepository.findStudentUserIdsByLectureId(lectureId);
         System.out.println(list.toString());
         return list;

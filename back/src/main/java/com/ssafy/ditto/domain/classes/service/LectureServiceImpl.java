@@ -81,8 +81,9 @@ public class LectureServiceImpl implements LectureService {
     public List<LectureResponse> getUpcomingLecturesByClassId(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
         LocalDateTime now = LocalDateTime.now();
-        List<Lecture> lectures = lectureRepository.findUpcomingLecturesByClassId(
-                dClass,
+
+        List<Lecture> lectures = lectureRepository.findUpcomingLecturesByDclass(
+                classId,
                 now.getYear(),
                 (byte) now.getMonthValue(),
                 (byte) now.getDayOfMonth(),
@@ -107,6 +108,7 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
+    @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
         List<Lecture> lectures = lectureRepository.findCompletedLecturesWithoutReviews(classId, userId);
         return lectures.stream()

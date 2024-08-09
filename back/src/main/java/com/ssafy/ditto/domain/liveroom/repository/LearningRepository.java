@@ -33,4 +33,11 @@ public interface LearningRepository extends JpaRepository<Learning, Integer>, Jp
 
     @Query("SELECT l.student.userId FROM Learning l WHERE l.lecture.lectureId = :lectureId")
     List<Integer> findStudentUserIdsByLectureId(@Param("lectureId") Integer lectureId);
+
+    @Query("SELECT l FROM Learning l " +
+            "JOIN FETCH l.dClass dc " +
+            "JOIN FETCH l.lecture le " +
+            "WHERE l.teacher = :teacher AND le.isFinished = false")
+    List<Learning> findByTeacherAndLectureNotFinished(@Param("teacher") User teacher);
+
 }
