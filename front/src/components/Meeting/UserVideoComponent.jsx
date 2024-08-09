@@ -121,19 +121,6 @@ function UserVideoComponent({ streamManager }) {
     return parsedData?.roleId;
   };
 
-  useEffect(()=>{
-    const videoUsername = getNicknameTag();
-    console.log("receive StatusMessage: ", statusMessages);
-    
-    if(videoUsername in statusMessages){
-      console.log(statusMessages[videoUsername]);
-      setMyStatus(statusMessages[videoUsername]);
-    }else{
-      console.log("sssss");
-      setMyStatus("normal");
-    }
-  },[]);
-
   useEffect(() => {
     const videoUsername = getNicknameTag();
     console.log("receive StatusMessage: ", statusMessages);
@@ -154,7 +141,7 @@ function UserVideoComponent({ streamManager }) {
     //   if (message.message === "도와주세요") setMyStatus("help");
     //   if (message.message === "완료") setMyStatus("done");
     // });
-  }, [statusMessages]);
+  }, [statusMessages, streamManager]);
 
   console.log("myStatus", myStatus);
   console.log(statusMessages);
