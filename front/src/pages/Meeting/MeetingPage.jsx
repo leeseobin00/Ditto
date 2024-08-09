@@ -107,7 +107,7 @@ function MeetingPage() {
   const [videoEnabled, setVideoEnabled] = useState(true);
   // pagination
   const [currentIndex, setCurrentIndex] = useState(0);
-  const maxVisible = 3; // Maximum visible participants
+  const maxVisible = 1; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
   // isOut
@@ -207,6 +207,8 @@ function MeetingPage() {
     );
   };
 
+  console.log(statusMessages);
+
   const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
@@ -257,18 +259,35 @@ function MeetingPage() {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
       //이벤트 수신시 로직
-      let isExist = false;
-      const newStatusMessage = [];
-      statusMessages.forEach((message)=>{
-        if(message?.sender != parsedData?.sender){
-          newStatusMessage.push(message);
-        }else{
-          isExist = true;
-        }
-      });
-      if(!isExist) newStatusMessage.push(parsedData); 
-      console.log(newStatusMessage);
-      setStatusMessages(newStatusMessage);
+      // let isExist = false;
+      // const newStatusMessage = [];
+      // console.log(statusMessages);
+      // statusMessages.forEach((message)=>{
+      //   console.log(statusMessages);
+      //   if(message?.sender != parsedData?.sender){
+      //     newStatusMessage.push(message);
+      //   }else{
+      //     isExist = true;
+      //   }
+      // });
+      // if(!isExist) newStatusMessage.push(parsedData); 
+      // console.log(newStatusMessage);
+      // setStatusMessages(newStatusMessage);
+      setStatusMessages((prevMessages)=>{
+        console.log(prevMessages);
+        let isExist = false;
+        const newStatusMessages = prevMessages.filter((message) => {
+          if (message?.sender !== parsedData?.sender) {
+            return true;
+          } else {
+            isExist = true;
+            return false;
+          }
+        });
+    
+        console.log(isExist);
+        return [...newStatusMessages, parsedData];
+      })
       // const newMap = statusMessages;
       // newMap.set(parsedData?.sender, parsedData?.message);
       // console.log("===============================newMap: ", newMap);
