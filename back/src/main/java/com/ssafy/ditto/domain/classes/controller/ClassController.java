@@ -38,9 +38,10 @@ public class ClassController {
             @ApiResponse(responseCode = "500", description = "파일 업로드 중 오류가 발생했습니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseDto<String> createClass(@RequestPart("classRequest") ClassRequest classRequest,
-                                           @RequestPart(value = "classFile", required = false) MultipartFile classFile,
-                                           @RequestPart(value = "kitFile", required = false) MultipartFile kitFile) {
+    public ResponseDto<?> createClass(@RequestPart("classRequest") ClassRequest classRequest,
+                                      @RequestPart(value = "classFile", required = false) MultipartFile classFile,
+                                      @RequestPart(value = "kitFile", required = false) MultipartFile kitFile) {
+        Integer classId;
         try {
             Integer classFileId = null;
             Integer kitFileId = null;
@@ -53,11 +54,11 @@ public class ClassController {
                 kitFileId = fileService.saveFile(kitFile);
             }
 
-            classService.createClass(classRequest, classFileId, kitFileId);
+            classId = classService.createClass(classRequest, classFileId, kitFileId);
         } catch (IOException e) {
             return ResponseDto.of(500, "파일 업로드 중 오류가 발생했습니다.");
         }
-        return ResponseDto.of(CREATED.value(), SUCCESS_WRITE.getMessage(), "클래스가 성공적으로 생성되었습니다.");
+        return ResponseDto.of(CREATED.value(), SUCCESS_WRITE.getMessage(), classId);
     }
 
     @Operation(summary = "클래스 수정", description = "기존 클래스를 수정합니다.")
