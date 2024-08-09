@@ -88,7 +88,7 @@ function BoardListPage() {
   const getPosts = async () => {
     const boardId =
       path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
-
+    
     const params = {
       page: currentPage,
       size: postsPerPage,
@@ -108,7 +108,6 @@ function BoardListPage() {
     setPosts(result?.data?.posts || []);
     setTotalPageCount(result?.data?.totalPageCount);
   };
-
 
   const resetOptions = () => {
     setCategoryId(0);

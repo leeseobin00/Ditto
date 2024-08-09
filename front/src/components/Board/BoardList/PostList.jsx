@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BsHeartFill } from "react-icons/bs";
 
 import PostItem from "./PostItem";
+import { useEffect, useState } from "react";
 
 const List = styled.div`
   margin-top: 16px;
@@ -63,6 +64,12 @@ const PostCount = styled(Content)`
 `;
 
 function PostList({ posts }) {
+  const [postList, setPostList] = useState([]);
+
+  useEffect(()=>{
+    setPostList(posts);
+  },[posts]);
+
   return (
     <List>
       <Item>
@@ -74,7 +81,7 @@ function PostList({ posts }) {
         <PostCommentCount>댓글수</PostCommentCount>
         <PostCount>조회수</PostCount>
       </Item>
-      {posts?.map((post, index) => (
+      {postList?.map((post, index) => (
         <Link key={index} to={`/board/detail/${post?.postId || 1}`}>
           <PostItem
             postId={post?.postId}
