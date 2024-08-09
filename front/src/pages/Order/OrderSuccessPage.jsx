@@ -33,6 +33,8 @@ const ButtonContainer = styled.div`
 `;
 
 function OrderSuccessPage() {
+  window.history.replaceState(null, "", "/");
+
   const [searchParams] = useSearchParams();
   const { sendRequest } = useAxios();
 
