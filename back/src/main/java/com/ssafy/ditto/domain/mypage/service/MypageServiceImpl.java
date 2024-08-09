@@ -215,7 +215,7 @@ public class MypageServiceImpl implements MypageService {
         List<PaymentResponse> paymentResponses = new ArrayList<>();
 
         for (Payment payment : payments) {
-            Lecture lecture = payment.getLectureId();
+            Lecture lecture = payment.getLecture();
             DClass dClass = lecture.getClassId();
 
             PaymentResponse paymentResponse = PaymentResponse.builder()
@@ -254,7 +254,7 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional
     public void patchRefund(int userId, int lectureId) {
-        Payment payment = paymentRepository.findByUserIdAndLectureId(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
+        Payment payment = paymentRepository.findByUserAndLecture(userRepository.findByUserId(userId), lectureRepository.findByLectureId(lectureId));
 
         payment.setPayCancelTime(LocalDateTime.now());
         payment.setIsCanceled(true);

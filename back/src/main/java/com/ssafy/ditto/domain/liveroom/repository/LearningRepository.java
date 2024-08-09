@@ -23,7 +23,11 @@ public interface LearningRepository extends JpaRepository<Learning, Integer>, Jp
 
     Page<Learning> findByStudent(User student, Pageable pageable);
 
-    Page<Learning> findByTeacher(User teacher, Pageable pageable);
+    @Query("SELECT l FROM Learning l " +
+            "JOIN FETCH l.dClass dc " +
+            "JOIN FETCH l.lecture le " +
+            "WHERE l.teacher = :teacher")
+    List<Learning> findByTeacher(@Param("teacher") User teacher);
 
     Optional<Learning> findByStudentAndLecture(User student, Lecture lecture);
 

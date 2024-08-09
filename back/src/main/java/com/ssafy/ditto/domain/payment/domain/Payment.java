@@ -29,7 +29,7 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     @Column(nullable = false, name = "pay_type")
     @Enumerated(EnumType.STRING)
@@ -48,7 +48,7 @@ public class Payment {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     @Column
     private String paymentKey;
