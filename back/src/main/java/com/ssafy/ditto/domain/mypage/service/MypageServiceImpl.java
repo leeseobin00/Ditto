@@ -8,7 +8,6 @@ import com.ssafy.ditto.domain.classes.domain.LikeClass;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.payment.domain.Payment;
 import com.ssafy.ditto.domain.payment.repository.PaymentRepository;
-import com.ssafy.ditto.domain.summary.domain.Summary;
 import com.ssafy.ditto.domain.classes.repository.*;
 import com.ssafy.ditto.domain.mypage.domain.*;
 import com.ssafy.ditto.domain.mypage.repository.*;
@@ -19,10 +18,8 @@ import com.ssafy.ditto.domain.question.domain.Question;
 import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
-import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
 import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -450,7 +447,7 @@ public class MypageServiceImpl implements MypageService {
         Account account = accountRepository.findByUserId(user);
 
         return MileageResponse.builder()
-                .mileage(mileageRepository.findByUserId(user).getMileage())
+                .mileage(mileageRepository.findByUser(user).getMileage())
                 .accountNumber(account.getAccountNumber())
                 .bank(account.getBank())
                 .receiver(account.getReceiver())
@@ -472,7 +469,7 @@ public class MypageServiceImpl implements MypageService {
             if (mileageHistory.getState() == 0){
                 milageHistoryResponse = MilageHistoryResponse.builder()
                         .historyId(mileageHistory.getHistoryId())
-                        .className(mileageHistory.getLectureId().getClassName())
+                        .className(mileageHistory.getLecture().getClassName())
                         .mileageAmount(mileageHistory.getMileageAmount())
                         .time(mileageHistory.getTime())
                         .state(mileageHistory.getState())
@@ -498,7 +495,7 @@ public class MypageServiceImpl implements MypageService {
     @Transactional
     public boolean userWithdraw(int userId, Integer requestMoney) {
         User user = userRepository.findByUserId(userId);
-        Mileage mileage = mileageRepository.findByUserId(user);
+        Mileage mileage = mileageRepository.findByUser(user);
         int finalAmount = mileage.getMileage() - requestMoney;
 
         if (finalAmount < 0){
@@ -510,8 +507,8 @@ public class MypageServiceImpl implements MypageService {
                 .time(LocalDateTime.now())
                 .state(2)
                 .finalAmount(finalAmount)
-                .mileageId(mileage)
-                .userId(user)
+                .mileage(mileage)
+                .user(user)
                 .build();
 
         mileageHistoryRepository.save(mileageHistory);

@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         Mileage mileage = Mileage.builder()
                 .mileage(0)
-                .userId(user)
+                .user(user)
                 .build();
 
         mileageRepository.save(mileage);
