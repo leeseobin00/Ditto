@@ -178,7 +178,6 @@ function ClassAddPage() {
               stepsData.append("stepFiles", step.file);
             }
           });
-          console.log(newClassId);
           await sendRequest(`/classes/${newClassId}/steps`, stepsData, "post");
         }
 

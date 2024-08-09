@@ -16,6 +16,7 @@ import Button from "../../components/common/Button";
 import ReviewAddModal from "../../components/Review/ReviewAddModal";
 
 const ClassDetailPageContainer = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -125,7 +126,8 @@ function ClassDetailPage() {
   };
 
   useEffect(() => {
-    if (classInfo?.user?.userId === userId) {
+    if (userId === null) setIsInstructor(false);
+    else if (classInfo?.user?.userId == userId) {
       setIsInstructor(true);
     }
   }, [classInfo]);
@@ -183,7 +185,6 @@ function ClassDetailPage() {
     handleGetReviewList();
     if (userId) {
       handleCanReview();
-      console.log(canReview);
     }
   }, [classId]);
 
@@ -199,7 +200,11 @@ function ClassDetailPage() {
             instructor={classInfo?.user}
             tag={classInfo?.tag}
           />
-          <TabBar titleIds={titleIds} />
+          <TabBar
+            classId={classId}
+            titleIds={titleIds}
+            isInstructor={isInstructor}
+          />
           <ClassBody>
             <ClassIntroductionContainer>
               <ContentContainer id={titleIds[0]}>
