@@ -104,7 +104,7 @@ const LikedClasses = ({ classes, onLikeCancel }) => {
       <ClassContainer>
         {classes.map((cls) => (
           <ClassCard key={cls.classId}>
-            <ClassImage src={cls.fileUrl} alt={cls.className} onClick={() => handleClassClick(cls.classId)} />
+            <ClassImage src={`http://i11a106.p.ssafy.io:8080/files/download/${cls.fileId}`} alt={cls.className} onClick={() => handleClassClick(cls.classId)} />
             <ClassInfo>
               <ClassName>{cls.className}</ClassName>
               <Group>
