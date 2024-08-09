@@ -21,7 +21,7 @@ export const CLASS_SORT_OPTIONS = [
   { value: "likeCount", label: "좋아요순" },
   { value: "averageRating", label: "평점순" },
   { value: "reviewCount", label: "리뷰 개수순" },
-  { value: "classPrice", label: "가격 낮은순" },
+  { value: "priceLow", label: "가격 낮은순" },
 ];
 
 export const SORT_OPTIONS = [
