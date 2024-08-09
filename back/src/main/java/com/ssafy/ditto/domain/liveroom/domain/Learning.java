@@ -38,7 +38,4 @@ public class Learning {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liveroom_id", nullable = true)
     private LiveRoom liveRoom;
-
-    @Column
-    private Boolean isFinished;
 }
