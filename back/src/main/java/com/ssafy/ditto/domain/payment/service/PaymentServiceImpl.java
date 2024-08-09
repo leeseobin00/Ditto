@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.ditto.domain.classes.domain.DClass;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
+import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
@@ -122,7 +123,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public String cancelPayment(int userId, int lectureId) {
-        // userId와 lectureId로 결제 정보를 찾음
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Optional<Payment> paymentOptional = paymentRepository.findByUser_UserIdAndLecture_LectureId(userId, lectureId);
 
         if (paymentOptional.isPresent()) {
@@ -140,6 +142,9 @@ public class PaymentServiceImpl implements PaymentService {
 
             paymentRepository.save(payment);
 
+            lecture.setUserCount((byte) (lecture.getUserCount() - 1));
+            DClass dClass = lecture.getClassId();
+            dClass.setStudentSum(dClass.getStudentSum() - 1);
             learningService.deleteStudent(userId,lectureId);
 
             return "결제가 성공적으로 취소되었습니다.";
