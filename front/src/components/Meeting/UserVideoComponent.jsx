@@ -121,16 +121,29 @@ function UserVideoComponent({ streamManager }) {
     return parsedData?.roleId;
   };
 
-  useEffect(() => {
+  useEffect(()=>{
     const videoUsername = getNicknameTag();
-    console.log("receive StatueMessage: ", statusMessages);
+    console.log("receive StatusMessage: ", statusMessages);
     
     if(videoUsername in statusMessages){
       console.log(statusMessages[videoUsername]);
       setMyStatus(statusMessages[videoUsername]);
     }else{
-        console.log("sssss");
-        setMyStatus("normal");
+      console.log("sssss");
+      setMyStatus("normal");
+    }
+  },[]);
+
+  useEffect(() => {
+    const videoUsername = getNicknameTag();
+    console.log("receive StatusMessage: ", statusMessages);
+    
+    if(videoUsername in statusMessages){
+      console.log(statusMessages[videoUsername]);
+      setMyStatus(statusMessages[videoUsername]);
+    }else{
+      console.log("sssss");
+      setMyStatus("normal");
     }
     // if(statusMessages.length===0) setMyStatus("normal");
     // const matchingMessages = statusMessages.filter(
