@@ -98,8 +98,8 @@ function MeetingPage() {
   const [members, setMembers] = useState([]);
   // chat, timer
   const [chatMessages, setChatMessages] = useState([]);
-  //const [statusMessages, setStatusMessages] = useState([]);
-  const [statusMessages, setStatusMessages] = useState(new Map());
+  const [statusMessages, setStatusMessages] = useState([]);
+  //const [statusMessages, setStatusMessages] = useState(new Map());
   const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   // 음소거, 화면끄기
@@ -256,27 +256,28 @@ function MeetingPage() {
     newSession.on('signal:status', (event) => {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 이벤트 수신시 로직
-      // let isExist = false;
-      // const newStatusMessage = [];
-      // statusMessages.forEach((message)=>{
-      //   if(message?.sender != parsedData?.sender){
-      //     newStatusMessage.push(message);
-      //   }else{
-      //     isExist = true;
-      //   }
-      // });
-      // if(!isExist) newStatusMessage.push(parsedData); 
-      // console.log(newStatusMessage);
-      // setStatusMessages(newStatusMessage);
-      const newMap = statusMessages;
-      newMap.set(parsedData?.sender, parsedData?.message);
-      console.log("===============================newMap: ", newMap);
-      setStatusMessages(newMap);
-      setStatusMessages((prevMessages) => ({
-        ...prevMessages,
-        [parsedData?.sender]: parsedData?.message,
-      }));
+      //이벤트 수신시 로직
+      let isExist = false;
+      const newStatusMessage = [];
+      statusMessages.forEach((message)=>{
+        if(message?.sender != parsedData?.sender){
+          newStatusMessage.push(message);
+        }else{
+          isExist = true;
+        }
+      });
+      if(!isExist) newStatusMessage.push(parsedData); 
+      console.log(newStatusMessage);
+      setStatusMessages(newStatusMessage);
+      // const newMap = statusMessages;
+      // newMap.set(parsedData?.sender, parsedData?.message);
+      // console.log("===============================newMap: ", newMap);
+      // setStatusMessages(newMap);
+      // setStatusMessages((prevMessages) => {
+      //   const updatedMap = new Map(prevMessages);
+      //   updatedMap.set(parsedData?.sender, parsedData?.message);
+      //   return updatedMap;
+      // });      
     });
 
     newSession.on('signal:timer', (event) => {

@@ -123,24 +123,25 @@ function UserVideoComponent({ streamManager }) {
 
   useEffect(() => {
     const videoUsername = getNicknameTag();
-    console.log("receive StatusMessage: ", statusMessages);
-    
-    if(videoUsername in statusMessages){
-      console.log(statusMessages[videoUsername]);
-      setMyStatus(statusMessages[videoUsername]);
-    }else{
-      console.log("sssss");
-      setMyStatus("normal");
-    }
-    // if(statusMessages.length===0) setMyStatus("normal");
-    // const matchingMessages = statusMessages.filter(
-    //   (message) => message.sender === videoUsername
-    // );
-    // matchingMessages.forEach((message) => {
-    //   if (message.message === "normal") setMyStatus("normal");
-    //   if (message.message === "도와주세요") setMyStatus("help");
-    //   if (message.message === "완료") setMyStatus("done");
-    // });
+    // console.log("receive StatusMessage: ", statusMessages);
+    // console.log("videoUserName:", videoUsername);
+    // console.log("statusMessages[videoUsername]", statusMessages[videoUsername]);
+    // if(videoUsername in statusMessages){
+    //   console.log(statusMessages[videoUsername]);
+    //   setMyStatus(statusMessages[videoUsername]);
+    // }else{
+    //   console.log("sssss");
+    //   setMyStatus("normal");
+    // }
+    if(statusMessages.length===0) setMyStatus("normal");
+    const matchingMessages = statusMessages.filter(
+      (message) => message.sender === videoUsername
+    );
+    matchingMessages.forEach((message) => {
+      if (message.message === "normal") setMyStatus("normal");
+      if (message.message === "도와주세요") setMyStatus("help");
+      if (message.message === "완료") setMyStatus("done");
+    });
   }, [statusMessages, streamManager]);
 
   console.log("myStatus", myStatus);
