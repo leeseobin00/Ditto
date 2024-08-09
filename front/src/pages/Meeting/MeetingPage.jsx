@@ -294,7 +294,7 @@ function MeetingPage() {
       // 이벤트 수신시 로직
       console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
-      setStatusMessages(new Map());
+      setStatusMessages([]);
     });
 
     newSession.on('signal:end', (event) => {
