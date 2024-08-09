@@ -221,9 +221,13 @@ function MeetingPage() {
       }
     });
 
+    console.log(currentIndex);
+
     newSession.on('streamDestroyed', (event) => {
-      if(visibleParticipants.length==1 && currentIndex>0){
-        setCurrentIndex((prev)=>prev-1);
+      console.log("visibleParticipants.length=====", visibleParticipants.length);
+      console.log("currentIndex=====",currentIndex);
+      if(visibleParticipants.length==1){
+        setCurrentIndex((prev)=>Math.max(prev - 1, 0));
       }
       deleteSubscriber(event.stream.streamManager);
     });
@@ -324,7 +328,16 @@ function MeetingPage() {
   };
 
   // Include publisher in pagination logic 
-  const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
+  const [visibleParticipants, setVisibleParticipants]  = useState([]);
+  useEffect(()=>{
+    if(roleId==1){
+      setVisibleParticipants([...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible));
+    }else if(roleId==2){
+      setVisibleParticipants([publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible));
+    }
+  },[currentIndex, publisher, subscribers]);
+
+  //const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
     return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
@@ -339,6 +352,7 @@ function MeetingPage() {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
 
+  console.log("==================================>", currentIndex);
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const [currentStep, setCurrentStep] = useState(-1);
   const [stepLoading, setStepLoading] = useState(false);
@@ -532,7 +546,7 @@ function MeetingPage() {
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
-              {(currentIndex+1<subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+              {(currentIndex<Math.floor(subscribers.length/maxVisible)) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
                 &gt;
               </RightScrollButton>}
           </>
