@@ -85,7 +85,7 @@ const LikedUsers = ({ users, onLikeCancel }) => {
       <UserContainer>
         {users.map((user) => (
           <UserCard key={user.userId}>
-            <UserImage src={user.fileUrl} alt={user.nickname} onClick={() => handleUserClick(user.userId)} />
+            <UserImage src={`http://i11a106.p.ssafy.io:8080/files/download/${user.fileId}`} alt={user.nickname} onClick={() => handleUserClick(user.userId)} />
             <UserInfo>
               <UserName>{user.nickname} <HeartIcon onClick={() => onLikeCancel(user.userId)}>❤</HeartIcon></UserName>
               <TagContainer>
