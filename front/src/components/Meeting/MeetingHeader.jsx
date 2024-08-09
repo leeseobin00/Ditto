@@ -47,6 +47,7 @@ const CustomOutIcon = styled(BiLogOut)`
 
 function MeetingHeader({ title }) {
   const { sendEnd } = useContext(MeetingContext);
+  const roleId = useSelector((state)=>state.auth.roleId);
   const username = useSelector((state)=>state.auth.username);
 
   const navigate = useNavigate();
