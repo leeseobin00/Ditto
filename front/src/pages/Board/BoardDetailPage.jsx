@@ -385,7 +385,7 @@ function BoardDetailPage() {
                   )}
                 </CommentTextWrapper>
               </ParentCommentWrapper>
-              {comment?.children.length > 0 && (
+              {(comment?.children.length > 0 || showReplyForms[index]) && (
                 <ChildCommentWrapper>
                   {comment?.children?.map((c, childIndex) => (
                     <CommentReplyWrapper key={childIndex}>
