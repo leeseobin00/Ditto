@@ -107,7 +107,7 @@ function MeetingPage() {
   const [videoEnabled, setVideoEnabled] = useState(true);
   // pagination
   const [currentIndex, setCurrentIndex] = useState(0);
-  const maxVisible = 3; // Maximum visible participants
+  const maxVisible = 1; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
   // isOut
@@ -271,6 +271,7 @@ function MeetingPage() {
       // setStatusMessages(newStatusMessage);
       const newMap = statusMessages;
       newMap.set(parsedData?.sender, parsedData?.message);
+      setStatusMessages(newMap);
     });
 
     newSession.on('signal:timer', (event) => {

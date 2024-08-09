@@ -124,8 +124,10 @@ function UserVideoComponent({ streamManager }) {
   useEffect(() => {
     const videoUsername = getNicknameTag();
     if(statusMessages?.has(videoUsername)){
+      console.log("sssss");
       setMyStatus("normal");
     }else{
+      console.log(statusMessages?.get(videoUsername));
       setMyStatus(statusMessages?.get(videoUsername));
     }
     // if(statusMessages.length===0) setMyStatus("normal");
@@ -139,7 +141,7 @@ function UserVideoComponent({ streamManager }) {
     // });
   }, [statusMessages]);
 
-  console.log(myStatus);
+  console.log("myStatus", myStatus);
   console.log(statusMessages);
   console.log(videoRoleId);
   console.log(roleId);
