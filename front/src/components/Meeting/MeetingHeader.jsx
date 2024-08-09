@@ -52,10 +52,11 @@ function MeetingHeader({ title }) {
   const navigate = useNavigate();
 
   const goBack = () => {
-    if(roleId==2){
+    if(roleId==1){
+      navigate("/video");
+    }else if(roleId==2){
       sendEnd(username);
     }
-    navigate("/video");
   }
 
   return (

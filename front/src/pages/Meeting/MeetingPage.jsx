@@ -282,6 +282,7 @@ function MeetingPage() {
     });
 
     newSession.on('signal:end', (event) => {
+      console.log("sssssssENDENDENDENDENDENDENDENDE");
       if(roleId==1){
         navigate("/video");
       }
