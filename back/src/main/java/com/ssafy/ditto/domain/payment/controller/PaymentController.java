@@ -39,7 +39,7 @@ public class PaymentController {
             @ApiResponse(responseCode = "200", description = "결제가 성공적으로 취소되었습니다."),
             @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
-    @PostMapping("/cancel/{userId}/{lectureId}")
+    @PutMapping("/cancel/{userId}/{lectureId}")
     public ResponseDto<String> cancelPayment(@PathVariable int userId,
                                              @PathVariable int lectureId) {
         return ResponseDto.of(OK.value(), SUCCESS_WRITE.getMessage(), paymentService.cancelPayment(userId,lectureId));
