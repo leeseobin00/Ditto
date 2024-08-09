@@ -6,7 +6,6 @@ import { BsSearch } from "react-icons/bs";
 
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Class/ClassList/TabBar";
-import Filter from "../../components/Board/Filter";
 import SelectBox from "../../components/Board/SelectBox";
 import SelectTag from "../../components/Board/SelectTag";
 import Button from "../../components/common/Button";
@@ -24,21 +23,35 @@ const ClassPageContainer = styled.div`
   width: 100%;
 `;
 
+const Filter = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const FilterTitle = styled.div`
+  width: 60px;
+  margin-right: 4px;
+`;
+
 const Wrapper = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 32px;
 `;
 
-const FilterWrapper = styled.div`
+const FilterContent = styled.div`
   display: flex;
-  gap: 48px;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 92%;
+  gap: 8px;
 `;
 
 const Input = styled.input`
-  width: 480px;
+  width: 70%;
   padding: 6px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
@@ -176,13 +189,15 @@ function ClassListPage() {
     <ClassPageContainer>
       <TabBar />
       <Wrapper>
-        <FilterWrapper>
-          <Filter title="태그">
+        <Filter>
+          <FilterTitle>태그</FilterTitle>
+          <FilterContent>
             <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
-          </Filter>
-        </FilterWrapper>
-        <FilterWrapper>
-          <Filter title="검색">
+          </FilterContent>
+        </Filter>
+        <Filter style={{ paddingRight: "20px" }}>
+          <FilterTitle>검색</FilterTitle>
+          <FilterContent style={{ justifyContent: "space-between" }}>
             <SelectBox
               options={CLASS_SEARCH_OPTIONS}
               onChange={handleSearchBy}
@@ -194,8 +209,8 @@ function ClassListPage() {
               label={<CustomSearchIcon />}
               size="md"
             />
-          </Filter>
-        </FilterWrapper>
+          </FilterContent>
+        </Filter>
         <PageTitle>{pageTitle}</PageTitle>
         <SearchOptionWrapper>
           <SelectBox

@@ -5,7 +5,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
-import Filter from "../../components/Board/Filter";
 import SelectBox from "../../components/Board/SelectBox";
 import PostList from "../../components/Board/BoardList/PostList";
 import PaginationBar from "../../components/Board/BoardList/PaginationBar";
@@ -29,12 +28,50 @@ const Wrapper = styled.div`
 const FilterWrapper = styled.div`
   display: flex;
   gap: 48px;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: flex-start;
 `;
 
+const Filter = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const FilterTitle = styled.p`
+  white-space: nowrap;
+  width: 60px;
+  margin-right: 4px;
+`;
+
+const SearchWrapper = styled.div`
+  width: 22%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const FilterContent = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 92%;
+  gap: 8px;
+`;
+
+const InputWrapper = styled.div`
+  width: 72%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const Input = styled.input`
-  width: 480px;
+  width: 85%;
   padding: 6px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
@@ -68,7 +105,7 @@ function BoardListPage() {
   const path = location.pathname.split("/")[2];
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
-  const page = parseInt(searchParams.get('page'), 10) || 1; // 기본값 1
+  const page = parseInt(searchParams.get("page"), 10) || 1; // 기본값 1
   // page title
   const [pageTitle, setPageTitle] = useState("전체");
   // posts
@@ -88,7 +125,7 @@ function BoardListPage() {
   const getPosts = async () => {
     const boardId =
       path === "talk" ? 1 : path === "community" ? 2 : path === "help" ? 3 : 0;
-    
+
     const params = {
       page: currentPage,
       size: postsPerPage,
@@ -184,17 +221,17 @@ function BoardListPage() {
   }, [currentSection, totalPageCount]);
 
   const handlePage = (number) => {
-    navigate(location.pathname+`?page=${number}`);
+    navigate(location.pathname + `?page=${number}`);
   };
   // pagination 끝 ////////////////////////////////////////
 
   // 쿼리 스트링에서 'page' 파라미터 읽기 ///////////////////
-  useEffect(()=>{
+  useEffect(() => {
     setCurrentPage(page);
     setCurrentSection(Math.ceil(page / 10));
-  },[page]);
+  }, [page]);
   /////////////////////////////////////////////////////////
-  
+
   return (
     <div>
       <TabBar />
@@ -202,7 +239,8 @@ function BoardListPage() {
       <Wrapper>
         {/* 필터 목록 시작 */}
         <FilterWrapper>
-          <Filter title="카테고리">
+          <Filter style={{ width: "22%" }}>
+            <FilterTitle>카테고리</FilterTitle>
             <SelectBox
               options={SEARCH_CATEGORY_OPTIONS}
               onChange={handleCategoryId}
@@ -210,25 +248,31 @@ function BoardListPage() {
             />
           </Filter>
 
-          <Filter title="태그">
-            <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
+          <Filter style={{ width: "72%", alignItems: "flex-start" }}>
+            <FilterTitle style={{ lineHeight: "2" }}>태그</FilterTitle>
+            <FilterContent>
+              <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
+            </FilterContent>
           </Filter>
         </FilterWrapper>
-        <FilterWrapper>
-          <Filter title="검색">
+        <Filter>
+          <SearchWrapper>
+            <FilterTitle>검색</FilterTitle>
             <SelectBox
               options={SEARCH_OPTIONS}
               onChange={handleSearchBy}
               curOption={searchBy}
             />
+          </SearchWrapper>
+          <InputWrapper style={{ paddingRight: "20px" }}>
             <Input onChange={handleKeyword} value={keyword} />
             <Button
               onClick={onSearchButton}
               label={<CustomSearchIcon />}
               size="md"
             />
-          </Filter>
-        </FilterWrapper>
+          </InputWrapper>
+        </Filter>
         {/* 필터 목록 끝 */}
 
         <PageTitle>{pageTitle}</PageTitle>
@@ -246,7 +290,7 @@ function BoardListPage() {
         </SearchOptionWrapper>
         {/* 검색 옵션 끝 */}
 
-        <PostList posts={posts}/>
+        <PostList posts={posts} />
 
         <PaginationBar
           pageNumbers={pageNumbers}

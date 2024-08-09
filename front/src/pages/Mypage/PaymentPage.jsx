@@ -76,7 +76,11 @@ const PaymentPage = () => {
       <Title>결제/수강 내역</Title>
       {payments.length > 0 ? (
         <>
-          <PaymentDetail payments={payments} setPayments={setPayments} />
+          <PaymentDetail
+            payments={payments}
+            setPayments={setPayments}
+            userId={userId}
+          />
           {showMoreButton && <MoreButton onClick={loadMorePayments} />}
         </>
       ) : (
