@@ -359,7 +359,6 @@ function MeetingPage() {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
 
-  console.log("==================================>", currentIndex);
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const [currentStep, setCurrentStep] = useState(-1);
   const [stepLoading, setStepLoading] = useState(false);
@@ -495,6 +494,7 @@ function MeetingPage() {
     };
   }
   const sendEnd = (senderName) => {
+    console.log("sssssssssss");
     if(session){
       session.signal({
         data: JSON.stringify({
@@ -504,7 +504,7 @@ function MeetingPage() {
         type: 'end'
     })
     .then(() => {
-        console.log('Message successfully sent: progress');
+        console.log('Message successfully sent: end');
     })
     .catch(error => {
         console.error(error);
