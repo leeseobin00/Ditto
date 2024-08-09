@@ -221,6 +221,11 @@ function MeetingPage() {
       }
     });
 
+    newSession.on('sessionDestroyed', (event)=>{
+      console.log("sessionDestroyed====>");
+      navigate("/video");
+    });
+
     console.log(currentIndex);
 
     newSession.on('streamDestroyed', (event) => {
