@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ssafy.ditto.global.error.ErrorCode.*;
@@ -76,22 +75,37 @@ public class LearningServiceImpl implements LearningService {
     @Override
     @Transactional
     public LearningPageResponse getTeacherLearning(Integer userId, Pageable pageable) {
-        User teacher = userRepository.findById(userId).orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+        User teacher = userRepository.findById(userId)
+                .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
 
-        Page<Learning> learningPage = learningRepository.findByTeacher(teacher,pageable);
+        // 모든 학습 데이터를 가져옴
+        List<Learning> allLearnings = learningRepository.findByTeacher(teacher);
+
+        // lectureId 기준으로 중복 제거
+        Map<Integer, Learning> distinctLearningsMap = new LinkedHashMap<>();
+        for (Learning learning : allLearnings) {
+            distinctLearningsMap.putIfAbsent(learning.getLecture().getLectureId(), learning);
+        }
+        List<Learning> distinctLearnings = new ArrayList<>(distinctLearningsMap.values());
+
+        // 페이징 처리
+        int start = Math.min((int) pageable.getOffset(), distinctLearnings.size());
+        int end = Math.min((start + pageable.getPageSize()), distinctLearnings.size());
+        List<Learning> paginatedLearnings = distinctLearnings.subList(start, end);
+
+        // Response 변환
+        List<LearningResponse> learningResponses = paginatedLearnings.stream()
+                .map(learning -> LearningResponse.of(learning.getDClass(), learning.getLecture(), learning.getIsFinished()))
+                .collect(Collectors.toList());
 
         return LearningPageResponse.of(
-                learningPage.stream().map(learning -> {
-                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
-                            .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
-                    Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
-                            .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-                    return LearningResponse.of(dClass,lecture,learning.getIsFinished());
-                }).collect(Collectors.toList()),
-                learningPage.getNumber()+1,
-                learningPage.getTotalPages()
+                learningResponses,
+                pageable.getPageNumber() + 1,
+                (int) Math.ceil((double) distinctLearnings.size() / pageable.getPageSize())
         );
     }
+
+
 
     @Override
     @Transactional
