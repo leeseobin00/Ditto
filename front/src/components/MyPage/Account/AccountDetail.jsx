@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 import OutlineButton from "../../common/OutlineButton";
 import RoundButton from "../../common/RoundButton";
@@ -116,10 +117,18 @@ const AccountDetail = ({ accountData }) => {
           },
         }
       );
-      alert("계좌 정보가 성공적으로 수정되었습니다.");
+      Swal.fire({
+        icon: 'success',
+        title: '수정 완료',
+        text: '계좌 정보가 성공적으로 수정되었습니다.',
+      });
     } catch (error) {
       console.error(error);
-      alert("계좌 정보 수정에 실패했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '수정 실패',
+        text: '계좌 정보 수정에 실패했습니다. 다시 시도해주세요.',
+      });
     }
   };
 

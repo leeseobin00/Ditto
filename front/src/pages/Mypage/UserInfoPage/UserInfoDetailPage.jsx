@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 import axiosIntercepter from "../../../features/axiosIntercepter";
 import useAxios from "../../../hooks/useAxios";
@@ -51,8 +52,12 @@ const UserInfoDetail = () => {
           setIsLoading(false);
         })
         .catch((error) => {
-          console.error(error);
           setIsLoading(false);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load user data!',
+          });
         });
     }
   }, [userId]);
@@ -77,6 +82,11 @@ const UserInfoDetail = () => {
       setAddresses(response?.data?.addresses);
     } catch {
       console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to fetch addresses!',
+      });
     }
   };
 

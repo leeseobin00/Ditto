@@ -18,6 +18,7 @@ import OutlineButton from "../../../components/common/OutlineButton";
 import WriteIcon from "../../../assets/icon/profile/write-white.png";
 import ModifyProfileImage from "./ModifyProfileImage";
 import Modal from "../../common/Modal";
+import Swal from "sweetalert2";
 
 const UserInfoContainer = styled.div`
   padding: 20px;
@@ -258,13 +259,20 @@ const UserInfo = ({ userData }) => {
   const handleSave = async () => {
     if (domain === "local") {
       if (error) {
-        alert("회원 정보를 수정할 수 없습니다.");
+        Swal.fire({
+          icon: "error",
+          title: "수정 불가",
+          text: "회원 정보를 수정할 수 없습니다.",
+        });
         return;
       }
     } else {
-      // 카카오 회원인 경우
       if (!isNicknameAvailableState) {
-        alert("해당 닉네임으로는 변경할 수 없습니다.");
+        Swal.fire({
+          icon: "error",
+          title: "닉네임 중복",
+          text: "해당 닉네임으로는 변경할 수 없습니다.",
+        });
         return;
       }
     }
@@ -275,26 +283,42 @@ const UserInfo = ({ userData }) => {
         nickname: name,
       };
 
-      console.log(patchData);
       const response = await sendAuthRequest(
         `/mypage/${userId}`,
         patchData,
         "patch"
       );
-      console.log("전송완료");
       if (response.code == 200) {
         dispatch(changeNickname({ nickname: name }));
+        Swal.fire({
+          icon: "success",
+          title: "수정 완료",
+          text: "회원 정보가 성공적으로 수정되었습니다.",
+        }).then(() => location.reload());
       } else {
         setError("수정 실패. 다시 시도해주세요.");
+        Swal.fire({
+          icon: "error",
+          title: "수정 실패",
+          text: "다시 시도해주세요.",
+        });
       }
-      alert("수정이 완료되었습니다.");
-      location.reload();
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setError("이미 사용중인 닉네임입니다.");
+        Swal.fire({
+          icon: "error",
+          title: "닉네임 중복",
+          text: "이미 사용 중인 닉네임입니다.",
+        });
       } else {
         console.error(error);
         setError("저장 실패. 다시 시도해주세요.");
+        Swal.fire({
+          icon: "error",
+          title: "저장 실패",
+          text: "다시 시도해주세요.",
+        });
       }
     }
   };
