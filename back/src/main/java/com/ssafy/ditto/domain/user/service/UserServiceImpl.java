@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 .accountNumber("")
                 .bank("")
                 .receiver("")
-                .userId(user)
+                .user(user)
                 .build();
 
         accountRepository.save(account);

@@ -40,7 +40,7 @@ public class Address {
     //FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     public void changeDefault(boolean newDefault){
         this.isDefault = newDefault;
