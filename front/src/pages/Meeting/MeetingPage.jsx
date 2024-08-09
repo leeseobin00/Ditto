@@ -47,15 +47,19 @@ const ParticipantGrid = styled.div`
 const ScrollButton = styled.button`
   background-color: var(--LIGHT);
   color: var(--DARK);
+  width: 40px;
+  height: 40px;
   border: none;
+  border-radius: 100%;
   padding: 10px;
   cursor: pointer;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  &:hover {
-    background-color: var(--HOVER_LIGHT);
+
+  &:hover{
+    color: var(--SECONDARY);
   }
 `;
 
@@ -218,6 +222,9 @@ function MeetingPage() {
     });
 
     newSession.on('streamDestroyed', (event) => {
+      if(visibleParticipants.length==1 && currentIndex>0){
+        setCurrentIndex((prev)=>prev-1);
+      }
       deleteSubscriber(event.stream.streamManager);
     });
 
@@ -521,16 +528,14 @@ function MeetingPage() {
             );
           })}
           </ParticipantGrid>
-          {(subscribers.length + 1) > maxVisible && (
-            <>
+          <>
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
               {(currentIndex<subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
                 &gt;
               </RightScrollButton>}
-            </>
-          )}
+          </>
         </MainContent>
         <MeetingFooter
           audioEnabled={audioEnabled}
