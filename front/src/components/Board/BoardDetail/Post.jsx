@@ -10,22 +10,35 @@ import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
 import { useSelector } from "react-redux";
 
-const PostWrapper = styled.div``;
+const PostWrapper = styled.div`
+  width: 100%;
+`;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+
+  width: 100%;
 `;
 
 const Title = styled.p`
   font-size: 22px;
   font-weight: 700;
+
+  width: 80%;
+
+  /* Ensure text wraps onto multiple lines */
+  word-wrap: break-word; /* This will break long words onto the next line */
+  white-space: normal; /* Allows the text to wrap normally */
+  overflow-wrap: break-word; /* Helps to break the text for older browsers */
 `;
 
 const Info = styled.p`
   font-size: 16px;
   color: var(--TEXT_SECONDARY);
+
+  white-space: nowrap;
 `;
 
 const SubHeader = styled.div`

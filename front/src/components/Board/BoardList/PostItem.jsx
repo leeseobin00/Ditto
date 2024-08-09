@@ -25,6 +25,8 @@ const PostId = styled(Content)`
 const PostTitle = styled(Content)`
   flex: 4;
   margin-right: 16px;
+
+  overflow: hidden;
 `;
 
 const PostLike = styled(Content)`
@@ -41,6 +43,8 @@ const CustomFilledHeartIcon = styled(BsHeartFill)`
 const PostUser = styled(Content)`
   flex: 1;
   margin-right: 16px;
+
+  overflow: hidden;
 `;
 
 const PostDate = styled(Content)`
