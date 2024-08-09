@@ -226,20 +226,22 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public UserClassListResponse userClass(int userId, PageRequest pageRequest) {
-        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
-
         // Learning 엔티티를 통해 DClass를 조회
-        Page<Learning> learningPage = learningRepository.findAll((root, query, criteriaBuilder) -> {
+        List<Learning> learningList = learningRepository.findAll((root, query, criteriaBuilder) -> {
             return criteriaBuilder.equal(root.get("student").get("userId"), userId);
-        }, pageable);
+        });
 
-        List<DClass> classList = learningPage.getContent().stream()
+        // 중복되지 않은 DClass 객체를 추출
+        List<DClass> classList = learningList.stream()
                 .map(Learning::getDClass)
-                .toList();
+                .distinct()
+                .collect(Collectors.toList());
 
         // Pagination
+        int totalElements = classList.size();
         int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
-        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
+        int end = Math.min(start + pageRequest.getPageSize(), totalElements);
+
         List<DClass> paginatedList = classList.subList(start, end);
 
         List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
@@ -279,31 +281,29 @@ public class ProfileServiceImpl implements ProfileService {
                 .classListResponse(ClassListResponse.builder()
                         .classList(classResponses)
                         .build())
-                .currentPage(pageRequest.getPageNumber()+1)
-                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
+                .currentPage(pageRequest.getPageNumber() + 1)
+                .totalPageCount((int) Math.ceil((double) totalElements / pageRequest.getPageSize()))
                 .build();
     }
+
 
     @Override
     @Transactional(readOnly = true)
     public UserClassListResponse proClass(int userId, PageRequest pageRequest) {
-        List<ClassResponse> classResponses = new ArrayList<>();
-        System.out.println("Pro : " + userId);
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
-        List<DClass> classList = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable).getContent();
 
-        // Pagination
-        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
-        int end = Math.min(start + pageRequest.getPageSize(), classList.size());
-        List<DClass> paginatedList = classList.subList(start, end);
+        // DClass 엔티티를 UserId로 조회
+        Page<DClass> classPage = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable);
 
-        for (DClass dClass : paginatedList){
+        List<DClass> classList = classPage.getContent();
+
+        List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
                     .tagName(dClass.getTagId().getTagName())
                     .categoryId(dClass.getTagId().getCategory().getCategoryId())
                     .build();
-            ClassResponse classResponse = ClassResponse.builder()
+            return ClassResponse.builder()
                     .classId(dClass.getClassId())
                     .className(dClass.getClassName())
                     .classPrice(dClass.getClassPrice())
@@ -328,18 +328,17 @@ public class ProfileServiceImpl implements ProfileService {
                     .user(UserResponse.of(dClass.getUserId()))
                     .tag(tagResponse)
                     .build();
-
-            classResponses.add(classResponse);
-        }
+        }).collect(Collectors.toList());
 
         return UserClassListResponse.builder()
                 .classListResponse(ClassListResponse.builder()
                         .classList(classResponses)
                         .build())
-                .currentPage(pageRequest.getPageNumber()+1)
-                .totalPageCount((classList.size()+ pageRequest.getPageSize()-1)/pageRequest.getPageSize())
+                .currentPage(classPage.getNumber() + 1)
+                .totalPageCount(classPage.getTotalPages())
                 .build();
     }
+
 
 
     @Override

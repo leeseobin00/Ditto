@@ -42,6 +42,7 @@ public class LearningServiceImpl implements LearningService {
     }
 
     @Override
+    @Transactional
     public void changeStatus(Integer lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
         // lecture 듣는 모든 수강생들의 상태 변경

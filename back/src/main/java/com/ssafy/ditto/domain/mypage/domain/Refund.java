@@ -15,6 +15,6 @@ public class Refund {
     @Column(name = "refund_id")
     private Integer refundId;
 
-    @Column(name = "refund")
+    @Column(name = "refund", length = 3000)
     private String refund;
 }
