@@ -221,11 +221,6 @@ function MeetingPage() {
       }
     });
 
-    newSession.on('sessionDestroyed', (event)=>{
-      console.log("sessionDestroyed====>");
-      navigate("/video");
-    });
-
     console.log(currentIndex);
 
     newSession.on('streamDestroyed', (event) => {
@@ -284,6 +279,12 @@ function MeetingPage() {
       console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
       setStatusMessages([]);
+    });
+
+    newSession.on('signal:end', (event) => {
+      if(roleId==1){
+        navigate("/video");
+      }
     });
 
     const token = await getToken();
@@ -492,6 +493,23 @@ function MeetingPage() {
     });
     };
   }
+  const sendEnd = (senderName) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+        }),
+        to: [],
+        type: 'end'
+    })
+    .then(() => {
+        console.log('Message successfully sent: progress');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
@@ -509,6 +527,7 @@ function MeetingPage() {
         chatMessages,
         sendStatus,
         statusMessages,
+        sendEnd,
         publisher,
         subscribers,
         timer,
