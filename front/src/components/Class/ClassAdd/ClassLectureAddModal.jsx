@@ -17,7 +17,7 @@ const ContentContainer = styled.div`
   width: 100%;
   margin-top: 25px;
   margin-bottom: 40px;
-  height: 155px;
+  max-height: 155px;
   overflow-y: auto;
 `;
 

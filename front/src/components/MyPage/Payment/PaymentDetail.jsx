@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { styled } from "styled-components";
 
 import axios from "axios";
@@ -134,10 +133,9 @@ const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
 `;
 
-const PaymentDetail = ({ payments = [], setPayments }) => {
+const PaymentDetail = ({ payments = [], setPayments, userId }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
   const [modalMessage, setModalMessage] = useState("");
@@ -152,11 +150,14 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
     try {
-      const response = await axios.get(`${baseURL}/mypage/payment/cancel`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const response = await axios.put(
+        `${baseURL}/payments/cancel/${userId}/${lectureId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         setRefundPolicy(response.data.data.refund);
@@ -167,7 +168,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
       }
     } catch (error) {
       alert("환불 규정 조회 실패. 다시 시도해주세요.");
-      console.error("환불 규정 조회 에러:", error);
+      console.error(error);
     }
   };
 
@@ -220,7 +221,6 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
       );
 
       if (response.status === 200) {
-        setModalMessage("결제/수강 취소 성공");
         setPayments(
           payments.map((payment) =>
             payment.lectureId === currentLectureId
