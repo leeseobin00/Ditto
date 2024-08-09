@@ -50,6 +50,9 @@ public class Lecture extends BaseTimeEntity {
     @Column
     private Boolean isDeleted;
 
+    @Column(name = "is_finished")
+    private Boolean isFinished;
+
     public LocalDateTime getStartDateTime() {
         return LocalDateTime.of(year, month, day, hour, minute);
     }
