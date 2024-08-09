@@ -91,7 +91,7 @@ function ClassThumbnail({ classInfo, file, instructor, tag }) {
       </ClassTitle>
       <ClassDetailLine>
         <Icon src={Star} />
-        <MediumFont>{classInfo.averageRating}</MediumFont>
+        <MediumFont>{classInfo.averageRating.toFixed(2)}</MediumFont>
         <MediumFont>&nbsp;({classInfo.reviewCount})</MediumFont>
       </ClassDetailLine>
       <ClassDetailLine>

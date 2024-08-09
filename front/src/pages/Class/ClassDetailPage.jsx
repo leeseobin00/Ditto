@@ -125,7 +125,7 @@ function ClassDetailPage() {
   };
 
   useEffect(() => {
-    if (classInfo?.user?.userId == userId) {
+    if (classInfo?.user?.userId === userId) {
       setIsInstructor(true);
     }
   }, [classInfo]);
@@ -165,6 +165,7 @@ function ClassDetailPage() {
         "get"
       );
       if (response?.data) {
+        console.log("data");
         setCanReview(true);
         setCanReviewLectures(response?.data);
       }
@@ -180,8 +181,13 @@ function ClassDetailPage() {
   useEffect(() => {
     handleGetClass();
     handleGetReviewList();
-    handleCanReview();
+    if (userId) {
+      handleCanReview();
+      console.log(canReview);
+    }
   }, [classId]);
+
+  useEffect(() => {});
 
   return (
     <ClassDetailPageContainer>

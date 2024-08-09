@@ -156,7 +156,7 @@ function ClassAddPage() {
         await sendRequest(`/classes/${classId}`, classData, "patch");
       } else {
         const response = await sendRequest("/classes", classData, "post");
-        const newClassId = response.data;
+        const newClassId = response?.data;
 
         if (infoData.steps && infoData.steps.length > 0) {
           const stepRequests = infoData.steps?.map((step, index) => ({
@@ -178,7 +178,7 @@ function ClassAddPage() {
               stepsData.append("stepFiles", step.file);
             }
           });
-
+          console.log(newClassId);
           await sendRequest(`/classes/${newClassId}/steps`, stepsData, "post");
         }
 
