@@ -58,8 +58,8 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "강사 회원 가입 성공")
     })
     @PostMapping("signup/form")
-    public ResponseDto<Void> proSignup(@RequestBody ProSignUpRequest proSignUpRequest) {
-        userService.proSignup(proSignUpRequest);
+    public ResponseDto<Void> proSignup(@RequestBody UserSignUpRequest userSignUpRequest) {
+        userService.proSignup(userSignUpRequest);
         return ResponseDto.of(201, "강사 회원 가입 성공");
     }
 
