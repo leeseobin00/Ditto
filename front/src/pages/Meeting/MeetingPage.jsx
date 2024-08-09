@@ -109,6 +109,14 @@ function MeetingPage() {
   const maxVisible = 3; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
+  // isOut
+  const [isEnd, setEnd] = useState(false);
+
+  useEffect(()=>{
+    if(isEnd && subscribers.length==0){
+      navigate("/video");
+    }
+  },[isEnd, subscribers]);
 
   const getLectureInfo = async() => {
     const result = await sendRequest(`/live-rooms/${lectureId}`);
@@ -282,9 +290,10 @@ function MeetingPage() {
     });
 
     newSession.on('signal:end', (event) => {
-      console.log("sssssssENDENDENDENDENDENDENDENDE");
       if(roleId==1){
         navigate("/video");
+      }else if(roleId==2){
+        setEnd(true);
       }
     });
 
@@ -494,7 +503,6 @@ function MeetingPage() {
     };
   }
   const sendEnd = (senderName) => {
-    console.log("sssssssssss");
     if(session){
       session.signal({
         data: JSON.stringify({
