@@ -6,6 +6,7 @@ import com.ssafy.ditto.domain.classes.service.LectureService;
 import com.ssafy.ditto.domain.liveroom.service.LearningService;
 import com.ssafy.ditto.domain.liveroom.service.LiveRoomService;
 import com.ssafy.ditto.domain.liveroom.service.SessionService;
+import com.ssafy.ditto.domain.mypage.service.MileageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -27,6 +28,7 @@ public class ManageLiveRoomsTasklet implements Tasklet {
     private final LiveRoomService liveRoomService;
     private final SessionService sessionService;
     private final LearningService learningService;
+    private final MileageService mileageService;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -56,16 +58,10 @@ public class ManageLiveRoomsTasklet implements Tasklet {
 
             if (now.isAfter(endTime) && now.isBefore(endTime.plusMinutes(30))) {
                 liveRoomService.endLiveRoom(lecture.getLectureId());
-                learningService.changeStatus(lecture.getLectureId());
+//                learningService.changeStatus(lecture.getLectureId());
                 sessionService.closeSession(lecture.getLectureId());
-
-
-//                lectureService
-                /*
-                lecture도 is finished 설정 ?
-                if lecture is finished지만 정산 못 받았다 -> 정산 관련 메서드 추가 필요
-                마일리지 추가 후 마일리지 히스토리에 등록하는 메서드 필요
-                 */
+                mileageService.addMileage(lecture.getLectureId());
+                
             }
         }
 

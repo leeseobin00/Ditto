@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MileageRepository extends JpaRepository<Mileage, Integer> {
-    Mileage findByUserId(User user);
+    Mileage findByUser(User user);
 }
