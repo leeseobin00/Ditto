@@ -30,15 +30,17 @@ function AddressListModal({ show, onClose, userId }) {
     try {
       const response = await sendRequest(
         `/mypage/${userId}/address`,
+        null,
+        "get",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        },
-        "get"
+        }
       );
+      console.log("끝?");
       setAddresses(response?.data?.addresses);
-    } catch {
+    } catch (error) {
       console.error(error);
     }
   };

@@ -154,7 +154,6 @@ const ReviewList = ({ reviewList, setReviews, fetchMoreReviews }) => {
 
   const handleSaveEdit = async () => {
     try {
-      console.log(userId);
       await axios.patch(
         `${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`,
         {

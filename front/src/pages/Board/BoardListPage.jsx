@@ -160,7 +160,7 @@ function BoardListPage() {
   useEffect(() => {
     resetOptions();
     setPageTitle(
-      path === "all"
+      path === ""
         ? "전체"
         : path === "talk"
           ? "소통해요!"

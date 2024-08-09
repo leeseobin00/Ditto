@@ -15,12 +15,6 @@ const ListContainer = styled.div`
   align-items: center;
 `;
 
-const QnANull = styled.div`
-  font-size: 20px;
-  color: var(--TEXT_SECONDARY);
-  padding: 20px;
-`;
-
 const QuestionItemContainer = styled.div`
   width: 100%;
   display: flex;
@@ -66,7 +60,7 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!initialQuestions) {
+    if (initialQuestions.length === 0) {
       setShowMore(false);
     }
   }, [initialQuestions]);
@@ -123,7 +117,6 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
 
   return (
     <ListContainer>
-      {questions?.length === 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
       {questions?.map((question) => (
         <QuestionItemContainer key={question.questionId}>
           <ClassInfo>
