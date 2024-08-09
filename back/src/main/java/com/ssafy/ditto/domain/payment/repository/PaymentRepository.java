@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     // 입력 날짜 이전의 결제 내역 5개 반환
@@ -19,5 +20,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
             "LIMIT 5", nativeQuery = true)
     List<Payment> getPaymentList(@Param("userId") Integer userId, @Param("dateTime") LocalDateTime dateTime);
 
-    Payment findByUserIdAndLectureId(User userId, Lecture lectureId);
+    Payment findByUserAndLecture(User user, Lecture lecture);
+
+    Optional<Payment> findByUser_UserIdAndLecture_LectureId(Integer userId, Integer lectureId);
 }

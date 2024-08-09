@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -52,6 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     @Override
+    @Transactional
     public String approvePayment(PaymentApprovalRequest approvalRequest) {
         User user = userRepository.findById(approvalRequest.getUserId())
                 .orElseThrow(UserNotFoundException::new);
@@ -100,8 +102,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .isPaySuccess(true)
                         .isCanceled(false)
                         .payType(PayType.CARD)
-                        .userId(user)
-                        .lectureId(lecture)
+                        .user(user)
+                        .lecture(lecture)
                         .build();
                 lecture.setUserCount((byte) (lecture.getUserCount() + 1));
                 dClass.setStudentSum(dClass.getStudentSum() + 1);
@@ -116,6 +118,33 @@ public class PaymentServiceImpl implements PaymentService {
             }
         } else {
             throw new RuntimeException("Payment approval failed with status: " + response.getStatusCode());
+        }
+    }
+
+    public String cancelPayment(int userId, int lectureId) {
+        // userId와 lectureId로 결제 정보를 찾음
+        Optional<Payment> paymentOptional = paymentRepository.findByUser_UserIdAndLecture_LectureId(userId, lectureId);
+
+        if (paymentOptional.isPresent()) {
+            Payment payment = paymentOptional.get();
+
+            // 결제 정보가 이미 취소된 상태인지 확인
+            if (Boolean.TRUE.equals(payment.getIsCanceled())) {
+                return "이미 취소된 결제입니다.";
+            }
+
+            // 결제 취소 처리
+            payment.setIsCanceled(true);
+            payment.setPayCancelTime(LocalDateTime.now());
+            payment.setCancelReason("사용자 요청에 의한 취소");  // 취소 이유를 적절히 설정
+
+            paymentRepository.save(payment);
+
+            learningService.deleteStudent(userId,lectureId);
+
+            return "결제가 성공적으로 취소되었습니다.";
+        } else {
+            return "결제 정보를 찾을 수 없습니다.";
         }
     }
 }
