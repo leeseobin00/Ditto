@@ -98,7 +98,8 @@ function MeetingPage() {
   const [members, setMembers] = useState([]);
   // chat, timer
   const [chatMessages, setChatMessages] = useState([]);
-  const [statusMessages, setStatusMessages] = useState([]);
+  //const [statusMessages, setStatusMessages] = useState([]);
+  const [statusMessages, setStatusMessages] = useState(new Map());
   const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   // 음소거, 화면끄기
@@ -229,8 +230,6 @@ function MeetingPage() {
       }
     });
 
-    console.log(currentIndex);
-
     newSession.on('streamDestroyed', (event) => {
       console.log("visibleParticipants.length=====", visibleParticipants.length);
       console.log("currentIndex=====",currentIndex);
@@ -258,18 +257,20 @@ function MeetingPage() {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      let isExist = false;
-      const newStatusMessage = [];
-      statusMessages.forEach((message)=>{
-        if(message?.sender != parsedData?.sender){
-          newStatusMessage.push(message);
-        }else{
-          isExist = true;
-        }
-      });
-      if(!isExist) newStatusMessage.push(parsedData); 
-      console.timeLog(newStatusMessage);
-      setStatusMessages(newStatusMessage);
+      // let isExist = false;
+      // const newStatusMessage = [];
+      // statusMessages.forEach((message)=>{
+      //   if(message?.sender != parsedData?.sender){
+      //     newStatusMessage.push(message);
+      //   }else{
+      //     isExist = true;
+      //   }
+      // });
+      // if(!isExist) newStatusMessage.push(parsedData); 
+      // console.log(newStatusMessage);
+      // setStatusMessages(newStatusMessage);
+      const newMap = statusMessages;
+      newMap.set(parsedData?.sender, parsedData?.message);
     });
 
     newSession.on('signal:timer', (event) => {
@@ -286,7 +287,7 @@ function MeetingPage() {
       // 이벤트 수신시 로직
       console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
-      setStatusMessages([]);
+      setStatusMessages(new Map());
     });
 
     newSession.on('signal:end', (event) => {
