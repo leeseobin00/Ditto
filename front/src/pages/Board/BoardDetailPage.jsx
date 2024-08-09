@@ -79,6 +79,7 @@ const AddComment = styled.span`
   color: var(--SECONDARY);
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
 `;
 
 const CommentReplyWrapper = styled.div`
