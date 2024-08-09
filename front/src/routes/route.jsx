@@ -24,6 +24,7 @@ import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 import OrderPage from "../pages/Order/OrderPage";
 import OrderSuccessPage from "../pages/Order/OrderSuccessPage";
 import VideoPage from "../pages/Video/VideoPage";
+import NoContentPage from "../pages/NoContent/NoContentPage";
 
 const AppRoutes = () => {
   return (
@@ -61,6 +62,7 @@ const AppRoutes = () => {
       <Route path="/profile/:profileId" element={<ProfileDetailPage />} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
       <Route path="/video" element={<VideoPage />} />
+      <Route path="*" element={<NoContentPage />} />
     </Routes>
   );
 };
