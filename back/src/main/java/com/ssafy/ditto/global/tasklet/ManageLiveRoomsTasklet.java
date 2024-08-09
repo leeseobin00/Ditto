@@ -49,18 +49,18 @@ public class ManageLiveRoomsTasklet implements Tasklet {
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
 
-//                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
-//                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
-//                for(Integer studentId : studentList) {
-//                    sessionService.getToken(lecture.getLectureId(), studentId);
-//                }
+                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
+                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
+                for(Integer studentId : studentList) {
+                    sessionService.getToken(lecture.getLectureId(), studentId);
+                }
             }
 
             if (now.isAfter(endTime) && now.isBefore(endTime.plusMinutes(30))) {
-//                liveRoomService.endLiveRoom(lecture.getLectureId());
-//                learningService.changeStatus(lecture.getLectureId());
-//                sessionService.closeSession(lecture.getLectureId());
-//                mileageService.addMileage(lecture.getLectureId());
+                liveRoomService.endLiveRoom(lecture.getLectureId());
+                learningService.changeStatus(lecture.getLectureId());
+                sessionService.closeSession(lecture.getLectureId());
+                mileageService.addMileage(lecture.getLectureId());
                 
             }
         }
