@@ -271,6 +271,8 @@ const ModalContainer = styled.div`
   max-width: 500px;
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-height: 75vh;  // 최대 높이를 화면 높이의 80%로 설정
+  overflow-y: auto;  // 내용이 많을 경우 스크롤 가능하게 설정
   z-index: 2;
 
   // 모달 애니메이션 (옵션)
@@ -390,8 +392,8 @@ const SignupForm = () => {
       setNicknameMessage("공백은 닉네임으로 사용할 수 없습니다.");
       return;
     }
-    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
-    if (specialCharPattern.test(name)) {
+    const specialCharPattern = /^[a-z0-9가-힣]{2,10}$/;
+    if (!specialCharPattern.test(name)) {
       setIsNicknameAvailable(false);
       setNicknameMessage("닉네임에 특수문자를 포함할 수 없습니다.");
       return;
@@ -461,10 +463,10 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!isVerified) {
-    //   alert("이메일 인증을 완료해주세요.");
-    //   return;
-    // }
+    if (!isVerified) {
+      alert("이메일 인증을 완료해주세요.");
+      return;
+    }
     if (!isPasswordMatchState) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
@@ -595,7 +597,7 @@ const SignupForm = () => {
             <FormInput
               type="text"
               name="nickname"
-              placeholder="특수문자 제외 2~15자"
+              placeholder="특수문자 제외 2~10자"
               value={formData.nickname}
               onChange={handleNicknameChange}
               required
