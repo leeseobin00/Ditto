@@ -133,13 +133,17 @@ function UserVideoComponent({ streamManager }) {
     //   console.log("sssss");
     //   setMyStatus("normal");
     // }
+    console.log("==============================================");
     if(statusMessages.length===0) setMyStatus("normal");
     const matchingMessages = statusMessages.filter(
       (message) => message.sender === videoUsername
     );
 
+    console.log(matchingMessages);
+
     matchingMessages.forEach((message) => {
-      setMyStatus("normal");
+      setMyStatus(message.message);
+      console.log(message.message)
     });
   }, [statusMessages, streamManager]);
 
