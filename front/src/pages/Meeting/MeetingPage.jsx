@@ -107,7 +107,7 @@ function MeetingPage() {
   const [videoEnabled, setVideoEnabled] = useState(true);
   // pagination
   const [currentIndex, setCurrentIndex] = useState(0);
-  const maxVisible = 1; // Maximum visible participants
+  const maxVisible = 3; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
   // isOut
