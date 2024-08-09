@@ -137,10 +137,9 @@ function UserVideoComponent({ streamManager }) {
     const matchingMessages = statusMessages.filter(
       (message) => message.sender === videoUsername
     );
+
     matchingMessages.forEach((message) => {
-      if (message.message === "normal") setMyStatus("normal");
-      if (message.message === "도와주세요") setMyStatus("help");
-      if (message.message === "완료") setMyStatus("done");
+      setMyStatus("normal");
     });
   }, [statusMessages, streamManager]);
 
