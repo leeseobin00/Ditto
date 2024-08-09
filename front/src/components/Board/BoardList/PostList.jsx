@@ -34,6 +34,8 @@ const PostId = styled(Content)`
 const PostTitle = styled(Content)`
   flex: 4;
   margin-right: 16px;
+
+  overflow: hidden;
 `;
 
 const PostLike = styled(Content)`
