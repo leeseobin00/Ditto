@@ -368,6 +368,7 @@ function MeetingPage() {
     setSubscribers([]);
     setMySessionId('SessionA');
     setMyUserName(undefined);
+    navigate("/video");
   };
 
   // Include publisher in pagination logic 
@@ -555,8 +556,6 @@ function MeetingPage() {
   useEffect(()=>{
     console.log("statusMessages: ", statusMessages);
   },[statusMessages]);
-
-  console.log("==========================>isopen: ", isOpen);
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
