@@ -368,7 +368,7 @@ function MeetingPage() {
     setSubscribers([]);
     setMySessionId('SessionA');
     setMyUserName(undefined);
-    navigate("/video");
+    if(isEnd) { navigate("/video"); }
   };
 
   // Include publisher in pagination logic 
