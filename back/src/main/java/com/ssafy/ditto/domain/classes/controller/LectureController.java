@@ -68,4 +68,9 @@ public class LectureController {
         lectureService.deleteLecture(classId, lectureId);
         return ResponseDto.of(OK.value(), ResponseMessage.SUCCESS_DELETE.getMessage(), "차시가 성공적으로 삭제되었습니다.");
     }
+
+    @GetMapping("/{lectureId}/review/completed")
+    public ResponseDto<Boolean> checkReviewCompletion(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestParam Integer userId) {
+        return ResponseDto.of(OK.value(), ResponseMessage.SUCCESS_FETCH.getMessage(), lectureService.checkReviewCompleted(classId, lectureId, userId));
+    }
 }
