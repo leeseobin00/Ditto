@@ -15,7 +15,7 @@ const PageContainer = styled.div`
 `;
 
 const ReviewNull = styled.div`
-  font-size: 18px;
+  font-size: 20px;
   color: var(--TEXT_SECONDARY);
   padding: 40px;
   text-align: center;
