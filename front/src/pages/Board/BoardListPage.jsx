@@ -7,7 +7,7 @@ import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Board/TabBar";
 import SelectBox from "../../components/Board/SelectBox";
 import PostList from "../../components/Board/BoardList/PostList";
-import PaginationBar from "../../components/Board/BoardList/PaginationBar";
+import PaginationBar from "../../components/common/PaginationBar";
 import Button from "../../components/common/Button";
 import SelectTag from "../../components/Board/SelectTag";
 import { getTagsForCategory } from "../../utils/options";

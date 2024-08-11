@@ -10,7 +10,7 @@ import SelectBox from "../../components/Board/SelectBox";
 import SelectTag from "../../components/Board/SelectTag";
 import Button from "../../components/common/Button";
 import ClassList from "../../components/Class/ClassList/ClassList";
-import PaginationBar from "../../components/Board/BoardList/PaginationBar";
+import PaginationBar from "../../components/common/PaginationBar";
 import { getTagsForCategory } from "../../utils/options";
 import {
   CLASS_SEARCH_OPTIONS,
@@ -115,7 +115,9 @@ function ClassListPage() {
     const result = await sendRequest(url, null, "get");
 
     setClassList(result?.data?.classList || []);
-    setTotalPageCount(result?.data?.totalPageCount);
+    setTotalPageCount(result?.data?.totalPages);
+    setCurrentPage(result?.data?.currentPage);
+    console.log(result?.data?.totalPages);
   };
 
   const resetOptions = () => {
@@ -176,14 +178,22 @@ function ClassListPage() {
   };
 
   const pageNumbers = useMemo(() => {
-    const size = Math.ceil(totalPageCount / 12);
-    return Array.from({ length: size }, (_, i) => i + 1);
-  }, [totalPageCount]);
+    const size = Math.ceil(totalPageCount - (currentSection - 1) * 12);
+    const ret = [];
+    for (let i = 1; i <= size; i++) {
+      ret.push(i);
+    }
+    return ret;
+  }, [currentSection, totalPageCount]);
 
   const handlePage = (number) => {
     setCurrentPage(number);
-    setCurrentSection(Math.ceil(number / 10));
   };
+
+  // useEffect(() => {
+  //   setCurrentPage(page);
+  //   setCurrentSection(Math.ceil(page / 10));
+  // }, [page]);
 
   return (
     <ClassPageContainer>
@@ -225,7 +235,7 @@ function ClassListPage() {
         <ClassList classList={classList} />
         <PaginationBar
           pageNumbers={pageNumbers}
-          currentPage={currentPage + 1}
+          currentPage={currentPage}
           handleClick={handlePage}
         />
       </Wrapper>
