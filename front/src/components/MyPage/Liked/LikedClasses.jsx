@@ -1,7 +1,7 @@
-// src/components/MyPage/LikedClasses.jsx
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import ClassListItem from "../../Class/ClassList/ClassListItem";
 
 const Container = styled.div`
   display: flex;
@@ -78,9 +78,9 @@ const Rating = styled.div`
 
 const Group = styled.div`
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  width: 100%; 
+  width: 100%;
   margin-top: 10px;
 `;
 
@@ -90,7 +90,7 @@ const Tag = styled.div`
   border-radius: 10px;
   padding: 5px;
   font-size: 13px;
-`
+`;
 
 const LikedClasses = ({ classes, onLikeCancel }) => {
   const navigate = useNavigate();
@@ -98,26 +98,19 @@ const LikedClasses = ({ classes, onLikeCancel }) => {
   const handleClassClick = (classId) => {
     navigate(`/classes/detail/${classId}`);
   };
-  
+
   return (
     <Container>
       <ClassContainer>
-        {classes.map((cls) => (
-          <ClassCard key={cls.classId}>
-            <ClassImage src={`http://i11a106.p.ssafy.io:8080/files/download/${cls.fileId}`} alt={cls.className} onClick={() => handleClassClick(cls.classId)} />
-            <ClassInfo>
-              <ClassName>{cls.className}</ClassName>
-              <Group>
-                <ClassDetail>{`${cls.classHour}시간 | ${cls.nickname}`}</ClassDetail>
-                <HeartIcon onClick={() => onLikeCancel(cls.classId)}>❤ {cls.likeCount}</HeartIcon>
-              </Group>
-              <Group>
-                <Rating>★ {cls.ratingSum / 100} ({cls.reviewCount})</Rating>
-                <Tag>{`${cls.tagName}`}</Tag>
-                <Price>₩ {cls.classPrice}</Price>
-              </Group>
-            </ClassInfo>
-          </ClassCard>
+        {classes.map((classInfo, index) => (
+          <ClassListItem
+            key={index}
+            classInfo={classInfo}
+            fileId={classInfo?.fileId}
+            instructor={classInfo?.nickname}
+            tag={classInfo?.tagName}
+            isMyPage={true}
+          />
         ))}
       </ClassContainer>
     </Container>

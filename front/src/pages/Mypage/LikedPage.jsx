@@ -4,19 +4,16 @@ import { useSelector } from "react-redux";
 import LikedClasses from "../../components/MyPage/Liked/LikedClasses";
 import LikedUsers from "../../components/MyPage/Liked/LikedUsers";
 import axios from "axios";
+import MoreButton from "../../components/common/MoreButton";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
 `;
 
-const Title = styled.h2`
-  align-self: flex-start;
-  color: var(--PRIMARY);
+const Title = styled.div`
   font-size: 20px;
-  margin: 20px 13px;
+  font-weight: 700;
+  color: var(--PRIMARY);
 `;
 
 const LoadMoreButton = styled.button`
@@ -152,14 +149,10 @@ const LikedPage = () => {
         classes={likedClasses}
         onLikeCancel={handleClassLikeCancel}
       />
-      <LoadMoreButton onClick={loadMoreClasses} disabled={loading}>
-        {loading ? "불러오는 중..." : "더보기"}
-      </LoadMoreButton>
+      <MoreButton onClick={loadMoreClasses} disabled={loading} />
       <Title>관심 User</Title>
       <LikedUsers users={likedUsers} onLikeCancel={handleUserLikeCancel} />
-      <LoadMoreButton onClick={loadMoreUsers} disabled={loading}>
-        {loading ? "불러오는 중..." : "더보기"}
-      </LoadMoreButton>
+      <MoreButton onClick={loadMoreUsers} disabled={loading} />
     </Container>
   );
 };
