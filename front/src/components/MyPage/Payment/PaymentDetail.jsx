@@ -8,6 +8,8 @@ import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
 import Swal from 'sweetalert2';
+import ReviewPostModal from "../../Review/ReviewPostModal";
+import MoreButton from "../../common/MoreButton";
 
 const ListContainer = styled.div`
   margin: 10px;
@@ -115,26 +117,17 @@ const PaymentActions = styled.div`
   gap: 5px;
 `;
 
-const ActionButton = styled.button`
-  padding: 5px 10px;
-  background-color: ${(props) =>
-    props.$cancel ? "var(--LIGHT)" : "var(--SECONDARY)"};
-  color: ${(props) => (props.$cancel ? "var(--RED)" : "var(--LIGHT)")};
-  border: 1px solid var(--TEXT_SECONDARY);
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.9);
-  }
-`;
-
 const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
 `;
 
-const PaymentDetail = ({ payments = [], setPayments, userId }) => {
+const PaymentDetail = ({
+  payments = [],
+  setPayments,
+  userId,
+  onUpdate,
+  showMoreButton,
+}) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -143,6 +136,7 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
   const [summaries, setSummaries] = useState([]);
   const [refundPolicy, setRefundPolicy] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const handleClassClick = (classId) => {
     navigate(`/classes/detail/${classId}`);
@@ -221,13 +215,18 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
     }
   };
 
-  const handleReviewClick = (classId) => {
-    navigate(`/class/${classId}`);
+  // 리뷰 작성 조작
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const handleReviewClick = (payment) => {
+    setSelectedPayment(payment);
+    setShowReviewModal(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setIsRefundPolicy(false);
+    setShowReviewModal(false);
     setModalMessage("");
     setSummaries([]);
     setRefundPolicy("");
@@ -316,7 +315,7 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
               <PaymentInfo onClick={() => handleClassClick(payment.classId)}>
                 <PaymentName>{payment.className}</PaymentName>
                 <ClassStartDateTime>
-                  {`${payment.year}.${String(payment.month).padStart(2, "0")}.${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
+                  {`${payment.year}-${String(payment.month).padStart(2, "0")}-${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
                 </ClassStartDateTime>
               </PaymentInfo>
               <PaymentInfoContainer>
@@ -354,7 +353,7 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
                       <RoundButton
                         label={"리뷰 작성"}
                         size={"sm"}
-                        onClick={() => handleReviewClick(payment.classId)}
+                        onClick={() => handleReviewClick(payment)}
                       />
                     </>
                   )}
@@ -364,6 +363,15 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
           </PaymentItemContainer>
         );
       })}
+      {showMoreButton && <MoreButton onClick={onUpdate} />}
+      <ReviewPostModal
+        show={showReviewModal}
+        onClose={closeModal}
+        userId={userId}
+        classId={selectedPayment?.classId}
+        isClass={false}
+        payment={selectedPayment}
+      />
       {isModalOpen &&
         (isRefundPolicy ? (
           <RefundPolicyModal

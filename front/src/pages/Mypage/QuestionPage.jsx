@@ -16,6 +16,13 @@ const Title = styled.div`
   color: var(--PRIMARY);
 `;
 
+const QnANull = styled.div`
+  font-size: 18px;
+  color: var(--TEXT_SECONDARY);
+  padding: 40px;
+  text-align: center;
+`;
+
 const QuestionPage = () => {
   const userId = useSelector((state) => state.auth.userId);
   const roleId = useSelector((state) => state.auth.roleId);
@@ -62,6 +69,7 @@ const QuestionPage = () => {
   return (
     <PageContainer>
       <Title>{roleId == 1 ? "작성한 문의" : "문의 내역"}</Title>
+      {questions.length === 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
       <MyPageQnAList
         initialQuestions={questions}
         userId={userId}

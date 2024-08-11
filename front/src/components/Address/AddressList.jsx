@@ -24,7 +24,7 @@ function AddressList({
 }) {
   return (
     <ListContainer>
-      {addresses.length > 0 ? (
+      {addresses?.length > 0 ? (
         addresses.map((address) => (
           <AddressItem
             key={address.addressId}

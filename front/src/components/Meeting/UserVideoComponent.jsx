@@ -60,7 +60,7 @@ function UserVideoComponent({ streamManager }) {
   const roleId = useSelector((state) => state.auth.roleId);
   const username = useSelector((state) => state.auth.nickname);
   // context API
-  const { statusMessages, sendStatus } = useContext(MeetingContext);
+  const { statusMessages, sendStatus, members } = useContext(MeetingContext);
 
   const videoRef = useRef(null);
   const [videoRoleId, setVideoRoleId] = useState(undefined);
@@ -72,7 +72,7 @@ function UserVideoComponent({ streamManager }) {
     if(isHelp==false){
       setIsHelp(true);
       setIsDone(false);
-      sendStatus(username, '도와주세요');
+      sendStatus(username, 'help');
     }else if(isHelp==true){
       setIsHelp(false);
       setIsDone(false);
@@ -84,7 +84,7 @@ function UserVideoComponent({ streamManager }) {
     if(isDone==false){
       setIsDone(true);
       setIsHelp(false);
-      sendStatus(username, '완료');
+      sendStatus(username, 'done');
     }else if(isDone==true){
       setIsHelp(false);
       setIsDone(false);
@@ -123,18 +123,31 @@ function UserVideoComponent({ streamManager }) {
 
   useEffect(() => {
     const videoUsername = getNicknameTag();
+    // console.log("receive StatusMessage: ", statusMessages);
+    // console.log("videoUserName:", videoUsername);
+    // console.log("statusMessages[videoUsername]", statusMessages[videoUsername]);
+    // if(videoUsername in statusMessages){
+    //   console.log(statusMessages[videoUsername]);
+    //   setMyStatus(statusMessages[videoUsername]);
+    // }else{
+    //   console.log("sssss");
+    //   setMyStatus("normal");
+    // }
+    console.log("==============================================");
     if(statusMessages.length===0) setMyStatus("normal");
     const matchingMessages = statusMessages.filter(
       (message) => message.sender === videoUsername
     );
-    matchingMessages.forEach((message) => {
-      if (message.message === "normal") setMyStatus("normal");
-      if (message.message === "도와주세요") setMyStatus("help");
-      if (message.message === "완료") setMyStatus("done");
-    });
-  }, [statusMessages]);
 
-  console.log(myStatus);
+    console.log(matchingMessages);
+
+    matchingMessages.forEach((message) => {
+      setMyStatus(message.message);
+      console.log(message.message)
+    });
+  }, [statusMessages, streamManager]);
+
+  console.log("myStatus", myStatus);
   console.log(statusMessages);
   console.log(videoRoleId);
   console.log(roleId);

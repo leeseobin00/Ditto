@@ -508,6 +508,10 @@ const SignupForm = () => {
       });
       return;
     }
+    // if (!isVerified) {
+    //   alert("이메일 인증을 완료해주세요.");
+    //   return;
+    // }
     if (!isPasswordMatchState) {
       Swal.fire({
         icon: "warning",

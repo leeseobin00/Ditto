@@ -7,7 +7,7 @@ const PageButtons = styled.div`
 `;
 
 const PageButton = styled.button`
-  padding: 8px 12px;
+  padding: 4px 8px;
   margin: 0 5px;
   background-color: ${(props) =>
     props.$active === "true" ? "var(--SECONDARY)" : "var(--LIGHT)"};

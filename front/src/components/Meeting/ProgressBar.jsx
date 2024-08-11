@@ -1,6 +1,7 @@
 import { styled, keyframes } from "styled-components";
 import { useSelector } from "react-redux";
 import MeetingButton from "./MeetingButton";
+import { BiSolidFolder } from "react-icons/bi";
 
 const ProgressBarWrapper = styled.div`
   display: flex;
@@ -37,8 +38,45 @@ const ProgressDescription = styled.div`
 `;
 
 const ProgressName = styled.div`
+  display: flex;
   color: var(--LIGHT);
   font-size: 16px;
+`;
+
+const FolderIconWrapper = styled.div`
+  position: relative;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  &:hover div{
+    display: flex;
+  }
+`;
+
+const CustomFolderIcon = styled(BiSolidFolder)`
+  cursor: pointer;
+`;
+
+const ProgressContent = styled.div`
+  display: none;
+  justify-content: flex-start;
+  align-items: center;
+  position: absolute;
+  top: 24px;
+  left: 0px;
+  padding: 16px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 400px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  background-color:  var(--MEETING_SECONDARY);
+  color: var(--LIGHT);
 `;
 
 const spin = keyframes`
@@ -75,7 +113,16 @@ function ProgressBar({ steps
         ))}
       </Bar>
       <ProgressDescription>
-        <ProgressName>{steps[currentStep]?.stepName}</ProgressName>
+        <ProgressName>
+          {(currentStep>=0 && currentStep<steps.length) && 
+          <FolderIconWrapper>
+            <CustomFolderIcon />
+            <ProgressContent>
+              {steps[currentStep]?.stepDetail}
+            </ProgressContent>  
+          </FolderIconWrapper>}
+          {steps[currentStep]?.stepName}
+        </ProgressName>
         {(roleId==2 && !loading) && <>
           {currentStep==-1 && <MeetingButton label="Start" onClick={handleStartStep} />}
           {(currentStep>=0 && currentStep<steps.length-1) && <MeetingButton label="Next" onClick={handleNextStep} />}
