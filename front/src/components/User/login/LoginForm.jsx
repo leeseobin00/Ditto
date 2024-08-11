@@ -188,6 +188,7 @@ const LoginForm = () => {
         text: "메인 페이지로 이동합니다.",
         icon: "success",
         confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
       });
 
       navigate("/"); // 로그인 성공 시 메인 페이지로 이동
@@ -200,6 +201,7 @@ const LoginForm = () => {
         text: "다시 시도해주세요.",
         icon: "error",
         confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
       });
     } finally {
       setLoading(false);

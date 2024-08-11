@@ -274,7 +274,8 @@ const ProSignupForm = ({ formData, setFormData }) => {
         title: '입력 오류',
         text: '필수 입력 사항을 모두 입력해 주세요.',
         icon: 'error',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
       });
       return;
     }
@@ -284,7 +285,8 @@ const ProSignupForm = ({ formData, setFormData }) => {
         title: '주의 사항',
         text: '주의 사항을 확인하고 체크해 주세요.',
         icon: 'warning',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
       });
       return;
     }
@@ -312,7 +314,8 @@ const ProSignupForm = ({ formData, setFormData }) => {
         title: '가입 신청 완료',
         text: '가입 신청이 성공적으로 완료되었습니다.',
         icon: 'success',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
       }).then(() => {
         navigate('/');
       });
@@ -322,7 +325,8 @@ const ProSignupForm = ({ formData, setFormData }) => {
         title: '오류 발생',
         text: '가입 신청 중 오류가 발생했습니다.',
         icon: 'error',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
       });
     }
   };
