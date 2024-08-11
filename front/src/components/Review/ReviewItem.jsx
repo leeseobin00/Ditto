@@ -6,7 +6,7 @@ import EmptyStar from "../../assets/icon/class/star-empty.png";
 const ReviewItemContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 150px;
+  min-height: 150px;
   width: 100%;
   border-style: solid;
   border-width: 0.5px;
@@ -24,6 +24,12 @@ const DetailLine = styled.div`
   align-items: center;
 `;
 
+const ContentLine = styled.div`
+  width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`;
+
 const Icon = styled.img`
   width: 20px;
   height: 20px;
@@ -32,7 +38,6 @@ const Icon = styled.img`
 
 const DetailLineSecondary = styled(DetailLine)`
   color: var(--TEXT_SECONDARY);
-  /* width: 150px; */
   justify-content: space-between;
   align-self: flex-end;
 `;
@@ -48,7 +53,7 @@ function ReviewItem({ review }) {
           <Icon key={index} src={EmptyStar} />
         ))}
       </DetailLine>
-      <DetailLine>{review.reviewContent}</DetailLine>
+      <ContentLine>{review.reviewContent}</ContentLine>
       <DetailLineSecondary>
         <div>{review.reviewer.nickname}</div>
         <div style={{ margin: "0 10px", color: "var(--TEXT_PRIMARY" }}>|</div>
