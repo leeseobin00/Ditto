@@ -24,9 +24,9 @@ const Wrapper = styled.div`
 `;
 
 const PageTitle = styled.p`
+  font-size: 25px;
+  font-weight: 700;
   color: var(--PRIMARY);
-  font-weight: 600;
-  font-size: 24px;
   width: 100%;
   margin-bottom: 32px;
 `;
@@ -233,7 +233,12 @@ function ProfileSearchPage() {
         </FilterWrapper>
       </Filters>
 
-      <Section title="강사" curPage={currentTeacherPage} totalPage={teacherTotalPage} onClick={handleTeacherPage}>
+      <Section
+        title="강사"
+        curPage={currentTeacherPage}
+        totalPage={teacherTotalPage}
+        onClick={handleTeacherPage}
+      >
         <Profiles>
           {uniqueTeacherProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>
@@ -247,7 +252,12 @@ function ProfileSearchPage() {
         </Profiles>
       </Section>
 
-      <Section title="일반 회원" curPage={currentPage} totalPage={totalPage} onClick={handlePage}>
+      <Section
+        title="일반 회원"
+        curPage={currentPage}
+        totalPage={totalPage}
+        onClick={handlePage}
+      >
         <Profiles>
           {uniqueProfiles.map((profile) => (
             <Link to={`/profile/${profile.userId}`} key={profile.userId}>

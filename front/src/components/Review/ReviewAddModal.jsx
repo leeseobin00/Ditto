@@ -85,6 +85,19 @@ const ContentInput = styled.textarea`
   }
 `;
 
+const LectureInfo = styled.div`
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  color: var(--TEXT_SECONDARY);
+  margin: 10px;
+  justify-content: space-between;
+`;
+
+const LectureDetail = styled.div`
+  font-size: 14px;
+`;
+
 function ReviewAddModal({
   show,
   onClose,
@@ -92,12 +105,16 @@ function ReviewAddModal({
   userId,
   classId,
   onUpdate,
+  isClass = true,
+  payment,
 }) {
   if (!show) return null;
 
   const [rating, setRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
-  const [selectedLecture, setSelectedLecture] = useState("");
+  const [selectedLecture, setSelectedLecture] = useState(
+    payment?.lectureId || ""
+  );
   const { sendRequest } = useAxios();
 
   const handleStarClick = (index) => {
@@ -127,8 +144,9 @@ function ReviewAddModal({
 
     try {
       await sendRequest(`/classes/${classId}/reviews`, reviewData, "post");
-      onUpdate();
+      if (isClass) onUpdate();
       onClose();
+      console.log("onclose");
     } catch (error) {
       console.log(error);
     }
@@ -150,20 +168,29 @@ function ReviewAddModal({
           </StarContainer>
           <RatingDiv>별점을 선택해주세요.</RatingDiv>
         </StarRateContainer>
-        <SelectBox onChange={handleSelectChange} value={selectedLecture}>
-          <option value="" disabled>
-            강의를 선택해주세요
-          </option>
-          {lectureList.map((lecture, index) => (
-            <option key={index} value={lecture.lectureId}>
-              {String(lecture.year).padStart(4, "0")}-
-              {String(lecture.month).padStart(2, "0")}-
-              {String(lecture.day).padStart(2, "0")}&nbsp;
-              {String(lecture.hour).padStart(2, "0")}:
-              {String(lecture.minute).padStart(2, "0")}
+        {isClass ? (
+          <SelectBox onChange={handleSelectChange} value={selectedLecture}>
+            <option value="" disabled>
+              강의를 선택해주세요
             </option>
-          ))}
-        </SelectBox>
+            {lectureList.map((lecture, index) => (
+              <option key={index} value={lecture.lectureId}>
+                {String(lecture.year).padStart(4, "0")}-
+                {String(lecture.month).padStart(2, "0")}-
+                {String(lecture.day).padStart(2, "0")}&nbsp;
+                {String(lecture.hour).padStart(2, "0")}:
+                {String(lecture.minute).padStart(2, "0")}
+              </option>
+            ))}
+          </SelectBox>
+        ) : (
+          <LectureInfo>
+            <LectureDetail>{payment?.className}</LectureDetail>
+            <LectureDetail>
+              {`${payment.year}-${String(payment.month).padStart(2, "0")}-${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
+            </LectureDetail>
+          </LectureInfo>
+        )}
         <ContentInput
           placeholder="내용을 입력해주세요."
           value={reviewContent}

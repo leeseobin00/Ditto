@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { styled } from "styled-components";
 import { BsSearch } from "react-icons/bs";
@@ -85,17 +85,20 @@ function ClassListPage() {
 
   const { sendRequest } = useAxios();
   const location = useLocation();
+  const navigate = useNavigate();
   const pathArr = location.pathname.split("/");
   const path = pathArr.length === 3 ? pathArr[2] : "";
 
   const [pageTitle, setPageTitle] = useState("전체");
+  const searchParams = new URLSearchParams(location.search);
+  const page = parseInt(searchParams.get("page"), 10) || 1;
   const [classList, setClassList] = useState([]);
   const [categoryId, setCategoryId] = useState(0);
   const [tagId, setTagId] = useState(0);
   const [searchBy, setSearchBy] = useState("className");
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState("classId");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(page);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
 
@@ -116,8 +119,6 @@ function ClassListPage() {
 
     setClassList(result?.data?.classList || []);
     setTotalPageCount(result?.data?.totalPages);
-    setCurrentPage(result?.data?.currentPage);
-    console.log(result?.data?.totalPages);
   };
 
   const resetOptions = () => {
@@ -188,12 +189,15 @@ function ClassListPage() {
 
   const handlePage = (number) => {
     setCurrentPage(number);
+    navigate(`${location.pathname}?page=${number}`);
   };
 
-  // useEffect(() => {
-  //   setCurrentPage(page);
-  //   setCurrentSection(Math.ceil(page / 10));
-  // }, [page]);
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get("page"), 10) || 1;
+    setCurrentPage(page);
+    setCurrentSection(Math.ceil(page / 12));
+  }, [location.search]);
 
   return (
     <ClassPageContainer>

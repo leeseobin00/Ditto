@@ -45,9 +45,9 @@ const ReviewListPage = () => {
   };
 
   const fetchMoreReviews = async () => {
-    if (reviews.length === 0) return;
+    if (reviewList.length === 0) return;
 
-    const finalDate = reviews[reviews.length - 1].createdDate;
+    const finalDate = reviewList[reviewList.length - 1].createdDate;
 
     try {
       const response = await axios.get(

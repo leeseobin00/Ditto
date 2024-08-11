@@ -36,7 +36,6 @@ function AddressListModal({ show, onClose, userId }) {
           },
         }
       );
-      console.log("끝?");
       setAddresses(response?.data?.addresses);
     } catch (error) {
       console.error(error);

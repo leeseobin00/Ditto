@@ -4,45 +4,50 @@ import EditReviewModal from "./EditReviewModal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ReviewItem from "../../Review/ReviewItem";
+import MoreButton from "../../common/MoreButton";
 
 const ListContainer = styled.div`
-  margin-top: 20px;
+  margin: 10px;
   width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const ReviewItemContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   padding: 20px;
-  margin-bottom: 10px;
-`;
-
-const ReviewHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin: 20px 0;
 `;
 
 const ClassInfo = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  border-bottom: 1px solid var(--BORDER_COLOR);
   cursor: pointer;
 `;
 
 const ClassImage = styled.img`
   width: 70px;
   height: 70px;
-  border-radius: 10px;
-  margin-right: 20px;
+  border-radius: 50px;
+  margin-right: 30px;
 `;
 
 const ClassDetails = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const Hr = styled.hr`
+  margin: 8px 0;
+  border: 0.5px solid var(--BACKGROUND_COLOR);
 `;
 
 const ClassName = styled.div`
@@ -52,20 +57,6 @@ const ClassName = styled.div`
 
 const ClassDate = styled.div`
   color: var(--TEXT_SECONDARY);
-`;
-
-const ReviewContent = styled.div`
-  margin-top: 10px;
-  color: var(--TEXT_SECONDARY);
-`;
-
-const ReviewDate = styled.div`
-  margin-top: 5px;
-  color: var(--TEXT_SECONDARY);
-`;
-
-const Rating = styled.div`
-  color: var(--YELLOW);
 `;
 
 const ButtonGroup = styled.div`
@@ -93,26 +84,6 @@ const DeleteButton = styled.button`
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
-  &:hover {
-    filter: brightness(0.9);
-  }
-`;
-
-const LoadMoreButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-const LoadMoreButton = styled.button`
-  padding: 10px 20px;
-  background-color: var(--SECONDARY);
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 20px;
   &:hover {
     filter: brightness(0.9);
   }
@@ -182,32 +153,27 @@ const ReviewList = ({ reviewList, setReviews, fetchMoreReviews }) => {
       {reviewList.map((review) => (
         <ReviewItemContainer key={review.reviewId}>
           <ClassInfo onClick={() => handleClassClick(review.classId)}>
-            <ClassImage src={review.fileUrl} alt={review.className} />
+            <ClassImage
+              src={`http://i11a106.p.ssafy.io:8080/files/download/${review.fileId}`}
+              alt={review.className}
+            />
             <ClassDetails>
               <ClassName>{review.className}</ClassName>
               <ClassDate>{`${review.year}.${String(review.month).padStart(2, "0")}.${String(review.day).padStart(2, "0")} ${String(review.hour).padStart(2, "0")}:${String(review.minute).padStart(2, "0")}`}</ClassDate>
             </ClassDetails>
           </ClassInfo>
-          <ReviewHeader>
-            <Rating>
-              {"★".repeat(review.rating)} {"☆".repeat(5 - review.rating)}
-            </Rating>
-            <ReviewDate>
-              {new Date(review.createdDate).toLocaleDateString()}
-            </ReviewDate>
-          </ReviewHeader>
-          <ReviewContent>{review.reviewContent}</ReviewContent>
+          <Hr />
+          <ReviewItem review={review} isMypage={true} />
+          {/*
           <ButtonGroup>
             <EditButton onClick={() => handleEdit(review)}>수정</EditButton>
             <DeleteButton onClick={() => handleDelete(review.reviewId)}>
               삭제
             </DeleteButton>
-          </ButtonGroup>
+          </ButtonGroup> */}
         </ReviewItemContainer>
       ))}
-      <LoadMoreButtonContainer>
-        <LoadMoreButton onClick={fetchMoreReviews}>더보기</LoadMoreButton>
-      </LoadMoreButtonContainer>
+      <MoreButton onClick={fetchMoreReviews} />
       {isEditing && (
         <EditReviewModal
           isOpen={isEditing}
