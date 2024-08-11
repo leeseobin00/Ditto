@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import DefaultProfileImage from "../../../assets/img/profile-user.png";
+import DefaultProfileImage from "../../../assets/img/default-user.png";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 

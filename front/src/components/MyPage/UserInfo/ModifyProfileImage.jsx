@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import useFormDataAxios from "../../../hooks/useFormDataAxios";
 import OutlineButton from "../../common/OutlineButton";
-import DefaultProfileImage from "../../../assets/img/profile-user.png";
+import DefaultProfileImage from "../../../assets/img/default-user.png";
 import Swal from "sweetalert2";
 
 const ModalTitle = styled.p`
