@@ -44,4 +44,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
             "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId) AND EXISTS " +
             "(SELECT ln FROM Learning ln WHERE ln.lecture.lectureId = l.lectureId AND ln.student.userId = :userId)")
     List<Lecture> findCompletedLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(r) > 0 FROM Review r WHERE r.dclass.classId = :classId AND r.lecture.lectureId = :lectureId AND r.user.userId = :userId")
+    boolean existsByClassIdAndLectureIdAndUserId(Integer classId, Integer lectureId, Integer userId);
 }
