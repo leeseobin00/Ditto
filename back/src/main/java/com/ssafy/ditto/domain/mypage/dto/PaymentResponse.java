@@ -51,4 +51,6 @@ public class PaymentResponse {
 
     @Schema(description = "분", example = "30")
     private Byte minute;
+
+    private Boolean isFinished;
 }

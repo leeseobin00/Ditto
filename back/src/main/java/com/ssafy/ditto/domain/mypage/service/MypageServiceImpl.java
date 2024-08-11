@@ -230,6 +230,7 @@ public class MypageServiceImpl implements MypageService {
                     .day(lecture.getDay())
                     .hour(lecture.getHour())
                     .minute(lecture.getMinute())
+                    .isFinished(lecture.getIsFinished())
                     .build();
 
             paymentResponses.add(paymentResponse);
