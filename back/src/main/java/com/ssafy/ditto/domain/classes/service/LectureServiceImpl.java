@@ -109,6 +109,11 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
+    public Boolean checkReviewCompleted(Integer classId, Integer lectureId, Integer userId) {
+        return lectureRepository.existsByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
+    }
+
+    @Override
     @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
         List<Lecture> lectures = lectureRepository.findCompletedLecturesWithoutReviews(classId, userId);

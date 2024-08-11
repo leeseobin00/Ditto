@@ -23,5 +23,7 @@ public interface LectureService {
     List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId);
 
     List<LectureResponse> getLecturesWithoutReviews(Integer classId, Integer userId);
+
+    Boolean checkReviewCompleted(Integer classId, Integer lectureId, Integer userId);
 }
 
