@@ -7,6 +7,7 @@ import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 �
 import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
+import Swal from 'sweetalert2';
 
 const ListContainer = styled.div`
   margin: 10px;
@@ -164,10 +165,22 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
         setIsRefundPolicy(true);
         setIsModalOpen(true);
       } else {
-        alert("환불 규정 조회 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '환불 규정 조회 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("환불 규정 조회 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '환불 규정 조회 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50', 
+        confirmButtonText: '확인'
+      });
       console.error(error);
     }
   };
@@ -188,10 +201,22 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
         setIsRefundPolicy(false);
         setIsModalOpen(true);
       } else {
-        alert("요약 조회 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '요약 조회 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', 
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("요약 조회 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '요약 조회 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error("요약 조회 에러:", error);
     }
   };
@@ -228,11 +253,30 @@ const PaymentDetail = ({ payments = [], setPayments, userId }) => {
               : payment
           )
         );
+        Swal.fire({
+          title: '취소 완료',
+          text: '결제가 성공적으로 취소되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       } else {
-        alert("취소 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '취소 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("취소 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '취소 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error(error);
     } finally {
       setIsRefundPolicy(false);

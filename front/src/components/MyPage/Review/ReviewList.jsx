@@ -4,6 +4,7 @@ import EditReviewModal from "./EditReviewModal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Swal from 'sweetalert2';
 
 const ListContainer = styled.div`
   margin-top: 20px;
@@ -143,11 +144,23 @@ const ReviewList = ({ reviewList, setReviews, fetchMoreReviews }) => {
       await axios.delete(
         `${baseURL}/classes/${classId}/reviews/${currentReview.reviewId}`
       );
-      alert("리뷰가 성공적으로 삭제되었습니다.");
-      //setQuestions(questions.map(q => q.answer?.answerId === answerId ? { ...q, answer: null, isAnswered: false } : q));
-      //삭제
+      Swal.fire({
+        title: '삭제 완료',
+        text: '리뷰가 성공적으로 삭제되었습니다.',
+        icon: 'success',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      }).then(() => {
+        setReviews((reviews) => reviews.filter(review => review.reviewId !== currentReview.reviewId));
+      });
     } catch (error) {
-      alert("리뷰 삭제 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '삭제 실패',
+        text: '리뷰 삭제에 실패했습니다. 다시 시도해 주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error("리뷰 삭제 에러:", error);
     }
   };
@@ -164,12 +177,24 @@ const ReviewList = ({ reviewList, setReviews, fetchMoreReviews }) => {
           lectureId: lectureId,
         }
       );
-      alert("리뷰가 성공적으로 수정되었습니다.");
+      Swal.fire({
+        title: '수정 완료',
+        text: '리뷰가 성공적으로 수정되었습니다.',
+        icon: 'success',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      })
       // setReviews(reviews.map(r => r?.reviewId === ));
       // 수정
       setIsEditing(false);
     } catch (error) {
-      alert("리뷰 수정 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '수정 실패',
+        text: '리뷰 수정에 실패했습니다. 다시 시도해 주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error("리뷰 수정 에러:", error);
     }
   };
