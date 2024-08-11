@@ -115,7 +115,8 @@ function ProfileDetailPage() {
     { rating: 5 },
   ]);
   const [reviewPage, setReviewPage] = useState(1);
-  const reviewSize = 1;
+  const [totalReviewPage, setTotalReviewPage] = useState(1);
+  const reviewSize = 3;
   const [posts, setPosts] = useState([]);
   const [postPage, setPostPage] = useState(1);
   const [totalPostPage, setTotalPostPage] = useState(1);
@@ -188,7 +189,7 @@ function ProfileDetailPage() {
     if(classPage<totalClassPage){
       const curPage = classPage;
       setClassPage((prev)=>prev+1);
-      const result = await getPosts(`/profiles/${profileId}/class?page=${curPage+1}&size=${postSize}`, null, "get");
+      const result = await getPosts(`/profiles/${profileId}/class?page=${curPage+1}&size=${classSize}`, null, "get");
       setClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
     }
   }
@@ -203,7 +204,7 @@ function ProfileDetailPage() {
     if(classPage<totalClassPage){
       const curPage = classPage;
       setClassPage((prev)=>prev+1);
-      const result = await getPosts(`/profiles/${profileId}/pro-class?page=${curPage+1}&size=${postSize}`, null, "get");
+      const result = await getPosts(`/profiles/${profileId}/pro-class?page=${curPage+1}&size=${classSize}`, null, "get");
       setProClasses((prev)=>[...prev, ...result?.data?.classListResponse?.classList]);
     }
   }
@@ -212,7 +213,17 @@ function ProfileDetailPage() {
   // reviews ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleGetReviews = async() => {
     const result = await getReviews(`/profiles/${profileId}/review?page=${reviewPage}&size=${reviewSize}`, null, "get");
-    setReviews(result?.data?.data?.Content);
+    setReviews(result?.data?.content);
+    setTotalReviewPage(result?.data?.totalPages);
+  }
+
+  const onNextReviews = async() => {
+    if(reviewPage<totalReviewPage){
+      const curPage = reviewPage;
+      setReviewPage((prev)=>prev+1);
+      const result = await getPosts(`/profiles/${profileId}/review?page=${curPage+1}&size=${reviewSize}`, null, "get");
+      setReviews((prev)=>[...prev, ...result?.data?.content]);
+    }
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -325,7 +336,7 @@ function ProfileDetailPage() {
               <Section id="proClasses" title={`${profileName}'s Class`} onClick={onNextProClassess} curPage={classPage} totalPage={totalClassPage}>
                 <CardList cards={proClasses} />
               </Section> 
-              <Section id="reviews" title="강의 리뷰">
+              <Section id="reviews" title="강의 리뷰" onClick={onNextReviews} curPage={reviewPage} totalPage={totalReviewPage}>
                 <ReviewList reviews={reviews} />
               </Section>            
             </>
