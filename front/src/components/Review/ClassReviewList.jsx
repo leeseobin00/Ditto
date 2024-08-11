@@ -17,7 +17,12 @@ const ReviewNull = styled.div`
   padding: 20px;
 `;
 
-function ReviewList({ reviewList, totalReviewCount, curReviewpage, onUpdate }) {
+function ClassReviewList({
+  reviewList,
+  totalReviewCount,
+  curReviewpage,
+  onUpdate,
+}) {
   return (
     <ReviewListContainer>
       {reviewList.length == 0 && (
@@ -31,4 +36,4 @@ function ReviewList({ reviewList, totalReviewCount, curReviewpage, onUpdate }) {
   );
 }
 
-export default ReviewList;
+export default ClassReviewList;

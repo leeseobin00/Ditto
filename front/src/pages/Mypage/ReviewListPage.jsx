@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import ReviewList from "../../components/MyPage/Review/ReviewList";
+import MyPageReviewList from "../../components/Review/MyPageReviewList";
 import styled from "styled-components";
 import axios from "axios";
 
@@ -25,7 +25,7 @@ const ReviewListPage = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const { userId } = useSelector((state) => state.auth);
   const [reviewList, setReviewList] = useState([]);
-  const [finalDate, setFinalDate] = useState(null);
+  const [showMoreButton, setShowMoreButton] = useState(true);
 
   useEffect(() => {
     fetchReviews();
@@ -39,6 +39,7 @@ const ReviewListPage = () => {
         },
       });
       setReviewList(response?.data?.data);
+      if (response?.data?.data.length < 3) setShowMoreButton(false);
     } catch (error) {
       console.error(error);
     }
@@ -62,6 +63,11 @@ const ReviewListPage = () => {
         ...prevReviewList,
         ...response?.data?.data,
       ]);
+
+      if (response?.data?.data.length == 0) {
+        setShowMoreButton(false);
+        alert("더 이상 불러올 리뷰가 없습니다.");
+      } else if (response?.data?.data.length < 3) setShowMoreButton(false);
     } catch (error) {
       console.error(error);
     }
@@ -71,10 +77,12 @@ const ReviewListPage = () => {
     <PageContainer>
       <Title>작성한 리뷰</Title>
       {reviewList.length > 0 ? (
-        <ReviewList
+        <MyPageReviewList
           reviewList={reviewList}
-          setReviewList={setReviewList}
           fetchMoreReviews={fetchMoreReviews}
+          onUpdate={fetchReviews}
+          userId={userId}
+          showMoreButton={showMoreButton}
         />
       ) : (
         <ReviewNull>작성한 리뷰가 없습니다.</ReviewNull>
