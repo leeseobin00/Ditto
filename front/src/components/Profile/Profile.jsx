@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
-import DefaultProfileImage from "../../assets/img/profile-user.png";
+import DefaultProfileImage from "../../assets/img/default-user.png";
 
 const ProfileWrapper = styled.div`
   display: flex;

@@ -8,7 +8,7 @@ import Modal from "../common/Modal";
 import ModifyTags from "./ProfileDetail/ModifyTags";
 import Tag from "./Tag";
 import ModifyProfileImage from "./ProfileDetail/ModifyProfileImage";
-import DefaultProfileImage from "../../assets/img/profile-user.png";
+import DefaultProfileImage from "../../assets/img/default-user.png";
 
 const ProfileWrapper = styled.div`
   display: flex;
