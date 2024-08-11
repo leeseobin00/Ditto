@@ -49,6 +49,7 @@ public class LectureServiceImpl implements LectureService {
                 .userCount((byte) 0)
                 .classPrice(dClass.getClassPrice())
                 .isDeleted(false)
+                .isFinished(false)
                 .build();
         lectureRepository.save(lecture);
     }
