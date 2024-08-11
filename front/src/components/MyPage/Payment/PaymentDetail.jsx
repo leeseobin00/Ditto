@@ -7,7 +7,7 @@ import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 �
 import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
-import ReviewAddModal from "../../Review/ReviewAddModal";
+import ReviewPostModal from "../../Review/ReviewPostModal";
 import MoreButton from "../../common/MoreButton";
 
 const ListContainer = styled.div`
@@ -320,7 +320,7 @@ const PaymentDetail = ({
         );
       })}
       {showMoreButton && <MoreButton onClick={onUpdate} />}
-      <ReviewAddModal
+      <ReviewPostModal
         show={showReviewModal}
         onClose={closeModal}
         userId={userId}

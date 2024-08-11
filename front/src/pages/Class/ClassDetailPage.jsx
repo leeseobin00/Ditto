@@ -7,13 +7,13 @@ import useAxios from "../../hooks/useAxios";
 import ClassThumbnail from "../../components/Class/ClasDetail/ClassThumbnail";
 import ClassKit from "../../components/Class/ClasDetail/ClassKit";
 import ClassStepList from "../../components/Class/ClasDetail/ClassStepList";
-import ReviewList from "../../components/Review/ReviewList";
+import ClassReviewList from "../../components/Review/ClassReviewList";
 import ClassQnAList from "../../components/QnA/QnAList/ClassQnAList";
 import QuestionModal from "../../components/QnA/Question/QuestionModal";
 import ClassSideBar from "../../components/Class/ClasDetail/ClassSideBar";
 import TabBar from "../../components/Class/ClasDetail/TabBar";
 import Button from "../../components/common/Button";
-import ReviewAddModal from "../../components/Review/ReviewAddModal";
+import ReviewPostModal from "../../components/Review/ReviewPostModal";
 
 const ClassDetailPageContainer = styled.div`
   position: relative;
@@ -167,7 +167,6 @@ function ClassDetailPage() {
         "get"
       );
       if (response?.data) {
-        console.log("data");
         setCanReview(true);
         setCanReviewLectures(response?.data);
       }
@@ -188,7 +187,25 @@ function ClassDetailPage() {
     }
   }, [classId]);
 
-  useEffect(() => {});
+  const handleReviewUpdate = async () => {
+    try {
+      setCurReviewPage(1);
+      const response = await getReviewList(
+        `/classes/${classId}/reviews?page=${curReviewPage}`,
+        null,
+        "get"
+      );
+      setReviewList(response?.data?.reviews);
+      setCurReviewPage(2);
+      setTotalReviewPage(response?.data?.totalPageCount);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // useEffect(() => {
+  //   handleGetReviewList();
+  // }, [curReviewPage]);
 
   return (
     <ClassDetailPageContainer>
@@ -222,19 +239,21 @@ function ClassDetailPage() {
                     <Button label={"리뷰작성"} onClick={handleReviewModal} />
                   )}
                 </TitleLine>
-                <ReviewList
+                <ClassReviewList
                   reviewList={reviewList}
                   totalReviewPage={totalReviewPage}
                   curReviewPage={curReviewPage}
                   onUpdate={handleGetReviewList}
                 />
-                <ReviewAddModal
+                <ReviewPostModal
                   show={showReviewModal}
                   onClose={handleReviewModal}
                   lectureList={canReviewLectures}
                   userId={userId}
                   classId={classId}
-                  onUpdate={handleGetReviewList}
+                  onUpdate={() => {
+                    handleReviewUpdate;
+                  }}
                 />
               </ContentContainer>
               <ContentContainer id={titleIds[2]}>

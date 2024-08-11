@@ -98,7 +98,7 @@ const LectureDetail = styled.div`
   font-size: 14px;
 `;
 
-function ReviewAddModal({
+function ReviewPostModal({
   show,
   onClose,
   lectureList,
@@ -107,15 +107,22 @@ function ReviewAddModal({
   onUpdate,
   isClass = true,
   payment,
+  isEdit = false,
+  initialReview,
 }) {
-  if (!show) return null;
-
   const [rating, setRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
-  const [selectedLecture, setSelectedLecture] = useState(
-    payment?.lectureId || ""
-  );
+  const [selectedLecture, setSelectedLecture] = useState("");
   const { sendRequest } = useAxios();
+
+  useEffect(() => {
+    if (isEdit && initialReview) {
+      setRating(initialReview.rating);
+      setReviewContent(initialReview.reviewContent);
+    }
+  }, [isEdit, initialReview]);
+
+  if (!show) return null;
 
   const handleStarClick = (index) => {
     setRating(index + 1);
@@ -127,6 +134,31 @@ function ReviewAddModal({
 
   const handleContentChange = (event) => {
     setReviewContent(event.target.value);
+  };
+
+  const handleEditReview = async () => {
+    if (!reviewContent || !rating) {
+      alert("내용을 정확히 입력해주세요.");
+      return;
+    }
+
+    try {
+      await sendRequest(
+        `/classes/${initialReview?.classId}/reviews/${initialReview?.reviewId}`,
+        {
+          reviewContent,
+          rating,
+          userId: userId,
+          lectureId: initialReview?.lectureId,
+        },
+        "patch"
+      );
+      alert("리뷰가 수정되었습니다.");
+      onClose();
+      onUpdate(reviewContent, rating);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handlePostReview = async () => {
@@ -144,9 +176,11 @@ function ReviewAddModal({
 
     try {
       await sendRequest(`/classes/${classId}/reviews`, reviewData, "post");
-      if (isClass) onUpdate();
+      if (isClass) {
+        onUpdate();
+        console.log("업데이트");
+      }
       onClose();
-      console.log("onclose");
     } catch (error) {
       console.log(error);
     }
@@ -154,7 +188,7 @@ function ReviewAddModal({
 
   return (
     <Modal onClose={onClose}>
-      <Title>리뷰 작성</Title>
+      <Title>{isEdit ? "리뷰 수정" : "리뷰 작성"}</Title>
       <ContentContainer>
         <StarRateContainer>
           <StarContainer>
@@ -185,9 +219,13 @@ function ReviewAddModal({
           </SelectBox>
         ) : (
           <LectureInfo>
-            <LectureDetail>{payment?.className}</LectureDetail>
             <LectureDetail>
-              {`${payment.year}-${String(payment.month).padStart(2, "0")}-${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
+              {isEdit ? initialReview.className : payment?.className}
+            </LectureDetail>
+            <LectureDetail>
+              {isEdit
+                ? `${initialReview.year}-${String(initialReview.month).padStart(2, "0")}-${String(initialReview.day).padStart(2, "0")} ${String(initialReview.hour).padStart(2, "0")}:${String(initialReview.minute).padStart(2, "0")}`
+                : `${payment.year}-${String(payment.month).padStart(2, "0")}-${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
             </LectureDetail>
           </LectureInfo>
         )}
@@ -197,9 +235,12 @@ function ReviewAddModal({
           onChange={handleContentChange}
         />
       </ContentContainer>
-      <OutlineButton label={"작성"} onClick={handlePostReview} />
+      <OutlineButton
+        label={isEdit ? "수정" : "작성"}
+        onClick={isEdit ? handleEditReview : handlePostReview}
+      />
     </Modal>
   );
 }
 
-export default ReviewAddModal;
+export default ReviewPostModal;

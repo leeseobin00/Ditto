@@ -1,7 +1,11 @@
 import { styled } from "styled-components";
 
+import axios from "axios";
 import Star from "../../assets/icon/class/star.png";
 import EmptyStar from "../../assets/icon/class/star-empty.png";
+import OutlineButton from "../common/OutlineButton";
+import ReviewPostModal from "./ReviewPostModal";
+import { useState } from "react";
 
 const ReviewItemContainer = styled.div`
   display: flex;
@@ -23,9 +27,24 @@ const DetailLine = styled.div`
   align-items: center;
 `;
 
+const SpaceLine = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+`;
+
 const ContentLine = styled.div`
   width: 100%;
-  white-space: pre-wrap;
+  white-space: normal;
   word-wrap: break-word;
   margin: 15px 0;
 `;
@@ -42,18 +61,64 @@ const DetailLineSecondary = styled(DetailLine)`
   align-self: flex-end;
 `;
 
-function ReviewItem({ review, isMypage }) {
+function ReviewItem({ review, isMypage = false, onUpdate, userId }) {
+  const baseURL = import.meta.env.VITE_BASE_URL;
+
+  const [reviewContent, setReviewContent] = useState(review.reviewContent);
+  const [rating, setRating] = useState(review.rating);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `${baseURL}/classes/${review.classId}/reviews/${review.reviewId}`
+      );
+      alert("리뷰가 삭제되었습니다.");
+      onUpdate();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 리뷰 수정
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const handleShowReviewModal = () => {
+    setShowReviewModal(!showReviewModal);
+  };
+
+  const handleReviewUpdate = (updatedReviewContent, updatedRating) => {
+    setReviewContent(updatedReviewContent);
+    setRating(updatedRating);
+  };
+
   return (
     <ReviewItemContainer>
-      <DetailLine>
-        {Array.from({ length: review.rating }, (_, index) => (
-          <Icon key={index} src={Star} />
-        ))}
-        {Array.from({ length: 5 - review.rating }, (_, index) => (
-          <Icon key={index} src={EmptyStar} />
-        ))}
-      </DetailLine>
-      <ContentLine>{review.reviewContent}</ContentLine>
+      <SpaceLine>
+        <DetailLine>
+          {Array.from({ length: rating }, (_, index) => (
+            <Icon key={index} src={Star} />
+          ))}
+          {Array.from({ length: 5 - rating }, (_, index) => (
+            <Icon key={index} src={EmptyStar} />
+          ))}
+        </DetailLine>
+        {isMypage && (
+          <ButtonContainer>
+            <OutlineButton
+              label={"수정"}
+              size={"sm"}
+              onClick={handleShowReviewModal}
+            />
+            <OutlineButton
+              label={"삭제"}
+              color={"ACCENT1"}
+              size={"sm"}
+              onClick={() => handleDelete(review.reviewId)}
+            />
+          </ButtonContainer>
+        )}
+      </SpaceLine>
+      <ContentLine>{reviewContent}</ContentLine>
       <DetailLineSecondary>
         {!isMypage && (
           <>
@@ -66,6 +131,15 @@ function ReviewItem({ review, isMypage }) {
 
         <div>{review.createdDate.substring(0, 10)}</div>
       </DetailLineSecondary>
+      <ReviewPostModal
+        show={showReviewModal}
+        onClose={handleShowReviewModal}
+        initialReview={review}
+        isEdit={true}
+        isClass={false}
+        userId={userId}
+        onUpdate={handleReviewUpdate}
+      />
     </ReviewItemContainer>
   );
 }
