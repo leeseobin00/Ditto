@@ -17,7 +17,7 @@ const Title = styled.div`
 `;
 
 const QnANull = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   color: var(--TEXT_SECONDARY);
   padding: 40px;
   text-align: center;

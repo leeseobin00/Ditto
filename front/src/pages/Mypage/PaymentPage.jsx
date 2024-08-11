@@ -80,8 +80,9 @@ const PaymentPage = () => {
             payments={payments}
             setPayments={setPayments}
             userId={userId}
+            onUpdate={loadMorePayments}
+            showMoreButton={showMoreButton}
           />
-          {showMoreButton && <MoreButton onClick={loadMorePayments} />}
         </>
       ) : (
         <PaymentNull>결제/수강한 클래스가 없습니다.</PaymentNull>

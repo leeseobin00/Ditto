@@ -21,9 +21,7 @@ const ContentContainer = styled.div`
 `;
 
 function AddressListModal({ show, onClose, userId }) {
-  if (!show) return null;
-
-  const [addresses, setAddresses] = useState();
+  const [addresses, setAddresses] = useState([]);
   const { sendRequest } = useAxios();
 
   const handleGetAddresses = async () => {
@@ -38,7 +36,6 @@ function AddressListModal({ show, onClose, userId }) {
           },
         }
       );
-      console.log("끝?");
       setAddresses(response?.data?.addresses);
     } catch (error) {
       console.error(error);
@@ -47,7 +44,9 @@ function AddressListModal({ show, onClose, userId }) {
 
   useEffect(() => {
     handleGetAddresses();
-  }, []);
+  }, [userId]);
+
+  if (!show) return null;
 
   return (
     <Modal onClose={onClose}>

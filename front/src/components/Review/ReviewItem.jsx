@@ -6,7 +6,6 @@ import EmptyStar from "../../assets/icon/class/star-empty.png";
 const ReviewItemContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 150px;
   width: 100%;
   border-style: solid;
   border-width: 0.5px;
@@ -28,6 +27,7 @@ const ContentLine = styled.div`
   width: 100%;
   white-space: pre-wrap;
   word-wrap: break-word;
+  margin: 15px 0;
 `;
 
 const Icon = styled.img`
@@ -42,7 +42,7 @@ const DetailLineSecondary = styled(DetailLine)`
   align-self: flex-end;
 `;
 
-function ReviewItem({ review }) {
+function ReviewItem({ review, isMypage }) {
   return (
     <ReviewItemContainer>
       <DetailLine>
@@ -55,8 +55,15 @@ function ReviewItem({ review }) {
       </DetailLine>
       <ContentLine>{review.reviewContent}</ContentLine>
       <DetailLineSecondary>
-        <div>{review.reviewer.nickname}</div>
-        <div style={{ margin: "0 10px", color: "var(--TEXT_PRIMARY" }}>|</div>
+        {!isMypage && (
+          <>
+            <div>{review?.reviewer?.nickname}</div>
+            <div style={{ margin: "0 10px", color: "var(--TEXT_PRIMARY" }}>
+              |
+            </div>
+          </>
+        )}
+
         <div>{review.createdDate.substring(0, 10)}</div>
       </DetailLineSecondary>
     </ReviewItemContainer>
