@@ -463,10 +463,10 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isVerified) {
-      alert("이메일 인증을 완료해주세요.");
-      return;
-    }
+    // if (!isVerified) {
+    //   alert("이메일 인증을 완료해주세요.");
+    //   return;
+    // }
     if (!isPasswordMatchState) {
       alert("비밀번호가 일치하지 않습니다.");
       return;

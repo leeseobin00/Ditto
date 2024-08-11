@@ -99,6 +99,7 @@ function MeetingPage() {
   // chat, timer
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
+  //const [statusMessages, setStatusMessages] = useState(new Map());
   const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   // 음소거, 화면끄기
@@ -109,6 +110,14 @@ function MeetingPage() {
   const maxVisible = 3; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
+  // isOut
+  const [isEnd, setEnd] = useState(false);
+
+  useEffect(()=>{
+    if(isEnd && subscribers.length==0){
+      navigate("/video");
+    }
+  },[isEnd, subscribers]);
 
   const getLectureInfo = async() => {
     const result = await sendRequest(`/live-rooms/${lectureId}`);
@@ -198,6 +207,8 @@ function MeetingPage() {
     );
   };
 
+  console.log(statusMessages);
+
   const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
@@ -220,8 +231,6 @@ function MeetingPage() {
         setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
       }
     });
-
-    console.log(currentIndex);
 
     newSession.on('streamDestroyed', (event) => {
       console.log("visibleParticipants.length=====", visibleParticipants.length);
@@ -249,19 +258,45 @@ function MeetingPage() {
     newSession.on('signal:status', (event) => {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 이벤트 수신시 로직
-      let isExist = false;
-      const newStatusMessage = [];
-      statusMessages.forEach((message)=>{
-        if(message?.sender != parsedData?.sender){
-          newStatusMessage.push(message);
-        }else{
-          isExist = true;
-        }
-      });
-      if(!isExist) newStatusMessage.push(parsedData); 
-      console.timeLog(newStatusMessage);
-      setStatusMessages(newStatusMessage);
+      //이벤트 수신시 로직
+      // let isExist = false;
+      // const newStatusMessage = [];
+      // console.log(statusMessages);
+      // statusMessages.forEach((message)=>{
+      //   console.log(statusMessages);
+      //   if(message?.sender != parsedData?.sender){
+      //     newStatusMessage.push(message);
+      //   }else{
+      //     isExist = true;
+      //   }
+      // });
+      // if(!isExist) newStatusMessage.push(parsedData); 
+      // console.log(newStatusMessage);
+      // setStatusMessages(newStatusMessage);
+      setStatusMessages((prevMessages)=>{
+        console.log(prevMessages);
+        let isExist = false;
+        const newStatusMessages = prevMessages.filter((message) => {
+          if (message?.sender !== parsedData?.sender) {
+            return true;
+          } else {
+            isExist = true;
+            return false;
+          }
+        });
+    
+        console.log(isExist);
+        return [...newStatusMessages, parsedData];
+      })
+      // const newMap = statusMessages;
+      // newMap.set(parsedData?.sender, parsedData?.message);
+      // console.log("===============================newMap: ", newMap);
+      // setStatusMessages(newMap);
+      // setStatusMessages((prevMessages) => {
+      //   const updatedMap = new Map(prevMessages);
+      //   updatedMap.set(parsedData?.sender, parsedData?.message);
+      //   return updatedMap;
+      // });      
     });
 
     newSession.on('signal:timer', (event) => {
@@ -279,6 +314,14 @@ function MeetingPage() {
       console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
       setStatusMessages([]);
+    });
+
+    newSession.on('signal:end', (event) => {
+      if(roleId==1){
+        navigate("/video");
+      }else if(roleId==2){
+        setEnd(true);
+      }
     });
 
     const token = await getToken();
@@ -325,6 +368,7 @@ function MeetingPage() {
     setSubscribers([]);
     setMySessionId('SessionA');
     setMyUserName(undefined);
+    if(isEnd) { navigate("/video"); }
   };
 
   // Include publisher in pagination logic 
@@ -352,7 +396,6 @@ function MeetingPage() {
     setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, Math.ceil((subscribers.length + 1) / maxVisible) - 1));
   };
 
-  console.log("==================================>", currentIndex);
   // STT /////////////////////////////////////////////////////////////////////////////////////////////////////
   const [currentStep, setCurrentStep] = useState(-1);
   const [stepLoading, setStepLoading] = useState(false);
@@ -487,12 +530,32 @@ function MeetingPage() {
     });
     };
   }
+  const sendEnd = (senderName) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+        }),
+        to: [],
+        type: 'end'
+    })
+    .then(() => {
+        console.log('Message successfully sent: end');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
-  console.log("==========================>isopen: ", isOpen);
+
+  useEffect(()=>{
+    console.log("statusMessages: ", statusMessages);
+  },[statusMessages]);
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
@@ -504,6 +567,7 @@ function MeetingPage() {
         chatMessages,
         sendStatus,
         statusMessages,
+        sendEnd,
         publisher,
         subscribers,
         timer,
