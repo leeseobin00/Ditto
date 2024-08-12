@@ -219,9 +219,7 @@ function ReviewPostModal({
         confirmButtonText: "확인",
         confirmButtonColor: "#FF7F50",
       });
-      if (isClass) {
-        onUpdate();
-      }
+      onUpdate();
       onClose();
     } catch (error) {
       console.error(error);

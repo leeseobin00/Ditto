@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { styled } from "styled-components";
 
-import OutlineButton from "../../common/OutlineButton";
+import MoreButton from "../../common/MoreButton";
 import Modal from "../../common/Modal";
 import WriteIcon from "../../../assets/icon/profile/write-white.png";
 
@@ -11,7 +11,7 @@ const SectionWrapper = styled.section`
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
-  margin-bottom: 60px;
+  margin-bottom: 15px;
 `;
 
 const TitleWrapper = styled.div`
@@ -23,11 +23,11 @@ const TitleWrapper = styled.div`
 
 const SectionTitle = styled.p`
   color: var(--PRIMARY);
-  font-weight: 600;
-  font-size: 22px;
+  font-weight: 700;
+  font-size: 20px;
   width: 100%;
   max-width: 1024px;
-  margin-bottom: 32px;
+  margin-bottom: 15px;
 `;
 
 const EditButton = styled.button`
@@ -83,14 +83,13 @@ function Section({
       {children}
       {onClick && (
         <ButtonWrapper>
-          {curPage<totalPage && <OutlineButton label="더보기" size="lg" color="default" onClick={onClick} />}
+          {curPage < totalPage && <MoreButton onClick={onClick} />}
         </ButtonWrapper>
       )}
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalContentComponent onClose={handleCloseModal}
-          />
+          <ModalContentComponent onClose={handleCloseModal} />
         </Modal>
       )}
     </SectionWrapper>

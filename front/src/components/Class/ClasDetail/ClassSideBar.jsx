@@ -97,7 +97,7 @@ const LikeContainer = styled.div`
 `;
 
 const LikeButton = styled.img`
-  width: 25px;
+  width: 27px;
   height: 25px;
   margin-right: 10px;
   cursor: pointer;

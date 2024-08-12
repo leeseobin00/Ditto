@@ -6,7 +6,7 @@ import Tag from "../Tag";
 
 const CardWrapper = styled.div`
   background-color: white;
-  width: 260px;
+  width: 240px;
   overflow: hidden;
   margin-bottom: 16px;
   cursor: pointer;
@@ -14,7 +14,6 @@ const CardWrapper = styled.div`
 
 const Image = styled.img`
   width: 100%;
-  width: 260px;
   aspect-ratio: 4 / 3;
   background-color: lightgray;
   border-radius: 10px;
@@ -51,30 +50,28 @@ function ClassCard({ classId, fileId, title, date, name, tag }) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [image, setImage] = useState(undefined);
 
-  const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-  
-  const getImage = async(fileId) => {
-    const response = await axios.get(
-      `${baseURL}/files/download/${fileId}`,
-      {
-        responseType: "blob",
-      }
-    );
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const getImage = async (fileId) => {
+    const response = await axios.get(`${baseURL}/files/download/${fileId}`, {
+      responseType: "blob",
+    });
     const fileBlob = response.data;
     const base64 = await toBase64(fileBlob);
     setImage(base64);
-  }
+  };
 
-  useEffect(()=>{
-    if(fileId){
+  useEffect(() => {
+    if (fileId) {
       getImage(fileId);
     }
-  },[fileId]);
+  }, [fileId]);
 
   return (
     <Link to={`/classes/detail/${classId}`}>
