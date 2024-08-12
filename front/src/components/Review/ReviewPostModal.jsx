@@ -182,22 +182,31 @@ function ReviewPostModal({
   };
 
   const handlePostReview = async () => {
-    if (!reviewContent || !rating || !selectedLecture) {
-      Swal.fire({
+    if (!reviewContent || !rating) {
+      if (isClass && !selectedLecture) {
+        Swal.fire({
         title: '입력 오류',
         text: "내용과 별점, 강의를 모두 입력해주세요.",
         icon: 'warning',
         confirmButtonText: "확인",
         confirmButtonColor: "#FF7F50"
       });
-      return;
-    }
-
+        return;
+      } else if (!isClass) {
+        Swal.fire({
+        title: '입력 오류',
+        text: "내용과 별점, 강의를 모두 입력해주세요.",
+        icon: 'warning',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50"
+      });
+        return;
+      }
     const reviewData = {
       reviewContent,
       rating,
       userId,
-      lectureId: selectedLecture,
+      lectureId: isClass ? selectedLecture : payment.lectureId,
     };
 
     try {

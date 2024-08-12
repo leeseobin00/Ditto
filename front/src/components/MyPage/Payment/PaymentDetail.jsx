@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 
 import axios from "axios";
-import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 수정
-import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
+import SummaryModal from "./SummaryModal";
+import RefundPolicyModal from "./RefundPolicyModal";
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
 import Swal from 'sweetalert2';
@@ -80,7 +80,7 @@ const PaymentInfo = styled.div`
   height: 100%;
   min-height: 70px;
   padding: 10px 0;
-  width: 45%;
+  width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -114,11 +114,18 @@ const PaymentPrice = styled.div`
 const PaymentActions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  height: 70px;
+  padding: 5px 0;
+  justify-content: space-between;
 `;
 
 const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
+`;
+
+const ReviewFinished = styled.div`
+  font-size: 14px;
+  color: var(--SECONDARY);
 `;
 
 const PaymentDetail = ({
@@ -130,13 +137,12 @@ const PaymentDetail = ({
 }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
-  const [modalMessage, setModalMessage] = useState("");
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false); // 환불 정책 모달 구분 상태
   const [summaries, setSummaries] = useState([]);
-  const [refundPolicy, setRefundPolicy] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [canReviewMap, setCanReviewMap] = useState({});
 
   const handleClassClick = (classId) => {
     navigate(`/classes/detail/${classId}`);
@@ -144,74 +150,54 @@ const PaymentDetail = ({
 
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
-    try {
-      const response = await axios.put(
-        `${baseURL}/payments/cancel/${userId}/${lectureId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setRefundPolicy(response.data.data.refund);
-        setIsRefundPolicy(true);
-        setIsModalOpen(true);
-      } else {
-        Swal.fire({
-          title: '환불 규정 조회 실패',
-          text: '다시 시도해주세요.',
-          icon: 'error',
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인'
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        title: '환불 규정 조회 실패',
-        text: '다시 시도해주세요.',
-        icon: 'error',
-        confirmButtonColor: '#FF7F50', 
-        confirmButtonText: '확인'
-      });
-      console.error(error);
+    setShowRefundModal(true);
     }
-  };
 
   const handleSummaryClick = async (lectureId) => {
     try {
-      const response = await axios.get(
-        `${baseURL}/mypage/lecture/${lectureId}/summary`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${baseURL}/summary/${lectureId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
 
-      if (response.status === 200) {
-        setSummaries(response.data.data.summaries);
-        setIsRefundPolicy(false);
-        setIsModalOpen(true);
+      if (response?.status === 200) {
+        setSummaries(response?.data?.data);
+        setShowSummaryModal(true);
       } else {
-        Swal.fire({
+        
+      }
+    } catch (error) {
+      Swal.fire({
           title: '요약 조회 실패',
           text: '다시 시도해주세요.',
           icon: 'error',
           confirmButtonColor: '#FF7F50', 
           confirmButtonText: '확인'
         });
-      }
+      console.error(error);
+    }
+  };
+
+  // 리뷰 작성 가능 여부 조작
+  useEffect(() => {
+    // 각 payment에 대해 handleGetCanReview 실행
+    payments.forEach((payment) => {
+      handleGetCanReview(payment.lectureId, payment.classId);
+    });
+  }, [payments]);
+
+  const handleGetCanReview = async (classId, lectureId) => {
+    try {
+      const response = await axios.get(
+        `${baseURL}/classes/${classId}/lectures/${lectureId}/review/completed?userId=${userId}`
+      );
+      setCanReviewMap((prev) => ({
+        ...prev,
+        [lectureId]: !response.data, // response.data가 false이면 리뷰 가능 상태로 설정
+      }));
     } catch (error) {
-      Swal.fire({
-        title: '요약 조회 실패',
-        text: '다시 시도해주세요.',
-        icon: 'error',
-        confirmButtonColor: '#FF7F50',
-        confirmButtonText: '확인'
-      });
-      console.error("요약 조회 에러:", error);
+      console.error(error);
     }
   };
 
@@ -224,50 +210,38 @@ const PaymentDetail = ({
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    setIsRefundPolicy(false);
+    setShowRefundModal(false);
+    setShowSummaryModal(false);
     setShowReviewModal(false);
-    setModalMessage("");
     setSummaries([]);
-    setRefundPolicy("");
   };
 
   const handleConfirmCancel = async () => {
     try {
-      const response = await axios.patch(
-        `${baseURL}/mypage/${userId}/payment/cancel`,
-        { lectureId: currentLectureId },
+      await axios.put(
+        `${baseURL}/payments/cancel/${userId}/${currentLectureId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         }
       );
+      setPayments(
+        payments.map((payment) =>
+          payment.lectureId === currentLectureId
+            ? { ...payment, payCancelTime: new Date() }
+            : payment
+        )
+      );
 
-      if (response.status === 200) {
-        setPayments(
-          payments.map((payment) =>
-            payment.lectureId === currentLectureId
-              ? { ...payment, payCancelTime: new Date() }
-              : payment
-          )
-        );
-        Swal.fire({
+      Swal.fire({
           title: '취소 완료',
           text: '결제가 성공적으로 취소되었습니다.',
           icon: 'success',
           confirmButtonColor: '#FF7F50',
           confirmButtonText: '확인'
         });
-      } else {
-        Swal.fire({
-          title: '취소 실패',
-          text: '다시 시도해주세요.',
-          icon: 'error',
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인'
-        });
-      }
+      closeModal();
     } catch (error) {
       Swal.fire({
         title: '취소 실패',
@@ -277,23 +251,12 @@ const PaymentDetail = ({
         confirmButtonText: '확인'
       });
       console.error(error);
-    } finally {
-      setIsRefundPolicy(false);
-      setIsModalOpen(true);
     }
   };
 
   return (
     <ListContainer>
       {payments.map((payment) => {
-        const classStartDateTime = new Date(
-          payment.year,
-          payment.month - 1,
-          payment.day,
-          payment.hour,
-          payment.minute
-        );
-        const now = new Date();
         const payTime = new Date(payment.payTime);
         const payCancelTime = payment.payCancelTime
           ? new Date(payment.payCancelTime)
@@ -322,43 +285,46 @@ const PaymentDetail = ({
                 <PaymentUserName>{payment.userName}</PaymentUserName>
                 <PaymentPrice>{payment.classPrice}&nbsp;원</PaymentPrice>
               </PaymentInfoContainer>
-              <PaymentPriceContainer>
-                <PaymentActions>
-                  {!payCancelTime && classStartDateTime > now && (
-                    <OutlineButton
-                      color={"ACCENT1"}
-                      label={"구매 취소"}
+
+              <PaymentActions>
+                {!payCancelTime && !payment.isFinished && (
+                  <OutlineButton
+                    color={"ACCENT1"}
+                    label={"구매 취소"}
+                    size={"sm"}
+                    $cancel
+                    onClick={() => handleCancelClick(payment.lectureId)}
+                  />
+                )}
+                {payCancelTime && (
+                  <CancleMessage>
+                    <div style={{ fontSize: "14px", color: "var(--RED)" }}>
+                      취소됨
+                    </div>
+                    <div style={{ fontSize: "14px" }}>
+                      {payCancelTime.toISOString().split("T")[0]}
+                    </div>
+                  </CancleMessage>
+                )}
+                {payment.isFinished && !payCancelTime && (
+                  <>
+                    <RoundButton
+                      label={"요약 보기"}
                       size={"sm"}
-                      $cancel
-                      onClick={() => handleCancelClick(payment.lectureId)}
+                      onClick={() => handleSummaryClick(payment?.lectureId)}
                     />
-                  )}
-                  {payCancelTime && (
-                    <CancleMessage>
-                      <div style={{ fontSize: "14px", color: "var(--RED)" }}>
-                        취소됨
-                      </div>
-                      <div style={{ fontSize: "14px" }}>
-                        {payCancelTime.toISOString().split("T")[0]}
-                      </div>
-                    </CancleMessage>
-                  )}
-                  {!payCancelTime && classStartDateTime <= now && (
-                    <>
-                      <RoundButton
-                        label={"요약 보기"}
-                        size={"sm"}
-                        onClick={() => handleSummaryClick(payment.lectureId)}
-                      />
+                    {canReviewMap[payment.lectureId] ? (
                       <RoundButton
                         label={"리뷰 작성"}
                         size={"sm"}
                         onClick={() => handleReviewClick(payment)}
                       />
-                    </>
-                  )}
-                </PaymentActions>
-              </PaymentPriceContainer>
+                    ) : (
+                      <ReviewFinished>리뷰 작성 완료</ReviewFinished>
+                    )}
+                  </>
+                )}
+              </PaymentActions>
             </PaymentDetails>
           </PaymentItemContainer>
         );
@@ -371,23 +337,21 @@ const PaymentDetail = ({
         classId={selectedPayment?.classId}
         isClass={false}
         payment={selectedPayment}
+        onReviewSubmit={() =>
+          handleGetCanReview(selectedPayment.lectureId, selectedPayment.classId)
+        } // 리뷰 제출 후 리뷰 가능 여부 다시 확인
       />
-      {isModalOpen &&
-        (isRefundPolicy ? (
-          <RefundPolicyModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onConfirm={handleConfirmCancel}
-            refundPolicy={refundPolicy}
-          />
-        ) : (
-          <SummaryModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            modalMessage={modalMessage}
-            summaries={summaries}
-          />
-        ))}
+
+      <RefundPolicyModal
+        show={showRefundModal}
+        onClose={closeModal}
+        onConfirm={handleConfirmCancel}
+      />
+      <SummaryModal
+        show={showSummaryModal}
+        onClose={closeModal}
+        summaries={summaries}
+      />
     </ListContainer>
   );
 };

@@ -44,6 +44,9 @@ const PaymentPage = () => {
         },
       });
       setPayments(response?.data?.data);
+      if (response?.data?.data.length < 5) {
+        setShowMoreButton(false);
+      }
     } catch (error) {
       console.error("Error fetching payment data:", error);
     }
@@ -65,6 +68,8 @@ const PaymentPage = () => {
         alert("더이상 불러올 결제 내역이 없습니다.");
         setShowMoreButton(false);
         return;
+      } else if (response?.data?.data.length < 5) {
+        setShowMoreButton(false);
       }
     } catch (error) {
       console.error("Error loading more payments:", error);
