@@ -32,6 +32,7 @@ import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
 import com.ssafy.ditto.global.error.ServiceException;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
@@ -348,7 +349,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         Page<Review> reviewPage = reviewRepository.findAll((root, query, criteriaBuilder) -> {
             Join<Review, DClass> classJoin = root.join("dclass");
-            return criteriaBuilder.equal(classJoin.get("userId").get("userId"), userId);
+
+            Predicate userCondition = criteriaBuilder.equal(classJoin.get("userId").get("userId"), userId);
+            Predicate isDeletedCondition = criteriaBuilder.isFalse(root.get("isDeleted"));
+
+            return criteriaBuilder.and(userCondition, isDeletedCondition);
         }, pageable);
 
         List<ReviewDetailResponse> reviewResponses = reviewPage.getContent().stream().map(review -> {

@@ -111,7 +111,12 @@ public class MypageServiceImpl implements MypageService {
                     .isDefault(address.getIsDefault())
                     .build();
 
-            addressListResponses.add(addressListResponse);
+            // 기본배송지인 경우 가장 앞으로 보냄
+            if (address.getIsDefault()){
+                addressListResponses.add(0, addressListResponse);
+            }else{
+                addressListResponses.add(addressListResponse);
+            }
         }
 
         return AddressResponse.builder()
