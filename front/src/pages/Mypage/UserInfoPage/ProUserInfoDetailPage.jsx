@@ -30,12 +30,11 @@ const ProUserinfoDetailPage = () => {
           },
         })
         .then((response) => {
-          console.log("tjddd");
           setUserData(response?.data); // 사용자 데이터 가져옴
           setIsLoading(false);
         })
         .catch((error) => {
-          console.error("Error fetching data", error);
+          console.error(error);
           setIsLoading(false);
         });
     }

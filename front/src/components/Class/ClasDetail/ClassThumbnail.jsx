@@ -1,5 +1,6 @@
 import React from "react";
 import { styled } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import Star from "../../../assets/icon/class/star.png";
 import Clock from "../../../assets/icon/class/clock.png";
@@ -77,6 +78,12 @@ const Icon = styled.img`
 `;
 
 function ClassThumbnail({ classInfo, file, instructor, tag }) {
+  const navigate = useNavigate();
+
+  const handleInstructorClick = () => {
+    navigate(`/profile/${instructor.userId}`);
+  };
+
   return (
     <ClassThumbnailContainer>
       <ThumbnailImg
@@ -87,7 +94,12 @@ function ClassThumbnail({ classInfo, file, instructor, tag }) {
       <ClassTitle>
         <SecondaryColor>#{tag.tagName}</SecondaryColor>
         <ClassName>{classInfo.className}</ClassName>
-        <MediumFont>{instructor.nickName}</MediumFont>
+        <MediumFont
+          onClick={handleInstructorClick}
+          style={{ cursor: "pointer" }}
+        >
+          {instructor.nickname}
+        </MediumFont>
       </ClassTitle>
       <ClassDetailLine>
         <Icon src={Star} />

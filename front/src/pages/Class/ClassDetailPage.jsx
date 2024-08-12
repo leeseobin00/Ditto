@@ -203,10 +203,6 @@ function ClassDetailPage() {
     }
   };
 
-  // useEffect(() => {
-  //   handleGetReviewList();
-  // }, [curReviewPage]);
-
   return (
     <ClassDetailPageContainer>
       {classInfo && (
