@@ -1,25 +1,60 @@
-// src/components/SummaryModal.jsx
-import React from 'react';
-import Modal from '../../common/Modal'; // Modal 컴포넌트 경로 수정
+import React from "react";
+import { styled } from "styled-components";
 
-const SummaryModal = ({ isOpen, onClose, modalMessage, summaries }) => {
+import Modal from "../../common/Modal"; // Modal 컴포넌트 경로 수정
+
+const Title = styled.div`
+  color: var(--PRIMARY);
+  font-weight: 600;
+  font-size: 20px;
+`;
+
+const ContentContainer = styled.div`
+  margin-top: 25px;
+  margin-bottom: 40px;
+  width: 100%;
+  max-height: 320px;
+  overflow: auto;
+`;
+
+const StepContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StepTitle = styled.div`
+  font-weight: 600;
+  margin-bottom: 10px;
+`;
+
+const StepContent = styled.div``;
+
+const SummaryNull = styled.div`
+  font-size: 18px;
+  color: var(--TEXT_SECONDARY);
+  padding: 40px;
+  text-align: center;
+`;
+
+const SummaryModal = ({ show, onClose, summaries }) => {
+  if (!show) return null;
+
   return (
-    isOpen && (
-      <Modal onClose={onClose}>
-        <h2>강의 요약</h2>
+    <Modal onClose={onClose}>
+      <Title>강의 요약</Title>
+      <ContentContainer>
         {summaries.length > 0 ? (
-          <ul>
-            {summaries.map((summary) => (
-              <li key={summary.summaryId}>
-                <p><strong>단계 {summary.stepId}:</strong> {summary.summaryContent}</p>
-              </li>
-            ))}
-          </ul>
+          summaries.map((summary) => (
+            <StepContainer key={summary.summaryId}>
+              <StepTitle>{summary.stepId}단계</StepTitle>
+              <StepContent>{summary.summaryContent}</StepContent>
+            </StepContainer>
+          ))
         ) : (
-          <p>{modalMessage}</p>
+          <SummaryNull>강의 요약 내용이 존재하지 않습니다.</SummaryNull>
         )}
-      </Modal>
-    )
+      </ContentContainer>
+    </Modal>
   );
 };
 

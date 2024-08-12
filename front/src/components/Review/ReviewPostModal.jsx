@@ -162,16 +162,21 @@ function ReviewPostModal({
   };
 
   const handlePostReview = async () => {
-    if (!reviewContent || !rating || !selectedLecture) {
-      alert("내용을 정확히 입력해주세요.");
-      return;
+    if (!reviewContent || !rating) {
+      if (isClass && !selectedLecture) {
+        alert("내용을 정확히 입력해주세요.");
+        return;
+      } else if (!isClass) {
+        alert("내용을 정확히 입력해주세요.");
+        return;
+      }
     }
 
     const reviewData = {
       reviewContent,
       rating,
       userId,
-      lectureId: selectedLecture,
+      lectureId: isClass ? selectedLecture : payment.lectureId,
     };
 
     try {
