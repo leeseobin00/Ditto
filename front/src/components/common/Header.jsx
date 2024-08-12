@@ -265,9 +265,9 @@ const Header = () => {
 
   const location = useLocation();
 
-  // "mypage" + "/" 형식의 페이지에 해당하는 경우 버튼을 활성화
-  const isActive = location.pathname.startsWith("/board");
-
+  const communityIsActive = location.pathname.startsWith("/board");
+  const profileIsActive = location.pathname.startsWith("/profile");
+  const mypageIsActive = location.pathname.startsWith("/mypage");
   // NavLink 클릭 이벤트 방지 메소드
   const handlePreventClick = (event) => {
     event.preventDefault();
@@ -278,7 +278,10 @@ const Header = () => {
       <MobileDropdownMenu open={menuOpen}>
         <DropdownItem to="/">홈</DropdownItem>
         <DropdownItem to="/classes">클래스</DropdownItem>
-        <DropdownItem to="/board/all" className={isActive ? "active" : ""}>
+        <DropdownItem
+          to="/board/all"
+          className={communityIsActive ? "active" : ""}
+        >
           커뮤니티
         </DropdownItem>
         <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
@@ -303,7 +306,21 @@ const Header = () => {
               <BiBell style={{ fontSize: "20px" }} />
             </IconLink>
             {isAuthenticated ? (
-              <Icon to="/mypage/">MyPage</Icon>
+              isPro ? (
+                <Icon
+                  to="/mypage/userinfo"
+                  className={mypageIsActive ? "active" : ""}
+                >
+                  MyPage
+                </Icon>
+              ) : (
+                <Icon
+                  to="/mypage/prouserinfo"
+                  className={mypageIsActive ? "active" : ""}
+                >
+                  MyPage
+                </Icon>
+              )
             ) : (
               <Icon to="/signup">회원가입</Icon>
             )}
@@ -318,9 +335,18 @@ const Header = () => {
         <BottomSection>
           <PageLink to="/">홈</PageLink>
           <PageLink to="/classes">클래스</PageLink>
-          <PageLink to="/board/all">커뮤니티</PageLink>
+          <PageLink
+            to="/board/all"
+            className={communityIsActive ? "active" : ""}
+          >
+            커뮤니티
+          </PageLink>
           <ProfileWrapper>
-            <MenuItem to="/profile/" onClick={handlePreventClick}>
+            <MenuItem
+              to="/profile"
+              onClick={handlePreventClick}
+              className={profileIsActive ? "active" : ""}
+            >
               프로필
             </MenuItem>
             <DropdownMenu>
