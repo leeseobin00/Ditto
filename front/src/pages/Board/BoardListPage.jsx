@@ -18,6 +18,7 @@ import {
   getCategoryLabelByValue,
   getSortOptionLabelByValue,
 } from "../../utils/searchOptions";
+import { useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -100,6 +101,7 @@ const SearchOptionWrapper = styled.div`
 
 function BoardListPage() {
   const { sendRequest } = useAxios();
+  const userId = useSelector((state)=>state.auth.userId);
   // router
   const location = useLocation();
   const path = location.pathname.split("/")[2];
@@ -284,9 +286,11 @@ function BoardListPage() {
             onChange={handleSortOption}
             curOption={sortBy}
           />
-          <Link to="/board/add">
+          {userId && 
+            <Link to="/board/add">
             <Button label="글쓰기" size="md" />
           </Link>
+          }
         </SearchOptionWrapper>
         {/* 검색 옵션 끝 */}
 
