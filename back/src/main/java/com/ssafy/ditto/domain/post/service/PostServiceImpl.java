@@ -181,6 +181,7 @@ public class PostServiceImpl implements PostService {
     public PostResponse getPost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         post.setViewCount(post.getViewCount()+1);
+        postRepository.save(post);
         List<File> files = fileRepository.findByPostId(postId);
 
         PostResponse postResp = PostResponse.of(post);

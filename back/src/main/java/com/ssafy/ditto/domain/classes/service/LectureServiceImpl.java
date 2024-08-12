@@ -5,6 +5,7 @@ import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.dto.LectureRequest;
 import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
+import com.ssafy.ditto.domain.classes.exception.LectureDuplicateException;
 import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
@@ -36,9 +37,14 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public void createLecture(Integer classId, LectureRequest lectureRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-        User user = userRepository.findById(dClass.getUserId().getUserId()).orElseThrow(UserNotFoundException::new);
 
-        Lecture lecture = Lecture.builder()
+        //이미 존재하는 차시일 경우 에러
+        Lecture lecture = lectureRepository.findByYearAndMonthAndDayAndHourAndMinute(lectureRequest.getYear(), lectureRequest.getMonth(), lectureRequest.getDay(), lectureRequest.getHour(), lectureRequest.getMinute());
+        if (lecture != null){
+            throw new LectureDuplicateException();
+        }
+
+        Lecture newLecture = Lecture.builder()
                 .year(lectureRequest.getYear())
                 .month(lectureRequest.getMonth())
                 .day(lectureRequest.getDay())
@@ -51,7 +57,7 @@ public class LectureServiceImpl implements LectureService {
                 .isDeleted(false)
                 .isFinished(false)
                 .build();
-        lectureRepository.save(lecture);
+        lectureRepository.save(newLecture);
     }
 
     @Override
@@ -110,9 +116,16 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public Boolean checkReviewCompleted(Integer classId, Integer lectureId, Integer userId) {
-        return lectureRepository.existsByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
+        return lectureRepository.existsReviewByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
     }
 
+    @Override
+    public Boolean checkPaymentCompleted(Integer classId, Integer lectureId, Integer userId) {
+        Boolean exists = lectureRepository.existsPaymentByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
+        System.out.println("Check Payment Completed - classId: {}, lectureId: , userId: , exists: " + classId + lectureId + userId + exists);
+        return exists;
+    }
+    
     @Override
     @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {

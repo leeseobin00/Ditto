@@ -78,4 +78,14 @@ public class LectureController {
     public ResponseDto<Boolean> checkReviewCompletion(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestParam Integer userId) {
         return ResponseDto.of(OK.value(), ResponseMessage.SUCCESS_FETCH.getMessage(), lectureService.checkReviewCompleted(classId, lectureId, userId));
     }
+
+    @Operation(summary = "차시 결제 여부 조회", description = "특정 차시에 대해 사용자가 결제를 완료했는지 확인합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "결제 여부 조회가 성공적으로 완료되었습니다."),
+            @ApiResponse(responseCode = "404", description = "차시 또는 사용자를 찾을 수 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("/{lectureId}/payment/completed")
+    public ResponseDto<Boolean> checkPaymentCompletion(@PathVariable Integer classId, @PathVariable Integer lectureId, @RequestParam Integer userId) {
+        return ResponseDto.of(OK.value(), ResponseMessage.SUCCESS_FETCH.getMessage(), lectureService.checkPaymentCompleted(classId, lectureId, userId));
+    }
 }
