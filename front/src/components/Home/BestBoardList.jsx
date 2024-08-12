@@ -9,6 +9,7 @@ const BoardListContainer = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 20px 20px;
+  margin-bottom: 15px;
 `;
 
 const BoardItem = styled(Link)`

@@ -11,7 +11,7 @@ const SectionWrapper = styled.section`
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
-  margin-bottom: 60px;
+  margin-bottom: 15px;
 `;
 
 const TitleWrapper = styled.div`
@@ -27,7 +27,7 @@ const SectionTitle = styled.p`
   font-size: 20px;
   width: 100%;
   max-width: 1024px;
-  margin-bottom: 32px;
+  margin-bottom: 15px;
 `;
 
 const EditButton = styled.button`

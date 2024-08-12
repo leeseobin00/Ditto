@@ -7,7 +7,7 @@ const FooterContainer = styled.div`
   background-color: var(--BACKGROUND_COLOR);
   height: 90px;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 30px;
 `;
 
 const DetailLine = styled.div`
