@@ -152,9 +152,15 @@ function ClassLectureAddModal({
     };
 
     try {
-      await postLecture(`/classes/${classId}/lectures`, newLecture, "post");
+      const response = await postLecture(`/classes/${classId}/lectures`, newLecture, "post");
       updateLectureList();
     } catch (error) {
+      if (error.response.status == 409){
+        Swal.fire({
+          icon: "warning",
+          text: error.response.data.message,
+        });
+      }
       console.error(error);
     }
   };
