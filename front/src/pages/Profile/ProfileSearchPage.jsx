@@ -48,7 +48,7 @@ const CustomSelectBox = styled(SelectBox)`
 
 const Input = styled.input`
   width: 160px;
-  padding: 6px 8px;
+  padding: 7px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
   border: 1px solid var(--BORDER_COLOR);
@@ -60,6 +60,7 @@ const Input = styled.input`
 const CustomSearchIcon = styled(BsSearch)`
   color: var(--LIGHT);
   font-size: 16px;
+  margin: 2px 0px;
 `;
 
 const Profiles = styled.div`
