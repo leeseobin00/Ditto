@@ -35,7 +35,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
 
     List<Lecture> findByYearAndMonthAndDay(Integer year, Byte month, Byte day);
 
-    Lecture findByYearAndMonthAndDayAndHourAndMinute(Integer year, Byte month, Byte day, Byte hour, Byte minute);
+    Lecture findByClassIdAndYearAndMonthAndDayAndHourAndMinute(DClass classId, Integer year, Byte month, Byte day, Byte hour, Byte minute);
 
     @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.isDeleted = false AND l.isFinished = true AND l.lectureId NOT IN " +
             "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId) AND EXISTS " +
