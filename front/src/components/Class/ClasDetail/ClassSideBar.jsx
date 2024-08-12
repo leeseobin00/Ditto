@@ -170,6 +170,10 @@ function ClassSideBar({
         icon: "warning",
         confirmButtonText: "확인",
         confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
       });
       return;
     }
@@ -195,6 +199,10 @@ function ClassSideBar({
         icon: "warning",
         confirmButtonText: "확인",
         confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
       });
       return;
     }
@@ -262,6 +270,10 @@ function ClassSideBar({
         icon: "warning",
         confirmButtonText: "확인",
         confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
       });
       return;
     }
