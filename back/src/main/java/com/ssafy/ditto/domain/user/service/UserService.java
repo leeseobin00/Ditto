@@ -10,7 +10,7 @@ public interface UserService {
 
     String getTerms(int agreeId);
 
-    void proSignup(ProSignUpRequest proSignUpRequest);
+    void proSignup(UserSignUpRequest userSignUpRequest);
 
     LoginResponse login(UserLoginRequest userLoginRequest);
 

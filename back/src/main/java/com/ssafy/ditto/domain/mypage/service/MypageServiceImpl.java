@@ -61,7 +61,7 @@ public class MypageServiceImpl implements MypageService {
         List<AddressListResponse> addressListResponses = new ArrayList<>();
 
         User user = userRepository.findByUserId(userId);
-        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+        List<Address> addresses = addressRepository.findAllByUser(userRepository.findByUserId(userId));
 
         for (Address address : addresses){
             AddressListResponse addressListResponse = AddressListResponse.builder()
@@ -97,7 +97,7 @@ public class MypageServiceImpl implements MypageService {
     public AddressResponse getAddress(int userId) {
         List<AddressListResponse> addressListResponses = new ArrayList<>();
 
-        List<Address> addresses = addressRepository.findAllByUserId(userRepository.findByUserId(userId));
+        List<Address> addresses = addressRepository.findAllByUser(userRepository.findByUserId(userId));
 
         for (Address address : addresses){
             AddressListResponse addressListResponse = AddressListResponse.builder()
@@ -147,7 +147,7 @@ public class MypageServiceImpl implements MypageService {
         // 기본배송지로 들어온 경우
         if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
+            Address address = addressRepository.findByUserAndIsDefault(user, true);
             if (!(address == null)) {
                 address.changeDefault(false);
             }
@@ -161,7 +161,7 @@ public class MypageServiceImpl implements MypageService {
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
                 .isDefault(addressRequest.getIsDefault())
-                .userId(user)
+                .user(user)
                 .build();
 
         addressRepository.save(newAddress);
@@ -174,7 +174,7 @@ public class MypageServiceImpl implements MypageService {
         // 기본배송지로 들어오면
         if (addressRequest.getIsDefault()) {
             //기존에 있던 배송지 중 기본배송지로 등록된걸 취소처리
-            Address address = addressRepository.findByUserIdAndIsDefault(user, true);
+            Address address = addressRepository.findByUserAndIsDefault(user, true);
             if (!(address == null)) {
                 address.changeDefault(false);
             }
@@ -190,7 +190,7 @@ public class MypageServiceImpl implements MypageService {
                 .receiver(addressRequest.getReceiver())
                 .phoneNumber(addressRequest.getPhoneNumber())
                 .isDefault(addressRequest.getIsDefault())
-                .userId(user)
+                .user(user)
                 .build();
 
         addressRepository.save(newAddress);
@@ -230,6 +230,7 @@ public class MypageServiceImpl implements MypageService {
                     .day(lecture.getDay())
                     .hour(lecture.getHour())
                     .minute(lecture.getMinute())
+                    .isFinished(lecture.getIsFinished())
                     .build();
 
             paymentResponses.add(paymentResponse);
@@ -348,7 +349,7 @@ public class MypageServiceImpl implements MypageService {
                         .classMinute(dClass.getClassMinute())
                         .likeCount(dClass.getLikeCount())
                         .reviewCount(dClass.getReviewCount())
-                        .ratingSum(dClass.getRatingSum())
+                        .averageRating(Math.round(((double) dClass.getRatingSum() / dClass.getReviewCount()) * 100) / 100.0)
                         .userId(dClass.getUserId().getUserId())
                         .nickname(dClass.getUserId().getNickname())
                         .tagId(dClass.getTagId().getTagId())
@@ -417,7 +418,7 @@ public class MypageServiceImpl implements MypageService {
     @Transactional(readOnly = true)
     public ProMypageResponse getProMypage(int userId) {
         User user = userRepository.findByUserId(userId);
-        Account account = accountRepository.findByUserId(user);
+        Account account = accountRepository.findByUser(user);
 
         return ProMypageResponse.builder()
                 .email(user.getEmail())
@@ -433,7 +434,7 @@ public class MypageServiceImpl implements MypageService {
     @Override
     @Transactional
     public void modifyAccount(int userId, AccountRequest accountRequest) {
-        Account account = accountRepository.findByUserId(userRepository.findByUserId(userId));
+        Account account = accountRepository.findByUser(userRepository.findByUserId(userId));
 
         account.changeAccountNumber(accountRequest.getAccountNumber());
         account.changeBank(accountRequest.getBank());
@@ -444,7 +445,7 @@ public class MypageServiceImpl implements MypageService {
     @Transactional(readOnly = true)
     public MileageResponse getMileage(int userId) {
         User user = userRepository.findByUserId(userId);
-        Account account = accountRepository.findByUserId(user);
+        Account account = accountRepository.findByUser(user);
 
         return MileageResponse.builder()
                 .mileage(mileageRepository.findByUser(user).getMileage())

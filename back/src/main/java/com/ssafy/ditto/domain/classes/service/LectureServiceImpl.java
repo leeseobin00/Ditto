@@ -49,6 +49,7 @@ public class LectureServiceImpl implements LectureService {
                 .userCount((byte) 0)
                 .classPrice(dClass.getClassPrice())
                 .isDeleted(false)
+                .isFinished(false)
                 .build();
         lectureRepository.save(lecture);
     }
@@ -105,6 +106,11 @@ public class LectureServiceImpl implements LectureService {
         return lectures.stream()
                 .map(LectureResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean checkReviewCompleted(Integer classId, Integer lectureId, Integer userId) {
+        return lectureRepository.existsByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
     }
 
     @Override

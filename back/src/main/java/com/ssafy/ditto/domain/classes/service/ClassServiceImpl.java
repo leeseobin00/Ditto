@@ -23,11 +23,10 @@ import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.dto.UserResponse;
 import com.ssafy.ditto.domain.user.exception.UserNotFoundException;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -152,11 +150,38 @@ public class ClassServiceImpl implements ClassService {
                 tagResponse);
     }
 
+
     @Override
     @Transactional
     public ClassListResponse getClassList(ClassListRequest request) {
-        List<DClass> classList = classRepository.findAll((root, query, criteriaBuilder) -> {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate")); // 기본 정렬
+
+        if (request.getSortBy() != null) {
+            switch (request.getSortBy()) {
+                case "likeCount":
+                    sort = Sort.by(Sort.Order.desc("likeCount"));
+                    break;
+                case "averageRating":
+                    sort = Sort.by(Sort.Order.desc("ratingSum")).and(Sort.by(Sort.Order.desc("reviewCount")));
+                    break;
+                case "reviewCount":
+                    sort = Sort.by(Sort.Order.desc("reviewCount"));
+                    break;
+                case "priceLow":
+                    sort = Sort.by(Sort.Order.asc("classPrice"));
+                    break;
+                case "createdDate":
+                default:
+                    sort = Sort.by(Sort.Order.desc("createdDate"));
+                    break;
+            }
+        }
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize() != null ? request.getSize() : 12, sort);
+
+        Page<DClass> classPage = classRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
             if (request.getCategoryId() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("categoryId").get("categoryId"), request.getCategoryId()));
             }
@@ -165,51 +190,38 @@ public class ClassServiceImpl implements ClassService {
             }
             if (request.getSearchBy() != null && request.getKeyword() != null) {
                 if (request.getSearchBy().equals("nickname")) {
-                    Join<DClass, User> userJoin = root.join("userId", JoinType.INNER);
-                    predicates.add(criteriaBuilder.like(userJoin.get("nickname"), "%" + request.getKeyword() + "%"));
+                    predicates.add(criteriaBuilder.like(root.get("userId").get("nickname"), "%" + request.getKeyword() + "%"));
                 } else if (request.getSearchBy().equals("className")) {
                     predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
                 }
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        });
+        }, pageable);
 
-        // Sort
-        switch (request.getSortBy() != null ? request.getSortBy() : "createdDate") {
-            case "likeCount":
-                classList.sort(Comparator.comparing(DClass::getLikeCount).reversed());
-                break;
-            case "averageRating":
-                classList.sort(Comparator.comparing(d -> (float) d.getRatingSum() / (d.getReviewCount() == 0 ? 1 : d.getReviewCount()), Comparator.reverseOrder()));
-                break;
-            case "reviewCount":
-                classList.sort(Comparator.comparing(DClass::getReviewCount).reversed());
-                break;
-            case "priceLow":
-                classList.sort(Comparator.comparing(DClass::getClassPrice));
-                break;
-            case "createdDate":
-            default:
-                classList.sort(Comparator.comparing(DClass::getCreatedDate).reversed());
-                break;
-        }
+        List<DClass> classList = classPage.getContent(); // Page에서 List로 변환
 
-        // Pagination
-        int start = request.getPage() * (request.getSize() != null ? request.getSize() : 12);
-        int end = Math.min(start + (request.getSize() != null ? request.getSize() : 12), classList.size());
-        List<DClass> paginatedList = classList.subList(start, end);
+        List<ClassResponse> classResponses = classList.stream()
+                .map(ClassResponse::of)
+                .collect(Collectors.toList());
 
-        List<ClassResponse> classResponses = paginatedList.stream().map(ClassResponse::of).collect(Collectors.toList());
+        int totalPages = classPage.getTotalPages();
 
-        return ClassListResponse.of(classResponses);
+        return ClassListResponse.builder()
+                .classList(classResponses)
+                .currentPage(request.getPage() + 1)
+                .totalPages(totalPages)
+                .build();
     }
+
 
     @Override
     @Transactional
     public List<ClassResponse> getPopularClasses() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("likeCount")));
-        List<DClass> popularClasses = classRepository.findPopularClasses(oneWeekAgo, pageable);
+        List<DClass> popularClasses = classRepository.findPopularClasses(oneWeekAgo, pageable).stream()
+                .filter(dClass -> !dClass.getIsDeleted()) 
+                .collect(Collectors.toList());
 
         return popularClasses.stream().map(ClassResponse::of).collect(Collectors.toList());
     }
@@ -219,7 +231,9 @@ public class ClassServiceImpl implements ClassService {
     public List<ClassResponse> getLatestClasses() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("createdDate")));
-        List<DClass> recentClasses = classRepository.findRecentClasses(oneWeekAgo, pageable);
+        List<DClass> recentClasses = classRepository.findRecentClasses(oneWeekAgo, pageable).stream()
+                .filter(dClass -> !dClass.getIsDeleted())
+                .collect(Collectors.toList());
 
         return recentClasses.stream().map(ClassResponse::of).collect(Collectors.toList());
     }

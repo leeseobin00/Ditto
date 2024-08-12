@@ -26,7 +26,7 @@ public class BatchScheduler {
     @Autowired
     private BatchConfig batchConfig;
 
-    @Scheduled(cron = "0 */10 * * * *")  // Run every minute
+    @Scheduled(cron = "0 * * * * *")  // Run every minute
     public void runJob() {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())

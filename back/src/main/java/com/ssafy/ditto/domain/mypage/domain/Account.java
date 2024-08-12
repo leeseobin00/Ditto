@@ -27,7 +27,7 @@ public class Account {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     public void changeAccountNumber(String newAccountNumber){
         this.accountNumber = newAccountNumber;

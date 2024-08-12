@@ -44,23 +44,23 @@ public class ManageLiveRoomsTasklet implements Tasklet {
             // 끝나는 시간 클래스 진행시간 + 1시간 후에 자동으로 라이브 룸 삭제
             DClass dClass = lecture.getClassId();
             LocalDateTime endTime = lectureStartTime.plusHours(dClass.getClassHour())
-                                                    .plusMinutes(dClass.getClassMinute()+30);
+                                                    .plusMinutes(dClass.getClassMinute());
 
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
 
-//                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
-//                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
-//                for(Integer studentId : studentList) {
-//                    sessionService.getToken(lecture.getLectureId(), studentId);
-//                }
+                sessionService.createSession(lecture.getLectureId(), lecture.getClassId().getUserId().getUserId());
+                List<Integer> studentList = learningService.getStudentList(lecture.getLectureId());
+                for(Integer studentId : studentList) {
+                    sessionService.getToken(lecture.getLectureId(), studentId);
+                }
             }
 
             if (now.isAfter(endTime) && now.isBefore(endTime.plusMinutes(30))) {
-//                liveRoomService.endLiveRoom(lecture.getLectureId());
-//                learningService.changeStatus(lecture.getLectureId());
-//                sessionService.closeSession(lecture.getLectureId());
-//                mileageService.addMileage(lecture.getLectureId());
+                liveRoomService.endLiveRoom(lecture.getLectureId());
+                learningService.changeStatus(lecture.getLectureId());
+                sessionService.closeSession(lecture.getLectureId());
+                mileageService.addMileage(lecture.getLectureId());
                 
             }
         }

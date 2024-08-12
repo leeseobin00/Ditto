@@ -6,15 +6,11 @@ import com.ssafy.ditto.domain.mypage.domain.Account;
 import com.ssafy.ditto.domain.mypage.domain.Mileage;
 import com.ssafy.ditto.domain.mypage.repository.AccountRepository;
 import com.ssafy.ditto.domain.mypage.repository.MileageRepository;
-import com.ssafy.ditto.domain.tag.repository.TagRepository;
 import com.ssafy.ditto.domain.user.domain.Agree;
-import com.ssafy.ditto.domain.user.domain.Form;
 import com.ssafy.ditto.domain.user.domain.User;
-import com.ssafy.ditto.domain.user.domain.UserTag;
 import com.ssafy.ditto.domain.user.dto.*;
 import com.ssafy.ditto.domain.user.exception.UserDuplicateException;
 import com.ssafy.ditto.domain.user.repository.*;
-import com.ssafy.ditto.global.jwt.dto.JwtResponse;
 import com.ssafy.ditto.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,13 +25,10 @@ import java.security.SecureRandom;
 public class UserServiceImpl implements UserService {
 
     private final AgreeRepository agreeRepository;
-    private final FormRepository formRepository;
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TagRepository tagRepository;
-    private final UserTagRepository userTagRepository;
     private final JwtProvider jwtProvider;
     private final AccountRepository accountRepository;
     private final MileageRepository mileageRepository;
@@ -76,17 +69,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void proSignup(ProSignUpRequest proSignUpRequest) {
+    public void proSignup(UserSignUpRequest userSignUpRequest) {
         File file = fileRepository.findByFileId(1);
         //강사 회원 등록
         User user = User.builder()
-                .email(proSignUpRequest.getEmail())
-                .password(passwordEncoder.encode(proSignUpRequest.getPassword()))
-                .nickname(proSignUpRequest.getNickname())
+                .email(userSignUpRequest.getEmail())
+                .password(passwordEncoder.encode(userSignUpRequest.getPassword()))
+                .nickname(userSignUpRequest.getNickname())
                 .agreeTOS(true)
                 .agreePICU(true)
                 .isDeleted(false)
-                .roleId(userRoleRepository.findByRoleId(proSignUpRequest.getRole()))
+                .roleId(userRoleRepository.findByRoleId(userSignUpRequest.getRole()))
                 .fileId(file)
                 .domain("local")
                 .build();
@@ -95,35 +88,11 @@ public class UserServiceImpl implements UserService {
 
         user.changeRefreshToken(jwtProvider.createRefreshToken(String.valueOf(user.getUserId()), user.getEmail()));
 
-        // 강사 지원서 등록
-        Form form = Form.builder()
-                .name(proSignUpRequest.getName())
-                .phoneNumber(proSignUpRequest.getPhoneNumber())
-                .startDate(proSignUpRequest.getStartDate())
-                .minActive(proSignUpRequest.getMinActive())
-                .experience(proSignUpRequest.getExperience())
-                .comment(proSignUpRequest.getComment())
-                .userId(user)
-                .build();
-
-        formRepository.save(form);
-
-
-        // 강사 관심사 태그 등록
-        for (String tagName : proSignUpRequest.getTagName()){
-            UserTag userTag = UserTag.builder()
-                    .userId(user)
-                    .tagId(tagRepository.findByTagName(tagName))
-                    .build();
-
-            userTagRepository.save(userTag);
-        }
-
         Account account = Account.builder()
                 .accountNumber("")
                 .bank("")
                 .receiver("")
-                .userId(user)
+                .user(user)
                 .build();
 
         accountRepository.save(account);

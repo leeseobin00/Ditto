@@ -19,11 +19,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
 
     boolean existsByClassId_UserIdAndLectureId(User user, Integer lectureId);
 
-    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.lectureId NOT IN " +
-            "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId AND r.dclass.classId = :classId) " +
-            "AND l.isDeleted = false")
-    List<Lecture> findLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
-
     @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.isDeleted = false AND " +
             "(l.year > :currentYear OR " +
             "(l.year = :currentYear AND l.month > :currentMonth) OR " +
@@ -44,4 +39,15 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
             "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId) AND EXISTS " +
             "(SELECT ln FROM Learning ln WHERE ln.lecture.lectureId = l.lectureId AND ln.student.userId = :userId)")
     List<Lecture> findCompletedLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
+
+    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.isDeleted = false")
+    List<Lecture> findAllByClassIdAndIsDeletedFalse(@Param("classId") Integer classId);
+
+    @Query("SELECT l FROM Lecture l WHERE l.classId.classId = :classId AND l.lectureId NOT IN " +
+            "(SELECT r.lecture.lectureId FROM Review r WHERE r.user.userId = :userId AND r.isDeleted = false) " +
+            "AND l.isDeleted = false")
+    List<Lecture> findLecturesWithoutReviews(@Param("classId") Integer classId, @Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(r) > 0 FROM Review r WHERE r.dclass.classId = :classId AND r.lecture.lectureId = :lectureId AND r.user.userId = :userId AND r.isDeleted = false")
+    boolean existsByClassIdAndLectureIdAndUserId(@Param("classId") Integer classId, @Param("lectureId") Integer lectureId, @Param("userId") Integer userId);
 }

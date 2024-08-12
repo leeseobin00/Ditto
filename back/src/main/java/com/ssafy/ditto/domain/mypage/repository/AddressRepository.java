@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
-    List<Address> findAllByUserId(User user);
-    Address findByUserIdAndIsDefault(User userId, boolean ddfault);
+    List<Address> findAllByUser(User user);
+    Address findByUserAndIsDefault(User user, boolean dfault);
 }
