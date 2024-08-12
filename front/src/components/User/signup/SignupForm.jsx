@@ -559,7 +559,13 @@ const SignupForm = () => {
     };
 
     try {
-      const response = await axios.post(`${baseURL}/users/signup`, userData);
+      let response = null;
+      if (userData.role == 1) {
+        response = await axios.post(`${baseURL}/users/signup`, userData);
+      }else{
+        response = await axios.post(`${baseURL}/users/signup/form`, userData);
+      }
+      
       console.log(response.data);
       Swal.fire({
         icon: "success",
