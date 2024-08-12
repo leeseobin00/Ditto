@@ -43,15 +43,17 @@ const FilterWrapper = styled.div`
 `;
 
 const CustomSelectBox = styled(SelectBox)`
-  width: 500px;
+  width: 700px;
+  margin-right: 100px;
 `;
 
 const Input = styled.input`
-  width: 160px;
+  width: 80%;
   padding: 6px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
   border: 1px solid var(--BORDER_COLOR);
+  margin-left: 30px;
   &:focus {
     outline: none;
   }
@@ -159,6 +161,7 @@ function ProfileSearchPage() {
 
       const result = await getProfile(url, null, "get");
       setTeacherProfiles((prev) => [...prev, ...result?.data?.profiles]);
+      console.log(result?.data?.profiles);
       setTeacherTotalPage(result?.data?.totalPageCount);
     }
   };
@@ -221,7 +224,7 @@ function ProfileSearchPage() {
               curOption={getCategoryLabelByValue(categoryId)}
             />
           </Filter>
-          <Filter title="닉네임">
+          <Filter title="닉네임" style={{ width: "80%" }}>
             <Input value={keyword} onChange={handleKeyword} />
           </Filter>
           <Button label={<CustomSearchIcon />} onClick={handleSearch} />
@@ -246,6 +249,7 @@ function ProfileSearchPage() {
                 profileImageId={profile?.fileId}
                 userName={profile?.nickname}
                 profileId={profile?.userId}
+                likeCount={profile?.likeCount}
               />
             </Link>
           ))}
@@ -265,6 +269,7 @@ function ProfileSearchPage() {
                 profileImageId={profile?.fileId}
                 userName={profile?.nickname}
                 profileId={profile?.userId}
+                likeCount={profile?.likeCount}
               />
             </Link>
           ))}

@@ -99,13 +99,6 @@ const ClassStartDateTime = styled.div`
   font-size: 14px;
 `;
 
-const PaymentPriceContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 150px;
-`;
-
 const PaymentPrice = styled.div`
   font-weight: bold;
   color: var(--PRIMARY);
@@ -116,7 +109,7 @@ const PaymentActions = styled.div`
   flex-direction: column;
   height: 70px;
   padding: 5px 0;
-  justify-content: space-between;
+  justify-content: center;
 `;
 
 const PaymentUserName = styled.div`
@@ -126,6 +119,13 @@ const PaymentUserName = styled.div`
 const ReviewFinished = styled.div`
   font-size: 14px;
   color: var(--SECONDARY);
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  justify-content: space-between;
 `;
 
 const PaymentDetail = ({
@@ -182,7 +182,7 @@ const PaymentDetail = ({
   useEffect(() => {
     // 각 payment에 대해 handleGetCanReview 실행
     payments.forEach((payment) => {
-      handleGetCanReview(payment.lectureId, payment.classId);
+      handleGetCanReview(payment.classId, payment.lectureId);
     });
   }, [payments]);
 
@@ -193,9 +193,8 @@ const PaymentDetail = ({
       );
       setCanReviewMap((prev) => ({
         ...prev,
-        [lectureId]: !response?.data, // response.data가 false이면 리뷰 가능 상태로 설정
+        [lectureId]: !response?.data?.data,
       }));
-      console.log(response?.data);
     } catch (error) {
       console.error(error);
     }
@@ -216,6 +215,7 @@ const PaymentDetail = ({
     setSummaries([]);
   };
 
+  // 결제 취소 조작
   const handleConfirmCancel = async () => {
     try {
       await axios.put(
@@ -228,7 +228,7 @@ const PaymentDetail = ({
       );
       setPayments(
         payments.map((payment) =>
-          payment.lectureId === currentLectureId
+          payment.lectureId == currentLectureId
             ? { ...payment, payCancelTime: new Date() }
             : payment
         )
@@ -285,7 +285,6 @@ const PaymentDetail = ({
                 <PaymentUserName>{payment.userName}</PaymentUserName>
                 <PaymentPrice>{payment.classPrice}&nbsp;원</PaymentPrice>
               </PaymentInfoContainer>
-
               <PaymentActions>
                 {!payCancelTime && !payment.isFinished && (
                   <OutlineButton
@@ -294,6 +293,7 @@ const PaymentDetail = ({
                     size={"sm"}
                     $cancel
                     onClick={() => handleCancelClick(payment.lectureId)}
+                    style={{ margin: "auto 0" }}
                   />
                 )}
                 {payCancelTime && (
@@ -307,13 +307,13 @@ const PaymentDetail = ({
                   </CancleMessage>
                 )}
                 {payment.isFinished && !payCancelTime && (
-                  <>
+                  <ButtonContainer>
                     <RoundButton
                       label={"요약 보기"}
                       size={"sm"}
                       onClick={() => handleSummaryClick(payment?.lectureId)}
                     />
-                    {canReviewMap[payment.lectureId] ? (
+                    {canReviewMap[payment?.lectureId] ? (
                       <RoundButton
                         label={"리뷰 작성"}
                         size={"sm"}
@@ -322,7 +322,7 @@ const PaymentDetail = ({
                     ) : (
                       <ReviewFinished>리뷰 작성 완료</ReviewFinished>
                     )}
-                  </>
+                  </ButtonContainer>
                 )}
               </PaymentActions>
             </PaymentDetails>
@@ -337,8 +337,8 @@ const PaymentDetail = ({
         classId={selectedPayment?.classId}
         isClass={false}
         payment={selectedPayment}
-        onReviewSubmit={() =>
-          handleGetCanReview(selectedPayment.lectureId, selectedPayment.classId)
+        onUpdate={() =>
+          handleGetCanReview(selectedPayment.classId, selectedPayment.lectureId)
         } // 리뷰 제출 후 리뷰 가능 여부 다시 확인
       />
 
