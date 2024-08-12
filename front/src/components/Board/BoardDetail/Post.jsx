@@ -239,9 +239,9 @@ function Post({
     setIsModalOpen(false);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async() => {
     // 추후 삭제 api 연결
-    deletePost(`/posts/${postId}`, null, "delete");
+    const res = await deletePost(`/posts/${postId}`, null, "delete");
     setIsModalOpen(false);
     navigate("/board/all");
   };
