@@ -21,31 +21,32 @@ const ContentContainer = styled.div`
 `;
 
 function AddressListModal({ show, onClose, userId }) {
-  if (!show) return null;
-
-  const [addresses, setAddresses] = useState();
+  const [addresses, setAddresses] = useState([]);
   const { sendRequest } = useAxios();
 
   const handleGetAddresses = async () => {
     try {
       const response = await sendRequest(
         `/mypage/${userId}/address`,
+        null,
+        "get",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        },
-        "get"
+        }
       );
       setAddresses(response?.data?.addresses);
-    } catch {
+    } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
     handleGetAddresses();
-  }, []);
+  }, [userId]);
+
+  if (!show) return null;
 
   return (
     <Modal onClose={onClose}>

@@ -11,6 +11,7 @@ import MeetingFooter from "../../components/Meeting/MeetingFooter";
 import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
+import Swal from 'sweetalert2';
 
 const PageContainer = styled.div`
   display: flex;
@@ -47,15 +48,19 @@ const ParticipantGrid = styled.div`
 const ScrollButton = styled.button`
   background-color: var(--LIGHT);
   color: var(--DARK);
+  width: 40px;
+  height: 40px;
   border: none;
+  border-radius: 100%;
   padding: 10px;
   cursor: pointer;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  &:hover {
-    background-color: var(--HOVER_LIGHT);
+
+  &:hover{
+    color: var(--SECONDARY);
   }
 `;
 
@@ -95,6 +100,7 @@ function MeetingPage() {
   // chat, timer
   const [chatMessages, setChatMessages] = useState([]);
   const [statusMessages, setStatusMessages] = useState([]);
+  //const [statusMessages, setStatusMessages] = useState(new Map());
   const [timer, setTimer] = useState(0); // Set initial timer value to 60 seconds
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   // 음소거, 화면끄기
@@ -105,6 +111,14 @@ function MeetingPage() {
   const maxVisible = 3; // Maximum visible participants
   // summary
   const [summaries, setSummaries] = useState([]);
+  // isOut
+  const [isEnd, setEnd] = useState(false);
+
+  useEffect(()=>{
+    if(isEnd && subscribers.length==0){
+      navigate("/video");
+    }
+  },[isEnd, subscribers]);
 
   const getLectureInfo = async() => {
     const result = await sendRequest(`/live-rooms/${lectureId}`);
@@ -161,9 +175,20 @@ function MeetingPage() {
   const createSession = async (sessionId) => {
     const response = await axios.post(`${baseURL}/sessions/${lectureId}?userId=${userId}`, null);
     if(response?.data?.code==200 || response?.data?.code==400){
+      Swal.fire({
+        title: '세션에 성공적으로 접속했습니다!',
+        icon: 'success',
+        confirmButtonText: '확인',
+        confirmButtonColor: "#FF7F50",
+      });
       joinSession();
     }else{
-      alert("세션에 접근할 수 없습니다!");
+      Swal.fire({
+        title: '세션에 접근할 수 없습니다!',
+        icon: 'error',
+        confirmButtonText: '확인',
+        confirmButtonColor: "#FF7F50",
+      });
       navigate("/video");
     }
   };
@@ -173,13 +198,47 @@ function MeetingPage() {
   };
 
   const createToken = async () => {
-    const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
-    if(response?.data?.code==403){
-      alert(response?.data?.message);
+    try {
+      const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`, null, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+  
+      if (response?.data?.code === 403) {
+        await Swal.fire({
+          title: '오류 발생!',
+          text: response?.data?.message || '권한이 없습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
+        navigate("/video");
+        return;
+      }
+  
+      if (response?.data?.code === 'SESSION_NOT_FOUND') {
+        await Swal.fire({
+          title: '세션 오류!',
+          text: response?.data?.message || '세션을 찾을 수 없습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
+        navigate("/video");
+        return;
+      }
+  
+      const token = response?.data?.data;
+      return token;
+    } catch (error) {
+      await Swal.fire({
+        title: '알림',
+        text: '접속 토큰 생성 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       navigate("/video");
     }
-    const token = response?.data?.data;
-    return token;
   };
 
   const handleMainVideoStream = (stream) => {
@@ -193,6 +252,8 @@ function MeetingPage() {
       prevSubscribers.filter((subscriber) => subscriber !== streamManager)
     );
   };
+
+  console.log(statusMessages);
 
   const joinSession = async () => {
     const newSession = OV.initSession();
@@ -218,6 +279,11 @@ function MeetingPage() {
     });
 
     newSession.on('streamDestroyed', (event) => {
+      console.log("visibleParticipants.length=====", visibleParticipants.length);
+      console.log("currentIndex=====",currentIndex);
+      if(visibleParticipants.length==1){
+        setCurrentIndex((prev)=>Math.max(prev - 1, 0));
+      }
       deleteSubscriber(event.stream.streamManager);
     });
 
@@ -238,19 +304,45 @@ function MeetingPage() {
     newSession.on('signal:status', (event) => {
       console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
-      // 이벤트 수신시 로직
-      let isExist = false;
-      const newStatusMessage = [];
-      statusMessages.forEach((message)=>{
-        if(message?.sender != parsedData?.sender){
-          newStatusMessage.push(message);
-        }else{
-          isExist = true;
-        }
-      });
-      if(!isExist) newStatusMessage.push(parsedData); 
-      console.timeLog(newStatusMessage);
-      setStatusMessages(newStatusMessage);
+      //이벤트 수신시 로직
+      // let isExist = false;
+      // const newStatusMessage = [];
+      // console.log(statusMessages);
+      // statusMessages.forEach((message)=>{
+      //   console.log(statusMessages);
+      //   if(message?.sender != parsedData?.sender){
+      //     newStatusMessage.push(message);
+      //   }else{
+      //     isExist = true;
+      //   }
+      // });
+      // if(!isExist) newStatusMessage.push(parsedData); 
+      // console.log(newStatusMessage);
+      // setStatusMessages(newStatusMessage);
+      setStatusMessages((prevMessages)=>{
+        console.log(prevMessages);
+        let isExist = false;
+        const newStatusMessages = prevMessages.filter((message) => {
+          if (message?.sender !== parsedData?.sender) {
+            return true;
+          } else {
+            isExist = true;
+            return false;
+          }
+        });
+    
+        console.log(isExist);
+        return [...newStatusMessages, parsedData];
+      })
+      // const newMap = statusMessages;
+      // newMap.set(parsedData?.sender, parsedData?.message);
+      // console.log("===============================newMap: ", newMap);
+      // setStatusMessages(newMap);
+      // setStatusMessages((prevMessages) => {
+      //   const updatedMap = new Map(prevMessages);
+      //   updatedMap.set(parsedData?.sender, parsedData?.message);
+      //   return updatedMap;
+      // });      
     });
 
     newSession.on('signal:timer', (event) => {
@@ -268,6 +360,14 @@ function MeetingPage() {
       console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
       setStatusMessages([]);
+    });
+
+    newSession.on('signal:end', (event) => {
+      if(roleId==1){
+        navigate("/video");
+      }else if(roleId==2){
+        setEnd(true);
+      }
     });
 
     const token = await getToken();
@@ -314,10 +414,20 @@ function MeetingPage() {
     setSubscribers([]);
     setMySessionId('SessionA');
     setMyUserName(undefined);
+    if(isEnd) { navigate("/video"); }
   };
 
   // Include publisher in pagination logic 
-  const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
+  const [visibleParticipants, setVisibleParticipants]  = useState([]);
+  useEffect(()=>{
+    if(roleId==1){
+      setVisibleParticipants([...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible));
+    }else if(roleId==2){
+      setVisibleParticipants([publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible));
+    }
+  },[currentIndex, publisher, subscribers]);
+
+  //const visibleParticipants = roleId == 1 ? [...subscribers, publisher].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible) : [publisher,...subscribers].slice(currentIndex * maxVisible, (currentIndex + 1) * maxVisible);
   // Calculate flex-basis based on the number of visible participants
   const getFlexBasis = () => {
     return `calc(${100 / Math.min(subscribers.length + 1, maxVisible)}% - 16px)`;
@@ -466,12 +576,32 @@ function MeetingPage() {
     });
     };
   }
+  const sendEnd = (senderName) => {
+    if(session){
+      session.signal({
+        data: JSON.stringify({
+            sender: senderName,
+        }),
+        to: [],
+        type: 'end'
+    })
+    .then(() => {
+        console.log('Message successfully sent: end');
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    };
+  }
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [isOpen, setIsOpen] = useState(false);
   const handleIsOpen = (status) => {
     setIsOpen(status);
   };
-  console.log("==========================>isopen: ", isOpen);
+
+  useEffect(()=>{
+    console.log("statusMessages: ", statusMessages);
+  },[statusMessages]);
 
   console.log("===========>publisher", publisher);
   console.log("===========>subscribers", subscribers);
@@ -483,6 +613,7 @@ function MeetingPage() {
         chatMessages,
         sendStatus,
         statusMessages,
+        sendEnd,
         publisher,
         subscribers,
         timer,
@@ -521,16 +652,14 @@ function MeetingPage() {
             );
           })}
           </ParticipantGrid>
-          {(subscribers.length + 1) > maxVisible && (
-            <>
+          <>
               {currentIndex!==0 && <LeftScrollButton onClick={handlePrev} disabled={currentIndex === 0}>
                 &lt;
               </LeftScrollButton>}
-              {(currentIndex<subscribers.length/maxVisible) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
+              {(currentIndex<Math.floor(subscribers.length/maxVisible)) && <RightScrollButton onClick={handleNext} disabled={(currentIndex + 1) * maxVisible >= (subscribers.length + 1)}>
                 &gt;
               </RightScrollButton>}
-            </>
-          )}
+          </>
         </MainContent>
         <MeetingFooter
           audioEnabled={audioEnabled}

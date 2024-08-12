@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../../hooks/useAxios";
 import UserIcon from "../../../assets/icon/class/user-count.png";
@@ -27,7 +28,6 @@ const ClassSideBarConatiner = styled.div`
   margin-top: 25px;
   margin-left: 15px;
   justify-content: space-between;
-  z-index: 3;
 `;
 
 const ClassPriceContainer = styled.div`
@@ -164,7 +164,17 @@ function ClassSideBar({
 
   const handlePostLike = async () => {
     if (userId == null) {
-      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 좋아요 기능을 이용할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
@@ -183,12 +193,28 @@ function ClassSideBar({
 
   const handleDeleteLike = async () => {
     if (userId == null) {
-      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 좋아요 기능을 이용할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
     if (roleId == 2) {
-      alert("강사는 클래스 좋아요 기능을 이용할 수 없습니다.");
+      Swal.fire({
+        title: "이용 불가",
+        text: "강사는 클래스 좋아요 기능을 이용할 수 없습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
@@ -238,17 +264,39 @@ function ClassSideBar({
 
   const handleOrderButton = () => {
     if (userId == null) {
-      alert("회원만 구매할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 구매할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
     if (roleId != 1) {
-      alert("일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.");
+      Swal.fire({
+        title: "회원 전환 필요",
+        text: "일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
     if (selectedLecture === null) {
-      alert("선택된 강의가 없습니다.");
+      Swal.fire({
+        title: "강의 선택 필요",
+        text: "선택된 강의가 없습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
@@ -256,52 +304,61 @@ function ClassSideBar({
   };
 
   return (
-    <ClassSideBarConatiner>
-      <ClassPriceContainer>
-        <Icon src={Dollar} />
-        <ClassPrice>{formatNumber(classInfo.classPrice)}</ClassPrice>
-      </ClassPriceContainer>
-      <hr />
-      <SelectBoxContainer>
-        {lectureList && lectureList.length > 0 ? (
-          <>
-            <SelectBox
-              onChange={handleSelectChange}
-              value={selectedLecture ? selectedLecture.lectureId : ""}
-            >
-              {lectureList.map((lecture, index) => (
-                <option key={index} value={lecture.lectureId}>
-                  {String(lecture.year).padStart(4, "0")}-
-                  {String(lecture.month).padStart(2, "0")}-
-                  {String(lecture.day).padStart(2, "0")}&nbsp;
-                  {String(lecture.hour).padStart(2, "0")}:
-                  {String(lecture.minute).padStart(2, "0")}
-                </option>
-              ))}
-            </SelectBox>
-            <StudentsNum>
-              <UserCountICon src={UserIcon} />
-              {lectureUserCount == null ? "0" : `${lectureUserCount}`}
-              &nbsp;/&nbsp;{classInfo.classMax}
-            </StudentsNum>
-          </>
-        ) : (
-          <StudentsNum>강의가 없습니다.</StudentsNum>
-        )}
-        {classInfo.user.userId == userId ? (
-          <RoundButton
-            label={"클래스 일정 관리"}
-            size={"lg"}
-            onClick={handleShowModal}
+    <>
+      <ClassSideBarConatiner>
+        <ClassPriceContainer>
+          <Icon src={Dollar} />
+          <ClassPrice>{formatNumber(classInfo.classPrice)}</ClassPrice>
+        </ClassPriceContainer>
+        <hr />
+        <SelectBoxContainer>
+          {lectureList && lectureList.length > 0 ? (
+            <>
+              <SelectBox
+                onChange={handleSelectChange}
+                value={selectedLecture ? selectedLecture.lectureId : ""}
+              >
+                {lectureList.map((lecture, index) => (
+                  <option key={index} value={lecture.lectureId}>
+                    {String(lecture.year).padStart(4, "0")}-
+                    {String(lecture.month).padStart(2, "0")}-
+                    {String(lecture.day).padStart(2, "0")}&nbsp;
+                    {String(lecture.hour).padStart(2, "0")}:
+                    {String(lecture.minute).padStart(2, "0")}
+                  </option>
+                ))}
+              </SelectBox>
+              <StudentsNum>
+                <UserCountICon src={UserIcon} />
+                {lectureUserCount == null ? "0" : `${lectureUserCount}`}
+                &nbsp;/&nbsp;{classInfo.classMax}
+              </StudentsNum>
+            </>
+          ) : (
+            <StudentsNum>강의가 없습니다.</StudentsNum>
+          )}
+          {classInfo.user.userId == userId ? (
+            <RoundButton
+              label={"클래스 일정 관리"}
+              size={"lg"}
+              onClick={handleShowModal}
+            />
+          ) : (
+            <RoundButton
+              label={"구매하기"}
+              size={"lg"}
+              onClick={handleOrderButton}
+            />
+          )}
+        </SelectBoxContainer>
+        <LikeContainer>
+          <LikeButton
+            src={heartActivated ? ActivatedHeart : EmptyHeart}
+            onClick={heartActivated ? handleDeleteLike : handlePostLike}
           />
-        ) : (
-          <RoundButton
-            label={"구매하기"}
-            size={"lg"}
-            onClick={handleOrderButton}
-          />
-        )}
-      </SelectBoxContainer>
+          <LikeCount>{formatNumber(likeCount)}</LikeCount>
+        </LikeContainer>
+      </ClassSideBarConatiner>
       <ClassLectureAddModal
         lectureList={lectureList || []}
         classId={classInfo.classId}
@@ -309,14 +366,7 @@ function ClassSideBar({
         show={showModal}
         onClose={handleShowModal}
       />
-      <LikeContainer>
-        <LikeButton
-          src={heartActivated ? ActivatedHeart : EmptyHeart}
-          onClick={heartActivated ? handleDeleteLike : handlePostLike}
-        />
-        <LikeCount>{formatNumber(likeCount)}</LikeCount>
-      </LikeContainer>
-    </ClassSideBarConatiner>
+    </>
   );
 }
 

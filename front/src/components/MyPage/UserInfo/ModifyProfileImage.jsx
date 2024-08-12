@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 
 import useFormDataAxios from "../../../hooks/useFormDataAxios";
 import OutlineButton from "../../common/OutlineButton";
-import DefaultProfileImage from "../../../assets/img/profile-user.png";
+import DefaultProfileImage from "../../../assets/img/default-user.png";
+import Swal from "sweetalert2";
 
 const ModalTitle = styled.p`
   color: var(--PRIMARY);
@@ -62,28 +63,75 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
   };
 
   const handleSubmit = async () => {
-    console.log(image);
     if (userId && image !== null) {
       const formData = new FormData();
       formData.append("userId", userId);
       formData.append("file", image);
 
-      await patchImage(`/profiles/image`, formData, "patch");
-      handleProfileImage(URL.createObjectURL(image));
-      onClose();
+      try {
+        await patchImage(`/profiles/image`, formData, "patch");
+        handleProfileImage(URL.createObjectURL(image));
+        onClose();
+        Swal.fire({
+          title: '수정 완료',
+          text: '프로필 이미지가 성공적으로 수정되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인',
+        });
+      } catch (error) {
+        console.error("Error updating profile image:", error);
+        Swal.fire({
+          title: '오류',
+          text: '프로필 이미지 수정에 실패했습니다. 다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', 
+          confirmButtonText: '확인',
+        });
+      }
     }
   };
 
   const handleDelete = async () => {
-    const formData = new FormData();
-    formData.append("userId", userId);
-    formData.append("file", image);
+    Swal.fire({
+      title: '정말 삭제하시겠습니까?',
+      text: '프로필 이미지를 삭제하면 복구할 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7F50',
+      cancelButtonColor: '#d33', // 빨간색
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("userId", userId);
 
-    await deleteImage(`/profiles/image`, formData, "delete");
-    setImage(null);
-    setImagePreview(null);
-    handleProfileImage(null);
-    onClose();
+          await deleteImage(`/profiles/image`, formData, "delete");
+          setImage(null);
+          setImagePreview(null);
+          handleProfileImage(null);
+          onClose();
+          Swal.fire({
+            title: '삭제 완료',
+            text: '프로필 이미지가 삭제되었습니다.',
+            icon: 'success',
+            confirmButtonColor: '#FF7F50',
+            confirmButtonText: '확인',
+          });
+        } catch (error) {
+          console.error("Error deleting profile image:", error);
+          Swal.fire({
+            title: '오류',
+            text: '프로필 이미지 삭제에 실패했습니다. 다시 시도해주세요.',
+            icon: 'error',
+            confirmButtonColor: '#FF7F50',
+            confirmButtonText: '확인',
+          });
+        }
+      }
+    });
   };
 
   return (

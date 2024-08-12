@@ -5,6 +5,7 @@ import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { BiVideo, BiBell, BiLogOut, BiMenu } from "react-icons/bi";
+import Swal from 'sweetalert2';
 
 import useAxios from "../../hooks/useAxios";
 
@@ -235,8 +236,28 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      dispatch(logout());
-      navigate("/");
+      Swal.fire({
+        title: '로그아웃 하시겠습니까?',
+        text: "로그아웃하면 다시 로그인해야 합니다.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#FF7F50',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '로그아웃',
+        cancelButtonText: '취소'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(logout());
+          Swal.fire({
+            icon: "success",
+            title: "로그아웃 완료",
+            text: "성공적으로 로그아웃 되었습니다.",
+            confirmButtonColor: '#FF7F50',
+          }).then(() => {
+            navigate('/');
+          });
+        }
+      });
     } catch (error) {
       console.error("Logout failed: ", error);
     }
@@ -275,11 +296,7 @@ const Header = () => {
               <BiBell style={{ fontSize: "20px" }} />
             </IconLink>
             {isAuthenticated ? (
-              isPro == 1 ? (
-                <Icon to="/mypage/userinfo">MyPage</Icon>
-              ) : (
-                <Icon to="/mypage/prouserinfo">MyPage</Icon>
-              )
+              <Icon to="/mypage/">MyPage</Icon>
             ) : (
               <Icon to="/signup">회원가입</Icon>
             )}
@@ -294,7 +311,7 @@ const Header = () => {
         <BottomSection>
           <PageLink to="/">홈</PageLink>
           <PageLink to="/classes">클래스</PageLink>
-          <PageLink to="/board/all">커뮤니티</PageLink>
+          <PageLink to="/board/">커뮤니티</PageLink>
           <ProfileWrapper>
             <MenuItem to="/profile/" onClick={handlePreventClick}>
               프로필

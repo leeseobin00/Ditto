@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../../hooks/useAxios";
 import Modal from "../../common/Modal";
@@ -17,7 +18,7 @@ const ContentContainer = styled.div`
   width: 100%;
   margin-top: 25px;
   margin-bottom: 40px;
-  height: 155px;
+  max-height: 155px;
   overflow-y: auto;
 `;
 
@@ -132,7 +133,13 @@ function ClassLectureAddModal({
 
   const handleAddLecture = async () => {
     if (date === "") {
-      alert("강의 날짜를 선택해주세요.");
+      Swal.fire({
+        title: "날짜 선택 필요",
+        text: "강의 날짜를 선택해주세요",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
     const [year, month, day] = date.split("-");
@@ -153,16 +160,41 @@ function ClassLectureAddModal({
   };
 
   const handleDeleteLecture = async (lectureId) => {
-    try {
-      await deleteLecture(
-        `/classes/${classId}/lectures/${lectureId}`,
-        null,
-        "delete"
-      );
-      updateLectureList();
-    } catch (error) {
-      console.error(error);
-    }
+    Swal.fire({
+      title: "강의 삭제",
+      text: "정말로 이 강의를 삭제하시겠습니까?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#FF7F50",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteLecture(
+            `/classes/${classId}/lectures/${lectureId}`,
+            null,
+            "delete"
+          );
+          updateLectureList();
+          Swal.fire({
+            title: "삭제 완료",
+            text: "강의가 성공적으로 삭제되었습니다.",
+            icon: "success",
+            confirmButtonColor: "#FF7F50",
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire({
+            title: "삭제 실패",
+            text: "강의 삭제 중 오류가 발생했습니다.",
+            icon: "error",
+            confirmButtonColor: "#FF7F50",
+          });
+        }
+      }
+    });
   };
 
   if (!show) {

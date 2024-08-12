@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { styled } from "styled-components";
+import Swal from 'sweetalert2';
 
 import useAxios from "../../../hooks/useAxios";
 import QnAItem from "./QnAItem";
@@ -14,12 +14,6 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const QnANull = styled.div`
-  font-size: 20px;
-  color: var(--TEXT_SECONDARY);
-  padding: 20px;
 `;
 
 const QuestionItemContainer = styled.div`
@@ -66,6 +60,12 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (initialQuestions.length === 0) {
+      setShowMore(false);
+    }
+  }, [initialQuestions]);
+
   const loadMoreQuestions = async () => {
     const lastDate = questions[questions.length - 1]?.createdDate;
     if (lastDate) {
@@ -89,11 +89,24 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
             setShowMore(false);
           }
         } else {
-          alert("더 이상 불러올 질문이 없습니다.");
+          await Swal.fire({
+            title: '정보',
+            text: '더 이상 불러올 질문이 없습니다.',
+            icon: 'info',
+            confirmButtonText: "확인",
+            confirmButtonColor: "#FF7F50",
+          });
           setShowMore(false);
         }
       } catch (error) {
         console.error(error);
+        await Swal.fire({
+          title: '오류 발생',
+          text: '질문을 불러오는 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
       }
     }
   };
@@ -118,7 +131,6 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
 
   return (
     <ListContainer>
-      {questions?.length === 0 && <QnANull>등록된 문의가 없습니다.</QnANull>}
       {questions?.map((question) => (
         <QuestionItemContainer key={question.questionId}>
           <ClassInfo>

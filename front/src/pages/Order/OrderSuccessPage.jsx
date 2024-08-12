@@ -57,6 +57,22 @@ function OrderSuccessPage() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.history.replaceState(null, "", "/");
+
+    // popstate 이벤트를 통해 뒤로가기를 감지하고 특정 페이지로 이동
+    const handlePopState = () => {
+      navigate("/", { replace: true });
+    };
+
+    // popstate 이벤트 리스너 추가
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
+
   const navigateTo = () => {
     navigate("/mypage/payment");
   };

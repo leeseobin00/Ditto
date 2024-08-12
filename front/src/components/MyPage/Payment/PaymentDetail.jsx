@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { styled } from "styled-components";
 
 import axios from "axios";
@@ -8,6 +7,9 @@ import SummaryModal from "./SummaryModal"; // SummaryModal 컴포넌트 경로 �
 import RefundPolicyModal from "./RefundPolicyModal"; // RefundPolicyModal 컴포넌트 경로 수정
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
+import Swal from 'sweetalert2';
+import ReviewPostModal from "../../Review/ReviewPostModal";
+import MoreButton from "../../common/MoreButton";
 
 const ListContainer = styled.div`
   margin: 10px;
@@ -88,7 +90,7 @@ const PaymentInfo = styled.div`
 const PaymentName = styled.div`
   font-weight: bold;
   margin-bottom: 5px;
-  max-width: 200px;
+  width: 100%;
   color: var(--TEXT_PRIMARY);
 `;
 
@@ -115,35 +117,26 @@ const PaymentActions = styled.div`
   gap: 5px;
 `;
 
-const ActionButton = styled.button`
-  padding: 5px 10px;
-  background-color: ${(props) =>
-    props.$cancel ? "var(--LIGHT)" : "var(--SECONDARY)"};
-  color: ${(props) => (props.$cancel ? "var(--RED)" : "var(--LIGHT)")};
-  border: 1px solid var(--TEXT_SECONDARY);
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.9);
-  }
-`;
-
 const PaymentUserName = styled.div`
   color: var(--TEXT_SECONDARY);
 `;
 
-const PaymentDetail = ({ payments = [], setPayments }) => {
+const PaymentDetail = ({
+  payments = [],
+  setPayments,
+  userId,
+  onUpdate,
+  showMoreButton,
+}) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const { userId } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefundPolicy, setIsRefundPolicy] = useState(false); // 환불 정책 모달 구분 상태
   const [modalMessage, setModalMessage] = useState("");
   const [summaries, setSummaries] = useState([]);
   const [refundPolicy, setRefundPolicy] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const handleClassClick = (classId) => {
     navigate(`/classes/detail/${classId}`);
@@ -152,22 +145,37 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
     try {
-      const response = await axios.get(`${baseURL}/mypage/payment/cancel`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const response = await axios.put(
+        `${baseURL}/payments/cancel/${userId}/${lectureId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         setRefundPolicy(response.data.data.refund);
         setIsRefundPolicy(true);
         setIsModalOpen(true);
       } else {
-        alert("환불 규정 조회 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '환불 규정 조회 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("환불 규정 조회 실패. 다시 시도해주세요.");
-      console.error("환불 규정 조회 에러:", error);
+      Swal.fire({
+        title: '환불 규정 조회 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50', 
+        confirmButtonText: '확인'
+      });
+      console.error(error);
     }
   };
 
@@ -187,21 +195,38 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
         setIsRefundPolicy(false);
         setIsModalOpen(true);
       } else {
-        alert("요약 조회 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '요약 조회 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', 
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("요약 조회 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '요약 조회 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error("요약 조회 에러:", error);
     }
   };
 
-  const handleReviewClick = (classId) => {
-    navigate(`/class/${classId}`);
+  // 리뷰 작성 조작
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const handleReviewClick = (payment) => {
+    setSelectedPayment(payment);
+    setShowReviewModal(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setIsRefundPolicy(false);
+    setShowReviewModal(false);
     setModalMessage("");
     setSummaries([]);
     setRefundPolicy("");
@@ -220,7 +245,6 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
       );
 
       if (response.status === 200) {
-        setModalMessage("결제/수강 취소 성공");
         setPayments(
           payments.map((payment) =>
             payment.lectureId === currentLectureId
@@ -228,11 +252,30 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
               : payment
           )
         );
+        Swal.fire({
+          title: '취소 완료',
+          text: '결제가 성공적으로 취소되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       } else {
-        alert("취소 실패. 다시 시도해주세요.");
+        Swal.fire({
+          title: '취소 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       }
     } catch (error) {
-      alert("취소 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '취소 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error(error);
     } finally {
       setIsRefundPolicy(false);
@@ -272,7 +315,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
               <PaymentInfo onClick={() => handleClassClick(payment.classId)}>
                 <PaymentName>{payment.className}</PaymentName>
                 <ClassStartDateTime>
-                  {`${payment.year}.${String(payment.month).padStart(2, "0")}.${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
+                  {`${payment.year}-${String(payment.month).padStart(2, "0")}-${String(payment.day).padStart(2, "0")} ${String(payment.hour).padStart(2, "0")}:${String(payment.minute).padStart(2, "0")}`}
                 </ClassStartDateTime>
               </PaymentInfo>
               <PaymentInfoContainer>
@@ -310,7 +353,7 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
                       <RoundButton
                         label={"리뷰 작성"}
                         size={"sm"}
-                        onClick={() => handleReviewClick(payment.classId)}
+                        onClick={() => handleReviewClick(payment)}
                       />
                     </>
                   )}
@@ -320,6 +363,15 @@ const PaymentDetail = ({ payments = [], setPayments }) => {
           </PaymentItemContainer>
         );
       })}
+      {showMoreButton && <MoreButton onClick={onUpdate} />}
+      <ReviewPostModal
+        show={showReviewModal}
+        onClose={closeModal}
+        userId={userId}
+        classId={selectedPayment?.classId}
+        isClass={false}
+        payment={selectedPayment}
+      />
       {isModalOpen &&
         (isRefundPolicy ? (
           <RefundPolicyModal

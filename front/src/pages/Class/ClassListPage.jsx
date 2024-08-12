@@ -1,17 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { styled } from "styled-components";
 import { BsSearch } from "react-icons/bs";
 
 import useAxios from "../../hooks/useAxios";
 import TabBar from "../../components/Class/ClassList/TabBar";
-import Filter from "../../components/Board/Filter";
 import SelectBox from "../../components/Board/SelectBox";
 import SelectTag from "../../components/Board/SelectTag";
 import Button from "../../components/common/Button";
 import ClassList from "../../components/Class/ClassList/ClassList";
-import PaginationBar from "../../components/Board/BoardList/PaginationBar";
+import PaginationBar from "../../components/common/PaginationBar";
 import { getTagsForCategory } from "../../utils/options";
 import {
   CLASS_SEARCH_OPTIONS,
@@ -24,21 +23,35 @@ const ClassPageContainer = styled.div`
   width: 100%;
 `;
 
+const Filter = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const FilterTitle = styled.div`
+  width: 60px;
+  margin-right: 4px;
+`;
+
 const Wrapper = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 32px;
 `;
 
-const FilterWrapper = styled.div`
+const FilterContent = styled.div`
   display: flex;
-  gap: 48px;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 92%;
+  gap: 8px;
 `;
 
 const Input = styled.input`
-  width: 480px;
+  width: 70%;
   padding: 6px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
@@ -72,17 +85,20 @@ function ClassListPage() {
 
   const { sendRequest } = useAxios();
   const location = useLocation();
+  const navigate = useNavigate();
   const pathArr = location.pathname.split("/");
   const path = pathArr.length === 3 ? pathArr[2] : "";
 
   const [pageTitle, setPageTitle] = useState("전체");
+  const searchParams = new URLSearchParams(location.search);
+  const page = parseInt(searchParams.get("page"), 10) || 1;
   const [classList, setClassList] = useState([]);
   const [categoryId, setCategoryId] = useState(0);
   const [tagId, setTagId] = useState(0);
   const [searchBy, setSearchBy] = useState("className");
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState("classId");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(page);
   const [totalPageCount, setTotalPageCount] = useState(1);
   const [currentSection, setCurrentSection] = useState(1);
 
@@ -102,7 +118,7 @@ function ClassListPage() {
     const result = await sendRequest(url, null, "get");
 
     setClassList(result?.data?.classList || []);
-    setTotalPageCount(result?.data?.totalPageCount);
+    setTotalPageCount(result?.data?.totalPages);
   };
 
   const resetOptions = () => {
@@ -163,26 +179,39 @@ function ClassListPage() {
   };
 
   const pageNumbers = useMemo(() => {
-    const size = Math.ceil(totalPageCount / 12);
-    return Array.from({ length: size }, (_, i) => i + 1);
-  }, [totalPageCount]);
+    const size = Math.ceil(totalPageCount - (currentSection - 1) * 12);
+    const ret = [];
+    for (let i = 1; i <= size; i++) {
+      ret.push(i);
+    }
+    return ret;
+  }, [currentSection, totalPageCount]);
 
   const handlePage = (number) => {
     setCurrentPage(number);
-    setCurrentSection(Math.ceil(number / 10));
+    navigate(`${location.pathname}?page=${number}`);
   };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get("page"), 10) || 1;
+    setCurrentPage(page);
+    setCurrentSection(Math.ceil(page / 12));
+  }, [location.search]);
 
   return (
     <ClassPageContainer>
       <TabBar />
       <Wrapper>
-        <FilterWrapper>
-          <Filter title="태그">
+        <Filter>
+          <FilterTitle>태그</FilterTitle>
+          <FilterContent>
             <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
-          </Filter>
-        </FilterWrapper>
-        <FilterWrapper>
-          <Filter title="검색">
+          </FilterContent>
+        </Filter>
+        <Filter style={{ paddingRight: "20px" }}>
+          <FilterTitle>검색</FilterTitle>
+          <FilterContent style={{ justifyContent: "space-between" }}>
             <SelectBox
               options={CLASS_SEARCH_OPTIONS}
               onChange={handleSearchBy}
@@ -194,8 +223,8 @@ function ClassListPage() {
               label={<CustomSearchIcon />}
               size="md"
             />
-          </Filter>
-        </FilterWrapper>
+          </FilterContent>
+        </Filter>
         <PageTitle>{pageTitle}</PageTitle>
         <SearchOptionWrapper>
           <SelectBox
@@ -210,7 +239,7 @@ function ClassListPage() {
         <ClassList classList={classList} />
         <PaginationBar
           pageNumbers={pageNumbers}
-          currentPage={currentPage + 1}
+          currentPage={currentPage}
           handleClick={handlePage}
         />
       </Wrapper>

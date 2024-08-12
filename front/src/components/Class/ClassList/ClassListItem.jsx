@@ -5,7 +5,7 @@ import Star from "../../../assets/icon/class/star.png";
 import Dollar from "../../../assets/icon/class/dollar.png";
 import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 
-const ClassListItemContainer = styled(Link)`
+const ClassListItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 290px;
@@ -17,7 +17,9 @@ const ClassListItemContainer = styled(Link)`
   color: inherit;
 `;
 
-const ClassThumbnail = styled.div`
+const LinkBox = styled(Link)``;
+
+const ClassThumbnail = styled(Link)`
   width: 100%;
   height: 180px;
   position: relative;
@@ -94,7 +96,7 @@ const Cost = styled(ClassDetailLine)`
 `;
 
 const Tag = styled(ClassDetailLine)`
-  width: 50px;
+  width: 55px;
   height: 20px;
   border-style: solid;
   border-radius: 20px;
@@ -108,7 +110,13 @@ const formatNumber = (number) => {
   return number.toLocaleString();
 };
 
-const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
+const ClassListItem = ({
+  classInfo,
+  fileId,
+  instructor,
+  tag,
+  isMyPage = false,
+}) => {
   const {
     classId,
     className,
@@ -121,8 +129,8 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
   } = classInfo;
 
   return (
-    <ClassListItemContainer to={`/classes/detail/${classId}`}>
-      <ClassThumbnail>
+    <ClassListItemContainer>
+      <ClassThumbnail to={`/classes/detail/${classId}`}>
         <ClassThumbnailDetail
           src={`http://i11a106.p.ssafy.io:8080/files/download/${fileId}`}
           alt="class-thumbnail"
@@ -133,7 +141,9 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
         </LikeNum>
       </ClassThumbnail>
       <ClassItemText>
-        <ClassTitle>{className}</ClassTitle>
+        <LinkBox to={`/classes/detail/${classId}`}>
+          <ClassTitle>{className}</ClassTitle>
+        </LinkBox>
         <ClassDetail>
           <ClassDetailLine>
             <Bold>
@@ -154,7 +164,10 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
           <ClassDetailLine>
             <Icon src={Star} alt="Star" />
             <Bold>
-              <SmallFont>{averageRating}&nbsp;</SmallFont>
+              <SmallFont>
+                {isMyPage ? classInfo?.ratingSum : averageRating?.toFixed(1)}
+                &nbsp;
+              </SmallFont>
             </Bold>
             <SmallFont>({reviewCount})</SmallFont>
           </ClassDetailLine>

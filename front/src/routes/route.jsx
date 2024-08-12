@@ -16,14 +16,15 @@ import UserInfoDetail from "../pages/Mypage/UserInfoPage/UserInfoDetailPage";
 import PaymentPage from "../pages/Mypage/PaymentPage";
 import ClassAddPage from "../pages/Class/ClassAddPage";
 import ReviewListPage from "../pages/Mypage/ReviewListPage";
-import LikedPage from "../pages/Mypage/LikedPage/LikedPage";
+import LikedPage from "../pages/Mypage/LikedPage";
 import ProAccountPage from "../pages/Mypage/UserInfoPage/ProUserInfoDetailPage";
-import MileagePage from "../pages/Mypage/Mileage/MileagePage";
+import MileagePage from "../pages/Mypage/MileagePage";
 import QuestionPage from "../pages/Mypage/QuestionPage";
 import MyClassroomPage from "../pages/MyClassroom/MyClassroomPage";
 import OrderPage from "../pages/Order/OrderPage";
 import OrderSuccessPage from "../pages/Order/OrderSuccessPage";
 import VideoPage from "../pages/Video/VideoPage";
+import NoContentPage from "../pages/NoContent/NoContentPage";
 
 const AppRoutes = () => {
   return (
@@ -51,7 +52,7 @@ const AppRoutes = () => {
         <Route path="mileage" element={<MileagePage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
-      <Route path="/board/all" element={<BoardListPage />} />
+      <Route path="/board" element={<BoardListPage />} />
       <Route path="/board/talk" element={<BoardListPage />} />
       <Route path="/board/community" element={<BoardListPage />} />
       <Route path="/board/help" element={<BoardListPage />} />
@@ -61,6 +62,7 @@ const AppRoutes = () => {
       <Route path="/profile/:profileId" element={<ProfileDetailPage />} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
       <Route path="/video" element={<VideoPage />} />
+      <Route path="*" element={<NoContentPage />} />
     </Routes>
   );
 };

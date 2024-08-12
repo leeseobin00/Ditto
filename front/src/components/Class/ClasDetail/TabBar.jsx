@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Link, Events, scrollSpy } from "react-scroll";
 import { styled } from "styled-components";
+
+import { FaBars } from "react-icons/fa";
+import useAxios from "../../../hooks/useAxios";
 
 const TabBarContainer = styled.div`
   display: flex;
@@ -12,7 +16,7 @@ const TabBarContainer = styled.div`
   background-color: var(--LIGHT);
   position: sticky;
   top: -1px;
-  z-index: 3;
+  z-index: 2;
   background-color: white;
 `;
 
@@ -29,8 +33,65 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
-function TabBar({ titleIds }) {
+const InstructorWrapper = styled.div`
+  width: 110px;
+  position: relative;
+  align-self: flex-start;
+  margin: auto 0;
+  margin-left: auto;
+  &:hover > div {
+    display: block;
+  }
+`;
+
+const MenuItem = styled.div`
+  position: relative;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover > div {
+    display: block;
+  }
+
+  &:hover {
+    color: var(--PRIMARY);
+  }
+
+  &.active {
+    color: var(--PRIMARY);
+  }
+`;
+
+const DropdownMenu = styled.div`
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 40%;
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+  white-space: nowrap;
+`;
+
+const DropdownItem = styled.div`
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: var(--TEXT_PRIMARY);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--BACKGROUND_COLOR);
+    color: var(--PRIMARY);
+  }
+`;
+
+function TabBar({ classId, titleIds, isInstructor = false }) {
   const [activeSection, setActiveSection] = useState();
+  const { sendRequest } = useAxios();
+  const navigate = useNavigate();
 
   useEffect(() => {
     Events.scrollEvent.register("begin", function () {});
@@ -44,6 +105,17 @@ function TabBar({ titleIds }) {
       Events.scrollEvent.remove("end");
     };
   }, []);
+
+  // 클래스 삭제
+  const handleDeleteClass = async () => {
+    try {
+      console.log(classId);
+      await sendRequest(`/classes/${classId}`, null, "delete");
+      navigate("/classes");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <TabBarContainer>
@@ -86,6 +158,17 @@ function TabBar({ titleIds }) {
           Q & A
         </Button>
       </Link>
+      {isInstructor && (
+        <InstructorWrapper>
+          <MenuItem>
+            <FaBars />
+          </MenuItem>
+          <DropdownMenu>
+            <DropdownItem>클래스 수정</DropdownItem>
+            <DropdownItem onClick={handleDeleteClass}>클래스 삭제</DropdownItem>
+          </DropdownMenu>
+        </InstructorWrapper>
+      )}
     </TabBarContainer>
   );
 }

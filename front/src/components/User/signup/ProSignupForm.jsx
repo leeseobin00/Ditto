@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { formatPhoneNumber } from '../../../utils/formatPhoneNumber';
+import Swal from 'sweetalert2';
 
 const StyledForm = styled.form`
   display: flex;
@@ -269,11 +270,24 @@ const ProSignupForm = ({ formData, setFormData }) => {
     setFormErrors(errors);
   
     if (Object.keys(errors).length > 0) {
+      Swal.fire({
+        title: '입력 오류',
+        text: '필수 입력 사항을 모두 입력해 주세요.',
+        icon: 'error',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
   
     if (!agree) {
-      alert("주의 사항을 확인하고 체크해 주세요.");
+      Swal.fire({
+        title: '주의 사항',
+        text: '주의 사항을 확인하고 체크해 주세요.',
+        icon: 'warning',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
   
@@ -296,11 +310,24 @@ const ProSignupForm = ({ formData, setFormData }) => {
     try {
       const response = await axios.post('http://localhost:8080/users/signup/form', instructorData);
       console.log('Submitted Data:', response.data);
-      alert("가입 신청이 완료되었습니다.");
-      navigate('/');
+      Swal.fire({
+        title: '가입 신청 완료',
+        text: '가입 신청이 성공적으로 완료되었습니다.',
+        icon: 'success',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
+      }).then(() => {
+        navigate('/');
+      });
     } catch (error) {
       console.error('서버로 데이터 전송 중 오류 발생:', error);
-      alert('가입 신청 중 오류가 발생했습니다.');
+      Swal.fire({
+        title: '오류 발생',
+        text: '가입 신청 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50',
+      });
     }
   };
   

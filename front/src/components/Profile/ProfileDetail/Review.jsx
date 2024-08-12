@@ -8,7 +8,6 @@ const ReviewWrapper = styled.div`
   max-width: calc(780px + 64px);
   padding: 32px;
   margin-bottom: 16px;
-  cursor: pointer;
 `;
 
 const TopWrapper = styled.div`
@@ -60,6 +59,9 @@ const ClassName = styled.div`
 
 const ContentWrapper = styled.div`
   margin-top: 24px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 `;
 
 const BottomWrapper = styled.div`
@@ -80,7 +82,7 @@ const Name = styled.p`
   margin-left: 16px;
 `;
 
-function Review({ rating }) {
+function Review({ rating, className, content, date, reviewer }) {
   return (
     <ReviewWrapper>
       <TopWrapper>
@@ -99,12 +101,12 @@ function Review({ rating }) {
             ),
           )}
         </Stars>
-        <ClassName>향수 클래스</ClassName>
+        <ClassName>{className}</ClassName>
       </TopWrapper>
-      <ContentWrapper>너무 재미있어요~</ContentWrapper>
+      <ContentWrapper>{content}</ContentWrapper>
       <BottomWrapper>
-        <Date>2024-07-11</Date>
-        <Name>김디토</Name>
+        <Date>{date}</Date>
+        <Name>{reviewer}</Name>
       </BottomWrapper>
     </ReviewWrapper>
   );

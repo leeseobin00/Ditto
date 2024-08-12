@@ -76,8 +76,13 @@ const PaymentPage = () => {
       <Title>결제/수강 내역</Title>
       {payments.length > 0 ? (
         <>
-          <PaymentDetail payments={payments} setPayments={setPayments} />
-          {showMoreButton && <MoreButton onClick={loadMorePayments} />}
+          <PaymentDetail
+            payments={payments}
+            setPayments={setPayments}
+            userId={userId}
+            onUpdate={loadMorePayments}
+            showMoreButton={showMoreButton}
+          />
         </>
       ) : (
         <PaymentNull>결제/수강한 클래스가 없습니다.</PaymentNull>
