@@ -1,5 +1,6 @@
 package com.ssafy.ditto.domain.mypage.dto;
 
+import com.google.type.Decimal;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,9 @@ public class LikeClassResponse {
 
     @Schema(description = "평점 합계", example = "250")
     private Integer ratingSum;
+
+    @Schema(description = "평점", example = "4")
+    private Double averageRating;
 
     @Schema(description = "유저 ID", example = "1")
     private Integer userId;

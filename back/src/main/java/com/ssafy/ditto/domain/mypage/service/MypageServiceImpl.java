@@ -349,7 +349,7 @@ public class MypageServiceImpl implements MypageService {
                         .classMinute(dClass.getClassMinute())
                         .likeCount(dClass.getLikeCount())
                         .reviewCount(dClass.getReviewCount())
-                        .ratingSum(dClass.getRatingSum())
+                        .averageRating(Math.round(((double) dClass.getRatingSum() / dClass.getReviewCount()) * 100) / 100.0)
                         .userId(dClass.getUserId().getUserId())
                         .nickname(dClass.getUserId().getNickname())
                         .tagId(dClass.getTagId().getTagId())
