@@ -11,6 +11,7 @@ import MeetingFooter from "../../components/Meeting/MeetingFooter";
 import UserVideoComponent from '../../components/Meeting/UserVideoComponent';
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
+import Swal from 'sweetalert2';
 
 const PageContainer = styled.div`
   display: flex;
@@ -174,9 +175,20 @@ function MeetingPage() {
   const createSession = async (sessionId) => {
     const response = await axios.post(`${baseURL}/sessions/${lectureId}?userId=${userId}`, null);
     if(response?.data?.code==200 || response?.data?.code==400){
+      Swal.fire({
+        title: '세션에 성공적으로 접속했습니다!',
+        icon: 'success',
+        confirmButtonText: '확인',
+        confirmButtonColor: "#FF7F50",
+      });
       joinSession();
     }else{
-      alert("세션에 접근할 수 없습니다!");
+      Swal.fire({
+        title: '세션에 접근할 수 없습니다!',
+        icon: 'error',
+        confirmButtonText: '확인',
+        confirmButtonColor: "#FF7F50",
+      });
       navigate("/video");
     }
   };
@@ -186,13 +198,47 @@ function MeetingPage() {
   };
 
   const createToken = async () => {
-    const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`,null, {headers: {'Content-Type': 'application/json'}});
-    if(response?.data?.code==403){
-      alert(response?.data?.message);
+    try {
+      const response = await axios.post(`${baseURL}/sessions/${lectureId}/get-token?userId=${userId}`, null, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+  
+      if (response?.data?.code === 403) {
+        await Swal.fire({
+          title: '오류 발생!',
+          text: response?.data?.message || '권한이 없습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
+        navigate("/video");
+        return;
+      }
+  
+      if (response?.data?.code === 'SESSION_NOT_FOUND') {
+        await Swal.fire({
+          title: '세션 오류!',
+          text: response?.data?.message || '세션을 찾을 수 없습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
+        navigate("/video");
+        return;
+      }
+  
+      const token = response?.data?.data;
+      return token;
+    } catch (error) {
+      await Swal.fire({
+        title: '알림',
+        text: '접속 토큰 생성 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       navigate("/video");
     }
-    const token = response?.data?.data;
-    return token;
   };
 
   const handleMainVideoStream = (stream) => {

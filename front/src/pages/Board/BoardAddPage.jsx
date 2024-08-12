@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import useFormDataAxios from "../../hooks/useFormDataAxios";
@@ -185,8 +186,14 @@ function BoardAddPage() {
   };
 
   const handleSave = async () => {
-    if(title==="" || content===""){
-      alert("게시글에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요.");
+    if (title === "" || content === "") {
+      Swal.fire({
+        title: "입력 오류",
+        text: "게시글에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       return;
     }
     
@@ -246,9 +253,24 @@ function BoardAddPage() {
 
     try {
       await postPost(url, formData, method);
-      handleCancel();
+      Swal.fire({
+        title: isedit ? "수정 완료" : "등록 완료",
+        text: isedit ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.",
+        icon: "success",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      }).then(() => {
+        handleCancel();
+      });
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        title: "오류 발생",
+        text: "게시글 저장 중 오류가 발생했습니다. 다시 시도해주세요.",
+        icon: "error",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 

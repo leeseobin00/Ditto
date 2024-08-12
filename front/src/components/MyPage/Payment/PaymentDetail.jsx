@@ -7,6 +7,7 @@ import SummaryModal from "./SummaryModal";
 import RefundPolicyModal from "./RefundPolicyModal";
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
+import Swal from 'sweetalert2';
 import ReviewPostModal from "../../Review/ReviewPostModal";
 import MoreButton from "../../common/MoreButton";
 
@@ -150,7 +151,7 @@ const PaymentDetail = ({
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
     setShowRefundModal(true);
-  };
+    }
 
   const handleSummaryClick = async (lectureId) => {
     try {
@@ -164,10 +165,16 @@ const PaymentDetail = ({
         setSummaries(response?.data?.data);
         setShowSummaryModal(true);
       } else {
-        alert("요약 조회 실패. 다시 시도해주세요.");
+        
       }
     } catch (error) {
-      alert("요약 조회 실패. 다시 시도해주세요.");
+      Swal.fire({
+          title: '요약 조회 실패',
+          text: '다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', 
+          confirmButtonText: '확인'
+        });
       console.error(error);
     }
   };
@@ -219,7 +226,6 @@ const PaymentDetail = ({
           },
         }
       );
-
       setPayments(
         payments.map((payment) =>
           payment.lectureId === currentLectureId
@@ -228,9 +234,22 @@ const PaymentDetail = ({
         )
       );
 
+      Swal.fire({
+          title: '취소 완료',
+          text: '결제가 성공적으로 취소되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
       closeModal();
     } catch (error) {
-      alert("취소 실패. 다시 시도해주세요.");
+      Swal.fire({
+        title: '취소 실패',
+        text: '다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
       console.error(error);
     }
   };

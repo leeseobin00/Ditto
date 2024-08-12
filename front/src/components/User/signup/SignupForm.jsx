@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import KakaoLogin from "../login/KaKaoLogin";
+import Swal from "sweetalert2";
 
 import useAxios from "../../../hooks/useAxios";
 import { useNavigate } from "react-router-dom";
@@ -421,11 +422,21 @@ const SignupForm = () => {
         email: formData.email,
       });
       if (result?.data?.code !== 409) {
-        alert("인증 코드가 이메일로 전송되었습니다. 5분 안에 인증코드를 입력해주세요.");
+        Swal.fire({
+          icon: "success",
+          title: "인증 코드 전송 완료",
+          text: "인증 코드가 이메일로 전송되었습니다. 5분 안에 인증코드를 입력해주세요.",
+          confirmButtonColor: '#FF7F50',
+        });
         setIsVerificationCodeInputVisible(true);
         setTimeLeft(300);
       } else {
-        alert("해당 이메일을 사용하는 계정이 이미 존재합니다.");
+        Swal.fire({
+          icon: "error",
+          title: "중복된 이메일",
+          text: "해당 이메일을 사용하는 계정이 이미 존재합니다.",
+          confirmButtonColor: '#FF7F50',
+        });
         setFormData({
           ...formData,
           email: "",
@@ -433,13 +444,23 @@ const SignupForm = () => {
       }
     } catch (error) {
       console.error("인증 코드 전송 에러:", error);
-      alert("인증 코드 전송 실패. 다시 시도해주세요.");
+      Swal.fire({
+        icon: "error",
+        title: "인증 코드 전송 실패",
+        text: "인증 코드 전송에 실패했습니다. 다시 시도해주세요.",
+        confirmButtonColor: '#FF7F50',
+      });
     }
   };
 
   const handleVerifyCode = async () => {
     if (isVerified){
-      alert("이미 인증되었습니다.");
+      Swal.fire({
+        icon: "info",
+        title: "이미 인증됨",
+        text: "이메일이 이미 인증되었습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
     const postData = {
@@ -450,37 +471,81 @@ const SignupForm = () => {
       const result = await sendRequest("/users/signup/auth", postData, "post");
       if (result.code === 201) {
         setIsVerified(true);
-        alert(result?.message);
+        Swal.fire({
+          icon: "success",
+          title: "인증 성공",
+          text: result?.message,
+          confirmButtonColor: '#FF7F50',
+        });
       } else {
         setIsVerified(false);
-        alert(result?.message);
+        Swal.fire({
+          icon: "error",
+          title: "인증 실패",
+          text: result?.message,
+          confirmButtonColor: '#FF7F50',
+        });
       }
     } catch (error) {
       setIsVerified(false);
-      alert("인증 코드 확인 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: "error",
+        title: "인증 코드 오류",
+        text: "인증 코드 확인 중 오류가 발생했습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // if (!isVerified) {
+    //   Swal.fire({
+    //     icon: "warning",
+    //     title: "이메일 인증 필요",
+    //     text: "이메일 인증을 완료해주세요.",
+    //     confirmButtonColor: '#FF7F50',
+    //   });
+    //   return;
+    // }
+    // if (!isVerified) {
     //   alert("이메일 인증을 완료해주세요.");
     //   return;
     // }
     if (!isPasswordMatchState) {
-      alert("비밀번호가 일치하지 않습니다.");
+      Swal.fire({
+        icon: "warning",
+        title: "비밀번호 불일치",
+        text: "비밀번호가 일치하지 않습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
     if (!isPasswordValidState) {
-      alert("비밀번호가 유효하지 않습니다.");
+      Swal.fire({
+        icon: "warning",
+        title: "비밀번호 조건 불충족",
+        text: "비밀번호가 조건에 맞지 않습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
     if (!isNicknameAvailable) {
-      alert("사용할 수 없는 닉네임입니다.");
+      Swal.fire({
+        icon: "warning",
+        title: "닉네임 사용 불가",
+        text: "사용할 수 없는 닉네임입니다.",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
     if (!formData.agreeTOS || !formData.agreePICU) {
-      alert("모든 약관에 동의해주세요.");
+      Swal.fire({
+        icon: "warning",
+        title: "약관 동의 필요",
+        text: "서비스 이용 약관 및 개인정보 수집 및 이용에 동의해주세요.",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
@@ -494,16 +559,37 @@ const SignupForm = () => {
     };
 
     try {
-      const response = await axios.post(`${baseURL}/users/signup`, userData);
+      let response = null;
+      if (userData.role == 1) {
+        response = await axios.post(`${baseURL}/users/signup`, userData);
+      }else{
+        response = await axios.post(`${baseURL}/users/signup/form`, userData);
+      }
+      
       console.log(response.data);
-      alert("회원가입 성공!");
+      Swal.fire({
+        icon: "success",
+        title: "회원가입 성공",
+        text: signupResult?.message,
+        confirmButtonColor: '#FF7F50',
+      });
       navigate("/"); // 홈화면으로 이동
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        alert("이미 사용중인 닉네임입니다.");
+        Swal.fire({
+          icon: "warning",
+          title: "닉네임 사용 불가",
+          text: "이미 사용 중인 닉네임입니다.",
+          confirmButtonColor: '#FF7F50',
+        });
       } else {
         console.error(error);
-        alert("회원가입 중 오류가 발생했습니다.");
+        Swal.fire({
+          icon: "error",
+          title: "회원가입 오류",
+          text: "회원가입 중 오류가 발생했습니다.",
+          confirmButtonColor: '#FF7F50',
+        });
       }
     }
   };
@@ -515,7 +601,12 @@ const SignupForm = () => {
       setIsTermsModalOpen(true);
     } catch (error) {
       console.error("이용약관 불러오기 에러:", error);
-      alert("이용약관 불러오기 실패. 다시 시도해주세요.");
+      Swal.fire({
+        icon: "error",
+        title: "약관 불러오기 오류",
+        text: "약관을 불러오는 중 오류가 발생했습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
     }
   };
 
@@ -530,7 +621,12 @@ const SignupForm = () => {
       setIsPrivacyModalOpen(true);
     } catch (error) {
       console.error("개인정보 처리방침 불러오기 에러:", error);
-      alert("개인정보 처리방침 불러오기 실패. 다시 시도해주세요.");
+      Swal.fire({
+        icon: "error",
+        title: "개인정보 처리 방침 불러오기 오류",
+        text: "개인정보 처리 방침을 불러오는 중 오류가 발생했습니다.",
+        confirmButtonColor: '#FF7F50',
+      });
     }
   };
 

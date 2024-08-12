@@ -4,6 +4,7 @@ import axiosIntercepter from "../../features/axiosIntercepter";
 import Modal from "../common/Modal";
 import AddressInput from "./AddressInput";
 import OutlineButton from "../common/OutlineButton";
+import Swal from "sweetalert2"; 
 
 const Title = styled.div`
   color: var(--PRIMARY);
@@ -46,7 +47,13 @@ const AddressPostModal = ({
       !phoneNumber ||
       !receiver
     ) {
-      alert("모든 값을 정확히 입력해주세요.");
+      Swal.fire({
+        title: '입력 오류',
+        text: '모든 값을 정확히 입력해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인',
+      });
       return false;
     }
     return true;
@@ -63,15 +70,35 @@ const AddressPostModal = ({
           `/mypage/${userId}/address/${addressData.addressId}`,
           addressData
         );
+        Swal.fire({
+          title: '수정 완료',
+          text: '배송지 정보가 수정되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인',
+        });
       } else {
         // 주소 추가 (POST 요청)
         await axiosIntercepter.post(`/mypage/${userId}/address`, addressData);
+        Swal.fire({
+          title: '등록 완료',
+          text: '배송지 정보가 등록되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인',
+        });
       }
-      alert("배송지 등록이 완료되었습니다.");
       onUpdate();
       onClose();
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        title: '오류',
+        text: '주소 등록 또는 수정에 실패했습니다. 다시 시도해주세요.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인',
+      });
     }
   };
 

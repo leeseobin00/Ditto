@@ -7,6 +7,7 @@ import axios from "axios";
 import { login } from "../../../features/auth/authSlice";
 import KakaoLogin from "./KaKaoLogin";
 import { jwtDecode } from "jwt-decode"; // jwt-decode 패키지 가져오기
+import Swal from "sweetalert2";
 
 // 스타일링 컴포넌트 정의
 const FormContainer = styled.div`
@@ -180,11 +181,28 @@ const LoginForm = () => {
           domain: domain,
         })
       ); // Redux 상태 업데이트
-      // alert("로그인 성공!");
+      
+       // SweetAlert2로 로그인 성공 메시지 표시
+       await Swal.fire({
+        title: "로그인 성공!",
+        text: "메인 페이지로 이동합니다.",
+        icon: "success",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
+
       navigate("/"); // 로그인 성공 시 메인 페이지로 이동
     } catch (error) {
       console.error(error);
-      setError("로그인 실패. 다시 시도해주세요.");
+
+      // SweetAlert2로 로그인 실패 메시지 표시
+      await Swal.fire({
+        title: "로그인 실패",
+        text: "다시 시도해주세요.",
+        icon: "error",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ import {
   ART_OPTIONS,
 } from "../../../utils/options";
 import useAxios from "../../../hooks/useAxios";
+import Swal from 'sweetalert2'; 
 
 const ModalTitle = styled.p`
   color: var(--PRIMARY);
@@ -96,18 +97,35 @@ function ModifyTags({ onClose }) {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (userId) {
       const patchData = {};
       selectedTags.forEach((tag, index) => {
         patchData[`tag${index + 1}`] = tag;
       });
 
-      patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
+      try {
+        await patchTags(`/profiles/tag?userId=${userId}`, patchData, "patch");
+        updateTags(selectedTags);
+        onClose();
+        Swal.fire({
+          title: '수정 완료',
+          text: '관심 태그가 성공적으로 수정되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50', // 선명한 주황색
+          confirmButtonText: '확인'
+        });
+      } catch (error) {
+        console.error("Failed to update tags:", error);
+        Swal.fire({
+          title: '수정 실패',
+          text: '관심 태그 수정 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', // 선명한 주황색
+          confirmButtonText: '확인'
+        });
+      }
     }
-
-    updateTags(selectedTags);
-    onClose();
   };
 
   return (

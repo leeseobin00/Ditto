@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../../hooks/useAxios";
 import Modal from "../../common/Modal";
@@ -84,7 +85,13 @@ function QuestionModal({
 
   const handleAddQuestion = async () => {
     if (title.trim() === "" || content.trim() === "") {
-      alert("제목과 내용을 모두 입력해주세요.");
+      await Swal.fire({
+        title: '입력 오류',
+        text: '제목과 내용을 모두 입력해주세요.',
+        icon: 'warning',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       return;
     }
 
@@ -96,10 +103,24 @@ function QuestionModal({
 
     try {
       await sendRequest(`/classes/${classId}/questions`, newQuestion, "post");
+      await Swal.fire({
+        title: '성공',
+        text: '문의가 추가되었습니다.',
+        icon: 'success',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       onSubmit();
       onClose();
     } catch (error) {
       console.error(error);
+      await Swal.fire({
+        title: '오류 발생',
+        text: '문의 추가 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 
@@ -113,10 +134,24 @@ function QuestionModal({
         },
         "patch"
       );
+      await Swal.fire({
+        title: '성공',
+        text: '문의가 수정되었습니다.',
+        icon: 'success',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       onSubmit();
       onClose();
     } catch (error) {
       console.error(error);
+      await Swal.fire({
+        title: '오류 발생',
+        text: '문의 수정 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 

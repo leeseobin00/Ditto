@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 import axios from "axios";
 import Star from "../../assets/icon/class/star.png";
@@ -68,14 +69,40 @@ function ReviewItem({ review, isMypage = false, onUpdate, userId }) {
   const [rating, setRating] = useState(review.rating);
 
   const handleDelete = async () => {
-    try {
-      await axios.delete(
-        `${baseURL}/classes/${review.classId}/reviews/${review.reviewId}`
-      );
-      alert("리뷰가 삭제되었습니다.");
-      onUpdate();
-    } catch (error) {
-      console.error(error);
+    const result = await Swal.fire({
+      title: '리뷰 삭제 확인',
+      text: "이 리뷰를 삭제하시겠습니까?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#FF7F50',
+      cancelButtonColor: '#6c757d'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(
+          `${baseURL}/classes/${review.classId}/reviews/${review.reviewId}`
+        );
+        await Swal.fire({
+          title: '삭제 완료',
+          text: '리뷰가 삭제되었습니다.',
+          icon: 'success',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#FF7F50'
+        });
+        onUpdate();
+      } catch (error) {
+        console.error(error);
+        await Swal.fire({
+          title: '삭제 실패',
+          text: '리뷰 삭제 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#FF7F50'
+        });
+      }
     }
   };
 
@@ -86,9 +113,31 @@ function ReviewItem({ review, isMypage = false, onUpdate, userId }) {
     setShowReviewModal(!showReviewModal);
   };
 
-  const handleReviewUpdate = (updatedReviewContent, updatedRating) => {
-    setReviewContent(updatedReviewContent);
-    setRating(updatedRating);
+  const handleReviewUpdate = async (updatedReviewContent, updatedRating) => {
+    try {
+      await axios.patch(
+        `${baseURL}/classes/${review.classId}/reviews/${review.reviewId}`,
+        { reviewContent: updatedReviewContent, rating: updatedRating }
+      );
+      setReviewContent(updatedReviewContent);
+      setRating(updatedRating);
+      await Swal.fire({
+        title: '수정 완료',
+        text: '리뷰가 수정되었습니다.',
+        icon: 'success',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50'
+      });
+    } catch (error) {
+      console.error(error);
+      await Swal.fire({
+        title: '수정 실패',
+        text: '리뷰 수정 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#FF7F50'
+      });
+    }
   };
 
   return (

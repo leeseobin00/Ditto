@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../hooks/useAxios";
 import ClassThumbnailAdd from "../../components/Class/ClassAdd/ClassThumbnailAdd";
@@ -138,9 +139,13 @@ function ClassAddPage() {
       classFile == null ||
       kitFile == null
     ) {
-      alert(
-        "클래스에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요."
-      );
+      Swal.fire({
+        title: "입력 오류",
+        text: "클래스에 대한 모든 정보의 입력은 필수입니다.\n입력 내용을 확인해주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       return;
     }
 
@@ -154,6 +159,13 @@ function ClassAddPage() {
     try {
       if (isEdit) {
         await sendRequest(`/classes/${classId}`, classData, "patch");
+        Swal.fire({
+          title: "수정 완료",
+          text: "클래스가 성공적으로 수정되었습니다.",
+          icon: "success",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
       } else {
         const response = await sendRequest("/classes", classData, "post");
         const newClassId = response?.data;
@@ -181,10 +193,25 @@ function ClassAddPage() {
           await sendRequest(`/classes/${newClassId}/steps`, stepsData, "post");
         }
 
-        navigate(`/classes/detail/${newClassId}`);
+        Swal.fire({
+          title: "등록 완료",
+          text: "클래스가 성공적으로 등록되었습니다.",
+          icon: "success",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        }).then(() => {
+          navigate(`/classes/detail/${newClassId}`);
+        });
       }
     } catch (error) {
       console.error("Error:", error);
+      Swal.fire({
+        title: "오류 발생",
+        text: "클래스 등록/수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+        icon: "error",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 

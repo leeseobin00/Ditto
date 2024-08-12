@@ -5,6 +5,7 @@ import { ProfileContext } from "../../../pages/Profile/ProfileDetailPage";
 
 import useAxios from "../../../hooks/useAxios";
 import RoundButton from "../../common/RoundButton";
+import Swal from 'sweetalert2'; 
 
 const ModalTitle = styled.p`
   color: var(--PRIMARY);
@@ -42,15 +43,42 @@ function ModifyIntro({ onClose }) {
     setIntro(event.target.value);
   };
 
-  const handleSubmit = () => {
-    if(userId){
-      const patchData = { "intro": intro };
-      
-      patchIntro(`/profiles/intro?userId=${userId}`, patchData, "patch");
-    }
+  const handleSubmit = async () => {
+    if (userId) {
+      try {
+        const patchData = { intro };
+        await patchIntro(`/profiles/intro?userId=${userId}`, patchData, "patch");
 
-    updateIntro(intro);
-    onClose();
+        Swal.fire({
+          title: '수정 완료',
+          text: '소개글이 성공적으로 수정되었습니다.',
+          icon: 'success',
+          confirmButtonColor: '#FF7F50',
+          confirmButtonText: '확인'
+        });
+
+        // Update context and close modal
+        updateIntro(intro);
+        onClose();
+      } catch (error) {
+        console.error("Failed to update intro:", error);
+        Swal.fire({
+          title: '수정 실패',
+          text: '소개글 수정 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonColor: '#FF7F50', 
+          confirmButtonText: '확인'
+        });
+      }
+    } else {
+      Swal.fire({
+        title: '오류',
+        text: '사용자 ID가 없습니다.',
+        icon: 'error',
+        confirmButtonColor: '#FF7F50',
+        confirmButtonText: '확인'
+      });
+    }
   };
 
   useEffect(()=>{
