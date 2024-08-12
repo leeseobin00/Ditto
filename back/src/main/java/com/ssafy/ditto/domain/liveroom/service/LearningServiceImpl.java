@@ -60,13 +60,13 @@ public class LearningServiceImpl implements LearningService {
         Page<Learning> learningPage = learningRepository.findByStudent(student, pageable);
 
         return LearningPageResponse.of(
-                learningPage.stream().map(learning -> {
-                    DClass dClass = classRepository.findById(learning.getDClass().getClassId())
-                            .orElseThrow(() -> new ServiceException(CLASS_NOT_FOUND));
-                    Lecture lecture = lectureRepository.findById(learning.getLecture().getLectureId())
-                            .orElseThrow(() -> new ServiceException(LECTURE_NOT_FOUND));
-                    return LearningResponse.of(dClass, lecture, lecture.getIsFinished());
-                }).collect(Collectors.toList()),
+                learningPage.stream().map(learning ->
+                        LearningResponse.of(
+                                learning.getDClass(),
+                                learning.getLecture(),
+                                learning.getLecture().getIsFinished()
+                        )
+                ).collect(Collectors.toList()),
                 learningPage.getNumber() + 1,
                 learningPage.getTotalPages()
         );
