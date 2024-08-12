@@ -96,7 +96,7 @@ const Cost = styled(ClassDetailLine)`
 `;
 
 const Tag = styled(ClassDetailLine)`
-  width: 50px;
+  width: 55px;
   height: 20px;
   border-style: solid;
   border-radius: 20px;
@@ -110,7 +110,13 @@ const formatNumber = (number) => {
   return number.toLocaleString();
 };
 
-const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
+const ClassListItem = ({
+  classInfo,
+  fileId,
+  instructor,
+  tag,
+  isMyPage = false,
+}) => {
   const {
     classId,
     className,
@@ -158,7 +164,10 @@ const ClassListItem = ({ classInfo, fileId, instructor, tag }) => {
           <ClassDetailLine>
             <Icon src={Star} alt="Star" />
             <Bold>
-              <SmallFont>{averageRating.toFixed(1)}&nbsp;</SmallFont>
+              <SmallFont>
+                {isMyPage ? classInfo?.ratingSum : averageRating?.toFixed(1)}
+                &nbsp;
+              </SmallFont>
             </Bold>
             <SmallFont>({reviewCount})</SmallFont>
           </ClassDetailLine>

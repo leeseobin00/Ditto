@@ -4,33 +4,32 @@ import { useSelector } from "react-redux";
 import LikedClasses from "../../components/MyPage/Liked/LikedClasses";
 import LikedUsers from "../../components/MyPage/Liked/LikedUsers";
 import axios from "axios";
+import MoreButton from "../../components/common/MoreButton";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
 `;
 
-const Title = styled.h2`
-  align-self: flex-start;
-  color: var(--PRIMARY);
+const Title = styled.div`
   font-size: 20px;
-  margin: 20px 13px;
+  font-weight: 700;
+  color: var(--PRIMARY);
 `;
 
-const LoadMoreButton = styled.button`
-  padding: 10px 20px;
-  background-color: var(--SECONDARY);
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 20px;
-  &:hover {
-    filter: brightness(0.9);
-  }
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+`;
+
+const LikedNull = styled.div`
+  font-size: 18px;
+  color: var(--TEXT_SECONDARY);
+  padding: 40px;
+  text-align: center;
 `;
 
 const LikedPage = () => {
@@ -39,6 +38,8 @@ const LikedPage = () => {
   const [likedClasses, setLikedClasses] = useState([]);
   const [likedUsers, setLikedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showClassMoreButton, setShowClassMoreButton] = useState(true);
+  const [showUserMoreButton, setShowUserMoreButton] = useState(true);
 
   useEffect(() => {
     fetchLikedItems();
@@ -56,6 +57,7 @@ const LikedPage = () => {
         }
       );
       setLikedClasses(response?.data?.data);
+      if (response?.data?.data.length < 3) setShowClassMoreButton(false);
 
       const userResponse = await axios.get(
         `${baseURL}/mypage/${userId}/like/user`,
@@ -66,8 +68,9 @@ const LikedPage = () => {
         }
       );
       setLikedUsers(userResponse?.data?.data);
+      if (userResponse?.data?.data.length < 3) setShowUserMoreButton(false);
     } catch (error) {
-      console.error("Error fetching liked items:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -85,12 +88,17 @@ const LikedPage = () => {
           },
         }
       );
+      if (response?.data?.data.length == 0) {
+        alert("더 이상 불러올 관심 클래스가 없습니다.");
+        setShowUserMoreButton(false);
+      }
+      if (response?.data?.data.length < 3) setShowClassMoreButton(false);
       setLikedClasses((prevClasses) => [
         ...prevClasses,
         ...response?.data?.data,
       ]);
     } catch (error) {
-      console.error("Error loading more classes:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -108,7 +116,11 @@ const LikedPage = () => {
           },
         }
       );
-      setLikedUsers((prevUsers) => [...prevUsers, ...response.data.users]);
+      if (response?.data?.data.length == 0) {
+        alert("더 이상 불러올 관심 유저가 없습니다.");
+        setShowUserMoreButton(false);
+      } else if (response?.data?.data.length < 3) setShowUserMoreButton(false);
+      setLikedUsers((prevUsers) => [...prevUsers, ...response?.data?.data]);
     } catch (error) {
       console.error("Error loading more users:", error);
     } finally {
@@ -116,50 +128,28 @@ const LikedPage = () => {
     }
   };
 
-  const handleClassLikeCancel = async (classId) => {
-    try {
-      await axios.delete(`${baseURL}/mypage/${userId}/like/class/${classId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      setLikedClasses(likedClasses.filter((cls) => cls.classId !== classId));
-    } catch (error) {
-      console.error("Error cancelling class like:", error);
-    }
-  };
-
-  const handleUserLikeCancel = async (cancelUserId) => {
-    try {
-      await axios.delete(
-        `${baseURL}/mypage/${userId}/like/user/${cancelUserId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      setLikedUsers(likedUsers.filter((user) => user.userId !== cancelUserId));
-    } catch (error) {
-      console.error("Error cancelling user like:", error);
-    }
-  };
-
   return (
     <Container>
       <Title>관심 Class</Title>
-      <LikedClasses
-        classes={likedClasses}
-        onLikeCancel={handleClassLikeCancel}
-      />
-      <LoadMoreButton onClick={loadMoreClasses} disabled={loading}>
-        {loading ? "불러오는 중..." : "더보기"}
-      </LoadMoreButton>
+      <ContentContainer>
+        {likedClasses.length == 0 && (
+          <LikedNull>좋아요한 클래스가 없습니다.</LikedNull>
+        )}
+        <LikedClasses classes={likedClasses} />
+        {showClassMoreButton && (
+          <MoreButton onClick={loadMoreClasses} disabled={loading} />
+        )}
+      </ContentContainer>
       <Title>관심 User</Title>
-      <LikedUsers users={likedUsers} onLikeCancel={handleUserLikeCancel} />
-      <LoadMoreButton onClick={loadMoreUsers} disabled={loading}>
-        {loading ? "불러오는 중..." : "더보기"}
-      </LoadMoreButton>
+      <ContentContainer>
+        {likedUsers.length == 0 && (
+          <LikedNull>좋아요한 유저가 없습니다.</LikedNull>
+        )}
+        <LikedUsers users={likedUsers} />
+        {showUserMoreButton && (
+          <MoreButton onClick={loadMoreUsers} disabled={loading} />
+        )}
+      </ContentContainer>
     </Container>
   );
 };
