@@ -40,6 +40,9 @@ const ClassImage = styled.img`
 const ClassDetails = styled.div`
   display: flex;
   flex-direction: column;
+  height: 70px;
+  padding: 10px 0;
+  justify-content: space-between;
 `;
 
 const Hr = styled.hr`
@@ -55,6 +58,7 @@ const ClassName = styled.div`
 
 const ClassDate = styled.div`
   color: var(--TEXT_SECONDARY);
+  font-size: 14px;
 `;
 
 const MyPageReviewList = ({
@@ -84,7 +88,7 @@ const MyPageReviewList = ({
               <ClassName onClick={() => handleClassClick(review.classId)}>
                 {review.className}
               </ClassName>
-              <ClassDate>{`${review.year}.${String(review.month).padStart(2, "0")}.${String(review.day).padStart(2, "0")} ${String(review.hour).padStart(2, "0")}:${String(review.minute).padStart(2, "0")}`}</ClassDate>
+              <ClassDate>{`${review.year}-${String(review.month).padStart(2, "0")}-${String(review.day).padStart(2, "0")}  ${String(review.hour).padStart(2, "0")}:${String(review.minute).padStart(2, "0")}`}</ClassDate>
             </ClassDetails>
           </ClassInfo>
           <Hr />

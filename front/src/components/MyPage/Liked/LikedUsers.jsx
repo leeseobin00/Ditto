@@ -1,7 +1,7 @@
-// src/components/MyPage/LikedUsers.jsx
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 
 const Container = styled.div`
   display: flex;
@@ -67,13 +67,12 @@ const Tag = styled.div`
   font-size: 13px;
 `;
 
-const HeartIcon = styled.span`
-  color: var(--RED);
-  font-size: 17px;
-  cursor: pointer;
+const HeartIcon = styled.img`
+  width: 17px;
+  height: 17px;
 `;
 
-const LikedUsers = ({ users, onLikeCancel }) => {
+const LikedUsers = ({ users }) => {
   const navigate = useNavigate();
 
   const handleUserClick = (userId) => {
@@ -85,9 +84,15 @@ const LikedUsers = ({ users, onLikeCancel }) => {
       <UserContainer>
         {users.map((user) => (
           <UserCard key={user.userId}>
-            <UserImage src={`http://i11a106.p.ssafy.io:8080/files/download/${user.fileId}`} alt={user.nickname} onClick={() => handleUserClick(user.userId)} />
+            <UserImage
+              src={`http://i11a106.p.ssafy.io:8080/files/download/${user.fileId}`}
+              alt={user.nickname}
+              onClick={() => handleUserClick(user.userId)}
+            />
             <UserInfo>
-              <UserName>{user.nickname} <HeartIcon onClick={() => onLikeCancel(user.userId)}>❤</HeartIcon></UserName>
+              <UserName>
+                {user.nickname} <HeartIcon src={Heart} />
+              </UserName>
               <TagContainer>
                 {user.tags.map((tag) => (
                   <Tag key={tag.tagId}>{tag.tagName}</Tag>
