@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReviewRepository extends JpaRepository<Review, Integer> , JpaSpecificationExecutor<Review> {
+public interface ReviewRepository extends JpaRepository<Review, Integer>, JpaSpecificationExecutor<Review> {
     @Query(value = "SELECT * " +
             "FROM Review r " +
             "WHERE r.user_id = :userId AND r.created_date < :dateTime AND r.is_deleted = false " +
@@ -20,5 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> , JpaSp
             "LIMIT 3", nativeQuery = true)
     List<Review> getReviews(@Param("userId") int userId, @Param("dateTime") LocalDateTime dateTime);
 
-    Page<Review> findByDclass(DClass classId, Pageable pageable);
+    @Query("SELECT r FROM Review r WHERE r.dclass = :classId AND r.isDeleted = false")
+    Page<Review> findByDclass(@Param("classId") DClass classId, Pageable pageable);
 }
