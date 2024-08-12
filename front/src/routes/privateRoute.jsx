@@ -14,7 +14,8 @@ const PrivateRoute = ({ children }) => {
         icon: 'warning',
         title: '접근 권한이 없습니다',
         text: '로그인 해주세요.',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        confirmButtonColor: "#FF7F50",
       }).then(() => {
         navigate("/login");
       });
