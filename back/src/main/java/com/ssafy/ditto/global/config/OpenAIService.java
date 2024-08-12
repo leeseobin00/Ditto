@@ -29,7 +29,7 @@ public class OpenAIService {
 
         Map<String, Object> userMessage = new HashMap<>();
         userMessage.put("role", "user");
-        userMessage.put("content", "'" + originText + "'를 200자 내외로 요약해줘");
+        userMessage.put("content", "'" + originText + "'를 200자 내외로 요약해줘. 200자가 넘지 않으면 요약하지 않고 다듬기만 해줘. 요구한 결과물만 출력해줘");
 
         List<Map<String, Object>> messages = List.of(systemMessage, userMessage);
 
