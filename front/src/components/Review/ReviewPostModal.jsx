@@ -140,11 +140,11 @@ function ReviewPostModal({
   const handleEditReview = async () => {
     if (!reviewContent || !rating) {
       Swal.fire({
-        title: '입력 오류',
+        title: "입력 오류",
         text: "내용과 별점을 모두 입력해주세요.",
-        icon: 'warning',
+        icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
+        confirmButtonColor: "#FF7F50",
       });
       return;
     }
@@ -161,22 +161,22 @@ function ReviewPostModal({
         "patch"
       );
       Swal.fire({
-        title: '수정 완료',
-        text: '리뷰가 수정되었습니다.',
-        icon: 'success',
+        title: "수정 완료",
+        text: "리뷰가 수정되었습니다.",
+        icon: "success",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
+        confirmButtonColor: "#FF7F50",
       });
       onClose();
       onUpdate(reviewContent, rating);
     } catch (error) {
       console.error(error);
       Swal.fire({
-        title: '수정 실패',
-        text: '리뷰 수정 중 오류가 발생했습니다.',
-        icon: 'error',
+        title: "수정 실패",
+        text: "리뷰 수정 중 오류가 발생했습니다.",
+        icon: "error",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
+        confirmButtonColor: "#FF7F50",
       });
     }
   };
@@ -185,23 +185,24 @@ function ReviewPostModal({
     if (!reviewContent || !rating) {
       if (isClass && !selectedLecture) {
         Swal.fire({
-        title: '입력 오류',
-        text: "내용과 별점, 강의를 모두 입력해주세요.",
-        icon: 'warning',
-        confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
-      });
+          title: "입력 오류",
+          text: "내용과 별점, 강의를 모두 입력해주세요.",
+          icon: "warning",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
         return;
       } else if (!isClass) {
         Swal.fire({
-        title: '입력 오류',
-        text: "내용과 별점, 강의를 모두 입력해주세요.",
-        icon: 'warning',
-        confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
-      });
+          title: "입력 오류",
+          text: "내용과 별점, 강의를 모두 입력해주세요.",
+          icon: "warning",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
         return;
       }
+    }
     const reviewData = {
       reviewContent,
       rating,
@@ -212,11 +213,11 @@ function ReviewPostModal({
     try {
       await sendRequest(`/classes/${classId}/reviews`, reviewData, "post");
       Swal.fire({
-        title: '작성 완료',
-        text: '리뷰가 작성되었습니다.',
-        icon: 'success',
+        title: "작성 완료",
+        text: "리뷰가 작성되었습니다.",
+        icon: "success",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
+        confirmButtonColor: "#FF7F50",
       });
       if (isClass) {
         onUpdate();
@@ -225,11 +226,11 @@ function ReviewPostModal({
     } catch (error) {
       console.error(error);
       Swal.fire({
-        title: '작성 실패',
-        text: '리뷰 작성 중 오류가 발생했습니다.',
-        icon: 'error',
+        title: "작성 실패",
+        text: "리뷰 작성 중 오류가 발생했습니다.",
+        icon: "error",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50"
+        confirmButtonColor: "#FF7F50",
       });
     }
   };
