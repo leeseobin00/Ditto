@@ -94,21 +94,7 @@ function VideoPage() {
     const userId = useSelector((state)=>state.auth.userId);
     const roleId = useSelector((state)=>state.auth.roleId);
     const { sendRequest } = useAxios();
-    const [lectures, setLectures] = useState([{
-        id: 1,
-        title: "누구나 손쉽게 따라하는 피아노 입문 클래스",
-        time: "2024-07-11 8:00" 
-    },
-    {
-        id: 1,
-        title: "누구나 손쉽게 따라하는 피아노 입문 클래스",
-        time: "2024-07-11 8:00" 
-    },
-    {
-        id: 1,
-        title: "누구나 손쉽게 따라하는 피아노 입문 클래스",
-        time: "2024-07-11 8:00" 
-    }]);
+    const [lectures, setLectures] = useState([]);
     const [curPage, setCurPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
 
