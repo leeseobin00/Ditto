@@ -25,6 +25,7 @@ import OrderPage from "../pages/Order/OrderPage";
 import OrderSuccessPage from "../pages/Order/OrderSuccessPage";
 import VideoPage from "../pages/Video/VideoPage";
 import NoContentPage from "../pages/NoContent/NoContentPage";
+import PrivateRoute from "./privateRoute";
 
 const AppRoutes = () => {
   return (
@@ -59,7 +60,7 @@ const AppRoutes = () => {
       <Route path="/board/detail/:postId" element={<BoardDetailPage />} />
       <Route path="/board/add" element={<BoardAddPage />} />
       <Route path="/board/edit/:postId" element={<BoardAddPage />} />
-      <Route path="/profile/:profileId" element={<ProfileDetailPage />} />
+      <Route path="/profile/:profileId" element={<PrivateRoute><ProfileDetailPage /></PrivateRoute>} />
       <Route path="/profile/search" element={<ProfileSearchPage />} />
       <Route path="/video" element={<VideoPage />} />
       <Route path="*" element={<NoContentPage />} />
