@@ -7,6 +7,7 @@ import com.ssafy.ditto.domain.classes.dto.LectureResponse;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.exception.LectureDuplicateException;
 import com.ssafy.ditto.domain.classes.exception.LectureNotFoundException;
+import com.ssafy.ditto.domain.classes.exception.LectureNotFutureException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.LectureRepository;
 import com.ssafy.ditto.domain.user.domain.User;
@@ -37,6 +38,20 @@ public class LectureServiceImpl implements LectureService {
     @Transactional
     public void createLecture(Integer classId, LectureRequest lectureRequest) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
+
+        // 요청된 시간을 LocalDateTime 객체로 생성
+        LocalDateTime lectureDateTime = LocalDateTime.of(
+                lectureRequest.getYear(),
+                lectureRequest.getMonth(),
+                lectureRequest.getDay(),
+                lectureRequest.getHour(),
+                lectureRequest.getMinute()
+        );
+
+        // 현재 시간보다 과거 시간이면 에러 발생
+        if (lectureDateTime.isBefore(LocalDateTime.now())) {
+            throw new LectureNotFutureException();
+        }
 
         //이미 존재하는 차시일 경우 에러
         Lecture lecture = lectureRepository.findByYearAndMonthAndDayAndHourAndMinute(lectureRequest.getYear(), lectureRequest.getMonth(), lectureRequest.getDay(), lectureRequest.getHour(), lectureRequest.getMinute());

@@ -49,7 +49,7 @@ public enum ErrorCode {
     // 중복 관련 오류
     DUPLICATE_RESOURCE(409, "DUPLICATE_RESOURCE", "중복된 리소스가 있습니다."),
     DUPLICATE_USER(409, "DUPLICATE_USER", "중복된 사용자가 있습니다."),
-    DUPLICATE_LECTURE(409, "DUPLICATE_LECTURE", "중복된 시간에 강의가 있습니다."),
+    DUPLICATE_LECTURE(409, "DUPLICATE_LECTURE", "해당 시간에 강의가 이미 존재합니다."),
 
     // 데이터베이스 관련 오류
     DATABASE_ERROR(500, "DATABASE_ERROR", "데이터베이스 오류가 발생했습니다."),
