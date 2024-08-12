@@ -43,7 +43,7 @@ public class MileageServiceImpl implements MileageService {
                 .lecture(lecture)
                 .user(user)
                 .mileage(current)
-                .state(1)
+                .state(0)
                 .time(LocalDateTime.now())
                 .mileageAmount(amount)
                 .finalAmount(current.getMileage())
