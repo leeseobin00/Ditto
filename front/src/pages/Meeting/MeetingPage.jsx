@@ -634,7 +634,6 @@ function MeetingPage() {
           handleEndStep={handleEndStep}
         />
         <MainContent isopen={isOpen.toString()}>
-          <div>{text}</div>
           <ParticipantGrid>
           {visibleParticipants.map((participant, i) => {
             if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음

@@ -160,6 +160,11 @@ function ClassLectureAddModal({
           icon: "warning",
           text: error.response.data.message,
         });
+      }else if (error.response.status == 400){
+        Swal.fire({
+          icon: "warning",
+          text: "과거 시간에 강의를 생성할 수 없습니다.",
+        });
       }
       console.error(error);
     }
