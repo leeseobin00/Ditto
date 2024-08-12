@@ -16,6 +16,7 @@ const PageButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 10px;
 
   &:hover {
     background-color: ${(props) =>

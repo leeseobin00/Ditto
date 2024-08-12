@@ -38,8 +38,8 @@ const LikedPage = () => {
   const [likedClasses, setLikedClasses] = useState([]);
   const [likedUsers, setLikedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showClassMoreButton, setShowClassMoreButton] = useState(true);
-  const [showUserMoreButton, setShowUserMoreButton] = useState(true);
+  const [showClassMoreButton, setShowClassMoreButton] = useState(false);
+  const [showUserMoreButton, setShowUserMoreButton] = useState(false);
 
   useEffect(() => {
     fetchLikedItems();
@@ -57,7 +57,7 @@ const LikedPage = () => {
         }
       );
       setLikedClasses(response?.data?.data);
-      if (response?.data?.data.length < 3) setShowClassMoreButton(false);
+      if (response?.data?.data.length == 3) setShowClassMoreButton(true);
 
       const userResponse = await axios.get(
         `${baseURL}/mypage/${userId}/like/user`,
@@ -68,7 +68,7 @@ const LikedPage = () => {
         }
       );
       setLikedUsers(userResponse?.data?.data);
-      if (userResponse?.data?.data.length < 3) setShowUserMoreButton(false);
+      if (userResponse?.data?.data.length == 3) setShowUserMoreButton(true);
     } catch (error) {
       console.error(error);
     } finally {

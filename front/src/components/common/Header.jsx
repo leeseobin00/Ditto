@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { styled } from "styled-components";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { BiVideo, BiBell, BiLogOut, BiMenu } from "react-icons/bi";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 import useAxios from "../../hooks/useAxios";
 
@@ -237,14 +237,14 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       Swal.fire({
-        title: '로그아웃 하시겠습니까?',
+        title: "로그아웃 하시겠습니까?",
         text: "로그아웃하면 다시 로그인해야 합니다.",
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#FF7F50',
-        cancelButtonColor: '#d33',
-        confirmButtonText: '로그아웃',
-        cancelButtonText: '취소'
+        confirmButtonColor: "#FF7F50",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "로그아웃",
+        cancelButtonText: "취소",
       }).then((result) => {
         if (result.isConfirmed) {
           dispatch(logout());
@@ -252,9 +252,9 @@ const Header = () => {
             icon: "success",
             title: "로그아웃 완료",
             text: "성공적으로 로그아웃 되었습니다.",
-            confirmButtonColor: '#FF7F50',
+            confirmButtonColor: "#FF7F50",
           }).then(() => {
-            navigate('/');
+            navigate("/");
           });
         }
       });
@@ -262,6 +262,11 @@ const Header = () => {
       console.error("Logout failed: ", error);
     }
   };
+
+  const location = useLocation();
+
+  // "mypage" + "/" 형식의 페이지에 해당하는 경우 버튼을 활성화
+  const isActive = location.pathname.startsWith("/board");
 
   // NavLink 클릭 이벤트 방지 메소드
   const handlePreventClick = (event) => {
@@ -273,7 +278,9 @@ const Header = () => {
       <MobileDropdownMenu open={menuOpen}>
         <DropdownItem to="/">홈</DropdownItem>
         <DropdownItem to="/classes">클래스</DropdownItem>
-        <DropdownItem to="/board/all">커뮤니티</DropdownItem>
+        <DropdownItem to="/board/all" className={isActive ? "active" : ""}>
+          커뮤니티
+        </DropdownItem>
         <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
         <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
         <DropdownItem to="/profile/my">로그아웃</DropdownItem>
@@ -311,7 +318,7 @@ const Header = () => {
         <BottomSection>
           <PageLink to="/">홈</PageLink>
           <PageLink to="/classes">클래스</PageLink>
-          <PageLink to="/board/">커뮤니티</PageLink>
+          <PageLink to="/board/all">커뮤니티</PageLink>
           <ProfileWrapper>
             <MenuItem to="/profile/" onClick={handlePreventClick}>
               프로필
