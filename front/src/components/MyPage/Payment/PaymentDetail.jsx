@@ -90,7 +90,7 @@ const PaymentInfo = styled.div`
 const PaymentName = styled.div`
   font-weight: bold;
   margin-bottom: 5px;
-  max-width: 200px;
+  width: 100%;
   color: var(--TEXT_PRIMARY);
 `;
 
