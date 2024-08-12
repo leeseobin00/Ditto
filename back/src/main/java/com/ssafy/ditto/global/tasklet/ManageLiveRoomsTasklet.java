@@ -44,7 +44,7 @@ public class ManageLiveRoomsTasklet implements Tasklet {
             // 끝나는 시간 클래스 진행시간 + 1시간 후에 자동으로 라이브 룸 삭제
             DClass dClass = lecture.getClassId();
             LocalDateTime endTime = lectureStartTime.plusHours(dClass.getClassHour())
-                                                    .plusMinutes(dClass.getClassMinute()+30);
+                                                    .plusMinutes(dClass.getClassMinute());
 
             if (now.isAfter(createTime) && now.isBefore(lectureStartTime)) {
                 liveRoomService.createLiveRoom(lecture.getLectureId());
