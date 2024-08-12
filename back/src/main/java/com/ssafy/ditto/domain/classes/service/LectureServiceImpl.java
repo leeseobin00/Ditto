@@ -131,7 +131,9 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public Boolean checkReviewCompleted(Integer classId, Integer lectureId, Integer userId) {
-        return lectureRepository.existsReviewByClassIdAndLectureIdAndUserId(classId, lectureId, userId);
+        Boolean exists = lectureRepository.existsReviewByLectureIdAndUserId(lectureId, userId);
+        System.out.println("Check Payment Completed - classId: {}, lectureId: , userId: , exists: " + classId + lectureId + userId + exists);
+        return exists;
     }
 
     @Override
@@ -140,7 +142,7 @@ public class LectureServiceImpl implements LectureService {
         System.out.println("Check Payment Completed - classId: {}, lectureId: , userId: , exists: " + classId + lectureId + userId + exists);
         return exists;
     }
-    
+
     @Override
     @Transactional
     public List<LectureResponse> getCompletedLecturesWithoutReviews(Integer classId, Integer userId) {
