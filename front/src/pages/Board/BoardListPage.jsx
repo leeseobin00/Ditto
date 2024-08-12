@@ -19,6 +19,7 @@ import {
   getSortOptionLabelByValue,
 } from "../../utils/searchOptions";
 import { useSelector } from "react-redux";
+import { current } from "@reduxjs/toolkit";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -73,6 +74,7 @@ const InputWrapper = styled.div`
 
 const Input = styled.input`
   width: 85%;
+  height: 100%;
   padding: 6px 8px;
   border-radius: 10px;
   background-color: var(--LIGHT);
@@ -85,6 +87,7 @@ const Input = styled.input`
 const CustomSearchIcon = styled(BsSearch)`
   color: var(--LIGHT);
   font-size: 16px;
+  margin: 2px 0px;
 `;
 
 const PageTitle = styled.h1`
@@ -294,7 +297,7 @@ function BoardListPage() {
         </SearchOptionWrapper>
         {/* 검색 옵션 끝 */}
 
-        <PostList posts={posts} />
+        <PostList posts={posts} currentPage={currentPage} />
 
         <PaginationBar
           pageNumbers={pageNumbers}

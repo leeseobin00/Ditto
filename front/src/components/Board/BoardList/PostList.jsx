@@ -63,12 +63,17 @@ const PostCount = styled(Content)`
   flex: 1;
 `;
 
-function PostList({ posts }) {
+function PostList({ posts, currentPage }) {
   const [postList, setPostList] = useState([]);
+  const [curPage, setCurPage] = useState(1);
 
   useEffect(()=>{
     setPostList(posts);
   },[posts]);
+
+  useEffect(()=>{
+    setCurPage(currentPage);
+  },[currentPage]);
 
   return (
     <List>
@@ -84,7 +89,7 @@ function PostList({ posts }) {
       {postList?.map((post, index) => (
         <Link key={index} to={`/board/detail/${post?.postId || 1}`}>
           <PostItem
-            postId={post?.postId}
+            postId={(curPage-1)*10+index+1}
             title={post?.title}
             likeCount={post?.likeCount}
             userName={post?.nickname}
