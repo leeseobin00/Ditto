@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../../hooks/useAxios";
 import UserIcon from "../../../assets/icon/class/user-count.png";
@@ -163,7 +164,17 @@ function ClassSideBar({
 
   const handlePostLike = async () => {
     if (userId == null) {
-      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 좋아요 기능을 이용할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
@@ -182,12 +193,28 @@ function ClassSideBar({
 
   const handleDeleteLike = async () => {
     if (userId == null) {
-      alert("회원만 좋아요 기능을 이용할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 좋아요 기능을 이용할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
     if (roleId == 2) {
-      alert("강사는 클래스 좋아요 기능을 이용할 수 없습니다.");
+      Swal.fire({
+        title: "이용 불가",
+        text: "강사는 클래스 좋아요 기능을 이용할 수 없습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
@@ -237,17 +264,39 @@ function ClassSideBar({
 
   const handleOrderButton = () => {
     if (userId == null) {
-      alert("회원만 구매할 수 있습니다.");
+      Swal.fire({
+        title: "로그인 필요",
+        text: "회원만 구매할 수 있습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
 
     if (roleId != 1) {
-      alert("일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.");
+      Swal.fire({
+        title: "회원 전환 필요",
+        text: "일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 
     if (selectedLecture === null) {
-      alert("선택된 강의가 없습니다.");
+      Swal.fire({
+        title: "강의 선택 필요",
+        text: "선택된 강의가 없습니다.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: '#FF7F50',
+      });
       return;
     }
 

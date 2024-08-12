@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import Swal from 'sweetalert2';
 
 import useAxios from "../../../hooks/useAxios";
 import QnAItem from "./QnAItem";
@@ -88,11 +89,24 @@ const MyPageQnAList = ({ initialQuestions = [], userId, roleId, onUpdate }) => {
             setShowMore(false);
           }
         } else {
-          alert("더 이상 불러올 질문이 없습니다.");
+          await Swal.fire({
+            title: '정보',
+            text: '더 이상 불러올 질문이 없습니다.',
+            icon: 'info',
+            confirmButtonText: "확인",
+            confirmButtonColor: "#FF7F50",
+          });
           setShowMore(false);
         }
       } catch (error) {
         console.error(error);
+        await Swal.fire({
+          title: '오류 발생',
+          text: '질문을 불러오는 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
       }
     }
   };

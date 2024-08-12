@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 import OutlineButton from "../../common/OutlineButton";
 import AddButton from "./AddButton";
@@ -134,7 +135,13 @@ function ClassStepAddInput({ show, onSubmit, stepNo }) {
     if (stepName.length > 0 && stepDetail.length > 0 && file != null) {
       onSubmit({ stepNo: 0, stepName, stepDetail, file, preview });
     } else {
-      alert("입력 내용을 확인해주세요.");
+      Swal.fire({
+        title: "입력 오류",
+        text: "입력 내용을 확인해주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 

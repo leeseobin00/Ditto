@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import Swal from 'sweetalert2';
 
 import useAxios from "../../../hooks/useAxios";
 import Modal from "../../common/Modal";
@@ -111,7 +112,13 @@ const AnswerModal = ({
 
   const handlePostAnswer = async () => {
     if (!answer) {
-      alert("답변을 작성해주세요.");
+      await Swal.fire({
+        title: '입력 오류',
+        text: '답변을 작성해주세요.',
+        icon: 'warning',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
       return;
     }
 
@@ -130,18 +137,39 @@ const AnswerModal = ({
           { answer: answerData.answer },
           "patch"
         );
+        await Swal.fire({
+          title: '성공',
+          text: '답변이 수정되었습니다.',
+          icon: 'success',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
       } else {
         await postAnswer(
           `/mypage/${userId}/answer/${question?.questionId}`,
           { answer: answerData.answer },
           "post"
         );
+        await Swal.fire({
+          title: '성공',
+          text: '답변이 등록되었습니다.',
+          icon: 'success',
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        });
       }
       onSubmit(answerData);
       setAnswer("");
       onClose();
     } catch (error) {
       console.error(error);
+      await Swal.fire({
+        title: '오류 발생',
+        text: '답변 처리 중 오류가 발생했습니다.',
+        icon: 'error',
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      });
     }
   };
 
