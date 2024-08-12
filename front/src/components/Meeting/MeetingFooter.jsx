@@ -162,6 +162,7 @@ function MeetingFooter({
 
   const openContentWindow = () => {
     setIsContentWindow(true);
+    setIsChatWindow(false);
   }
 
   const closeContentWindow = () => {
@@ -170,6 +171,7 @@ function MeetingFooter({
 
   const openChatWindow = () => {
     setIsChatWindow(true);
+    setIsContentWindow(false);
   }
 
   const closeChatWindow = () => {
