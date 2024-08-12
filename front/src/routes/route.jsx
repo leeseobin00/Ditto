@@ -52,7 +52,7 @@ const AppRoutes = () => {
         <Route path="mileage" element={<MileagePage />} />
       </Route>
       <Route path="/myclassroom" element={<MyClassroomPage />} />
-      <Route path="/board" element={<BoardListPage />} />
+      <Route path="/board/all" element={<BoardListPage />} />
       <Route path="/board/talk" element={<BoardListPage />} />
       <Route path="/board/community" element={<BoardListPage />} />
       <Route path="/board/help" element={<BoardListPage />} />

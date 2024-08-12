@@ -44,9 +44,11 @@ const SummaryModal = ({ show, onClose, summaries }) => {
       <Title>강의 요약</Title>
       <ContentContainer>
         {summaries.length > 0 ? (
-          summaries.map((summary) => (
+          summaries.map((summary, index) => (
             <StepContainer key={summary.summaryId}>
-              <StepTitle>{summary.stepId}단계</StepTitle>
+              <StepTitle>
+                {index + 1}단계: {summary.stepName}
+              </StepTitle>
               <StepContent>{summary.summaryContent}</StepContent>
             </StepContainer>
           ))

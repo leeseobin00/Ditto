@@ -137,6 +137,7 @@ function ClassSideBar({
     sendRequest: getIsLike,
     sendRequest: postLike,
     sendRequest: deleteLike,
+    sendRequest: getCanOrder,
   } = useAxios();
 
   const handleGetIsLike = async () => {
@@ -169,7 +170,7 @@ function ClassSideBar({
         text: "회원만 좋아요 기능을 이용할 수 있습니다.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login");
@@ -198,7 +199,7 @@ function ClassSideBar({
         text: "회원만 좋아요 기능을 이용할 수 있습니다.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login");
@@ -213,7 +214,7 @@ function ClassSideBar({
         text: "강사는 클래스 좋아요 기능을 이용할 수 없습니다.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       });
       return;
     }
@@ -262,6 +263,25 @@ function ClassSideBar({
     navigate(`/order?${queryString}`);
   };
 
+  const handleCanOrder = async () => {
+    try {
+      const response = await getCanOrder(
+        `/classes/${classInfo.classId}/lectures/${selectedLecture.lectureId}/payment/completed?userId=${userId}`
+      );
+      if (!response?.data) {
+        if (selectedLecture.userCount < classInfo.classMax) {
+          navigateToOrder(classInfo.classId, selectedLecture.lectureId);
+        } else {
+          alert("수강 가능한 인원이 초과되었습니다.");
+        }
+      } else {
+        alert("이미 결제한 강의입니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOrderButton = () => {
     if (userId == null) {
       Swal.fire({
@@ -269,7 +289,7 @@ function ClassSideBar({
         text: "회원만 구매할 수 있습니다.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login");
@@ -284,7 +304,7 @@ function ClassSideBar({
         text: "일반 회원만 구매할 수 있습니다. \n일반 회원으로 가입해주세요.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       });
       return;
     }
@@ -295,12 +315,12 @@ function ClassSideBar({
         text: "선택된 강의가 없습니다.",
         icon: "warning",
         confirmButtonText: "확인",
-        confirmButtonColor: '#FF7F50',
+        confirmButtonColor: "#FF7F50",
       });
       return;
     }
 
-    navigateToOrder(classInfo.classId, selectedLecture.lectureId);
+    handleCanOrder();
   };
 
   return (

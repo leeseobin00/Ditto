@@ -20,8 +20,8 @@ function TabBar() {
 
   return (
     <Tabs>
-      <Link to="/board">
-        <Tab $active={path === ""}>전체</Tab>
+      <Link to="/board/all">
+        <Tab $active={path === "all"}>전체</Tab>
       </Link>
       <Link to="/board/talk">
         <Tab $active={path === "talk"}>소통해요</Tab>

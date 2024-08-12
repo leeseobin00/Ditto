@@ -7,7 +7,7 @@ import SummaryModal from "./SummaryModal";
 import RefundPolicyModal from "./RefundPolicyModal";
 import RoundButton from "../../common/RoundButton";
 import OutlineButton from "../../common/OutlineButton";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import ReviewPostModal from "../../Review/ReviewPostModal";
 import MoreButton from "../../common/MoreButton";
 
@@ -151,7 +151,7 @@ const PaymentDetail = ({
   const handleCancelClick = async (lectureId) => {
     setCurrentLectureId(lectureId);
     setShowRefundModal(true);
-    }
+  };
 
   const handleSummaryClick = async (lectureId) => {
     try {
@@ -165,16 +165,15 @@ const PaymentDetail = ({
         setSummaries(response?.data?.data);
         setShowSummaryModal(true);
       } else {
-        
       }
     } catch (error) {
       Swal.fire({
-          title: '요약 조회 실패',
-          text: '다시 시도해주세요.',
-          icon: 'error',
-          confirmButtonColor: '#FF7F50', 
-          confirmButtonText: '확인'
-        });
+        title: "요약 조회 실패",
+        text: "다시 시도해주세요.",
+        icon: "error",
+        confirmButtonColor: "#FF7F50",
+        confirmButtonText: "확인",
+      });
       console.error(error);
     }
   };
@@ -194,8 +193,9 @@ const PaymentDetail = ({
       );
       setCanReviewMap((prev) => ({
         ...prev,
-        [lectureId]: !response.data, // response.data가 false이면 리뷰 가능 상태로 설정
+        [lectureId]: !response?.data, // response.data가 false이면 리뷰 가능 상태로 설정
       }));
+      console.log(response?.data);
     } catch (error) {
       console.error(error);
     }
@@ -235,20 +235,20 @@ const PaymentDetail = ({
       );
 
       Swal.fire({
-          title: '취소 완료',
-          text: '결제가 성공적으로 취소되었습니다.',
-          icon: 'success',
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인'
-        });
+        title: "취소 완료",
+        text: "결제가 성공적으로 취소되었습니다.",
+        icon: "success",
+        confirmButtonColor: "#FF7F50",
+        confirmButtonText: "확인",
+      });
       closeModal();
     } catch (error) {
       Swal.fire({
-        title: '취소 실패',
-        text: '다시 시도해주세요.',
-        icon: 'error',
-        confirmButtonColor: '#FF7F50',
-        confirmButtonText: '확인'
+        title: "취소 실패",
+        text: "다시 시도해주세요.",
+        icon: "error",
+        confirmButtonColor: "#FF7F50",
+        confirmButtonText: "확인",
       });
       console.error(error);
     }
