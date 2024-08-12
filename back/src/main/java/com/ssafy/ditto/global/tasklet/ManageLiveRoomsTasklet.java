@@ -56,10 +56,12 @@ public class ManageLiveRoomsTasklet implements Tasklet {
                 }
             }
 
-            if (now.isAfter(endTime) && now.isBefore(endTime.plusMinutes(30))) {
-                liveRoomService.endLiveRoom(lecture.getLectureId());
+            if (now.isAfter(endTime)) {
+                boolean close = liveRoomService.endLiveRoom(lecture.getLectureId());
+                if(close){
+                    sessionService.closeSession(lecture.getLectureId());
+                }
                 learningService.changeStatus(lecture.getLectureId());
-                sessionService.closeSession(lecture.getLectureId());
                 mileageService.addMileage(lecture.getLectureId());
                 
             }

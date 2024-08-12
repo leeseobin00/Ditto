@@ -166,7 +166,7 @@ public class SessionServiceImpl implements SessionService {
     public void closeSession(int lectureId) {
         Session session = this.lectureSessions.get(lectureId);
         if (session == null) {
-            throw new ServiceException(ErrorCode.SESSION_NOT_FOUND);
+            return;
         }
 
         try {

@@ -31,7 +31,7 @@ public class MileageServiceImpl implements MileageService {
 
         Optional<MileageHistory> mileageHistory = mileageHistoryRepository.findByUserAndLecture(user,lecture);
 
-        if(mileageHistory.isPresent()){
+        if(mileageHistory.isPresent() || amount==0){
             return;
         }
 

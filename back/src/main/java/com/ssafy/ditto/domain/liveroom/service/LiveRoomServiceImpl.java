@@ -15,6 +15,7 @@ import com.ssafy.ditto.domain.liveroom.domain.LiveRoom;
 import com.ssafy.ditto.domain.liveroom.repository.LiveRoomRepository;
 import com.ssafy.ditto.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,14 +57,19 @@ public class LiveRoomServiceImpl implements LiveRoomService {
     }
 
     @Override
-    public void endLiveRoom(int lectureId) {
+    public boolean endLiveRoom(int lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         Optional<LiveRoom> liveRoomOptional = liveRoomRepository.findByLecture(lecture);
         if (liveRoomOptional.isPresent()) {
             LiveRoom liveRoom = liveRoomOptional.get();
+            if(liveRoom.getIsFinished()) {
+                return false;
+            }
             liveRoom.setIsFinished(true);
             liveRoomRepository.save(liveRoom);
+            return true;
         }
+        return false;
     }
 
     @Override
