@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import Swal from "sweetalert2"; 
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -9,8 +10,14 @@ const PrivateRoute = ({ children }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      alert("접근 권한이 없습니다. 로그인 해주세요.");
-      navigate("/");
+      Swal.fire({
+        icon: 'warning',
+        title: '접근 권한이 없습니다',
+        text: '로그인 해주세요.',
+        confirmButtonText: '확인'
+      }).then(() => {
+        navigate("/login");
+      });
     }
   }, [isAuthenticated, navigate]);
 
