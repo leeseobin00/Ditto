@@ -499,19 +499,15 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!isVerified) {
-    //   Swal.fire({
-    //     icon: "warning",
-    //     title: "이메일 인증 필요",
-    //     text: "이메일 인증을 완료해주세요.",
-    //     confirmButtonColor: '#FF7F50',
-    //   });
-    //   return;
-    // }
-    // if (!isVerified) {
-    //   alert("이메일 인증을 완료해주세요.");
-    //   return;
-    // }
+    if (!isVerified) {
+      Swal.fire({
+        icon: "warning",
+        title: "이메일 인증 필요",
+        text: "이메일 인증을 완료해주세요.",
+        confirmButtonColor: '#FF7F50',
+      });
+      return;
+    }
     if (!isPasswordMatchState) {
       Swal.fire({
         icon: "warning",
