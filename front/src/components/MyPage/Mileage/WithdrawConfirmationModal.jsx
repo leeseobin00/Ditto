@@ -1,7 +1,6 @@
-// src/components/Mileage/WithdrawConfirmationModal.js
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { IoClose } from "react-icons/io5";
 import Modal from "../../common/Modal";
 import OutlineButton from "../../common/OutlineButton";
 
@@ -42,17 +41,11 @@ const ButtonGroup = styled.div`
   gap: 20px;
 `;
 
-const Button = styled.button`
-  padding: 10px 20px;
-  background-color: ${(props) =>
-    props.$cancel ? "var(--TEXT_SECONDARY)" : "var(--SECONDARY)"};
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.9);
-  }
+const AccountNull = styled.div`
+  font-size: 18px;
+  color: var(--TEXT_SECONDARY);
+  padding: 40px;
+  text-align: center;
 `;
 
 const WithdrawConfirmationModal = ({
@@ -62,22 +55,50 @@ const WithdrawConfirmationModal = ({
   accountDetails,
   onConfirm,
 }) => {
+  const navigate = useNavigate();
+
+  const handleAccountRegisterClick = () => {
+    navigate("/mypage/prouserInfo");
+  };
   if (!isOpen) return null;
 
   return (
     <Modal onClose={onClose}>
       <Title>{amount} 원을 출금하시겠습니까?</Title>
       <ModalContent>
-        <CloseButton onClick={onClose} />
         <Details>
-          <DetailItem>은행명: {accountDetails.bank}</DetailItem>
-          <DetailItem>계좌번호: {accountDetails.accountNumber}</DetailItem>
-          <DetailItem>예금주: {accountDetails.receiver}</DetailItem>
+          {accountDetails.accountNumber ? (
+            <>
+              <DetailItem>은행명: {accountDetails.bank}</DetailItem>
+              <DetailItem>계좌번호: {accountDetails.accountNumber}</DetailItem>
+              <DetailItem>예금주: {accountDetails.receiver}</DetailItem>
+            </>
+          ) : (
+            <AccountNull>
+              등록된 계좌가 없습니다.
+              <br />
+              계좌를 등록해주세요.
+            </AccountNull>
+          )}
         </Details>
-        <ButtonGroup>
-          <OutlineButton onClick={onConfirm} label={"출금"} />
-          <OutlineButton $cancel onClick={onClose} label={"취소"} />
-        </ButtonGroup>
+        {accountDetails.accountNumber ? (
+          <ButtonGroup>
+            <OutlineButton onClick={onConfirm} label={"출금"} />
+            <OutlineButton
+              $cancel
+              onClick={onClose}
+              label={"취소"}
+              color={"ACCENT1"}
+            />
+          </ButtonGroup>
+        ) : (
+          <ButtonGroup>
+            <OutlineButton
+              label={"계좌 등록"}
+              onClick={handleAccountRegisterClick}
+            />
+          </ButtonGroup>
+        )}
       </ModalContent>
     </Modal>
   );
