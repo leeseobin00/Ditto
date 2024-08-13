@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { styled } from "styled-components";
+import { styled, css } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { MdMenu } from "react-icons/md";
@@ -39,7 +39,7 @@ const MyComment = styled.div`
 
 const Comments = styled.div`
   background-color: var(--BACKGROUND_COLOR);
-  padding: 10px 30px 0px 16px;
+  padding: 10px 30px 10px 16px;
   margin-top: 32px;
   border-radius: 10px;
 `;
@@ -53,6 +53,12 @@ const Comment = styled.div`
   padding: 15px 0px;
   padding-left: 8px;
   border-bottom: 1px solid var(--BORDER_COLOR);
+
+  ${(props) =>
+    props.isLast &&
+    css`
+      border-bottom: none;
+    `}
 `;
 
 const ParentCommentWrapper = styled.div`
@@ -60,7 +66,7 @@ const ParentCommentWrapper = styled.div`
 `;
 
 const ChildCommentWrapper = styled.div`
-  margin-top: 32px;
+  margin-top: 20px;
   width: 100%;
 `;
 
@@ -85,7 +91,7 @@ const AddComment = styled.span`
 const CommentReplyWrapper = styled.div`
   position: relative;
   margin-top: 0px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
   margin-left: 52px;
 `;
 
@@ -331,128 +337,135 @@ function BoardDetailPage() {
             />
           </CommentReplyWrapper>
         </MyComment>
-
-        <Comments>
-          {comments?.map((comment, index) => (
-            <Comment key={index}>
-              <ParentCommentWrapper>
-                {comment?.isDeleted == false && comment?.userId == userId && (
-                  <MenuIconWrapper>
-                    <MenuIcon>
-                      <CustomMenuIcon />
-                      <DropdownMenu className="dropdown-menu">
-                        <DropdownItem
-                          onClick={() => handleEditClick(comment.commentId)}
-                        >
-                          수정
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => handleDeleteComment(comment.commentId)}
-                        >
-                          삭제
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </MenuIcon>
-                  </MenuIconWrapper>
-                )}
-                <Profile
-                  fileId={comment.fileId}
-                  name={comment.nickname}
-                  date={new Date(comment.createdDate)
-                    .toISOString()
-                    .split("T")[0]
-                    .replace(/-/g, ".")}
-                  userId={comment.userId}
-                />
-                <CommentTextWrapper>
-                  {editCommentId === comment.commentId ? (
-                    <ReplyForm
-                      commentId={comment.commentId}
-                      parentId={comment.parentId}
-                      isCancel
-                      onCancel={() => setEditCommentId(null)}
-                      initialContent={comment.content}
-                      onUpdateComment={handleUpdateComment}
-                    />
-                  ) : (
-                    <>
-                      <CommentText>{comment.content}</CommentText>
-                      {comment?.isDeleted === false && (
-                        <AddComment onClick={() => handleReplyFormOpen(index)}>
-                          답글달기
-                        </AddComment>
-                      )}
-                    </>
+        {comments?.length > 0 && (
+          <Comments>
+            {comments?.map((comment, index) => (
+              <Comment key={index} isLast={index === comments.length - 1}>
+                <ParentCommentWrapper>
+                  {comment?.isDeleted == false && comment?.userId == userId && (
+                    <MenuIconWrapper>
+                      <MenuIcon>
+                        <CustomMenuIcon />
+                        <DropdownMenu className="dropdown-menu">
+                          <DropdownItem
+                            onClick={() => handleEditClick(comment.commentId)}
+                          >
+                            수정
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() =>
+                              handleDeleteComment(comment.commentId)
+                            }
+                          >
+                            삭제
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </MenuIcon>
+                    </MenuIconWrapper>
                   )}
-                </CommentTextWrapper>
-              </ParentCommentWrapper>
-              {(comment?.children.length > 0 || showReplyForms[index]) && (
-                <ChildCommentWrapper>
-                  {comment?.children?.map((c, childIndex) => (
-                    <CommentReplyWrapper key={childIndex}>
-                      {userId == c?.userId && (
-                        <MenuIconWrapper>
-                          <MenuIcon>
-                            <CustomMenuIcon />
-                            <DropdownMenu className="dropdown-menu">
-                              <DropdownItem
-                                onClick={() => handleEditClick(c.commentId)}
-                              >
-                                수정
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleDeleteComment(c.commentId)}
-                              >
-                                삭제
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </MenuIcon>
-                        </MenuIconWrapper>
-                      )}
-                      <Profile
-                        fileId={c.fileId}
-                        name={c.nickname}
-                        date={new Date(c.createdDate)
-                          .toISOString()
-                          .split("T")[0]
-                          .replace(/-/g, ".")}
-                        userId={c.userId}
-                      />
-                      <CommentTextWrapper>
-                        {editCommentId === c.commentId ? (
-                          <ReplyForm
-                            commentId={c.commentId}
-                            parentId={c.parentId}
-                            isCancel
-                            onCancel={() => setEditCommentId(null)}
-                            initialContent={c.content}
-                            onUpdateComment={handleUpdateComment}
-                          />
-                        ) : (
-                          <>
-                            <CommentText>{c.content}</CommentText>
-                            {/* <AddComment onClick={() => handleReplyFormOpen(index)}>답글달기</AddComment> */}
-                          </>
-                        )}
-                      </CommentTextWrapper>
-                    </CommentReplyWrapper>
-                  ))}
-
-                  {showReplyForms[index] && (
-                    <CommentReplyWrapper>
+                  <Profile
+                    fileId={comment.fileId}
+                    name={comment.nickname}
+                    date={new Date(comment.createdDate)
+                      .toISOString()
+                      .split("T")[0]
+                      .replace(/-/g, ".")}
+                    userId={comment.userId}
+                  />
+                  <CommentTextWrapper>
+                    {editCommentId === comment.commentId ? (
                       <ReplyForm
-                        parentId={comment.commentId}
+                        commentId={comment.commentId}
+                        parentId={comment.parentId}
                         isCancel
-                        onCancel={() => handleReplyFormClose(index)}
-                        onAddComment={handlePostComment}
+                        onCancel={() => setEditCommentId(null)}
+                        initialContent={comment.content}
+                        onUpdateComment={handleUpdateComment}
                       />
-                    </CommentReplyWrapper>
-                  )}
-                </ChildCommentWrapper>
-              )}
-            </Comment>
-          ))}
-        </Comments>
+                    ) : (
+                      <>
+                        <CommentText>{comment.content}</CommentText>
+                        {comment?.isDeleted === false && (
+                          <AddComment
+                            onClick={() => handleReplyFormOpen(index)}
+                          >
+                            답글달기
+                          </AddComment>
+                        )}
+                      </>
+                    )}
+                  </CommentTextWrapper>
+                </ParentCommentWrapper>
+                {(comment?.children.length > 0 || showReplyForms[index]) && (
+                  <ChildCommentWrapper>
+                    {comment?.children?.map((c, childIndex) => (
+                      <CommentReplyWrapper key={childIndex}>
+                        {userId == c?.userId && (
+                          <MenuIconWrapper>
+                            <MenuIcon>
+                              <CustomMenuIcon />
+                              <DropdownMenu className="dropdown-menu">
+                                <DropdownItem
+                                  onClick={() => handleEditClick(c.commentId)}
+                                >
+                                  수정
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleDeleteComment(c.commentId)
+                                  }
+                                >
+                                  삭제
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </MenuIcon>
+                          </MenuIconWrapper>
+                        )}
+                        <Profile
+                          fileId={c.fileId}
+                          name={c.nickname}
+                          date={new Date(c.createdDate)
+                            .toISOString()
+                            .split("T")[0]
+                            .replace(/-/g, ".")}
+                          userId={c.userId}
+                        />
+                        <CommentTextWrapper>
+                          {editCommentId === c.commentId ? (
+                            <ReplyForm
+                              commentId={c.commentId}
+                              parentId={c.parentId}
+                              isCancel
+                              onCancel={() => setEditCommentId(null)}
+                              initialContent={c.content}
+                              onUpdateComment={handleUpdateComment}
+                            />
+                          ) : (
+                            <>
+                              <CommentText>{c.content}</CommentText>
+                              {/* <AddComment onClick={() => handleReplyFormOpen(index)}>답글달기</AddComment> */}
+                            </>
+                          )}
+                        </CommentTextWrapper>
+                      </CommentReplyWrapper>
+                    ))}
+
+                    {showReplyForms[index] && (
+                      <CommentReplyWrapper>
+                        <ReplyForm
+                          parentId={comment.commentId}
+                          isCancel
+                          onCancel={() => handleReplyFormClose(index)}
+                          onAddComment={handlePostComment}
+                        />
+                      </CommentReplyWrapper>
+                    )}
+                  </ChildCommentWrapper>
+                )}
+              </Comment>
+            ))}
+          </Comments>
+        )}
       </Wrapper>
     </div>
   );

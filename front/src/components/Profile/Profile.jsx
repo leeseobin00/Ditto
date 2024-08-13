@@ -37,31 +37,15 @@ const LikeCount = styled.p`
   margin-top: 8px;
 `;
 
-const popAnimation = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
-
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
   cursor: pointer;
-  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
-    ease-in-out;
   margin-right: 10px;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
   cursor: pointer;
-  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
-    ease-in-out;
   margin-right: 10px;
 `;
 
@@ -91,7 +75,7 @@ function Profile({
   const [profileImage, setProfileImage] = useState(profileImageURL);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curLikeCount, setCurLikeCount] = useState(likeCount);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isanimating, setIsAnimating] = useState(false);
 
   const handleHeartClick = () => {
     if (!userId) return;
@@ -164,11 +148,7 @@ function Profile({
         <Name>{userName}</Name>
       </Link>
       <LikeCount onClick={handleHeartClick}>
-        {isHeartFilled ? (
-          <CustomFilledHeartIcon isanimating={isAnimating} />
-        ) : (
-          <CustomHeartIcon isanimating={isAnimating} />
-        )}
+        {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />}
         {curLikeCount}
       </LikeCount>
       <Tags>
