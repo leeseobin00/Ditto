@@ -286,7 +286,7 @@ const Header = () => {
         </DropdownItem>
         <DropdownItem to="/profile/search">프로필 찾기</DropdownItem>
         <DropdownItem to={`/profile/${userId}`}>내 프로필</DropdownItem>
-        <DropdownItem to="/profile/my">로그아웃</DropdownItem>
+        {isAuthenticated && <DropdownItem to="/profile/my">로그아웃</DropdownItem>}
       </MobileDropdownMenu>
       <HeaderContainer>
         <Overlay open={menuOpen} onClick={handleOverlayClick} />
@@ -298,13 +298,15 @@ const Header = () => {
             <Logo>Ditto</Logo>
           </NavLink>
           <Icons>
-            <IconLink to="/video">
-              <BiVideo style={{ fontSize: "20px" }} />
-            </IconLink>
+            {isAuthenticated  && 
+              <IconLink to="/video">
+                <BiVideo style={{ fontSize: "20px" }} />
+              </IconLink>
+            }
             {/* 알림페이지 구현 후 수정 예정 */}
-            <IconLink to="/notification" onClick={handlePreventClick}>
+            {/* <IconLink to="/notification" onClick={handlePreventClick}>
               <BiBell style={{ fontSize: "20px" }} />
-            </IconLink>
+            </IconLink> */}
             {isAuthenticated ? (
               isPro == 2 ? (
                 <Icon
