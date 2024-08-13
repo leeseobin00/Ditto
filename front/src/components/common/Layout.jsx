@@ -14,7 +14,6 @@ const LayoutContainer = styled.div`
 
 const MainContent = styled.div`
   flex: 1;
-  height: 100%;
 `;
 
 function Layout({ children }) {

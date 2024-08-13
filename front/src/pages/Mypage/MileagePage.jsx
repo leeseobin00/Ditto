@@ -109,7 +109,8 @@ const WithdrawGroup = styled.div`
 
 const MileagePage = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
-  const { userId } = useSelector((state) => state.auth);
+  const userId = useSelector((state) => state.auth.userId);
+  const nickname = useSelector((state) => state.auth.nickname);
   const navigate = useNavigate();
   const [balance, setBalance] = useState(0);
   const [accountDetails, setAccountDetails] = useState({
@@ -173,7 +174,7 @@ const MileagePage = () => {
             },
           }
         );
-        setHistories([...histories, ...response.data.histories]);
+        setHistories([...histories, ...response?.data?.histories]);
       } catch (error) {
         console.error("Error fetching more mileage history:", error);
       }
@@ -235,7 +236,7 @@ const MileagePage = () => {
       <Title>마일리지 출금</Title>
       <WithdrawGroup>
         <Header>
-          <Subtitle>이강사 님의 마일리지</Subtitle>
+          <Subtitle>{nickname} 님의 마일리지</Subtitle>
           <BalanceContainer>
             <BalanceLabel>전체 마일리지</BalanceLabel>
             <Balance>{balance.toLocaleString()} 원</Balance>
