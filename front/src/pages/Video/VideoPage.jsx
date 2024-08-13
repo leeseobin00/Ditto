@@ -9,10 +9,11 @@ import LectureImage from "../../components/Video/LectureImage";
 import Swal from "sweetalert2";
 
 const Container = styled.div`
-  max-width: 1024px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 32px;
+    max-width: 1024px;
+    width: 100%;
+    min-height: calc(100vh - 92px - 90px);
+    margin: 0 auto;
+    padding: 32px;
 `;
 
 const PageTitle = styled.p`
