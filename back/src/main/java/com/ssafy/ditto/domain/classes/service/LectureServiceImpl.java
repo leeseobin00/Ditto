@@ -54,7 +54,7 @@ public class LectureServiceImpl implements LectureService {
         }
 
         //이미 존재하는 차시일 경우 에러
-        Lecture lecture = lectureRepository.findByYearAndMonthAndDayAndHourAndMinute(lectureRequest.getYear(), lectureRequest.getMonth(), lectureRequest.getDay(), lectureRequest.getHour(), lectureRequest.getMinute());
+        Lecture lecture = lectureRepository.findByClassIdAndYearAndMonthAndDayAndHourAndMinute(dClass, lectureRequest.getYear(), lectureRequest.getMonth(), lectureRequest.getDay(), lectureRequest.getHour(), lectureRequest.getMinute());
         if (lecture != null){
             throw new LectureDuplicateException();
         }
