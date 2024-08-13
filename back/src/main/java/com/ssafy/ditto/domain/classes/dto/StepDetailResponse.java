@@ -29,6 +29,7 @@ public class StepDetailResponse {
 
     public static StepDetailResponse of(Step step, FileResponse fileResponse) {
         return StepDetailResponse.builder()
+                .stepId(step.getStepId())
                 .stepNo(step.getStepNo())
                 .stepName(step.getStepName())
                 .stepDetail(step.getStepDetail())
