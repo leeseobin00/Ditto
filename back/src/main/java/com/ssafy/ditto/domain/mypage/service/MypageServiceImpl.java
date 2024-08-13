@@ -19,6 +19,7 @@ import com.ssafy.ditto.domain.question.repository.QuestionRepository;
 import com.ssafy.ditto.domain.review.domain.Review;
 import com.ssafy.ditto.domain.review.repository.ReviewRepository;
 import com.ssafy.ditto.domain.tag.domain.Tag;
+import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import com.ssafy.ditto.domain.user.domain.User;
 import com.ssafy.ditto.domain.user.repository.UserRepository;
 import com.ssafy.ditto.domain.user.repository.UserTagRepository;
@@ -396,10 +397,22 @@ public class MypageServiceImpl implements MypageService {
             //getter 유저를 토대로 UserTag랑 Tag를 조인해서 반환
             List<Tag> tags = userTagRepository.getTagList(getterUser.getUserId());
 
+            List<TagResponse> tagResponseList = new ArrayList<>();
+
+            for (Tag tag : tags){
+                TagResponse tagResponse = TagResponse.builder()
+                        .tagId(tag.getTagId())
+                        .tagName(tag.getTagName())
+                        .categoryId(tag.getCategory().getCategoryId())
+                        .build();
+
+                tagResponseList.add(tagResponse);
+            }
+
             LikeUserResponse likeUserResponse = LikeUserResponse.builder()
                     .userId(getterUser.getUserId())
                     .nickname(getterUser.getNickname())
-                    .tags(tags)
+                    .tags(tagResponseList)
                     .fileId(getterUser.getFileId().getFileId())
                     .fileUrl(getterUser.getFileId().getFileUrl())
                     .likeUserId(likeUser.getLikeUserId())
@@ -408,7 +421,7 @@ public class MypageServiceImpl implements MypageService {
 
             likeUserResponseList.add(likeUserResponse);
         }
-        System.out.println(likeUserResponseList.size());
+
         return likeUserResponseList;
     }
 
