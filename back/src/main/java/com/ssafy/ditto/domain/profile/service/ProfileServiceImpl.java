@@ -232,18 +232,21 @@ public class ProfileServiceImpl implements ProfileService {
             return criteriaBuilder.equal(root.get("student").get("userId"), userId);
         });
 
-        // 중복되지 않은 DClass 객체를 추출
-        List<DClass> classList = learningList.stream()
+        // 중복되지 않은 DClass 객체를 추출하면서 isDeleted = false인 DClass만 필터링
+        List<DClass> filteredClassList = learningList.stream()
                 .map(Learning::getDClass)
+                .filter(dClass -> !dClass.getIsDeleted()) // isDeleted = false 필터링
                 .distinct()
                 .collect(Collectors.toList());
 
         // Pagination
-        int totalElements = classList.size();
-        int start = pageRequest.getPageNumber() * pageRequest.getPageSize();
-        int end = Math.min(start + pageRequest.getPageSize(), totalElements);
+        int totalElements = filteredClassList.size();
+        int pageSize = pageRequest.getPageSize();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        int start = pageRequest.getPageNumber() * pageSize;
+        int end = Math.min(start + pageSize, totalElements);
 
-        List<DClass> paginatedList = classList.subList(start, end);
+        List<DClass> paginatedList = filteredClassList.subList(start, end);
 
         List<ClassResponse> classResponses = paginatedList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
@@ -283,21 +286,23 @@ public class ProfileServiceImpl implements ProfileService {
                         .classList(classResponses)
                         .build())
                 .currentPage(pageRequest.getPageNumber() + 1)
-                .totalPageCount((int) Math.ceil((double) totalElements / pageRequest.getPageSize()))
+                .totalPageCount(totalPages)
                 .build();
     }
-
 
     @Override
     @Transactional(readOnly = true)
     public UserClassListResponse proClass(int userId, PageRequest pageRequest) {
+        // Pageable 객체 생성 (likeCount 기준 내림차순 정렬)
         Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "likeCount"));
 
-        // DClass 엔티티를 UserId로 조회
-        Page<DClass> classPage = classRepository.findAllByUserId(userRepository.findByUserId(userId), pageable);
+        // DClass 엔티티를 UserId와 isDeleted=false 조건으로 조회
+        Page<DClass> classPage = classRepository.findAllByUserIdAndIsDeletedFalse(userRepository.findByUserId(userId), pageable);
 
+        // 조회된 결과에서 컨텐츠(클래스 목록)만 추출
         List<DClass> classList = classPage.getContent();
 
+        // DClass 리스트를 ClassResponse 리스트로 변환
         List<ClassResponse> classResponses = classList.stream().map(dClass -> {
             TagResponse tagResponse = TagResponse.builder()
                     .tagId(dClass.getTagId().getTagId())
@@ -339,7 +344,6 @@ public class ProfileServiceImpl implements ProfileService {
                 .totalPageCount(classPage.getTotalPages())
                 .build();
     }
-
 
 
     @Override

@@ -22,5 +22,5 @@ public interface ClassRepository extends JpaRepository<DClass, Integer>, JpaSpec
 
     DClass findByClassId(Integer classId);
 
-    Page<DClass> findAllByUserId(User userId, Pageable pageable);
+    Page<DClass> findAllByUserIdAndIsDeletedFalse(User byUserId, Pageable pageable);
 }
