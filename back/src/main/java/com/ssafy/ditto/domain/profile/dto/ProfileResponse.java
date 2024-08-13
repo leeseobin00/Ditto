@@ -62,21 +62,23 @@ public class ProfileResponse {
         this.tags = tags;
     }
 
-    public ProfileResponse(int userId, String nickname, int fileId, String fileUrl, List<String> tags) {
+    public ProfileResponse(int userId, String nickname, int fileId, String fileUrl, List<String> tags, int likeCount) {
         this.userId = userId;
         this.nickname = nickname;
         this.fileId = fileId;
         this.fileUrl = fileUrl;
         this.tags = tags;
+        this.likeCount = likeCount;
     }
 
-    public static ProfileResponse of(User user, List<String> tags) {
+    public static ProfileResponse of(User user, List<String> tags, int likeCount) {
         return new ProfileResponse(
                 user.getUserId(),
                 user.getNickname(),
                 user.getFileId().getFileId(),
                 user.getFileId().getFileUrl(),
-                tags
+                tags,
+                likeCount
         );
     }
 }

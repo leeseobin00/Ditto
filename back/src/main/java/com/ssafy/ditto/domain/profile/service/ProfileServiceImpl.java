@@ -95,13 +95,14 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<ProfileResponse> profileResponses = paginatedUsers.stream()
                 .map(user -> {
+                    int likeCount = likeUserRepository.countLikesByUserId(user.getUserId());
                     List<UserTag> userTags = userTagRepository.findByUserId(user);
                     List<String> tagNames = new ArrayList<>();
                     for(UserTag ut : userTags){
                         Tag tag = tagRepository.findByTagName(ut.getTagId().getTagName());
                         tagNames.add(tag.getTagName());
                     }
-                    return ProfileResponse.of(user, tagNames);
+                    return ProfileResponse.of(user, tagNames, likeCount);
                 })
                 .collect(Collectors.toList());
 
