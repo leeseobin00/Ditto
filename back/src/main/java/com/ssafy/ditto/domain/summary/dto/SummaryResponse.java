@@ -9,7 +9,7 @@ import lombok.Data;
 @Schema(title = "요약 응답", description = "요약 응답 DTO")
 public class SummaryResponse {
     @Schema(description = "단계 Id", example = "1")
-    private Integer stepId;
+    private Byte stepNo;
 
     @Schema(description = "단계 정보", example = "굳히기 단계")
     private String stepName;
