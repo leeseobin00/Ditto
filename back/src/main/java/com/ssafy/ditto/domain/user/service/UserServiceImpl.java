@@ -220,9 +220,9 @@ public class UserServiceImpl implements UserService {
         // 가능한 문자들
         String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = SecureRandom.getInstanceStrong();
-        StringBuilder sb = new StringBuilder(15);
+        StringBuilder sb = new StringBuilder(10);
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             int index = random.nextInt(characters.length());
             sb.append(characters.charAt(index));
         }
