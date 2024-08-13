@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { styled, keyframes } from "styled-components";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import useAxios from "../../hooks/useAxios";
 import Tag from "./Tag";
@@ -51,25 +52,19 @@ const popAnimation = keyframes`
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
   cursor: pointer;
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s
+  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
     ease-in-out;
+  margin-right: 10px;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
   cursor: pointer;
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s
+  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
     ease-in-out;
+  margin-right: 10px;
 `;
 
-const NoTagText = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  color: var(--TEXT_SECONDARY);
-  width: 100%;
-`;
 const Tags = styled.div`
   display: flex;
   justify-content: center;
@@ -162,13 +157,17 @@ function Profile({
 
   return (
     <ProfileWrapper>
-      <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
-      <Name>{userName}</Name>
+      <Link to={`/profile/${profileId}`}>
+        <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
+      </Link>
+      <Link to={`/profile/${profileId}`}>
+        <Name>{userName}</Name>
+      </Link>
       <LikeCount onClick={handleHeartClick}>
         {isHeartFilled ? (
-          <CustomFilledHeartIcon isAnimating={isAnimating} />
+          <CustomFilledHeartIcon isanimating={isAnimating} />
         ) : (
-          <CustomHeartIcon isAnimating={isAnimating} />
+          <CustomHeartIcon isanimating={isAnimating} />
         )}
         {curLikeCount}
       </LikeCount>
