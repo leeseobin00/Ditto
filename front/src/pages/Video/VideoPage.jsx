@@ -10,6 +10,7 @@ import LectureImage from "../../components/Video/LectureImage";
 const Container = styled.div`
     max-width: 1024px;
     width: 100%;
+    min-height: calc(100vh - 92px - 90px);
     margin: 0 auto;
     padding: 32px;
 `;
