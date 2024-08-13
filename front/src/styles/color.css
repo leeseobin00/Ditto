@@ -1,0 +1,26 @@
+:root {
+  --PRIMARY: #ff5d00;
+  --PRIMARY_DARK: #e65b00;
+  --SECONDARY: #ff9900;
+  --SECONDARY_DARK: #e68a00;
+  --TERTIARY: #fef6ea;
+  --ACCENT1: #f9595f;
+  --ACCENT1_LIGHT: #fee4e5;
+  --ACCENT2: #71d3b9;
+  --TEXT_PRIMARY: #202020;
+  --RED: #ec2e2e;
+  --YELLOW: #ffd54f;
+  --GREEN: #37c074;
+  --BLUE: #3d99ed;
+  --TEXT_SECONDARY: #767676;
+  --TEXT_TERTIARY: #989898;
+  --DARK: #000000;
+  --LIGHT: #ffffff;
+  --BORDER_COLOR: #b2b2b2;
+  --BACKGROUND_COLOR: #efefef;
+  --BACKGROUND_SECONDARY: #d2d2d286 ;
+  --MEETING_BACKGROUND: #2d2d2d;
+  --MEETING_PRIMARY: #3a3a3a;
+  --MEETING_SECONDARY: #444444;
+  --MEETING_DARK: #1b1b1b;
+}
