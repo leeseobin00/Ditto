@@ -187,7 +187,12 @@ const MileagePage = () => {
         );
         setHistories([...histories, ...response?.data?.data]);
         if (response?.data?.data.length == 0) {
-          alert("더 이상 불러올 결제 내역이 없습니다.");
+          Swal.fire({
+            text: "더 이상 불러올 결제 내역이 없습니다.",
+            icon: "warning",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#FF7F50",
+          })
           setShowMoreButton(false);
           return;
         }
@@ -240,11 +245,21 @@ const MileagePage = () => {
           },
         }
       );
-      alert("출금 신청이 완료되었습니다.");
+      Swal.fire({
+        text: "출금 신청이 완료되었습니다.",
+        icon: "success",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      })
       setIsConfirmationOpen(false);
     } catch (error) {
       console.error("Error requesting withdrawal:", error);
-      alert("출금 신청에 실패했습니다.");
+      Swal.fire({
+        text: "출금 신청에 실패했습니다.",
+        icon: "error",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      })
     }
   };
 

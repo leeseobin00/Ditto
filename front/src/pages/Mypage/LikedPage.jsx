@@ -89,7 +89,12 @@ const LikedPage = () => {
         }
       );
       if (response?.data?.data.length == 0) {
-        alert("더 이상 불러올 관심 클래스가 없습니다.");
+        Swal.fire({
+          text: "더 이상 불러올 관심 클래스가 없습니다.",
+          icon: "info",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        })
         setShowClassMoreButton(false);
       }
       if (response?.data?.data.length < 3) setShowClassMoreButton(false);
@@ -117,7 +122,12 @@ const LikedPage = () => {
         }
       );
       if (response?.data?.data.length == 0) {
-        alert("더 이상 불러올 관심 유저가 없습니다.");
+        Swal.fire({
+          text: "더 이상 불러올 관심 유저가 없습니다.",
+          icon: "info",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        })
         setShowUserMoreButton(false);
       } else if (response?.data?.data.length < 4) setShowUserMoreButton(false);
       setLikedUsers((prevUsers) => [...prevUsers, ...response?.data?.data]);

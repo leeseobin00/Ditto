@@ -57,7 +57,12 @@ const RefundPolicyModal = ({ show, onClose, onConfirm }) => {
 
   const handleConfirmClick = () => {
     if (!isChecked) {
-      alert("환불 규정에 동의해야 구매 취소가 가능합니다.");
+      Swal.fire({
+        text: "환불 규정에 동의해야 구매 취소가 가능합니다.",
+        icon: "info",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#FF7F50",
+      })
     } else {
       onConfirm();
     }
