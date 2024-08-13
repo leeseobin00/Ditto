@@ -18,6 +18,7 @@ const ProfileImage = styled.img`
   width: 160px;
   height: 160px;
   border-radius: 50%;
+  object-fit: cover;
   box-shadow: 4px 4px 8px rgba(152, 146, 138, 0.7);
 `;
 
@@ -73,20 +74,20 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
         handleProfileImage(URL.createObjectURL(image));
         onClose();
         Swal.fire({
-          title: '수정 완료',
-          text: '프로필 이미지가 성공적으로 수정되었습니다.',
-          icon: 'success',
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          title: "수정 완료",
+          text: "프로필 이미지가 성공적으로 수정되었습니다.",
+          icon: "success",
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
       } catch (error) {
         console.error("Error updating profile image:", error);
         Swal.fire({
-          title: '오류',
-          text: '프로필 이미지 수정에 실패했습니다. 다시 시도해주세요.',
-          icon: 'error',
-          confirmButtonColor: '#FF7F50', 
-          confirmButtonText: '확인',
+          title: "오류",
+          text: "프로필 이미지 수정에 실패했습니다. 다시 시도해주세요.",
+          icon: "error",
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
       }
     }
@@ -94,14 +95,14 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
 
   const handleDelete = async () => {
     Swal.fire({
-      title: '정말 삭제하시겠습니까?',
-      text: '프로필 이미지를 삭제하면 복구할 수 없습니다.',
-      icon: 'warning',
+      title: "정말 삭제하시겠습니까?",
+      text: "프로필 이미지를 삭제하면 복구할 수 없습니다.",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#FF7F50',
-      cancelButtonColor: '#d33', // 빨간색
-      confirmButtonText: '삭제',
-      cancelButtonText: '취소',
+      confirmButtonColor: "#FF7F50",
+      cancelButtonColor: "#d33", // 빨간색
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -114,20 +115,20 @@ function ModifyProfileImage({ curProfileImage, handleProfileImage, onClose }) {
           handleProfileImage(null);
           onClose();
           Swal.fire({
-            title: '삭제 완료',
-            text: '프로필 이미지가 삭제되었습니다.',
-            icon: 'success',
-            confirmButtonColor: '#FF7F50',
-            confirmButtonText: '확인',
+            title: "삭제 완료",
+            text: "프로필 이미지가 삭제되었습니다.",
+            icon: "success",
+            confirmButtonColor: "#FF7F50",
+            confirmButtonText: "확인",
           });
         } catch (error) {
           console.error("Error deleting profile image:", error);
           Swal.fire({
-            title: '오류',
-            text: '프로필 이미지 삭제에 실패했습니다. 다시 시도해주세요.',
-            icon: 'error',
-            confirmButtonColor: '#FF7F50',
-            confirmButtonText: '확인',
+            title: "오류",
+            text: "프로필 이미지 삭제에 실패했습니다. 다시 시도해주세요.",
+            icon: "error",
+            confirmButtonColor: "#FF7F50",
+            confirmButtonText: "확인",
           });
         }
       }

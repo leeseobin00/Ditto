@@ -20,6 +20,7 @@ const Image = styled.img`
   background-color: lightgray;
   width: 160px;
   height: 160px;
+  object-fit: cover;
   border-radius: 100%;
 `;
 
