@@ -231,10 +231,9 @@ function Post({
 
     setIsAnimating(true);
 
-    // Reset animation after it's done
     setTimeout(() => {
       setIsAnimating(false);
-    }, 300); // Match the duration of the animation
+    }, 300);
 
     if (isHeartFilled) {
       setIsHeartFilled(false);
