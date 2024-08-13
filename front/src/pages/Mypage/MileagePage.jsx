@@ -69,6 +69,13 @@ const Input = styled.input`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 15px;
   width: 300px;
+
+  &:focus {
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--SECONDARY);
+    outline: none;
+  }
 `;
 
 const ButtonGroup = styled.div`
