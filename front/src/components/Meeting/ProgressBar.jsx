@@ -126,7 +126,7 @@ function ProgressBar({ steps
         {(roleId==2 && !loading) && <>
           {currentStep==-1 && <MeetingButton label="Start" onClick={handleStartStep} />}
           {(currentStep>=0 && currentStep<steps.length-1) && <MeetingButton label="Next" onClick={handleNextStep} />}
-          {currentStep>=steps.length-1 && <MeetingButton label="End" onClick={handleEndStep} />}
+          {currentStep==steps.length-1 && <MeetingButton label="End" onClick={handleEndStep} />}
         </>}
         {(roleId==2 && loading) && <Spinner/>}
       </ProgressDescription>
