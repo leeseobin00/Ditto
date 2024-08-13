@@ -47,7 +47,7 @@ const Image = styled.img`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 32px;
+  margin-top: 10px;
 `;
 
 function Section({

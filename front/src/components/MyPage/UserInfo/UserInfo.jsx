@@ -44,6 +44,7 @@ const ProfileImage = styled.img`
   height: 160px;
   border-radius: 100%;
   border: 1px solid var(--BORDER_COLOR);
+  object-fit: cover;
 `;
 
 const ProfileEditButton = styled.button`
@@ -263,8 +264,8 @@ const UserInfo = ({ userData }) => {
           icon: "error",
           title: "수정 불가",
           text: "회원 정보를 수정할 수 없습니다.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
         return;
       }
@@ -274,8 +275,8 @@ const UserInfo = ({ userData }) => {
           icon: "error",
           title: "닉네임 중복",
           text: "해당 닉네임으로는 변경할 수 없습니다.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
         return;
       }
@@ -298,8 +299,8 @@ const UserInfo = ({ userData }) => {
           icon: "success",
           title: "수정 완료",
           text: "회원 정보가 성공적으로 수정되었습니다.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         }).then(() => location.reload());
       } else {
         setError("수정 실패. 다시 시도해주세요.");
@@ -307,8 +308,8 @@ const UserInfo = ({ userData }) => {
           icon: "error",
           title: "수정 실패",
           text: "다시 시도해주세요.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
       }
     } catch (error) {
@@ -318,8 +319,8 @@ const UserInfo = ({ userData }) => {
           icon: "error",
           title: "닉네임 중복",
           text: "이미 사용 중인 닉네임입니다.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
       } else {
         console.error(error);
@@ -328,8 +329,8 @@ const UserInfo = ({ userData }) => {
           icon: "error",
           title: "저장 실패",
           text: "다시 시도해주세요.",
-          confirmButtonColor: '#FF7F50',
-          confirmButtonText: '확인',
+          confirmButtonColor: "#FF7F50",
+          confirmButtonText: "확인",
         });
       }
     }

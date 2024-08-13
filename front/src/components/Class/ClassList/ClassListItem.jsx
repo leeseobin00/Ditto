@@ -165,7 +165,7 @@ const ClassListItem = ({
             <Icon src={Star} alt="Star" />
             <Bold>
               <SmallFont>
-                {isMyPage ? classInfo?.ratingSum : averageRating?.toFixed(1)}
+                {averageRating?.toFixed(1)}
                 &nbsp;
               </SmallFont>
             </Bold>
