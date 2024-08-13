@@ -65,7 +65,12 @@ const PaymentPage = () => {
       );
       setPayments((prevPayments) => [...prevPayments, ...response?.data?.data]);
       if (response?.data?.data.length == 0) {
-        alert("더이상 불러올 결제 내역이 없습니다.");
+        Swal.fire({
+          text: "더 이상 불러올 관심 유저가 없습니다.",
+          icon: "info",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        })
         setShowMoreButton(false);
         return;
       } else if (response?.data?.data.length < 5) {

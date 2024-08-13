@@ -272,10 +272,20 @@ function ClassSideBar({
         if (selectedLecture.userCount < classInfo.classMax) {
           navigateToOrder(classInfo.classId, selectedLecture.lectureId);
         } else {
-          alert("수강 가능한 인원이 초과되었습니다.");
+          Swal.fire({
+            text: "수강 가능한 인원이 초과되었습니다.",
+            icon: "warning",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#FF7F50",
+          })
         }
       } else {
-        alert("이미 결제한 강의입니다.");
+        Swal.fire({
+          text: "이미 결제한 강의입니다.",
+          icon: "warning",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        })
       }
     } catch (error) {
       console.log(error);

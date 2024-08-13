@@ -66,7 +66,12 @@ const ReviewListPage = () => {
 
       if (response?.data?.data.length == 0) {
         setShowMoreButton(false);
-        alert("더 이상 불러올 리뷰가 없습니다.");
+        Swal.fire({
+          text: "더 이상 불러올 리뷰가 없습니다.",
+          icon: "info",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#FF7F50",
+        })
       } else if (response?.data?.data.length < 3) setShowMoreButton(false);
     } catch (error) {
       console.error(error);
