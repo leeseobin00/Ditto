@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { BsSearch } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 import Button from "../../components/common/Button";
-import Filter from "../../components/Board/Filter";
 import SelectBox from "../../components/Board/SelectBox";
 import SelectTag from "../../components/Board/SelectTag";
 import Section from "../../components/Profile/ProfileDetail/Section";
@@ -37,15 +35,38 @@ const Filters = styled.div`
 
 const FilterWrapper = styled.div`
   display: flex;
-  gap: 48px;
-  justify-content: flex-start;
-  align-items: flex-end;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
 `;
 
-const CustomSelectBox = styled(SelectBox)`
-  width: 700px;
-  margin-right: 100px;
+const FilterColumnWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
+
+const Filter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 8px 0;
+`;
+
+const FilterLabel = styled.div`
+  width: 60px;
+  margin-right: 30px;
+`;
+
+const FilterContent = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 92%;
+  gap: 8px;
+`;
+
+const CustomSelectBox = styled(SelectBox)``;
 
 const Input = styled.input`
   width: 160px;
@@ -53,7 +74,6 @@ const Input = styled.input`
   border-radius: 10px;
   background-color: var(--LIGHT);
   border: 1px solid var(--BORDER_COLOR);
-  margin-left: 30px;
   &:focus {
     outline: none;
   }
@@ -162,7 +182,6 @@ function ProfileSearchPage() {
 
       const result = await getProfile(url, null, "get");
       setTeacherProfiles((prev) => [...prev, ...result?.data?.profiles]);
-      console.log(result?.data?.profiles);
       setTeacherTotalPage(result?.data?.totalPageCount);
     }
   };
@@ -218,22 +237,27 @@ function ProfileSearchPage() {
       <PageTitle>프로필 찾기</PageTitle>
       <Filters>
         <FilterWrapper>
-          <Filter title="카테고리">
-            <CustomSelectBox
-              options={SEARCH_CATEGORY_OPTIONS}
-              onChange={handleCategory}
-              curOption={getCategoryLabelByValue(categoryId)}
-            />
-          </Filter>
-          <Filter title="닉네임" style={{ width: "80%" }}>
-            <Input value={keyword} onChange={handleKeyword} />
+          <FilterColumnWrapper>
+            <Filter>
+              <FilterLabel>카테고리</FilterLabel>
+              <CustomSelectBox
+                options={SEARCH_CATEGORY_OPTIONS}
+                onChange={handleCategory}
+                curOption={getCategoryLabelByValue(categoryId)}
+              />
+            </Filter>
+            <Filter>
+              <FilterLabel>닉네임</FilterLabel>
+              <Input value={keyword} onChange={handleKeyword} />
+            </Filter>
+          </FilterColumnWrapper>
+          <Filter style={{ width: "64%", margin: "0" }}>
+            <FilterLabel>태그</FilterLabel>
+            <FilterContent>
+              <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
+            </FilterContent>
           </Filter>
           <Button label={<CustomSearchIcon />} onClick={handleSearch} />
-        </FilterWrapper>
-        <FilterWrapper>
-          <Filter title="태그">
-            <SelectTag tags={tags} curTag={tagId} handleTag={handleTag} />
-          </Filter>
         </FilterWrapper>
       </Filters>
 
@@ -245,15 +269,14 @@ function ProfileSearchPage() {
       >
         <Profiles>
           {uniqueTeacherProfiles.map((profile) => (
-            <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile
-                profileImageId={profile?.fileId}
-                userName={profile?.nickname}
-                profileId={profile?.userId}
-                likeCount={profile?.likeCount}
-                tags={profile?.tags}
-              />
-            </Link>
+            <Profile
+              profileImageId={profile?.fileId}
+              userName={profile?.nickname}
+              profileId={profile?.userId}
+              likeCount={profile?.likeCount}
+              tags={profile?.tags}
+              key={profile?.userId}
+            />
           ))}
         </Profiles>
       </Section>
@@ -266,14 +289,13 @@ function ProfileSearchPage() {
       >
         <Profiles>
           {uniqueProfiles.map((profile) => (
-            <Link to={`/profile/${profile.userId}`} key={profile.userId}>
-              <Profile
-                profileImageId={profile?.fileId}
-                userName={profile?.nickname}
-                profileId={profile?.userId}
-                likeCount={profile?.likeCount}
-              />
-            </Link>
+            <Profile
+              profileImageId={profile?.fileId}
+              userName={profile?.nickname}
+              profileId={profile?.userId}
+              likeCount={profile?.likeCount}
+              key={profile?.userId}
+            />
           ))}
         </Profiles>
       </Section>
