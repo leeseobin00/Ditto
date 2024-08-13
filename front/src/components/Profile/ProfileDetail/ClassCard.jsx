@@ -15,6 +15,7 @@ const CardWrapper = styled.div`
 const Image = styled.img`
   width: 100%;
   aspect-ratio: 4 / 3;
+  object-fit: cover;
   background-color: lightgray;
   border-radius: 10px;
 `;
