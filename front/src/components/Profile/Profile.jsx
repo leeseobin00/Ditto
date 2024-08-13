@@ -11,10 +11,17 @@ import DefaultProfileImage from "../../assets/img/default-user.png";
 const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  margin: 32px 0px;
+  height: 303px;
+  margin: 20px 0px;
+`;
+
+const ProfileTopWrapper = styled.div`
+  height: 230px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Image = styled.img`
@@ -55,7 +62,7 @@ const Tags = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 10px;
 `;
 
 function Profile({
@@ -141,16 +148,21 @@ function Profile({
 
   return (
     <ProfileWrapper>
-      <Link to={`/profile/${profileId}`}>
-        <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
-      </Link>
-      <Link to={`/profile/${profileId}`}>
-        <Name>{userName}</Name>
-      </Link>
-      <LikeCount onClick={handleHeartClick}>
-        {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />}
-        {curLikeCount}
-      </LikeCount>
+      <ProfileTopWrapper>
+        <Link to={`/profile/${profileId}`}>
+          <Image
+            src={profileImage || DefaultProfileImage}
+            alt="Profile Image"
+          />
+        </Link>
+        <Link to={`/profile/${profileId}`}>
+          <Name>{userName}</Name>
+        </Link>
+        <LikeCount onClick={handleHeartClick}>
+          {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />}
+          {curLikeCount}
+        </LikeCount>
+      </ProfileTopWrapper>
       <Tags>
         {tags?.map((tag, index) => (
           <Tag key={index} tagName={tag} />

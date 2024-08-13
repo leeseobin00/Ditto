@@ -21,10 +21,21 @@ const UserCard = styled.div`
   border: 1px solid var(--BORDER_COLOR);
   border-radius: 10px;
   padding: 20px;
+  height: 220px;
   text-align: center;
   position: relative;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ColumnContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 const UserImage = styled.img`
@@ -41,21 +52,22 @@ const UserImage = styled.img`
   cursor: pointer;
 `;
 
-const UserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const UserName = styled.h3`
+const UserName = styled.div`
+  font-weight: 600;
   color: var(--TEXT_PRIMARY);
   margin-bottom: 5px;
   font-size: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  cursor: pointer;
 `;
 
 const TagContainer = styled.div`
   display: flex;
-  gap: 5px;
+  justify-content: center;
 `;
 
 const Tag = styled.div`
@@ -70,6 +82,7 @@ const Tag = styled.div`
 const HeartIcon = styled.img`
   width: 17px;
   height: 17px;
+  margin-left: 7px;
 `;
 
 const LikedUsers = ({ users }) => {
@@ -84,21 +97,21 @@ const LikedUsers = ({ users }) => {
       <UserContainer>
         {users.map((user) => (
           <UserCard key={user.userId}>
-            <UserImage
-              src={`http://i11a106.p.ssafy.io:8080/files/download/${user.fileId}`}
-              alt={user.nickname}
-              onClick={() => handleUserClick(user.userId)}
-            />
-            <UserInfo>
-              <UserName>
+            <ColumnContainer>
+              <UserImage
+                src={`http://i11a106.p.ssafy.io:8080/files/download/${user.fileId}`}
+                alt={user.nickname}
+                onClick={() => handleUserClick(user.userId)}
+              />
+              <UserName onClick={() => handleUserClick(user.userId)}>
                 {user.nickname} <HeartIcon src={Heart} />
               </UserName>
-              <TagContainer>
-                {user.tags.map((tag) => (
-                  <Tag key={tag.tagId}>{tag.tagName}</Tag>
-                ))}
-              </TagContainer>
-            </UserInfo>
+            </ColumnContainer>
+            <TagContainer>
+              {user.tags.map((tag) => (
+                <Tag key={tag.tagId}>{tag.tagName}</Tag>
+              ))}
+            </TagContainer>
           </UserCard>
         ))}
       </UserContainer>

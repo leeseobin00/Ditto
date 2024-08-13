@@ -409,7 +409,7 @@ function ProfileDetailPage() {
               >
                 <CardList cards={proClasses} />
                 {proClasses.length == 0 && (
-                  <ContentNull>수강한 강의가 없습니다.</ContentNull>
+                  <ContentNull>등록한 강의가 없습니다.</ContentNull>
                 )}
               </Section>
               <Section

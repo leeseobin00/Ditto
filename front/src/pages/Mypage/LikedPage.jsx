@@ -68,7 +68,7 @@ const LikedPage = () => {
         }
       );
       setLikedUsers(userResponse?.data?.data);
-      if (userResponse?.data?.data.length == 3) setShowUserMoreButton(true);
+      if (userResponse?.data?.data.length == 4) setShowUserMoreButton(true);
     } catch (error) {
       console.error(error);
     } finally {
@@ -119,7 +119,7 @@ const LikedPage = () => {
       if (response?.data?.data.length == 0) {
         alert("더 이상 불러올 관심 유저가 없습니다.");
         setShowUserMoreButton(false);
-      } else if (response?.data?.data.length < 3) setShowUserMoreButton(false);
+      } else if (response?.data?.data.length < 4) setShowUserMoreButton(false);
       setLikedUsers((prevUsers) => [...prevUsers, ...response?.data?.data]);
     } catch (error) {
       console.error("Error loading more users:", error);
