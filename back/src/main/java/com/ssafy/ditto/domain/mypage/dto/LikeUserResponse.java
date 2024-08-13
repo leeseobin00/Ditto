@@ -1,6 +1,7 @@
 package com.ssafy.ditto.domain.mypage.dto;
 
 import com.ssafy.ditto.domain.tag.domain.Tag;
+import com.ssafy.ditto.domain.tag.dto.TagResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class LikeUserResponse {
     private String nickname;
 
     @Schema(description = "태그 목록")
-    private List<Tag> tags;
+    private List<TagResponse> tags;
 
     @Schema(description = "파일 ID", example = "1")
     private Integer fileId;
