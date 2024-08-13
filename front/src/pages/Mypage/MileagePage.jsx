@@ -107,6 +107,13 @@ const WithdrawGroup = styled.div`
   margin: 20px 10px;
 `;
 
+const HistoryNull = styled.div`
+  font-size: 18px;
+  color: var(--TEXT_SECONDARY);
+  padding: 40px;
+  text-align: center;
+`;
+
 const MileagePage = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const userId = useSelector((state) => state.auth.userId);
@@ -122,6 +129,7 @@ const MileagePage = () => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showMoreButton, setShowMoreButton] = useState(false);
 
   useEffect(() => {
     const fetchMileage = async () => {
@@ -153,6 +161,9 @@ const MileagePage = () => {
           }
         );
         setHistories(response?.data?.data);
+        if (response?.data?.data.length == 10) {
+          setShowMoreButton(true);
+        }
       } catch (error) {
         console.error("Error fetching mileage history:", error);
       }
@@ -174,7 +185,17 @@ const MileagePage = () => {
             },
           }
         );
-        setHistories([...histories, ...response?.data?.histories]);
+        setHistories([...histories, ...response?.data?.data]);
+        if (response?.data?.data.length == 0) {
+          alert("더 이상 불러올 결제 내역이 없습니다.");
+          setShowMoreButton(false);
+          return;
+        }
+        if (response?.data?.data.length < 10) {
+          setShowMoreButton(false);
+        } else if (response?.data?.data.length == 10) {
+          setShowMoreButton(true);
+        }
       } catch (error) {
         console.error("Error fetching more mileage history:", error);
       }
@@ -270,7 +291,10 @@ const MileagePage = () => {
         {histories.map((history) => (
           <HistoryItem key={history.historyId} history={history} />
         ))}
-        <MoreButton onClick={handleMore} />
+        {histories.length == 0 && (
+          <HistoryNull>정산 내역이 없습니다.</HistoryNull>
+        )}
+        {showMoreButton && <MoreButton onClick={handleMore} />}
       </HistoryList>
       <WithdrawConfirmationModal
         isOpen={isConfirmationOpen}

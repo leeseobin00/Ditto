@@ -90,7 +90,7 @@ const LikedPage = () => {
       );
       if (response?.data?.data.length == 0) {
         alert("더 이상 불러올 관심 클래스가 없습니다.");
-        setShowUserMoreButton(false);
+        setShowClassMoreButton(false);
       }
       if (response?.data?.data.length < 3) setShowClassMoreButton(false);
       setLikedClasses((prevClasses) => [

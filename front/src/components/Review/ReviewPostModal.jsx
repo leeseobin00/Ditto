@@ -150,13 +150,15 @@ function ReviewPostModal({
     }
 
     try {
+      console.log(userId);
+      console.log(initialReview?.lectureId);
       await sendRequest(
         `/classes/${initialReview?.classId}/reviews/${initialReview?.reviewId}`,
         {
           reviewContent,
           rating,
           userId: userId,
-          lectureId: selectedLecture,
+          lectureId: initialReview?.lectureId,
         },
         "patch"
       );
