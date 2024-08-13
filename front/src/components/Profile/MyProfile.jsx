@@ -30,6 +30,7 @@ const Image = styled.img`
   width: 160px;
   height: 160px;
   border-radius: 100%;
+  object-fit: cover;
 `;
 
 const ProfileEditButton = styled.button`
@@ -73,7 +74,7 @@ const NoTagText = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 14px;
-  color: var(--TEXT_SECONDARY);  
+  color: var(--TEXT_SECONDARY);
   width: 100%;
 `;
 
@@ -98,12 +99,12 @@ const TagsEditButton = styled.button`
 `;
 
 function MyProfile({
-    profileImageURL, 
-    handleProfileImageURL,
-    tags,
-    userName, 
-    likeCount
-  }) {
+  profileImageURL,
+  handleProfileImageURL,
+  tags,
+  userName,
+  likeCount,
+}) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
 
@@ -126,7 +127,10 @@ function MyProfile({
   return (
     <ProfileWrapper>
       <ImageWrapper>
-        <Image src={profileImageURL || DefaultProfileImage}  alt="Profile Image"/>
+        <Image
+          src={profileImageURL || DefaultProfileImage}
+          alt="Profile Image"
+        />
         <ProfileEditButton
           position={{ top: "10px", left: "120px" }}
           onClick={handleProfileEditClick}
@@ -139,8 +143,12 @@ function MyProfile({
         <CustomFilledHeartIcon /> {likeCount}
       </LikeCount>
       <Tags>
-        {tags?.length===0 && <NoTagText>현재 등록된 태그가 없습니다.</NoTagText>}
-        {tags?.map((tag, index)=><Tag key={index} tagName={tag} />)}
+        {tags?.length === 0 && (
+          <NoTagText>현재 등록된 태그가 없습니다.</NoTagText>
+        )}
+        {tags?.map((tag, index) => (
+          <Tag key={index} tagName={tag} />
+        ))}
         <TagsEditButton onClick={handleTagsEditClick}>
           <ProfileIconImage src={WriteIcon} alt="Edit Icon" />
         </TagsEditButton>
@@ -151,7 +159,8 @@ function MyProfile({
           <ModifyProfileImage
             curProfileImageURL={profileImageURL}
             handleProfileImageURL={handleProfileImageURL}
-            onClose={handleCloseProfileModal} />
+            onClose={handleCloseProfileModal}
+          />
         </Modal>
       )}
 
