@@ -101,14 +101,20 @@ const CustomBackIcon = styled(BsChevronLeft)`
   color: var(--TEXT_SECONDARY);
 `;
 
-const CustomHeartIcon = styled(BsHeart)`
+const CustomHeartIcon = styled(({ isanimating, ...rest }) => (
+  <BsHeart {...rest} />
+))`
   color: var(--TEXT_SECONDARY);
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
+  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
+    ease-in-out;
 `;
 
-const CustomFilledHeartIcon = styled(BsHeartFill)`
+const CustomFilledHeartIcon = styled(({ isanimating, ...rest }) => (
+  <BsHeartFill {...rest} />
+))`
   color: var(--ACCENT1);
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
+  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
+    ease-in-out;
 `;
 
 const CustomMenuIcon = styled(MdMenu)`
@@ -207,7 +213,7 @@ function Post({
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curlikeCount, setCurlikeCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isanimating, setIsAnimating] = useState(false);
 
   const navigate = useNavigate();
   const handleGoBack = () => {
@@ -258,7 +264,7 @@ function Post({
     setIsModalOpen(false);
   };
 
-  const handleConfirmDelete = async() => {
+  const handleConfirmDelete = async () => {
     // 추후 삭제 api 연결
     const res = await deletePost(`/posts/${postId}`, null, "delete");
     setIsModalOpen(false);
@@ -300,9 +306,9 @@ function Post({
             label={
               <>
                 {isHeartFilled ? (
-                  <CustomFilledHeartIcon isAnimating={isAnimating} />
+                  <CustomFilledHeartIcon isanimating={isanimating} />
                 ) : (
-                  <CustomHeartIcon isAnimating={isAnimating} />
+                  <CustomHeartIcon isanimating={isanimating} />
                 )}
                 <HeartCount>{curlikeCount}</HeartCount>
               </>

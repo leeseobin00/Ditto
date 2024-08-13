@@ -11,10 +11,17 @@ import DefaultProfileImage from "../../assets/img/default-user.png";
 const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  margin: 32px 0px;
+  height: 303px;
+  margin: 20px 0px;
+`;
+
+const ProfileTopWrapper = styled.div`
+  height: 230px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Image = styled.img`
@@ -37,31 +44,15 @@ const LikeCount = styled.p`
   margin-top: 8px;
 `;
 
-const popAnimation = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
-
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
   cursor: pointer;
-  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
-    ease-in-out;
   margin-right: 10px;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
   cursor: pointer;
-  animation: ${({ isanimating }) => (isanimating ? popAnimation : "none")} 0.3s
-    ease-in-out;
   margin-right: 10px;
 `;
 
@@ -71,7 +62,7 @@ const Tags = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 10px;
 `;
 
 function Profile({
@@ -91,7 +82,7 @@ function Profile({
   const [profileImage, setProfileImage] = useState(profileImageURL);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curLikeCount, setCurLikeCount] = useState(likeCount);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isanimating, setIsAnimating] = useState(false);
 
   const handleHeartClick = () => {
     if (!userId) return;
@@ -157,20 +148,21 @@ function Profile({
 
   return (
     <ProfileWrapper>
-      <Link to={`/profile/${profileId}`}>
-        <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
-      </Link>
-      <Link to={`/profile/${profileId}`}>
-        <Name>{userName}</Name>
-      </Link>
-      <LikeCount onClick={handleHeartClick}>
-        {isHeartFilled ? (
-          <CustomFilledHeartIcon isanimating={isAnimating} />
-        ) : (
-          <CustomHeartIcon isanimating={isAnimating} />
-        )}
-        {curLikeCount}
-      </LikeCount>
+      <ProfileTopWrapper>
+        <Link to={`/profile/${profileId}`}>
+          <Image
+            src={profileImage || DefaultProfileImage}
+            alt="Profile Image"
+          />
+        </Link>
+        <Link to={`/profile/${profileId}`}>
+          <Name>{userName}</Name>
+        </Link>
+        <LikeCount onClick={handleHeartClick}>
+          {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />}
+          {curLikeCount}
+        </LikeCount>
+      </ProfileTopWrapper>
       <Tags>
         {tags?.map((tag, index) => (
           <Tag key={index} tagName={tag} />
