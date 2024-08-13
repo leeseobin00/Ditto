@@ -106,7 +106,7 @@ function ProfileDetailPage() {
 
   const [profileImageURL, setProfileImageURL] = useState(undefined);
   const [profileName, setProfileName] = useState("");
-  const [profileRoleId, setProfileRoleId] = useState(1);
+  const [profileRoleId, setProfileRoleId] = useState();
   const [tags, setTags] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
   const [studentSum, setStudentSum] = useState(0);
@@ -117,11 +117,7 @@ function ProfileDetailPage() {
   const [classPage, setClassPage] = useState(1);
   const [totalClassPage, setTotalClassPage] = useState(1);
   const classSize = 3;
-  const [reviews, setReviews] = useState([
-    { rating: 4 },
-    { rating: 3 },
-    { rating: 5 },
-  ]);
+  const [reviews, setReviews] = useState([]);
   const [reviewPage, setReviewPage] = useState(1);
   const [totalReviewPage, setTotalReviewPage] = useState(1);
   const reviewSize = 3;

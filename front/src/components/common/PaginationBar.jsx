@@ -7,7 +7,7 @@ const PageButtons = styled.div`
 `;
 
 const PageButton = styled.button`
-  padding: 4px 8px;
+  padding: 6px 10px;
   margin: 0 5px;
   background-color: ${(props) =>
     props.$active === "true" ? "var(--SECONDARY)" : "var(--LIGHT)"};
@@ -16,7 +16,7 @@ const PageButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 14px;
 
   &:hover {
     background-color: ${(props) =>

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { styled } from "styled-components";
+import { styled, keyframes } from "styled-components";
 import { BsChevronLeft, BsHeart, BsHeartFill } from "react-icons/bs";
 import { MdMenu } from "react-icons/md";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxios from "../../../hooks/useAxios";
-import Button from "../../common/Button";
 import OutlineButton from "../../common/OutlineButton";
 import Modal from "../../common/Modal";
 import { useSelector } from "react-redux";
@@ -28,10 +26,9 @@ const Title = styled.p`
 
   width: 80%;
 
-  /* Ensure text wraps onto multiple lines */
-  word-wrap: break-word; /* This will break long words onto the next line */
-  white-space: normal; /* Allows the text to wrap normally */
-  overflow-wrap: break-word; /* Helps to break the text for older browsers */
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
 `;
 
 const Info = styled.p`
@@ -88,16 +85,30 @@ const ButtonWrapper = styled.div`
   width: 80px;
 `;
 
+const popAnimation = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
 const CustomBackIcon = styled(BsChevronLeft)`
   color: var(--TEXT_SECONDARY);
 `;
 
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
 `;
 
 const CustomMenuIcon = styled(MdMenu)`
@@ -196,6 +207,7 @@ function Post({
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curlikeCount, setCurlikeCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const navigate = useNavigate();
   const handleGoBack = () => {
@@ -216,6 +228,13 @@ function Post({
 
   const handleHeartClick = () => {
     if (!userId) return;
+
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+
     if (isHeartFilled) {
       setIsHeartFilled(false);
       setCurlikeCount((prev) => prev - 1);
@@ -239,9 +258,9 @@ function Post({
     setIsModalOpen(false);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async() => {
     // 추후 삭제 api 연결
-    deletePost(`/posts/${postId}`, null, "delete");
+    const res = await deletePost(`/posts/${postId}`, null, "delete");
     setIsModalOpen(false);
     navigate("/board/all");
   };
@@ -281,9 +300,9 @@ function Post({
             label={
               <>
                 {isHeartFilled ? (
-                  <CustomFilledHeartIcon />
+                  <CustomFilledHeartIcon isAnimating={isAnimating} />
                 ) : (
-                  <CustomHeartIcon />
+                  <CustomHeartIcon isAnimating={isAnimating} />
                 )}
                 <HeartCount>{curlikeCount}</HeartCount>
               </>
