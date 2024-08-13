@@ -68,7 +68,7 @@ const CommentTextWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding-top: 8px;
-  padding-left: 52px;
+  padding-left: 56px;
 `;
 
 const CommentText = styled.span`
