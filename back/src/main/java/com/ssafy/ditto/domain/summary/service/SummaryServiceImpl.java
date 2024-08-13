@@ -47,6 +47,7 @@ public class SummaryServiceImpl implements SummaryService {
         List<Summary> summaries = summaryRepository.findAllByLecture(lectureRepository.findByLectureId(lectureId));
         for (Summary summary : summaries) {
             SummaryResponse newSummaryResponse = SummaryResponse.builder()
+                    .stepId(summary.getStep().getStepId())
                     .stepName(summary.getStep().getStepName())
                     .summaryContent(summary.getSummaryContent())
                     .build();
