@@ -104,7 +104,7 @@ const SearchOptionWrapper = styled.div`
 
 function BoardListPage() {
   const { sendRequest } = useAxios();
-  const userId = useSelector((state)=>state.auth.userId);
+  const userId = useSelector((state) => state.auth.userId);
   // router
   const location = useLocation();
   const path = location.pathname.split("/")[2];
@@ -289,11 +289,11 @@ function BoardListPage() {
             onChange={handleSortOption}
             curOption={sortBy}
           />
-          {userId && 
+          {userId && (
             <Link to="/board/add">
-            <Button label="글쓰기" size="md" />
-          </Link>
-          }
+              <Button label="글쓰기" size="md" />
+            </Link>
+          )}
         </SearchOptionWrapper>
         {/* 검색 옵션 끝 */}
 

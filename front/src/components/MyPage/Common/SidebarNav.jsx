@@ -6,7 +6,7 @@ const Sidebar = styled.div`
   border-right: 1px solid var(--BORDER_COLOR);
   padding-top: 20px;
   padding-left: 18px;
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 100px);
 `;
 
 const NavItem = styled(NavLink)`

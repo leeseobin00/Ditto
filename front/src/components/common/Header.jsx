@@ -308,16 +308,16 @@ const Header = () => {
               <BiBell style={{ fontSize: "20px" }} />
             </IconLink> */}
             {isAuthenticated ? (
-              isPro ? (
+              isPro == 2 ? (
                 <Icon
-                  to="/mypage/userinfo"
+                  to="/mypage/prouserinfo"
                   className={mypageIsActive ? "active" : ""}
                 >
                   MyPage
                 </Icon>
               ) : (
                 <Icon
-                  to="/mypage/prouserinfo"
+                  to="/mypage/userinfo"
                   className={mypageIsActive ? "active" : ""}
                 >
                   MyPage

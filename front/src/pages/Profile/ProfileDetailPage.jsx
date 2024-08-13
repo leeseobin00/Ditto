@@ -436,7 +436,7 @@ function ProfileDetailPage() {
           >
             <PostList posts={posts} />
             {posts.length == 0 && (
-              <ContentNull>작성된 리뷰가 없습니다.</ContentNull>
+              <ContentNull>작성한 글이 없습니다.</ContentNull>
             )}
           </Section>
         </Content>

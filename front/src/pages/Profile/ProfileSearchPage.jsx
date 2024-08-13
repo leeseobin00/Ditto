@@ -251,6 +251,7 @@ function ProfileSearchPage() {
                 userName={profile?.nickname}
                 profileId={profile?.userId}
                 likeCount={profile?.likeCount}
+                tags={profile?.tags}
               />
             </Link>
           ))}

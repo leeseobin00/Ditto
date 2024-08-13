@@ -20,6 +20,7 @@ const Image = styled.img`
   background-color: lightgray;
   width: 160px;
   height: 160px;
+  object-fit: cover;
   border-radius: 100%;
 `;
 
@@ -50,13 +51,15 @@ const popAnimation = keyframes`
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
   cursor: pointer;
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s
+    ease-in-out;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
   cursor: pointer;
-  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s
+    ease-in-out;
 `;
 
 const NoTagText = styled.div`
@@ -162,13 +165,14 @@ function Profile({
       <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
       <Name>{userName}</Name>
       <LikeCount onClick={handleHeartClick}>
-        {isHeartFilled ? <CustomFilledHeartIcon isAnimating={isAnimating} /> : <CustomHeartIcon isAnimating={isAnimating} />}
+        {isHeartFilled ? (
+          <CustomFilledHeartIcon isAnimating={isAnimating} />
+        ) : (
+          <CustomHeartIcon isAnimating={isAnimating} />
+        )}
         {curLikeCount}
       </LikeCount>
       <Tags>
-        {tags?.length === 0 && (
-          <NoTagText>현재 등록된 태그가 없습니다.</NoTagText>
-        )}
         {tags?.map((tag, index) => (
           <Tag key={index} tagName={tag} />
         ))}
