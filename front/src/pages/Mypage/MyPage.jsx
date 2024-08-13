@@ -6,11 +6,11 @@ import SidebarNav from "../../components/MyPage/Common/SidebarNav";
 
 const Container = styled.div`
   display: flex;
+  padding: 20px;
 `;
 
 const Content = styled.div`
   flex: 1;
-  padding: 10px;
 `;
 
 const MyPage = () => {
