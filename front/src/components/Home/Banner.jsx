@@ -48,7 +48,7 @@ const slideUpAndDown = keyframes`
   0% {
     transform: translate(0, -50%);
   }
-  30% {
+  60% {
     transform: translate(0, -70%); 
   }
   100% {
