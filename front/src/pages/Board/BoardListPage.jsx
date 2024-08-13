@@ -165,13 +165,13 @@ function BoardListPage() {
   useEffect(() => {
     resetOptions();
     setPageTitle(
-      path === ""
-        ? "전체"
-        : path === "talk"
-          ? "소통해요!"
-          : path === "community"
-            ? "자랑해요!"
-            : "도와줘요!"
+      path === "talk"
+        ? "소통해요!"
+        : path === "community"
+          ? "자랑해요!"
+          : path === "help"
+            ? "도와줘요!"
+            : "전체"
     );
   }, [path]);
 
