@@ -566,7 +566,7 @@ const SignupForm = () => {
       Swal.fire({
         icon: "success",
         title: "회원가입 성공",
-        text: signupResult?.message,
+        text: response?.data?.message,
         confirmButtonColor: '#FF7F50',
       });
       navigate("/"); // 홈화면으로 이동
