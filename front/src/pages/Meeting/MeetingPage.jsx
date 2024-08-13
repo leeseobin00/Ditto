@@ -460,7 +460,7 @@ function MeetingPage() {
     setText(transcript);
     const sendText = transcript;
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`${baseURL}/summary/${lectureId}/${stepList[currentStep]?.stepId}`, {"originText": sendText});
+    axios.post(`${baseURL}/summary/${lectureId}/${stepId}`, {"originText": sendText});
     resetTranscript();
     sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
@@ -474,7 +474,7 @@ function MeetingPage() {
     setText(transcript);
     const sendText = transcript;
     // TODO: await를 해야하지만... duplicate key가 안되서 어찌하지..
-    axios.post(`${baseURL}/summary/${lectureId}/${stepList[currentStep]?.stepId}`, {"originText": sendText});
+    axios.post(`${baseURL}/summary/${lectureId}/${stepId}`, {"originText": sendText});
     resetTranscript();
     sendProgress(username, currentStep+1);
     setCurrentStep((prev) => prev + 1);
