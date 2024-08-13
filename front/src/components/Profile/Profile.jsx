@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { styled } from "styled-components";
+import { styled, keyframes } from "styled-components";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -35,14 +35,28 @@ const LikeCount = styled.p`
   margin-top: 8px;
 `;
 
+const popAnimation = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
 const CustomHeartIcon = styled(BsHeart)`
   color: var(--TEXT_SECONDARY);
   cursor: pointer;
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
 `;
 
 const CustomFilledHeartIcon = styled(BsHeartFill)`
   color: var(--ACCENT1);
   cursor: pointer;
+  animation: ${({ isAnimating }) => (isAnimating ? popAnimation : "none")} 0.3s ease-in-out;
 `;
 
 const NoTagText = styled.div`
@@ -79,9 +93,17 @@ function Profile({
   const [profileImage, setProfileImage] = useState(profileImageURL);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [curLikeCount, setCurLikeCount] = useState(likeCount);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleHeartClick = () => {
     if (!userId) return;
+
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+
     if (isHeartFilled === true) {
       setIsHeartFilled(false);
       setCurLikeCount((prev) => prev - 1);
@@ -140,7 +162,7 @@ function Profile({
       <Image src={profileImage || DefaultProfileImage} alt="Profile Image" />
       <Name>{userName}</Name>
       <LikeCount onClick={handleHeartClick}>
-        {isHeartFilled ? <CustomFilledHeartIcon /> : <CustomHeartIcon />}
+        {isHeartFilled ? <CustomFilledHeartIcon isAnimating={isAnimating} /> : <CustomHeartIcon isAnimating={isAnimating} />}
         {curLikeCount}
       </LikeCount>
       <Tags>
