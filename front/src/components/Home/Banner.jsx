@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import { styled, keyframes } from "styled-components";
 
 import BannerBackground from "../../assets/img/banner-bg.png";
 import BannerImg from "../../assets/img/banner.png";
@@ -44,6 +44,18 @@ const BannerContent = styled.div`
   z-index: 2;
 `;
 
+const slideUpAndDown = keyframes`
+  0% {
+    transform: translate(0, -50%);
+  }
+  30% {
+    transform: translate(0, -70%); 
+  }
+  100% {
+    transform: translate(0, -50%);
+  }
+`;
+
 const Slogan = styled.div`
   font-size: 30px;
   color: white;
@@ -52,6 +64,7 @@ const Slogan = styled.div`
   left: 3%;
   transform: translate(0, -50%);
   z-index: 3;
+  animation: ${slideUpAndDown} 0.8s ease-in-out;
 `;
 
 const Img = styled.div`
