@@ -10,6 +10,7 @@ import com.ssafy.ditto.domain.summary.dto.SummaryResponse;
 import com.ssafy.ditto.domain.summary.domain.Summary;
 import com.ssafy.ditto.domain.summary.repository.SummaryRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +43,13 @@ public class SummaryServiceImpl implements SummaryService {
 
 
     @Override
+    @Transactional
     public List<SummaryResponse> getSummary(int lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         List<SummaryResponse> summaryResponseList = new ArrayList<>();
-        List<Summary> summaries = summaryRepository.findAllByLecture(lectureRepository.findByLectureId(lectureId));
+        List<Summary> summaries = summaryRepository.findAllByLecture(lecture);
         for (Summary summary : summaries) {
+            Hibernate.initialize(summary.getStep());
             SummaryResponse newSummaryResponse = SummaryResponse.builder()
                     .stepNo(summary.getStep().getStepNo())
                     .stepName(summary.getStep().getStepName())
@@ -54,6 +58,7 @@ public class SummaryServiceImpl implements SummaryService {
 
             summaryResponseList.add(newSummaryResponse);
         }
+
 
         return summaryResponseList;
     }
