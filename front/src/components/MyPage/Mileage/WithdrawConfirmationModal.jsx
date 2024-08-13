@@ -1,20 +1,9 @@
 // src/components/Mileage/WithdrawConfirmationModal.js
-import React from 'react';
-import styled from 'styled-components';
-import { IoClose } from 'react-icons/io5';
-
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-`;
+import React from "react";
+import styled from "styled-components";
+import { IoClose } from "react-icons/io5";
+import Modal from "../../common/Modal";
+import OutlineButton from "../../common/OutlineButton";
 
 const ModalContent = styled.div`
   position: relative;
@@ -28,15 +17,6 @@ const ModalContent = styled.div`
   transition: all 0.3s ease-in-out;
   transform: translateY(0);
   opacity: 1;
-`;
-
-const CloseButton = styled(IoClose)`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  color: var(--SECONDARY);
-  font-size: 24px;
 `;
 
 const Title = styled.h3`
@@ -64,7 +44,8 @@ const ButtonGroup = styled.div`
 
 const Button = styled.button`
   padding: 10px 20px;
-  background-color: ${(props) => (props.$cancel ? 'var(--TEXT_SECONDARY)' : 'var(--SECONDARY)')};
+  background-color: ${(props) =>
+    props.$cancel ? "var(--TEXT_SECONDARY)" : "var(--SECONDARY)"};
   color: white;
   border: none;
   border-radius: 10px;
@@ -74,22 +55,28 @@ const Button = styled.button`
   }
 `;
 
-const WithdrawConfirmationModal = ({ isOpen, onClose, amount, accountDetails, onConfirm }) => {
+const WithdrawConfirmationModal = ({
+  isOpen,
+  onClose,
+  amount,
+  accountDetails,
+  onConfirm,
+}) => {
   if (!isOpen) return null;
 
   return (
-    <Modal>
+    <Modal onClose={onClose}>
+      <Title>{amount} 원을 출금하시겠습니까?</Title>
       <ModalContent>
         <CloseButton onClick={onClose} />
-        <Title>{amount} 원을 출금하시겠습니까?</Title>
         <Details>
           <DetailItem>은행명: {accountDetails.bank}</DetailItem>
           <DetailItem>계좌번호: {accountDetails.accountNumber}</DetailItem>
           <DetailItem>예금주: {accountDetails.receiver}</DetailItem>
         </Details>
         <ButtonGroup>
-          <Button onClick={onConfirm}>출금</Button>
-          <Button $cancel onClick={onClose}>취소</Button>
+          <OutlineButton onClick={onConfirm} label={"출금"} />
+          <OutlineButton $cancel onClick={onClose} label={"취소"} />
         </ButtonGroup>
       </ModalContent>
     </Modal>

@@ -165,7 +165,7 @@ function ReviewPostModal({
         text: "리뷰가 수정되었습니다.",
         icon: "success",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50",
+        confirmButtonColor: "var(--GREEN)",
       });
       onClose();
       onUpdate(reviewContent, rating);
@@ -217,7 +217,7 @@ function ReviewPostModal({
         text: "리뷰가 작성되었습니다.",
         icon: "success",
         confirmButtonText: "확인",
-        confirmButtonColor: "#FF7F50",
+        confirmButtonColor: "var(--GREEN)",
       });
       onUpdate();
       onClose();
