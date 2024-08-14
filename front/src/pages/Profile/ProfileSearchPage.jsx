@@ -295,6 +295,7 @@ function ProfileSearchPage() {
               profileId={profile?.userId}
               likeCount={profile?.likeCount}
               key={profile?.userId}
+              tags={profile?.tags}
             />
           ))}
         </Profiles>
