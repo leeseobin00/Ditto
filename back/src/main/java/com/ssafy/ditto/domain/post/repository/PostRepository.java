@@ -16,8 +16,7 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     @Query(value = "SELECT p.* FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE p.isDeleted = false AND "
-            + "(:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
             + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
             + "(:tagId IS NULL OR p.tag_id = :tagId) AND "
             + "(p.is_deleted = FALSE) AND "
@@ -33,8 +32,7 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     @Query(value = "SELECT p.* FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE p.isDeleted = false AND "
-            + " (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
             + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
             + "(:tagId IS NULL OR p.tag_id = :tagId) AND"
             + "(p.is_deleted = FALSE)",
@@ -46,7 +44,7 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     @Query(value = "SELECT COUNT(*) FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE p.isDeleted = false AND  (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
             + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
             + "(:tagId IS NULL OR p.tag_id = :tagId) AND "
             + "(p.is_deleted = FALSE) AND "
@@ -62,7 +60,7 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
 
     @Query(value = "SELECT COUNT(*) FROM Post p "
             + "JOIN User u ON p.user_id = u.user_id "
-            + "WHERE p.isDeleted = false AND  (:boardId IS NULL OR p.board_id = :boardId) AND "
+            + "WHERE (:boardId IS NULL OR p.board_id = :boardId) AND "
             + "(:categoryId IS NULL OR p.category_id = :categoryId) AND "
             + "(:tagId IS NULL OR p.tag_id = :tagId) AND"
             + "(p.is_deleted = FALSE)",
@@ -75,13 +73,13 @@ public interface PostRepository extends JpaRepository<Post,Integer>{
     // 최근 1주일간 받은 좋아요 수
     @Query(value = "SELECT p.* FROM Post p " +
             "LEFT JOIN Like_Post l ON p.post_id = l.post_id " +
-            "WHERE p.isDeleted = false AND  l.created_date > :oneWeekAgo " +
+            "WHERE p.is_deleted = FALSE AND  l.created_date > :oneWeekAgo " +
             "GROUP BY p.post_id " +
             "ORDER BY COUNT(l.post_id) DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Post> getBestPosts(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
 
-    @Query("SELECT p FROM Post p WHERE p.isDeleted = false AND  p.user.userId = :userId AND p.isDeleted = false")
+    @Query("SELECT p FROM Post p WHERE p.user.userId = :userId AND (p.isDeleted = FALSE)")
     List<Post> getUserPosts(@Param("userId") int userId);
 
     // 좋아요 추가
