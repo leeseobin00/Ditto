@@ -26,6 +26,7 @@ const ClassAddBody = styled.div`
 
 const ButtonContainer = styled.div`
   width: 100px;
+  margin-bottom: 20px;
 `;
 
 function ClassAddPage() {
