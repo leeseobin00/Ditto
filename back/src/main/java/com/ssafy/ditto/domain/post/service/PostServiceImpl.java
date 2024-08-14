@@ -209,6 +209,8 @@ public class PostServiceImpl implements PostService {
     public void deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
         List<Comment> commentList = commentRepository.findAllByPost_PostId(postId);
+
+        commentList.sort((c1, c2) -> c2.getLevel() - c1.getLevel());
         for(Comment comment:commentList){
             commentService.deleteComment(comment.getCommentId());
         }
