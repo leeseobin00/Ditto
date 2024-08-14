@@ -562,7 +562,6 @@ const SignupForm = () => {
         response = await axios.post(`${baseURL}/users/signup/form`, userData);
       }
       
-      console.log(response.data);
       Swal.fire({
         icon: "success",
         title: "회원가입 성공",

@@ -99,7 +99,6 @@ function UserVideoComponent({ streamManager }) {
         const parsedData = JSON.parse(
             streamManager?.session?.connection?.data.split('%/%user-data')[0]
         );
-        console.log("===>parsedData: ", parsedData);
         setVideoRoleId(parsedData?.roleId);
       }catch(error){
         console.log(error);
@@ -123,35 +122,16 @@ function UserVideoComponent({ streamManager }) {
 
   useEffect(() => {
     const videoUsername = getNicknameTag();
-    // console.log("receive StatusMessage: ", statusMessages);
-    // console.log("videoUserName:", videoUsername);
-    // console.log("statusMessages[videoUsername]", statusMessages[videoUsername]);
-    // if(videoUsername in statusMessages){
-    //   console.log(statusMessages[videoUsername]);
-    //   setMyStatus(statusMessages[videoUsername]);
-    // }else{
-    //   console.log("sssss");
-    //   setMyStatus("normal");
-    // }
-    console.log("==============================================");
     if(statusMessages.length===0) setMyStatus("normal");
     const matchingMessages = statusMessages.filter(
       (message) => message.sender === videoUsername
     );
 
-    console.log(matchingMessages);
-
     matchingMessages.forEach((message) => {
       setMyStatus(message.message);
-      console.log(message.message)
     });
   }, [statusMessages, streamManager]);
 
-  console.log("myStatus", myStatus);
-  console.log(statusMessages);
-  console.log(videoRoleId);
-  console.log(roleId);
-  console.log("videoRole: ", getRoleId());
   return (
     <>
       {streamManager !== undefined ? (

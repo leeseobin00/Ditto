@@ -18,12 +18,10 @@ const KakaoCallback = () => {
     if (code) {
       axios.post(`${baseURL}/users/kakao-login`, { code })
         .then(response => {
-          console.log(response);
           const { accessToken, refreshToken, nickname, roleId, domain } = response?.data?.data;
 
           // JWT 디코딩하여 사용자 정보 추출
           const decodedToken = jwtDecode(accessToken);
-          console.log(decodedToken);
           const userId = decodedToken.sub; // JWT의 subject에서 userId 추출
           const email = decodedToken.email; // JWT의 email 클레임에서 email 추출
 

@@ -109,7 +109,6 @@ function TabBar({ classId, titleIds, isInstructor = false }) {
   // 클래스 삭제
   const handleDeleteClass = async () => {
     try {
-      console.log(classId);
       await sendRequest(`/classes/${classId}`, null, "delete");
       navigate("/classes");
     } catch (error) {
