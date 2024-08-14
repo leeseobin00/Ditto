@@ -14,6 +14,9 @@ public class ProMypageResponse {
     @Schema(description = "닉네임", example = "홍길동")
     private String nickname;
 
+    @Schema(description = "파일 Id", example = "1")
+    private Integer fileId;
+
     @Schema(description = "파일 URL", example = "https://example.com/file")
     private String fileUrl;
 
