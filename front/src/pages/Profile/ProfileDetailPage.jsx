@@ -305,7 +305,7 @@ function ProfileDetailPage() {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleRating = async () => {
-    const result = await getRating(`/profiles/${userId}`);
+    const result = await getRating(`/profiles/${profileId}`);
     setStudentSum(result?.data?.studentSum);
     setAvgRating(result?.data?.avgRating);
   };
@@ -313,6 +313,7 @@ function ProfileDetailPage() {
   useEffect(() => {
     if (profileId) {
       handleGetProfile();
+      handleRating();
     }
   }, [profileId]);
 
