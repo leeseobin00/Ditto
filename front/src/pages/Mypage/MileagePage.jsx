@@ -7,6 +7,7 @@ import WithdrawConfirmationModal from "../../components/MyPage/Mileage/WithdrawC
 import axios from "axios";
 import MoreButton from "../../components/common/MoreButton";
 import Button from "../../components/common/Button";
+import Swal from "sweetalert2"; 
 
 const Title = styled.div`
   font-size: 20px;
