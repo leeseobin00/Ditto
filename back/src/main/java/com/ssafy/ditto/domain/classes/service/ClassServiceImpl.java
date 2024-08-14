@@ -159,28 +159,7 @@ public class ClassServiceImpl implements ClassService {
     public ClassListResponse getClassList(ClassListRequest request) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate")); // 기본 정렬
 
-        if (request.getSortBy() != null) {
-            switch (request.getSortBy()) {
-                case "likeCount":
-                    sort = Sort.by(Sort.Order.desc("likeCount"));
-                    break;
-                case "averageRating":
-                    sort = Sort.by(Sort.Order.desc("ratingSum")).and(Sort.by(Sort.Order.desc("reviewCount")));
-                    break;
-                case "reviewCount":
-                    sort = Sort.by(Sort.Order.desc("reviewCount"));
-                    break;
-                case "priceLow":
-                    sort = Sort.by(Sort.Order.asc("classPrice"));
-                    break;
-                case "createdDate":
-                default:
-                    sort = Sort.by(Sort.Order.desc("createdDate"));
-                    break;
-            }
-        }
-
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize() != null ? request.getSize() : 12, sort);
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize() != null ? request.getSize() : 12);
 
         Page<DClass> classPage = classRepository.findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -198,6 +177,22 @@ public class ClassServiceImpl implements ClassService {
                     predicates.add(criteriaBuilder.like(root.get("className"), "%" + request.getKeyword() + "%"));
                 }
             }
+
+            if ("averageRating".equals(request.getSortBy())) {
+                query.orderBy(criteriaBuilder.desc(
+                        criteriaBuilder.quot(root.get("ratingSum"),
+                                criteriaBuilder.coalesce(root.get("reviewCount"), 1))
+                ));
+            } else if ("likeCount".equals(request.getSortBy())) {
+                query.orderBy(criteriaBuilder.desc(root.get("likeCount")));
+            } else if ("reviewCount".equals(request.getSortBy())) {
+                query.orderBy(criteriaBuilder.desc(root.get("reviewCount")));
+            } else if ("priceLow".equals(request.getSortBy())) {
+                query.orderBy(criteriaBuilder.asc(root.get("classPrice")));
+            } else {
+                query.orderBy(criteriaBuilder.desc(root.get("createdDate")));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
 
@@ -216,14 +211,13 @@ public class ClassServiceImpl implements ClassService {
                 .build();
     }
 
-
     @Override
     @Transactional
     public List<ClassResponse> getPopularClasses() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Order.desc("likeCount")));
         List<DClass> popularClasses = classRepository.findPopularClasses(oneWeekAgo, pageable).stream()
-                .filter(dClass -> !dClass.getIsDeleted()) 
+                .filter(dClass -> !dClass.getIsDeleted())
                 .collect(Collectors.toList());
 
         return popularClasses.stream().map(ClassResponse::of).collect(Collectors.toList());
