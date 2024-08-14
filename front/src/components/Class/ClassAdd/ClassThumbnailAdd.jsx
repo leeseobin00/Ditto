@@ -220,8 +220,9 @@ function ClassThumbnailAdd({ onChange, userNickname, initialData, isEdit }) {
 
   const decrementTime = (field) => {
     setClassTime((prevTime) => {
-      if (field === "hour" && prevTime.hour > 0) {
-        return { ...prevTime, hour: prevTime.hour - 1 };
+      if (field === "hour") {
+        if(prevTime.hour > 0) return { ...prevTime, hour: prevTime.hour - 1 };
+        else return { ...prevTime, hour: prevTime.hour};
       } else if (field === "minute" && prevTime.minute > 0) {
         return { ...prevTime, minute: prevTime.minute - 5 };
       }
