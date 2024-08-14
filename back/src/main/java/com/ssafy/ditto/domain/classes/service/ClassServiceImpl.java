@@ -7,6 +7,7 @@ import com.ssafy.ditto.domain.classes.domain.Kit;
 import com.ssafy.ditto.domain.classes.domain.Lecture;
 import com.ssafy.ditto.domain.classes.domain.Step;
 import com.ssafy.ditto.domain.classes.dto.*;
+import com.ssafy.ditto.domain.classes.exception.ClassCancelException;
 import com.ssafy.ditto.domain.classes.exception.ClassNotFoundException;
 import com.ssafy.ditto.domain.classes.repository.ClassRepository;
 import com.ssafy.ditto.domain.classes.repository.KitRepository;
@@ -135,7 +136,9 @@ public class ClassServiceImpl implements ClassService {
     @Transactional
     public ClassDetailResponse getClassDetail(Integer classId) {
         DClass dClass = classRepository.findById(classId).orElseThrow(ClassNotFoundException::new);
-
+        if (dClass.getIsDeleted() == true) {
+            throw new ClassCancelException();
+        }
         List<Step> steps = stepRepository.findAllByClassId(dClass);
         List<Lecture> lectures = lectureRepository.findAllByClassIdAndIsDeletedFalse(dClass);
         UserResponse userResponse = UserResponse.of(dClass.getUserId());
