@@ -441,6 +441,7 @@ public class MypageServiceImpl implements MypageService {
         return ProMypageResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
+                .fileId(user.getFileId().getFileId())
                 .fileUrl(user.getFileId().getFileUrl())
                 .accountId(account.getAccountId())
                 .accountNumber(account.getAccountNumber())
