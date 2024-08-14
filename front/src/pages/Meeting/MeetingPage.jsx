@@ -253,21 +253,14 @@ function MeetingPage() {
     );
   };
 
-  console.log(statusMessages);
-
   const joinSession = async () => {
     const newSession = OV.initSession();
     setSession(newSession);
 
-    console.log("====>newSession: ", newSession);
     newSession.on('streamCreated', (event) => {
-      console.log("====>streamCreated: ",event.stream.connection);
       const connectionData = event.stream.connection;
       const parsedData = JSON.parse(connectionData?.data.split('%/%user-data')[0]);
       if(connectionData.connectionId == newSession.connection.connectionId) return;
-
-      console.log("====>streamCreated====>parsedData_roleId: ", parsedData?.roleId);
-      console.log("====>streamCreated====>loginUser_roleId: ", roleId);
       
       // 수강생이면 강사만 subscribe할 수 있음
       if(roleId==1 && parsedData?.roleId==1) return;
@@ -279,8 +272,6 @@ function MeetingPage() {
     });
 
     newSession.on('streamDestroyed', (event) => {
-      console.log("visibleParticipants.length=====", visibleParticipants.length);
-      console.log("currentIndex=====",currentIndex);
       if(visibleParticipants.length==1){
         setCurrentIndex((prev)=>Math.max(prev - 1, 0));
       }
@@ -292,35 +283,16 @@ function MeetingPage() {
     });
 
     newSession.on('signal:chat', (event) => {
-      console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      console.log("=====>received chat:", parsedData);
       if(parsedData?.target=="모두에게" || parsedData?.target==username || parsedData?.sender==username){
         setChatMessages((prev)=>[...prev, parsedData]);
       }
     });
 
     newSession.on('signal:status', (event) => {
-      console.log('New status message:', event.data);
       const parsedData = JSON.parse(event.data);
-      //이벤트 수신시 로직
-      // let isExist = false;
-      // const newStatusMessage = [];
-      // console.log(statusMessages);
-      // statusMessages.forEach((message)=>{
-      //   console.log(statusMessages);
-      //   if(message?.sender != parsedData?.sender){
-      //     newStatusMessage.push(message);
-      //   }else{
-      //     isExist = true;
-      //   }
-      // });
-      // if(!isExist) newStatusMessage.push(parsedData); 
-      // console.log(newStatusMessage);
-      // setStatusMessages(newStatusMessage);
       setStatusMessages((prevMessages)=>{
-        console.log(prevMessages);
         let isExist = false;
         const newStatusMessages = prevMessages.filter((message) => {
           if (message?.sender !== parsedData?.sender) {
@@ -331,33 +303,19 @@ function MeetingPage() {
           }
         });
     
-        console.log(isExist);
         return [...newStatusMessages, parsedData];
-      })
-      // const newMap = statusMessages;
-      // newMap.set(parsedData?.sender, parsedData?.message);
-      // console.log("===============================newMap: ", newMap);
-      // setStatusMessages(newMap);
-      // setStatusMessages((prevMessages) => {
-      //   const updatedMap = new Map(prevMessages);
-      //   updatedMap.set(parsedData?.sender, parsedData?.message);
-      //   return updatedMap;
-      // });      
+      })    
     });
 
     newSession.on('signal:timer', (event) => {
-      console.log('New timer message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      console.log("=====>timer parsedData: ",  parsedData);
       startTimer(parsedData?.minute, parsedData?.second);
     });
 
     newSession.on('signal:progress', (event) => {
-      console.log('New chat message:', event.data);
       const parsedData = JSON.parse(event.data);
       // 이벤트 수신시 로직
-      console.log("=====>progress parsedData: ",  parsedData);
       setCurrentStep(parsedData?.curProgress);
       setStatusMessages([]);
     });
@@ -600,13 +558,6 @@ function MeetingPage() {
     setIsOpen(status);
   };
 
-  useEffect(()=>{
-    console.log("statusMessages: ", statusMessages);
-  },[statusMessages]);
-
-  console.log("===========>publisher", publisher);
-  console.log("===========>subscribers", subscribers);
-  console.log("currentIdx: ", currentIndex, "subscribers_length: ", subscribers.length, "subscribers_length / maxVisible: ", subscribers.length/maxVisible);
   return (
     <MeetingContext.Provider
       value={{
@@ -639,8 +590,6 @@ function MeetingPage() {
           {visibleParticipants.map((participant, i) => {
             if (!participant) return null; // participant가 null인 경우 null을 반환하여 렌더링하지 않음
             if (roleId==1 && (participant?.stream?.connection?.data?.split('%/%user-data')[0])?.roleId==1) {
-              console.log(roleId);
-              console.log(participant);
               return;
             }
             return (

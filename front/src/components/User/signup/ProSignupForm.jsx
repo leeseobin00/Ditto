@@ -309,7 +309,6 @@ const ProSignupForm = ({ formData, setFormData }) => {
   
     try {
       const response = await axios.post('http://localhost:8080/users/signup/form', instructorData);
-      console.log('Submitted Data:', response.data);
       Swal.fire({
         title: '가입 신청 완료',
         text: '가입 신청이 성공적으로 완료되었습니다.',

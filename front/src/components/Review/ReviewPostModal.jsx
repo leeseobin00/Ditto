@@ -150,8 +150,6 @@ function ReviewPostModal({
     }
 
     try {
-      console.log(userId);
-      console.log(initialReview?.lectureId);
       await sendRequest(
         `/classes/${initialReview?.classId}/reviews/${initialReview?.reviewId}`,
         {

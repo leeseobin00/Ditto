@@ -69,7 +69,6 @@ const authSlice = createSlice({
       localStorage.removeItem("domain");
     },
     changeNickname: (state, action) => {
-      console.log(action.payload);
       state.nickname = action.payload.nickname;
       localStorage.setItem("nickname", action.payload.nickname);
     }

@@ -43,7 +43,6 @@ axiosIntercepter.interceptors.response.use(
           store.dispatch(sessionExpired()); // 세션 만료 처리
           return Promise.reject(error);
         }
-        console.log("리프레시토큰으로 엑세스토큰 요청");
         const response = await axios.post(
           "http://localhost:8080/users/refresh-token",
           {
@@ -52,7 +51,6 @@ axiosIntercepter.interceptors.response.use(
         );
 
         const newAccessToken = response.data.data;
-        console.log(newAccessToken);
         store.dispatch(refresh(newAccessToken)); // Redux 상태 업데이트
         localStorage.setItem("accessToken", newAccessToken);
         axiosIntercepter.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
