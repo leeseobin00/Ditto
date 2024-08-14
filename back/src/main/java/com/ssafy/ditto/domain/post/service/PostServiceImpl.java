@@ -212,9 +212,11 @@ public class PostServiceImpl implements PostService {
 
         commentList.sort((c1, c2) -> c2.getLevel() - c1.getLevel());
         for(Comment comment:commentList){
-            commentService.deleteComment(comment.getCommentId());
+            comment.setIsDeleted(true);
+            commentRepository.save(comment);
         }
-        postRepository.delete(post);
+        post.setIsDeleted(true);
+        postRepository.save(post);
     }
 
     @Override
