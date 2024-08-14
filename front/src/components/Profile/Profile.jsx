@@ -65,6 +65,15 @@ const Tags = styled.div`
   margin-top: 10px;
 `;
 
+const NoTagText = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: var(--TEXT_SECONDARY);
+  width: 100%;
+`;
+
 function Profile({
   profileImageURL,
   profileImageId,
@@ -74,6 +83,7 @@ function Profile({
   profileId,
   postHeart,
   deleteHeart,
+  isDetail = false,
 }) {
   // redux
   const userId = useSelector((state) => state.auth.userId);
@@ -164,6 +174,9 @@ function Profile({
         </LikeCount>
       </ProfileTopWrapper>
       <Tags>
+        {tags?.length === 0 && isDetail && (
+          <NoTagText>현재 등록된 태그가 없습니다.</NoTagText>
+        )}
         {tags?.map((tag, index) => (
           <Tag key={index} tagName={tag} />
         ))}

@@ -348,6 +348,7 @@ function ProfileDetailPage() {
               profileId={profileId}
               postHeart={handlePostHeart}
               deleteHeart={handleDeleteHeart}
+              isDetail={true}
             />
           )}
           {profileRoleId == 2 && (
