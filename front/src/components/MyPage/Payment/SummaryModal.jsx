@@ -11,10 +11,12 @@ const Title = styled.div`
 
 const ContentContainer = styled.div`
   margin-top: 25px;
-  margin-bottom: 40px;
   width: 100%;
-  max-height: 320px;
+  max-height: 350px;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 `;
 
 const StepContainer = styled.div`
@@ -25,9 +27,13 @@ const StepContainer = styled.div`
 const StepTitle = styled.div`
   font-weight: 600;
   margin-bottom: 10px;
+  color: var(--SECONDARY);
+  margin-bottom: 8px;
 `;
 
-const StepContent = styled.div``;
+const StepContent = styled.div`
+  font-size: 14px;
+`;
 
 const SummaryNull = styled.div`
   font-size: 18px;
