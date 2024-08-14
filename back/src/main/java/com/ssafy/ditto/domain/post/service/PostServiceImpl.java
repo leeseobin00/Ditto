@@ -6,6 +6,9 @@ import java.util.*;
 import com.ssafy.ditto.domain.category.domain.Category;
 import com.ssafy.ditto.domain.category.exception.CategoryNotFoundException;
 import com.ssafy.ditto.domain.category.repository.CategoryRepository;
+import com.ssafy.ditto.domain.comment.domain.Comment;
+import com.ssafy.ditto.domain.comment.repository.CommentRepository;
+import com.ssafy.ditto.domain.comment.service.CommentService;
 import com.ssafy.ditto.domain.file.domain.File;
 import com.ssafy.ditto.domain.file.repository.FileRepository;
 import com.ssafy.ditto.domain.post.domain.Board;
@@ -43,6 +46,8 @@ public class PostServiceImpl implements PostService {
     public final TagRepository tagRepository;
     public final UserRepository userRepository;
     public final FileRepository fileRepository;
+    public final CommentRepository commentRepository;
+    public final CommentService commentService;
 
     @Override
     @Transactional
@@ -200,8 +205,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deletePost(int postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorCode.POST_NOT_EXIST));
+        List<Comment> commentList = commentRepository.findAllByPost_PostId(postId);
+        for(Comment comment:commentList){
+            commentService.deleteComment(comment.getCommentId());
+        }
         postRepository.delete(post);
     }
 
