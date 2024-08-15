@@ -3,8 +3,6 @@
   <p>💗 DIY 온라인 취미 클래스 및 공유 플랫폼 💗</p>
 </div>
 
-
-
 <img src="./assets/image1.png" alt="Logo"/>
 <br />
 
@@ -23,6 +21,12 @@
   <a href="https://docs.google.com/document/d/1ximw-0fHCp1mF3r4-ubYZ6C6keAJdscZ/edit?usp=sharing&ouid=109929827104996211729&rtpof=true&sd=true">기획서 </a>
 </div>
 </br>
+
+## ✍️ 프로젝트 개요
+
+- **프로젝트 명:** Do IT TOgether (DITTO)
+- **프로젝트 기간:** 2023.07.01 ~ 2023.08.16
+- **SSAFY 11기 2학기 공통 프로젝트**
 
 ## ✍️ 프로젝트 소개
 
@@ -85,21 +89,58 @@ Do IT TOgether (DITTO)는 이러한 문제점을 해결하고, 혼자서도 취�
 
 ## ⚙️ 기술 스택
 
-### Infra
-![AWS EC2](https://img.shields.io/badge/AWS%20EC2-FF9900?style=flat-square&logo=amazonec2&logoColor=white)
- ![Ubuntu](https://img.shields.io/badge/Ubuntu%2020.04-E95420?style=flat-square&logo=ubuntu&logoColor=white)
- ![nginx](https://img.shields.io/badge/nginx-009639?style=flat-square&logo=nginx&logoColor=white)
- ![Tomcat](https://img.shields.io/badge/Apache%20Tomcat-F8DC75?style=flat-square&logo=apachetomcat&logoColor=black)
-
-### Backend
-![Java](https://img.shields.io/badge/Java-007396?style=flat-square&logo=openjdk&logoColor=white)
- ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat-square&logo=spring-boot&logoColor=white)
- ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
- ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
-
-### Frontend
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
- ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+<table>
+    <thead>
+        <tr>
+            <th>분류</th>
+            <th>기술 스택</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                  <p>프론트엔드</p>
+            </td>
+            <td>
+                  <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white"/>
+                  <img src="https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>백엔드</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=spring-boot&logoColor=white"/>
+                <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>인프라</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Amazon_EC2-FF9900?style=flat&logo=amazon-ec2&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Ubuntu-0078D7?style=flat&logo=ubuntu&logoColor=white"/>
+                <img src="https://img.shields.io/badge/nginx-009639?style=flat&logo=nginx&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Tomcat-F8DC75?style=flat&logo=apache-tomcat&logoColor=black"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>협업 툴</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white"/>
+                <img src="https://img.shields.io/badge/GitLab-FC6D26?style=flat&logo=gitlab&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Jira-0052CC?style=flat&logo=jira&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white"/>
+                <img src="https://img.shields.io/badge/Mattermost-0072C6?style=flat&logo=mattermost&logoColor=white"/>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 ---
 
@@ -117,5 +158,6 @@ Do IT TOgether (DITTO)는 이러한 문제점을 해결하고, 혼자서도 취�
 
 ## 🌐 유튜브 링크
 
-[![YouTube Demo](./assets/youtube_thumbnail.png)](https://youtu.be/ejzWzqgtO0M)
+[![YouTube Demo](./assets/youtube_thumbnail.png){: width="100px" height="40px"}](https://youtu.be/ejzWzqgtO0M)
 
+---
