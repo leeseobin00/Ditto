@@ -53,19 +53,20 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
     }
 
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(userId) // 유저 아이디
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
+                .claim("email", email)
                 .signWith(SignatureAlgorithm.HS512, accessSecret)
                 .compact();
     }
 
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpiration);
 
@@ -73,6 +74,7 @@ public class JwtProvider {
                 .setSubject(userId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
+                .claim("email", email)
                 .signWith(SignatureAlgorithm.HS512, refreshSecret)
                 .compact();
     }
@@ -81,8 +83,9 @@ public class JwtProvider {
         validateToken(refreshToken, true);
         Claims claims = parseClaims(refreshToken, true);
         String userId = claims.getSubject();
+        String email = claims.get("email", String.class);
 
-        String newAccessToken = createAccessToken(userId);
+        String newAccessToken = createAccessToken(userId, email);
         return new JwtResponse(newAccessToken, refreshToken);
     }
 }

@@ -2,6 +2,7 @@ package com.ssafy.ditto.global.dto;
 
 public enum ResponseMessage {
     // Success messages
+    SUCCESS("Successfully"),
     SUCCESS_WRITE("Successfully created."),
     SUCCESS_UPDATE("Successfully updated."),
     SUCCESS_DELETE("Successfully deleted."),
@@ -11,6 +12,7 @@ public enum ResponseMessage {
     SUCCESS_LOGIN("Login successful."),
     SUCCESS_LOGOUT("Logout successful."),
     SUCCESS_REGISTER("Registration successful."),
+    SUCCESS_CONVERT("Convert successful"),
 
     // Error messages
     ERROR_WRITE("Failed at creating."),
