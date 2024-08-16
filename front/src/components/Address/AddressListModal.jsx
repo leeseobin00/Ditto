@@ -20,7 +20,7 @@ const ContentContainer = styled.div`
   overflow: auto;
 `;
 
-function AddressListModal({ show, onClose, userId }) {
+function AddressListModal({ show, onClose, userId, onSelect }) {
   const [addresses, setAddresses] = useState([]);
   const { sendRequest } = useAxios();
 
@@ -46,15 +46,33 @@ function AddressListModal({ show, onClose, userId }) {
     handleGetAddresses();
   }, [userId]);
 
+  const [selectedAddress, setSelectedAddress] = useState(null);
+
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address);
+  };
+
+  const handleSelectClick = () => {
+    if (onSelect && selectedAddress) {
+      onSelect(selectedAddress);
+      onClose();
+    }
+  };
+
   if (!show) return null;
 
   return (
     <Modal onClose={onClose}>
       <Title>배송지 목록</Title>
       <ContentContainer>
-        <AddressList addresses={addresses} isPayment={true} userId={userId} />
+        <AddressList
+          addresses={addresses}
+          isPayment={true}
+          userId={userId}
+          onAddressSelect={handleAddressSelect}
+        />
       </ContentContainer>
-      <OutlineButton label={"선택"} />
+      <OutlineButton label={"선택"} onClick={handleSelectClick} />
     </Modal>
   );
 }

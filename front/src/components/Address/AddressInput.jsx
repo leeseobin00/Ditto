@@ -89,7 +89,7 @@ const loadDaumPostcode = () => {
   });
 };
 
-function AddressInput({ onChange, initialddress, isEdit = false }) {
+function AddressInput({ onChange, initialAddress, isEdit = false }) {
   const [addressName, setAddressName] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [address1, setAddress1] = useState("");
@@ -99,23 +99,24 @@ function AddressInput({ onChange, initialddress, isEdit = false }) {
   const [isDefault, setIsDefault] = useState(false);
 
   useEffect(() => {
-    if (isEdit && initialddress) {
-      setAddressName(initialddress.addressName);
-      setZipCode(initialddress.zipCode);
-      setAddress1(initialddress.address1);
-      setAddress2(initialddress.address2);
-      setPhoneNumber(initialddress.phoneNumber);
-      setReceiver(initialddress.receiver);
-      setIsDefault(initialddress.isDefault);
+    if (initialAddress) {
+      setAddressName(initialAddress.addressName);
+      setZipCode(initialAddress.zipCode);
+      setAddress1(initialAddress.address1);
+      setAddress2(initialAddress.address2);
+      setPhoneNumber(initialAddress.phoneNumber);
+      setReceiver(initialAddress.receiver);
+      setIsDefault(initialAddress.isDefault);
     }
   }, [
-    initialddress?.addressName,
-    initialddress?.zipCode,
-    initialddress?.address1,
-    initialddress?.address2,
-    initialddress?.phoneNumber,
-    initialddress?.receiver,
-    initialddress?.isDefault,
+    initialAddress?.addressName,
+    initialAddress?.zipCode,
+    initialAddress?.address1,
+    initialAddress?.address2,
+    initialAddress?.phoneNumber,
+    initialAddress?.receiver,
+    initialAddress?.isDefault,
+    isEdit,
   ]);
 
   const updateAddressData = useCallback(() => {
@@ -138,7 +139,6 @@ function AddressInput({ onChange, initialddress, isEdit = false }) {
     isDefault,
   ]);
 
-  // updateThumbnailData를 상태가 변경될 때만 호출하도록 useEffect를 설정합니다.
   useEffect(() => {
     updateAddressData();
   }, [

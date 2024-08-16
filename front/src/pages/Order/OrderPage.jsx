@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 
 import useAxios from "../../hooks/useAxios";
 
@@ -230,13 +231,29 @@ function OrderPage() {
   }, [classInfo]);
 
   // 배송지 목록 모달 조작
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isAddressComplete, setIsAddressComplete] = useState(false);
 
   const handleShowModal = () => {
     setShowModal(!showModal);
   };
 
-  const handleAddressChange = () => {};
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address); // 선택된 주소를 상태로 저장
+  };
+
+  const handleAddressChange = (address) => {
+    // 모든 필드가 입력되었는지 확인
+    const isComplete =
+      address.addressName &&
+      address.zipCode &&
+      address.address1 &&
+      address.address2 &&
+      address.phoneNumber &&
+      address.receiver;
+    setIsAddressComplete(isComplete); // 상태 업데이트
+  };
 
   // 결제 구현
   const [payment, setPayment] = useState();
@@ -253,6 +270,17 @@ function OrderPage() {
   }, []);
 
   async function requestPayment() {
+    if (!isAddressComplete) {
+      Swal.fire({
+        title: "입력 오류",
+        text: "배송지 정보를 정확히 입력해주세요.",
+        icon: "error",
+        confirmButtonColor: "#FF7F50",
+        confirmButtonText: "확인",
+      });
+
+      return;
+    }
     // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
     // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
     await payment.requestPayment({
@@ -344,13 +372,17 @@ function OrderPage() {
           />
         </TitleLine>
         <AddressContainer>
-          <AddressInput onChange={handleAddressChange} />
+          <AddressInput
+            onChange={handleAddressChange}
+            initialAddress={selectedAddress}
+          />
         </AddressContainer>
       </OrderInfo>
       <AddressListModal
         show={showModal}
         onClose={handleShowModal}
         userId={userId}
+        onSelect={handleAddressSelect}
       />
     </OrderPageContainer>
   );
