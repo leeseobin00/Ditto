@@ -1,5 +1,5 @@
+import { useState } from "react";
 import styled from "styled-components";
-
 import useAxios from "../../hooks/useAxios";
 import OutlineButton from "../common/OutlineButton";
 import CallIcon from "../../assets/icon/mypage/call.png";
@@ -18,8 +18,10 @@ const FullContainer = styled(LineContainer)`
   border-style: solid;
   border-color: var(--BORDER_COLOR);
   border-radius: 10px;
-  border-width: 1px;
   margin: 5px 0;
+  border-width: ${(props) => (props.isclicked == "true" ? "2px" : "1px")};
+  border-color: ${(props) =>
+    props.isclicked == "true" ? "var(--PRIMARY)" : "var(--BORDER_COLOR)"};
 `;
 
 const ColumnContainer = styled.div`
@@ -54,8 +56,22 @@ const Icon = styled.img`
   margin-right: 10px;
 `;
 
-function AddressItem({ address, isPayment = false, userId, onUpdate, onEdit }) {
+function AddressItem({
+  address,
+  isPayment = false,
+  userId,
+  isSelected,
+  onUpdate,
+  onEdit,
+  onAddressSelect,
+}) {
   const { sendRequest } = useAxios();
+
+  const handleItemClick = () => {
+    if (isPayment && onAddressSelect) {
+      onAddressSelect(address);
+    }
+  };
 
   const handleDeleteAddress = async () => {
     try {
@@ -71,7 +87,11 @@ function AddressItem({ address, isPayment = false, userId, onUpdate, onEdit }) {
   };
 
   return (
-    <FullContainer>
+    <FullContainer
+      style={{ cursor: isPayment ? "pointer" : "default" }}
+      isclicked={isPayment && isSelected.toString()}
+      onClick={isPayment ? handleItemClick : undefined}
+    >
       <AddressInfo>
         <LineContainer>
           <AddressName>{address?.addressName}</AddressName>
@@ -89,7 +109,7 @@ function AddressItem({ address, isPayment = false, userId, onUpdate, onEdit }) {
           </LineContainer>
         </LineContainer>
         <LineContainer>
-          <SecondaryFont>
+          <SecondaryFont style={{ width: "85%" }}>
             {address?.address1}&nbsp;{address?.address2}
           </SecondaryFont>
           <SecondaryFont>{address?.receiver}</SecondaryFont>

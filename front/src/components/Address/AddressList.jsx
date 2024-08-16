@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 
 import AddressItem from "./AddressItem";
@@ -21,7 +22,17 @@ function AddressList({
   userId,
   onUpdate,
   onEdit,
+  onAddressSelect,
 }) {
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+
+  const handleAddressSelect = (address) => {
+    const newSelectedId =
+      address.addressId === selectedAddressId ? null : address.addressId;
+    setSelectedAddressId(newSelectedId);
+    onAddressSelect(address);
+  };
+
   return (
     <ListContainer>
       {addresses?.length > 0 ? (
@@ -33,6 +44,8 @@ function AddressList({
             userId={userId}
             onUpdate={onUpdate}
             onEdit={() => onEdit(address)}
+            isSelected={selectedAddressId == address.addressId}
+            onAddressSelect={handleAddressSelect}
           />
         ))
       ) : (
