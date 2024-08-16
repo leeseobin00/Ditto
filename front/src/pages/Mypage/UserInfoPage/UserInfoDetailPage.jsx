@@ -37,6 +37,7 @@ const UserInfoDetail = () => {
   const userId = useSelector((state) => state.auth.userId);
   const [userData, setUserData] = useState({});
   const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -54,9 +55,9 @@ const UserInfoDetail = () => {
         .catch((error) => {
           setIsLoading(false);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to load user data!',
+            icon: "error",
+            title: "Error",
+            text: "Failed to load user data!",
           });
         });
     }
@@ -83,16 +84,17 @@ const UserInfoDetail = () => {
     } catch {
       console.error(error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to fetch addresses!',
+        icon: "error",
+        title: "Error",
+        text: "Failed to fetch addresses!",
       });
     }
   };
 
-  const handleEditAddress = () => {
+  const handleEditAddress = (address) => {
     setShowAddressModal(true);
     setIsEdit(true);
+    setSelectedAddress(address);
   };
 
   if (isLoading) {
@@ -120,6 +122,7 @@ const UserInfoDetail = () => {
         onClose={handleAddressModal}
         userId={userId}
         onUpdate={handleGetAddresses}
+        initialAddress={selectedAddress}
         isEdit={isEdit}
       />
     </PageContainer>
