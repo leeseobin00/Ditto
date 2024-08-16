@@ -32,7 +32,7 @@ function AddressList({
             address={address}
             userId={userId}
             onUpdate={onUpdate}
-            onEdit={onEdit}
+            onEdit={() => onEdit(address)}
           />
         ))
       ) : (
