@@ -19,7 +19,6 @@ const Title = styled.div`
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -94,7 +93,7 @@ const LikedPage = () => {
           icon: "info",
           confirmButtonText: "확인",
           confirmButtonColor: "#FF7F50",
-        })
+        });
         setShowClassMoreButton(false);
       }
       if (response?.data?.data.length < 3) setShowClassMoreButton(false);
@@ -127,7 +126,7 @@ const LikedPage = () => {
           icon: "info",
           confirmButtonText: "확인",
           confirmButtonColor: "#FF7F50",
-        })
+        });
         setShowUserMoreButton(false);
       } else if (response?.data?.data.length < 4) setShowUserMoreButton(false);
       setLikedUsers((prevUsers) => [...prevUsers, ...response?.data?.data]);
