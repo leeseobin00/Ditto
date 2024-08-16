@@ -99,7 +99,7 @@ function AddressInput({ onChange, initialAddress, isEdit = false }) {
   const [isDefault, setIsDefault] = useState(false);
 
   useEffect(() => {
-    if (isEdit && initialAddress) {
+    if (initialAddress) {
       setAddressName(initialAddress.addressName);
       setZipCode(initialAddress.zipCode);
       setAddress1(initialAddress.address1);

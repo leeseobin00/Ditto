@@ -6,15 +6,16 @@ import Heart from "../../../assets/icon/common/heart/heart-activated.png";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 20px;
+  width: 100%;
 `;
 
 const UserContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  justify-content: center;
+  justify-content: left;
+  width: 100%;
 `;
 
 const UserCard = styled.div`
