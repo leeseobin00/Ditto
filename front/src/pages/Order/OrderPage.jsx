@@ -257,7 +257,7 @@ function OrderPage() {
 
   // 결제 구현
   const [payment, setPayment] = useState();
-  const clientKey = "test_ck_5OWRapdA8djBBkmjYKwYVo1zEqZK";
+  const clientKey = "=====CLIENTKEY=====";
   const customerKey = uuidv4();
 
   const initializeTossPayments = async () => {
