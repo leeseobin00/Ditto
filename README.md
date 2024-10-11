@@ -221,6 +221,10 @@ Do IT TOgether (DITTO)는 이러한 문제점을 해결하고, 혼자서도 취�
 
 ## 🌐 유튜브 링크
 
-[![YouTube Demo](./assets/youtube_thumbnail.png){: width="100px" height="40px"}](https://youtu.be/ejzWzqgtO0M)
+<div>
+  <a href="https://youtu.be/ejzWzqgtO0M">
+    <img src="./assets/youtube_thumbnail.png" alt="youtube_thumbnail" style="border-radius: 10px; width:120px;" />
+  </a>
+</div>
 
 ---
